@@ -14,16 +14,21 @@ const useStyles = makeStyles((theme) => ({
     }, 
     circular: {
         marginTop: '45vh'
+    },
+    text: {
+      position: 'absolute',
+      top: '50vh'
     }
   }
 ));
 
-export function Loading() { 
+export function Loading({text = ''}) { 
   const classes = useStyles();
   
   return (
     <Grid container justify="center" className={classes.root}>
       <CircularProgress className={classes.circular}/>
+      <span className={classes.text}>{text}</span>
     </Grid>
   );
 }

@@ -22,7 +22,6 @@ import { Icon } from 'semantic-ui-react';
 
 
 const useStyles = makeStyles((theme) => {
-  let headerHeight = 82;
   let docHeight = document.body.scrollHeight
   
   return {
@@ -42,7 +41,6 @@ function App() {
   const user = useSelector(selectUser);
   const reloadApp = useSelector(selectReloadApp);
   const dispatch = useDispatch();
-  const loading = useSelector(selectLoading);
   const mainService = MainService();
   const facetsQuery = useSelector(selectFacetsQuery);
   const query = useSelector(selectQuery);
@@ -51,7 +49,8 @@ function App() {
   let collection_id = useSelector(selectCollection);
   const [initialOrganization, setInitialOrganization] = useState(null);
   const [initialCollection, setInitialCollection] = useState(null);
-  const [logged, setLogged] = useState(null);
+  const [localUser, setLocalUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   function clearAllFilters()
   {
@@ -76,34 +75,34 @@ function App() {
   useEffect( () => {
     const initUser = async () => {
       if (mainService.getToken()) {
-        if(!logged) {
+        if(!localUser) {
           let fetchedUser = await MainService().getUser();
           if (fetchedUser.error) {
             throw new Error('Error1.1: ' + fetchedUser.error)
           }
-          setLogged(fetchedUser);
+          setLocalUser(fetchedUser);
           dispatch(setUser(fetchedUser));
         }
       }
+      setLoading(false);
       return;
     }
 
     const prepareData = () => {
-      if(logged && !organization_id && !collection_id) {
-        setInitialOrganization(logged.data.selected_org_data.id) 
-        setInitialCollection(logged.data.selected_org_data.collections[0].id)
+      if(localUser && !organization_id && !collection_id) {
+        setInitialOrganization(localUser.data.selected_org_data.id) 
+        setInitialCollection(localUser.data.selected_org_data.collections[0].id)
         dispatch(setOrganization({oid: initialOrganization, cid: initialCollection}))
         localStorage.setItem('lomes_loaded', '0');
-      } 
-      dispatch(setLoading(false))
+      }
     }
 
     initUser();
     prepareData();
     
-  }, [reloadApp, logged, collection_id, organization_id, facetsQuery, initialOrganization, initialCollection]);
+  }, [reloadApp, localUser, collection_id, organization_id, facetsQuery, initialOrganization, initialCollection]);
 
-  if (logged) {
+  if (localUser) {
     return (
       <Container maxWidth='xl' disableGutters>
         {/* {
@@ -188,12 +187,9 @@ function App() {
   } else {
     return (
       <ThemeProvider theme={theme}>
-        {loading ? (<Loading />) : (
           <Router>
-            <Login />    
+            {loading ? (<Loading text="Loading user data..."/>) : (<Login />)}            
           </Router>
-        )}
-        
       </ThemeProvider>        
     )
   }  

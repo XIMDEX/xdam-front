@@ -18,7 +18,7 @@ interface AppState {
 
 const initialState: AppState = {
   user: null,
-  loading: true,
+  loading: false,
   resourcesLoading: true,
   fixedFacets: [],
   facets: [],
