@@ -33,7 +33,9 @@ class AppService {
 
     setToken(name, value)
     {
-      return this.cookies.set(name, value);
+      return this.cookies.set(name, value, {
+        maxAge: 31536000
+      });
     }
 
     async login (email: String, password: String) 
