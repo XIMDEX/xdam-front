@@ -78,7 +78,8 @@ function App() {
         if(!localUser) {
           let fetchedUser = await MainService().getUser();
           if (fetchedUser.error) {
-            throw new Error('Error1.1: ' + fetchedUser.error)
+            alert('Error loading user: ', fetchedUser.error);
+            throw new Error('Error1.1: ' + fetchedUser.error);
           }
           setLocalUser(fetchedUser);
           dispatch(setUser(fetchedUser));
