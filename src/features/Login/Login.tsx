@@ -36,7 +36,7 @@ export function Login() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState({});
+  const [loginStatus, setLoginStatus] = useState({} as any | '');
 
   const writeEmail = (e) => {
     setEmail(e.target.value)
@@ -49,24 +49,23 @@ export function Login() {
     setLoading(true)
     let user = await MainService().login(email, password)
     if (user.error) {
-      setErrors(user.error)
+      setLoginStatus(user.error)
       setLoading(false)
       return;
     }
     MainService().setToken('JWT', user.data.access_token)
-
+    setLoginStatus('Login success. Loading user data, please wait.');
     history.push('/home');
     dispatch(reloadApp());
   }
 
-  function RenderErrors ({ errors }) {
-    if (errors) {
-      return <ul>
-        {Object.keys(errors).map(item => (<li key=''>{errors[item][0]}</li>))}
-      </ul>
-    }
-    return null
+  function RenderStatus () {
+    if (typeof loginStatus === 'string') {
+      return <p style={{textAlign: 'center', marginTop: 10}}>{loginStatus}</p>
+    } 
+    return <ul> {Object.keys(loginStatus).map((item, i) => (<li key={i}>{loginStatus[item][0]}</li>))} </ul>
   };
+  
   
   return (
     <Grid container justify="center" className={classes.root}>
@@ -85,7 +84,7 @@ export function Login() {
         <Button fullWidth color='primary' variant='contained' onClick={log} disabled={loading}>
           { loading ? (<CircularProgress size={24}/>) : "LOGIN" }
         </Button>
-        <RenderErrors errors={errors}/>
+        <RenderStatus />
       </Grid>
       <Grid item sm={3} lg={4}/>
     </Grid>

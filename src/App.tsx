@@ -77,6 +77,7 @@ function App() {
       if (mainService.getToken()) {
         if(!localUser) {
           let fetchedUser = await MainService().getUser();
+          console.log(fetchedUser);
           if (fetchedUser.error) {
             alert('Error loading user: ' + fetchedUser.error);
             throw new Error('Error1.1: ' + fetchedUser.error);
