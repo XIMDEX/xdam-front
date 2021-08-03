@@ -15,6 +15,7 @@ export default function OrganizationSwitch( { organizations, user } ) {
     const oid = data.value
     let org = user.data.organizations.find(x => x.id === oid);
     let col = org.collections[0];
+    /*SET WORKSPACE. AND SWITCH ORG NOT USED YET
     let wsp = org.workspaces.find(x => x.type === 'corporate');
     if (wsp === undefined) {
         wsp = org.workspaces.find(x => x.type === 'public');
@@ -25,6 +26,7 @@ export default function OrganizationSwitch( { organizations, user } ) {
     }
 
     const res = await MainService().setWorkspace(wsp.id)
+
     if (res.data['selected workspace']) {
         setSelected(org.name);
         dispatch(setOrganization({oid: oid, cid: col.id}))
@@ -34,6 +36,7 @@ export default function OrganizationSwitch( { organizations, user } ) {
         //setErrors(['Error changing organization'])
         throw new Error('Error changing organization')
     }
+    */
     return;
   };
 

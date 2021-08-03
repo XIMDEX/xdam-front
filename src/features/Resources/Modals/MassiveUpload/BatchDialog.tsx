@@ -31,7 +31,7 @@ export default function BatchDialog( {open, setOpenBatch, action} ) {
     const collection = useSelector(selectCollection);
     const dispatch = useDispatch();
     const fileInputRef = useRef(null);
-    const workspaces = useSelector(selectUser).data.selected_org_data.workspaces;
+    //const workspaces = useSelector(selectUser).data.selected_org_data.workspaces;
 
     useEffect(() => {
         
