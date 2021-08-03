@@ -149,12 +149,12 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
         }
       })
 
-      org.workspaces.forEach((wsp) => {
-        wspFacet[wsp.name] = {
-          count: wsp.wsp_resource_count,
-          id: wsp.id
-        }
-      })
+      // org.workspaces.forEach((wsp) => {
+      //   wspFacet[wsp.name] = {
+      //     count: wsp.wsp_resource_count,
+      //     id: wsp.id
+      //   }
+      // })
     }
 
     let OFF: IFacet = {
