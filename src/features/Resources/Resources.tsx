@@ -121,7 +121,7 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
     let q = ''
     Object.keys(f).map(i => {
       f[i].forEach(v => {
-        q += 'facets[' + i + ']=' + v + '&'
+        q += 'facets[' + i + '][]=' + v + '&'
       })
     })
     return q;
