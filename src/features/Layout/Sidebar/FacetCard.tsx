@@ -10,6 +10,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import { Icon } from 'semantic-ui-react';
+import EFacetNameMapping from './EFacetNameMapping';
 
 const useStyles = makeStyles((theme) => ({
     sidebarRoot: {
@@ -189,9 +190,9 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
             return selectedColl.name
         }
 
-        // if (facet.key === 'types') {
-        //     return 'Attached files';
-        // }
+        if (facet.key in EFacetNameMapping) {
+            return EFacetNameMapping[facet.key];
+        }
 
         return facet.label
     }
