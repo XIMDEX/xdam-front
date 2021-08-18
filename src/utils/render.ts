@@ -2,11 +2,14 @@ import MainService from "../api/service";
 
 export const render = (data, quality = 'small'): string =>
 {
-    const defaultImage = 'noimg.png';   
+    const defaultImage = 'noimg.png';
+    const defaultAudioImage = 'audio.png';   
     //console.log(data)
     
     if (data.hasOwnProperty('previews')) {
-        return MainService().render(data.previews[0]) + '/' + quality
+        let url = MainService().render(data.previews[0]) + '/' + quality;
+        url = url.includes('@@dam:@audio@') ? defaultAudioImage : url;
+        return url;
     // } else if (data.data.description?.hasOwnProperty('media_upload')) {
     //     return MainService().render(data.data.description.media_upload)
     } else {

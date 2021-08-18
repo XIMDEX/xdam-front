@@ -144,7 +144,7 @@ class AppService {
         headers: this.httpOptions.headersForm,
         body: body
       }
-      const res = await (await fetch(api().createResource.url, request)).json();
+      const res = await fetch(api().createResource.url, request);
       return res;
     }
 
@@ -166,7 +166,7 @@ class AppService {
         headers: this.httpOptions.headersForm,
         body: body
       }
-      const res = await (await fetch(_api.url, request)).json();
+      const res = await fetch(_api.url, request);
       return res;
     }
 

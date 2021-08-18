@@ -89,7 +89,8 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const [previewImage, setPreviewImage] = useState(null);
   const [formFiles, setFormFiles] = useState([]);
   const [processing, setProcessing] = useState(null);
-  const [msg, setMessage] = useState(false);
+  const messageDefaultState = { display: false, text: '', ok: false }
+  const [msg, setMessage] = useState(messageDefaultState);
   const _refForm = React.useRef(null);
   const [mediaType, setMediaType] = useState(dataForUpdate?.type ?? null);
   const [resourceData, setResourceData] = useState(null);
@@ -184,7 +185,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
 
   const postData = async (form, event) => {
     localStorage.setItem('reload_catalogue', '1');
-    setMessage(false)
+    setMessage(messageDefaultState)
 
     const data = form.formData
     /*
@@ -227,9 +228,15 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     }
     setLoaded(false)
     setProcessing(false)
-    console.log(res)
-    setForm(res.data);
-    setMessage(true)
+    const resData = await res.json()
+
+    if(!res.ok) {
+      setMessage({display: true, ok: res.ok, text: resData.error ?? 'Error 0' })
+    } else {  
+      setForm(resData.data);
+      setMessage({display: true, text: '', ok: res.ok })
+    }
+    
     event.preventDefault();
     return false; // prevent reload
   }
@@ -345,9 +352,21 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
             
         </div>
         <div className='form-messages'>    
-          <Message className={msg ? 'zoom-message' : 'hidden-message'} info onDismiss={() => setMessage(false)}>
-              <Message.Header>Done</Message.Header>
-              <p>Resource {dataForUpdate ? 'updated' : 'created'}</p>
+          <Message color={msg.ok ? 'teal' : 'red'} className={msg.display ? 'zoom-message' : 'hidden-message'} info onDismiss={() => setMessage(messageDefaultState)}>
+              {
+                msg.ok ? (
+                  <>
+                    <Message.Header>Done</Message.Header>
+                    <p>Resource {dataForUpdate ? 'updated' : 'created'}</p>
+                  </>
+                ) : (
+                  <>
+                    <Message.Header>An error ocurred</Message.Header>
+                    <p>{msg.text}</p>
+                  </>
+                )
+              }
+              
           </Message>
         </div>
         <SemanticForm
