@@ -78,25 +78,6 @@ export function Resource( { data, listMode, resourceType } ) {
         setDialogOpen(true)
     }
 
-    useEffect(() => {
-        //removeBuggedDiv()
-    })
-
-    function removeBuggedDiv() {
-        //for undetected reason, when a view modal is opened, on the list item a div is appended. It brokes the style
-        let listDom = document.getElementsByClassName('striped');
-        if(listDom) { 
-            for (var i = 0; i < listDom.length; i++) {
-                if(listDom[i].childNodes.length > 1) {
-                    if(listDom[i].childNodes[listDom[i].childNodes.length - 1]) {
-                        //comment next line to view the bug
-                        listDom[i].childNodes[listDom[i].childNodes.length - 1].remove()
-                    }
-                }
-            }
-        }
-    }
-
     async function remove_endpoint(data) {
         let res = await MainService().removeResource(data.id)
         if(res.ok) {
