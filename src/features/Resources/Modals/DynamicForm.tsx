@@ -9,23 +9,23 @@ import {
 } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import MainService from '../../../api/service';
-import { MULTIMEDIA } from '../../../constants';
+import { MULTIMEDIA, LOM_NORMAS } from '../../../constants';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectCollection } from '../../../slices/organizationSlice';
 import SemanticForm from "@rjsf/semantic-ui";
 import { JSONSchema7 } from 'json-schema';
 import { render } from '../../../utils/render';
-import Lomes from '../LOMES/Lomes';
 import { Tab, Label, Icon, Dropdown, Radio } from 'semantic-ui-react'
 import { Button as Btn } from 'semantic-ui-react';
 import { Message } from 'semantic-ui-react';
 import RelatedFiles from './RelatedFiles';
-import { setFormData, selectFormData, reloadCatalogue, setLomesSchema } from '../../../appSlice';
+import { setFormData, selectFormData, reloadCatalogue, setLomesSchema, setLomSchema } from '../../../appSlice';
 import store from '../../../app/store';
 import ArrayFieldTemplate from './DynamicFormTemplates/ArrayFieldTemplate';
 import ResourceActionButtons from './ResourceActionButtons';
 import { iconHandler } from '../../../utils/iconHandler';
 import { InputText, InputTextArea, CustomToggle, CustomInputText, CustomDropdown } from './DynamicFormTemplates/CustomFields';
+import LomForm from '../LOM/LomForm';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -113,10 +113,22 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
         let lomesSchema = await MainService().getLomesSchema();
         dispatch(setLomesSchema(lomesSchema));
       }
-      let ll = localStorage.getItem('lomes_loaded');
-      if(ll === null || ll === '0') {
+
+      const fecthLomSchema = async () => {
+        const lomSchema = await MainService().getLomSchema();
+        dispatch(setLomSchema(lomSchema));
+      }
+      
+      let lomesl = localStorage.getItem('lomes_loaded');
+      if(lomesl === null || lomesl === '0') {
         fetchLomesSchema()
         localStorage.setItem('lomes_loaded', '1');
+      }
+
+      let loml = localStorage.getItem('lom_loaded');
+      if(loml === null || loml === '0') {
+        fecthLomSchema()
+        localStorage.setItem('lom_loaded', '1');
       }
       
       const getResourceData = async () => {
@@ -247,10 +259,11 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   }
 
   const metaData = { menuItem: 'Main Data', render: () => <Tab.Pane > <MainData /></Tab.Pane> };
-  const lomesData = { menuItem: 'LOMES', render: () => <Tab.Pane > <LomesForm /> </Tab.Pane> };
+  const lomesData = { menuItem: 'LOM-ES', render: () => <Tab.Pane > <LomForm data={dataForUpdate} standard={LOM_NORMAS.LOMES} /> </Tab.Pane> };
+  const lomData = { menuItem: 'LOM', render: () => <Tab.Pane > <LomForm data={dataForUpdate} standard={LOM_NORMAS.LOM} /> </Tab.Pane> };
 
   const pane = [metaData];
-  const panes = [metaData, lomesData];
+  const panes = [metaData, lomesData, lomData];
 
   const setForm = (data) => {
     dispatch(setFormData(data))
@@ -394,16 +407,6 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
       </Grid>
     )
   });
-
-  const LomesForm = () => {    
-    return (
-      <Grid container>
-        <Grid item sm={12}>
-          <Lomes resourceData={dataForUpdate} />
-        </Grid>
-      </Grid>
-    )
-  }
 
   const FilesAndActions = () => {
     return (
