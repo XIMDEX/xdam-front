@@ -94,7 +94,7 @@ class AppService {
       return res;
     }
 
-    async getLomesSchema () 
+    async _getLomesSchema () 
     {
       const request = {
         method: api().getSchemas.method,
@@ -103,8 +103,20 @@ class AppService {
       const res = await (await fetch(api().getLomesSchema.url, request)).json();
       return res;
     }
+    getLomesSchema = this._getLomesSchema.bind(this)
 
-    async postLomesData (resource_id, body) {
+    async _getLomSchema ()
+    {
+      const request = {
+        method: api().getSchemas.method,
+        headers: this.httpOptions.headers
+      }
+      const res = (await (await fetch(api().getLomSchema.url, request)).json());
+      return res;
+    }
+    getLomSchema = this._getLomSchema.bind(this)
+
+    async _postLomesData (resource_id, body) {
       const _api = api().postLomesData(resource_id)
       const request = {
         method: _api.method,
@@ -114,8 +126,21 @@ class AppService {
       const res = await (await fetch(_api.url, request)).json();
       return res;
     }
+    postLomesData = this._postLomesData.bind(this)
 
-    async getLomesData (resource_id) 
+    async _postLomData (resource_id, body) {
+      const _api = api().postLomData(resource_id)
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers,
+        body: JSON.stringify(body),
+      }
+      const res = await (await fetch(_api.url, request)).json();
+      return res;
+    }
+    postLomData = this._postLomData.bind(this)
+
+    async _getLomesData (resource_id) 
     {
       const _api = api().getLomesData(resource_id)
       const request = {
@@ -125,6 +150,19 @@ class AppService {
       const res = await (await fetch(_api.url, request)).json();
       return res;
     }
+    getLomesData = this._getLomesData.bind(this)
+
+    async _getLomData (resource_id) 
+    {
+      const _api = api().getLomData(resource_id)
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers,
+      }
+      const res = await (await fetch(_api.url, request)).json();
+      return res;
+    }
+    getLomData = this._getLomData.bind(this)
 
     async getResource (resource_id) 
     {
