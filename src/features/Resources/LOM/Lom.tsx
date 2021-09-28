@@ -50,7 +50,7 @@ function Lom({resourceData, standard}) {
   }
 
   return (
-    <div className={classes.root} key='paco'>
+    <div className={classes.root}>
       <Tabs
         orientation='vertical'
         variant="scrollable"
