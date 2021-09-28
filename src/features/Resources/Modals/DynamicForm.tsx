@@ -9,7 +9,7 @@ import {
 } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import MainService from '../../../api/service';
-import { MULTIMEDIA, LOM_NORMAS } from '../../../constants';
+import { MULTIMEDIA, VALIDS_LOM } from '../../../constants';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectCollection } from '../../../slices/organizationSlice';
 import SemanticForm from "@rjsf/semantic-ui";
@@ -259,11 +259,10 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   }
 
   const metaData = { menuItem: 'Main Data', render: () => <Tab.Pane > <MainData /></Tab.Pane> };
-  const lomesData = { menuItem: 'LOM-ES', render: () => <Tab.Pane > <LomForm data={dataForUpdate} standard={LOM_NORMAS.LOMES} /> </Tab.Pane> };
-  const lomData = { menuItem: 'LOM', render: () => <Tab.Pane > <LomForm data={dataForUpdate} standard={LOM_NORMAS.LOM} /> </Tab.Pane> };
+  const lomsData = VALIDS_LOM.map(typeLom => ({menuItem: typeLom.name, render: () => (<Tab.Pane><LomForm data={dataForUpdate} standard={typeLom.key}/></Tab.Pane>)}))
 
   const pane = [metaData];
-  const panes = [metaData, lomesData, lomData];
+  const panes = [metaData, ...lomsData];
 
   const setForm = (data) => {
     dispatch(setFormData(data))
