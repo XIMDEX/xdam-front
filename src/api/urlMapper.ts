@@ -26,9 +26,17 @@ const api = () => {
             method: 'GET',   
             url: baseUrl + '/lomesSchema'
         },
+        getLomSchema: {    
+            method: 'GET',   
+            url: baseUrl + '/lomSchema'
+        },
         getLomesData: (resource_id) => ({    
             method: 'GET',   
             url: baseUrl + '/resource/' + resource_id + '/lomes'
+        }),
+        getLomData: (resource_id) => ({    
+            method: 'GET',   
+            url: baseUrl + '/resource/' + resource_id + '/lom'
         }),
         getResource: (resource_id) => ({    
             method: 'GET',   
@@ -61,6 +69,10 @@ const api = () => {
         postLomesData: (resource_id) => ({    
             method: 'POST',   
             url: baseUrl + '/resource/' + resource_id + '/lomes'
+        }),
+        postLomData: (resource_id) => ({    
+            method: 'POST',   
+            url: baseUrl + '/resource/' + resource_id + '/lom'
         }),
         updateResource: (id) => ({    
             method: 'POST',   

@@ -96,6 +96,7 @@ function App() {
         setInitialCollection(localUser.data.selected_org_data.collections[0].id)
         dispatch(setOrganization({oid: initialOrganization, cid: initialCollection}))
         localStorage.setItem('lomes_loaded', '0');
+        localStorage.setItem('lom_loaded', '0');
       }
     }
 
