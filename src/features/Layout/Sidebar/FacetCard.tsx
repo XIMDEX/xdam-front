@@ -7,10 +7,10 @@ import { ORGANIZATION, COLLECTION } from '../../../constants';
 import { setFacetsQuery, setQuery, selectQuery } from '../../../slices/organizationSlice';
 import { setResourcesLoading } from '../../../appSlice';
 import ClearIcon from '@material-ui/icons/Clear';
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import { Icon } from 'semantic-ui-react';
 import EFacetNameMapping from './EFacetNameMapping';
+import { mapping, EFilterTypes } from './EMapFacetKeysToFilterType';
+import RangeFilter from './RangeFilter/RangeFilter';
 
 const useStyles = makeStyles((theme) => ({
     sidebarRoot: {
@@ -198,7 +198,7 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
     }
 
     function FacetItems( { fixed } ): any {
-        if (facet.key === COLLECTION || facet.key === ORGANIZATION) {
+        if (facet.key === COLLECTION || facet.key === ORGANIZATION ) {
             return (
                 Object.keys(facetValues).map((name, index) => (
                     <li key={index} style={{listStyleType: "none"}}>
@@ -216,38 +216,51 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
                     )
                 )
             )
-        } else {
-            if (facetValues) {
-                return (
-                    Object.keys(facetValues).map((name, index) => (
-                        //switch lines to hidden facets values in zero
-                        // <li key={index} style={{listStyleType: "none"}} className={facetValues[name].count < 1 ? classes.hidden : null}>
-                        <li key={index} style={{listStyleType: "none"}}>
-                            <input 
-                                type={facetValues[name].radio ? 'radio' : 'checkbox'} 
-                                name={facet.key}
-                                // disabled={facetValues[name].count < 1}
-                                value={fixed ? facetValues[name].id : name} 
-                                onChange={facetValues[name].radio ? filterRadio : filterCheck}
-                                checked={getChecked(fixed ? facetValues[name].id : name, facet.key)} 
-                                id={(facet.key +'-'+ name +'-'+facetValues[name].id).replace(/ /g,'--')}
-                            /> 
-                            <label htmlFor={(facet.key +'-'+ name +'-'+facetValues[name].id).replace(/ /g,'--')}>
-                                <span>{ name } <strong>({ facetValues[name].count })</strong></span>
-                            </label>
-                            
-                        </li>
+        }
+        
+        if (facetValues) {
+            switch (facet.key) {
+                // case 'cost':
+                    
+                //     var comp = <RangeFilter values={facetValues} fkey={facet.key}/>
+                //     return comp
+                //     break;
+            
+                default:
+                    return (
+                        Object.keys(facetValues).map((name, index) => (
+                            //switch lines to hidden facets values in zero
+                            // <li key={index} style={{listStyleType: "none"}} className={facetValues[name].count < 1 ? classes.hidden : null}>
+                            <li key={index} style={{listStyleType: "none"}}>
+                                <input 
+                                    type={facetValues[name].radio ? 'radio' : 'checkbox'} 
+                                    name={facet.key}
+                                    // disabled={facetValues[name].count < 1}
+                                    value={fixed ? facetValues[name].id : name} 
+                                    onChange={facetValues[name].radio ? filterRadio : filterCheck}
+                                    checked={getChecked(fixed ? facetValues[name].id : name, facet.key)} 
+                                    id={(facet.key +'-'+ name +'-'+facetValues[name].id).replace(/ /g,'--')}
+                                /> 
+                                <label htmlFor={(facet.key +'-'+ name +'-'+facetValues[name].id).replace(/ /g,'--')}>
+                                    <span>{ name } <strong>({ facetValues[name].count })</strong></span>
+                                </label>
+                                
+                            </li>
+                            )
                         )
                     )
-                )
-            } else {
-                return (
-                    <></>
-                )
+                    break;
             }
+        } else {
+            return (
+                <></>
+            )
         }
+        
     }
     
+
+
     return (
         
         <Grid container className={`${classes.sidebarRoot} ${cardOpen ? 'cardOpen' : null} facetCard facets-context`} >
