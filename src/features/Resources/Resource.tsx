@@ -114,7 +114,7 @@ export function Resource( { data, listMode, resourceType } ) {
                         /> 
                     </div>
                     <div className="dam-preview-title" title={data.name || data.data.description.course_title}> 
-                        <strong>{data.name || data.data.description.course_title} </strong>
+                        <strong>{data.name || data.data.description.course_title || 'no name set'} </strong>
                     </div>
                 </div>
                 <div className="dam-item-actions ">
