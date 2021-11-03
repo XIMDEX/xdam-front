@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Card, CardContent, Typography, Grid, IconButton } from "@material-ui/core";
-import { Icon, Button, Divider, Label } from "semantic-ui-react";
+import { Card } from "@material-ui/core";
+import { Button, Label } from "semantic-ui-react";
 
 
 const InputText = ({data, array, popIndex, indexToPop}) => {
@@ -13,7 +13,13 @@ const InputText = ({data, array, popIndex, indexToPop}) => {
               // <input className='forms-currentItems' id={data.props.idSchema.$id} disabled type='text' defaultValue={data.props.formData} />
               <Label className='forms-currentItems' size='large'>{data.props.formData}</Label>
             ) : (
-              <input className='forms-onArrayAddItem' id={data.props.idSchema.$id} type='text' defaultValue={data.props.formData} onChange={(event) => data.props.onChange(event.target.value)}/>
+              <input 
+                className='forms-onArrayAddItem' 
+                id={data.props.idSchema.$id} 
+                type='text' 
+                defaultValue={data.props.formData} 
+                onChange={(event) => data.props.onChange(event.target.value)}
+              />
             )
           }
     </div>
@@ -23,7 +29,7 @@ const InputText = ({data, array, popIndex, indexToPop}) => {
 }
 
 function ArrayFieldTemplate(props) {
-  const [data, setData] = useState(props.formData)
+  const [data] = useState(props.formData)
   return (
 
         <Card variant='outlined' className='forms-arrayField'>  

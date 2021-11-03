@@ -3,6 +3,14 @@ import { Cookies } from 'react-cookie';
 import * as ponyfill from 'web-streams-polyfill/ponyfill';
 const streamSaver = require('streamsaver')
 
+const XTAGS =  {
+  vocabularyId: 1, 
+  langId: 1,
+  typeId: 1
+}
+
+const URI_XTAGS = 'http://localhost/ximdex/xtags/public/index.php/api/resource-tags/'
+
 class AppService {
     /**
      * Dict containing options for using with the http client
@@ -112,6 +120,7 @@ class AppService {
         headers: this.httpOptions.headers
       }
       const res = (await (await fetch(api().getLomSchema.url, request)).json());
+
       return res;
     }
     getLomSchema = this._getLomSchema.bind(this)
@@ -136,6 +145,31 @@ class AppService {
         body: JSON.stringify(body),
       }
       const res = await (await fetch(_api.url, request)).json();
+      
+      if (body.hasOwnProperty('Taxon Path')) {
+
+        const bodyTags = {
+          resourceId: resource_id,
+          vocabularyId: XTAGS.vocabularyId,
+          tags: []
+        }
+
+        bodyTags.tags = body['Taxon Path'].map(taxon => ({
+          langId: XTAGS.langId,
+          typeId: XTAGS.typeId,
+          name: taxon['Entry'],
+          definitionId: taxon['Id']
+        }))
+
+        const requestTags = {
+          method: _api.method,
+          headers: this.httpOptions.headers,
+          body: JSON.stringify(bodyTags),
+        }
+        const resTags = await (await fetch(URI_XTAGS, requestTags)).json();
+
+        res.tags = body['Taxon Path']
+      }
       return res;
     }
     postLomData = this._postLomData.bind(this)

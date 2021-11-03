@@ -1,0 +1,15 @@
+.suggestion-wrap {
+    margin-top: 10px;
+    border-left: 1px solid #ccc;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap
+}
+
+.suggestion-unit {
+    margin: 5px;
+    padding:5px;
+    background-color: #43a1a2;
+    border-radius: 5px;
+    color: white
+}
