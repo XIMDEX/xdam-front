@@ -1,7 +1,7 @@
-const URI_SEARCH = 'http://vocabularies.unesco.org/browser/rest/v1/thesaurus/data?uri=http%3A%2F%2Fvocabularies.unesco.org%2Fthesaurus%2F%%ximdex_id%%&format=application/ld%2Bjson'
+const URI_SEARCH = process.env.REACT_APP_DEFINITION_INFO
 
 const getDetailInfo = async id => {
-    const url = URI_SEARCH.replace('%%ximdex_id%%', id)
+    const url = URI_SEARCH.includes('%%ximdex_id%%') ? URI_SEARCH.replace('%%ximdex_id%%', id) : `${URI_SEARCH}?id=${id}&vocabulary=1&lang=1`
     const respo = await fetch(url)
     const json = await respo.json();
     return handleResponseThesauro(json)

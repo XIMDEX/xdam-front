@@ -7,7 +7,7 @@ const DEFAULT_PARAMS = {
 }
 
 
-const URI_SEARCH = 'http://localhost/ximdex/xtags/public/index.php/api/vocabularies/search?q='
+const URI_SEARCH = process.env.REACT_APP_XTAGS_API_BASE_URL + '/vocabularies/search?q='
 
 const useSearch = () => {
     const [txt, setTxt] = useState('');
