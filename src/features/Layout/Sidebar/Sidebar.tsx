@@ -39,12 +39,12 @@ function Sidebar( { collection, organization } ) {
   
   useEffect(() => {
   }, [currentQuery, organization, collection, facets, fixedFacets, resources, user])
-  
+
   return (
     <Grid container className={`${classes.sidebarComp}`} > 
       <Grid item sm={12}>
         {
-          facets.length > 0 ? (
+          facets?.length > 0 ? (
             facets.map( (item: any, key) => {
               return (
                 <FacetCard key={key} 

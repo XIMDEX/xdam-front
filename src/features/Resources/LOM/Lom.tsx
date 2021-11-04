@@ -3,12 +3,14 @@ import React, { useEffect, useState } from 'react'
 import TabPanel from './components/TabPanel/TabPanel';
 import useLomSchema from './hooks/useLomSchema';
 import useStyles from './hooks/useStyles'
-import SemanticForm from "@rjsf/semantic-ui";
+import SemanticForm, { ArrayFieldTemplate } from "@rjsf/semantic-ui";
 import { JSONSchema7 } from 'json-schema';
 import { Button } from 'semantic-ui-react';
 import { Tab } from '@material-ui/core';
 import LomCustomDropdown from './components/LomCustomDropdown';
 import _ from 'lodash'
+import Field from './components/FieldTaxon/components/Field/Field';
+import Dropdown from './components/FieldTaxon/components/Dropdown/Dropdown';
 
 function Lom({resourceData, standard}) {
   const classes = useStyles();
@@ -39,7 +41,8 @@ function Lom({resourceData, standard}) {
   }
 
   const widgets = {
-    SelectWidget: LomCustomDropdown
+    SelectWidget: LomCustomDropdown,
+    DropdownCustom: Dropdown
   };
 
   const tabFormData = (tab) => {
@@ -49,6 +52,28 @@ function Lom({resourceData, standard}) {
     }
   }
 
+  const getUiSchema = (tab, schema = {}) => {
+    const {properties} = tab
+    schema = {...schema}
+    Object.keys(properties).forEach(property => {
+        if (properties[property]?.type === 'array' && tab.definitions[property]?.isUnique) {
+          // is Array with a unique child
+          if (!schema?.[property]) schema[property] = {}
+          if (!schema[property]?.['ui:options']) schema[property]['ui:options'] = {}
+          schema[property]['ui:options'] = {
+            ...schema[property]['ui:options'],
+            addable: false,
+            removable: false,
+          }
+          // hide title of children array
+          schema[property]['ui:title'] = ' '
+        }
+    })
+    return schema
+  }
+
+  const uiSchema_default = { "ui:widget": "DropdownCustom" }
+  
   return (
     <div className={classes.root}>
       <Tabs
@@ -66,10 +91,13 @@ function Lom({resourceData, standard}) {
         }
       </Tabs>
       {
-        schema.tabs.map((tab, ix) => (
+        schema.tabs.map((tab, ix) => {
+          const uiSchema = getUiSchema(tab, uiSchema_default)
+          return (
           <TabPanel value={value} index={parseInt(tab.key) - 1} key={ix}>
             <div className={loading ? classes.blur : null}></div>
             <SemanticForm
+                    uiSchema={uiSchema}
                     liveOmit={false}
                     idPrefix={"rjsf_prefix"}
                     schema={tab as JSONSchema7}
@@ -77,13 +105,14 @@ function Lom({resourceData, standard}) {
                     onSubmit={saveTabData}
                     formData={tabFormData(tab)}
                     noValidate
+                    ArrayFieldTemplate={Field}
                   > 
                     <div>
                       <Button type="submit">Submit</Button>
                     </div>
                   </ SemanticForm>
           </TabPanel>
-        ))
+        )})
       }
     </div>
   )

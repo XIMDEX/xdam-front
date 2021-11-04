@@ -1,0 +1,72 @@
+.tag {
+    border-radius: 5px;
+    display: inline;
+    margin: 10px;
+    display: flex;
+    flex-direction: row;
+    box-shadow: 0px 0px 5px #ccc;
+    cursor: pointer;
+}
+
+.tag:hover {
+    background-color: rgb(245, 245, 245);
+}
+
+.suggestion {
+    width: 50%;
+}
+
+
+.tag .icon-tag {
+    height: 100%; 
+    width: 50px;
+    background-color: #2fb7a4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px 0 0 5px;
+    box-shadow: 0px 0px 5px #ccc;
+}
+
+#delete.delete-tag {
+    outline: 0;
+    border-width: 0;
+    background-color: #fd6b6b;
+    border-radius: 0 5px 5px 0;
+    box-shadow: 0px 0px 5px #ccc;
+    cursor: pointer;
+    transition: width 0.1s linear 0s;
+    transition: opacity 0.1s linear 0s;
+}
+
+.delete-tag.hidden > i {
+    transition: width 0.3s ease 0s;
+    transition: opacity 0.3s ease 0s;
+}
+
+.delete-tag.hidden, .tag .delete-tag.hidden > * {
+    opacity: 0;
+}
+
+.tag .text {
+    font-weight: 700;
+    display: flex;
+    flex-direction: column;
+    padding: 10px 20px 10px 10px;
+    transition: background-color 0.5s ease 0s;
+}
+
+
+.tag .label {
+    font-size: 1.3em; 
+}
+
+.tag .description {
+    font-size: 0.8em;
+    color: #b5b5b5;
+}
+
+.tag .input-search {
+    transition: all 0.5x ease 0s;
+}
+
