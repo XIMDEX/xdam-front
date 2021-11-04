@@ -51,7 +51,29 @@ function Lom({resourceData, standard}) {
       return formData.formData;
     }
   }
-  console.log(schema)
+
+  const getUiSchema = (tab, schema = {}) => {
+    const {properties} = tab
+    schema = {...schema}
+    Object.keys(properties).forEach(property => {
+        if (properties[property]?.type === 'array' && tab.definitions[property]?.isUnique) {
+          // is Array with a unique child
+          if (!schema?.[property]) schema[property] = {}
+          if (!schema[property]?.['ui:options']) schema[property]['ui:options'] = {}
+          schema[property]['ui:options'] = {
+            ...schema[property]['ui:options'],
+            addable: false,
+            removable: false,
+          }
+          // hide title of children array
+          schema[property]['ui:title'] = ' '
+        }
+    })
+    return schema
+  }
+
+  const uiSchema_default = { "ui:widget": "DropdownCustom" }
+  
   return (
     <div className={classes.root}>
       <Tabs
@@ -70,13 +92,12 @@ function Lom({resourceData, standard}) {
       </Tabs>
       {
         schema.tabs.map((tab, ix) => {
+          const uiSchema = getUiSchema(tab, uiSchema_default)
           return (
           <TabPanel value={value} index={parseInt(tab.key) - 1} key={ix}>
             <div className={loading ? classes.blur : null}></div>
             <SemanticForm
-                    uiSchema={{
-                      "ui:widget": "DropdownCustom"
-                    }}
+                    uiSchema={uiSchema}
                     liveOmit={false}
                     idPrefix={"rjsf_prefix"}
                     schema={tab as JSONSchema7}

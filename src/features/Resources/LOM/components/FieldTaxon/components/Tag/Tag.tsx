@@ -40,7 +40,7 @@ export default function Tag({id, addSuggestions,...props}) {
                     icon={`${isEdit && 'close'}`} 
                     size='small'
                     className={`delete-tag ${!isEdit && 'hidden'}` }
-                    onClick={handleDelete} 
+                    onClick={isEdit ? handleDelete : null} 
                 />
             </div>
             {!isEdit && <div style={{width: 0}}></div>}

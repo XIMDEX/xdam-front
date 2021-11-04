@@ -6,8 +6,6 @@ const DEFAULT_PARAMS = {
     label: 'en'
 }
 
-var controller = new AbortController();
-var signal = controller.signal;
 
 const URI_SEARCH = 'http://localhost/ximdex/xtags/public/index.php/api/vocabularies/search?q='
 
@@ -44,7 +42,6 @@ const useSearch = () => {
         if (Array.isArray(response)) setOpts(response)
     };
 
-    console.log(txt)
 
     return [opts, isloading, txt, setTxt]
 }
