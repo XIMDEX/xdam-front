@@ -4,7 +4,7 @@ import Layout from '../Layout/Layout';
 import { Button } from 'semantic-ui-react';
 
 const Field = (props) => {
-    
+
     return (
       <div>
         <h3 style={{marginBottom: 25}}>{props.title}{props.canAdd && (

@@ -1,15 +1,8 @@
 import api from './urlMapper'
 import { Cookies } from 'react-cookie';
 import * as ponyfill from 'web-streams-polyfill/ponyfill';
+import { PATH_TAXONS_DATA, XTAGS } from '../constants';
 const streamSaver = require('streamsaver')
-
-const XTAGS =  {
-  vocabularyId: 1, 
-  langId: 1,
-  typeId: 1
-}
-
-const URI_XTAGS = 'http://localhost/ximdex/xtags/public/index.php/api/resource-tags/'
 
 class AppService {
     /**
@@ -147,32 +140,37 @@ class AppService {
       const res = await (await fetch(_api.url, request)).json();
       
       if (body.hasOwnProperty('Taxon Path')) {
-
-        const bodyTags = {
-          resourceId: resource_id,
-          vocabularyId: XTAGS.vocabularyId,
-          tags: []
-        }
-
-        bodyTags.tags = body['Taxon Path'].map(taxon => ({
-          langId: XTAGS.langId,
-          typeId: XTAGS.typeId,
-          name: taxon['Entry'],
-          definitionId: taxon['Id']
-        }))
-
-        const requestTags = {
-          method: _api.method,
-          headers: this.httpOptions.headers,
-          body: JSON.stringify(bodyTags),
-        }
-        const resTags = await (await fetch(URI_XTAGS, requestTags)).json();
-
-        res.tags = body['Taxon Path']
+        await this.postTaxonsData(resource_id, body['Taxon Path']);
       }
       return res;
     }
     postLomData = this._postLomData.bind(this)
+
+    async postTaxonsData (resource_id, taxons)
+    {
+      const _apiXTags = api().postTags(resource_id);
+
+      const bodyTags = {
+        resourceId: resource_id,
+        vocabularyId: XTAGS.vocabularyId,
+        tags: []
+      }
+
+      bodyTags.tags = taxons.map(taxon => ({
+        langId: XTAGS.langId,
+        typeId: XTAGS.typeId,
+        name: taxon['Entry'],
+        definitionId: taxon['Id']
+      }))
+
+      const requestTags = {
+        method: _apiXTags.method,
+        headers: this.httpOptions.headers,
+        body: JSON.stringify(bodyTags),
+      }
+
+      await (await fetch(_apiXTags.url, requestTags)).json();
+    }
 
     async _getLomesData (resource_id) 
     {
@@ -194,9 +192,59 @@ class AppService {
         headers: this.httpOptions.headers,
       }
       const res = await (await fetch(_api.url, request)).json();
+
+      const taxones = await this.getTaxons(resource_id)
+      let isAdded = res.data.some((tab, i) => {
+        if (tab.title === "Classification") {
+          res.data[i].formData['Taxon Path'] = taxones
+          return true;
+        }
+        return false;
+      })
+
+      if (!isAdded && taxones.length > 0) {
+        let key = res.data.length
+        res.data[key] = {
+          title: 'Classification',
+          key,
+          formData: {
+            'Taxon Path': taxones
+          }
+        }
+      }
+        
       return res;
     }
     getLomData = this._getLomData.bind(this)
+
+    async getTaxons (resource_id)
+    {
+      const _api = api().getTags(resource_id)
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers,
+      }
+      const {tags} = await (await fetch(_api.url, request)).json();
+      
+      return tags.map(tag => ({
+        ['Entry']: tag.label,
+        ['Id']: tag.definition_id,
+        taxon: tag
+      }));
+    }
+
+    async _getTaxonDetails (id, vocabulary = XTAGS.vocabularyId, lang = XTAGS.lang)
+    {
+      const _api = api().getTaxonDetails(id, lang, vocabulary);
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers,
+      }
+      const res = await (await fetch(_api.url, request)).json();
+
+      return res;
+    }
+    getTaxonDetails = this._getTaxonDetails.bind(this)
 
     async getResource (resource_id) 
     {

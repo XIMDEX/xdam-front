@@ -37,6 +37,7 @@ function Lom({resourceData, standard}) {
   }
 
   const saveTabData = async (e) => {
+    console.log(e)
     await postData(resourceData.id, e)
   }
 

@@ -3,6 +3,7 @@ import { Cookies } from 'react-cookie';
 const api = () => {
     let cookies = new Cookies();
     let baseUrl = process.env.REACT_APP_API_BASE_URL;
+    let baseUrlXTags = process.env.REACT_APP_XTAGS_API_BASE_URL; 
     let mapper = {
         baseUrl: baseUrl,
         auth: cookies.get('JWT') ? 'Bearer ' + cookies.get('JWT') : null,
@@ -108,6 +109,36 @@ const api = () => {
         removeMedia: (dam_id, media_id) => ({    
             method: 'DELETE',   
             url: baseUrl + '/resource/' + dam_id + '/associatedFile/' + media_id
+        }),
+        searchInVocabularies: (query, lang, vocabulary) => {
+            let url = `${baseUrlXTags}/vocabularies/searchq=${query}`;
+            url += vocabulary ? `&vocabulary=${vocabulary}` : null;
+            url += lang ? `&lang=${lang}` : null;
+            return {
+                method: 'GET',   
+                url
+            };
+        },
+        getTagInfo: (id, lang, vocabulary) => {
+            let url = `${baseUrlXTags}/info?id=${id}`;
+            url += vocabulary ? `&vocabulary=${vocabulary}` : null;
+            url += lang ? `&lang=${lang}` : null;
+            return {
+                method: 'GET',   
+                url
+            }
+        },
+        postTags: (resource_id) => ({
+            method: 'POST',
+            url: `${baseUrlXTags}/resource-tags/${resource_id}`
+        }),
+        getTags: (resource_id) => ({
+            method: 'GET',
+            url: `${baseUrlXTags}/resource-tags/${resource_id}`
+        }),
+        getTaxonDetails: (id, lang, vocabulary) => ({
+            method: 'GET',
+            url: `${baseUrlXTags}/vocabularies/info?id=${id}&vocabulary=${vocabulary}&lang=${lang}`
         })
     }
     return mapper;
