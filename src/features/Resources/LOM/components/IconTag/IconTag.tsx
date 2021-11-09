@@ -1,9 +1,9 @@
 import React from 'react'
 
-function IconTag(props) {
+function IconTag({type, width, color, ...props}) {
     return ( 
-        <div className={` ${props.className}`}>
-            <img src='custom_tag.png' alt='' width='32px'/>
+        <div className={` ${props.className}`} style={{backgroundColor: color}}>
+            <img src={`${type}_tag.png`} alt='' width={width}/>
         </div> )
 }
 

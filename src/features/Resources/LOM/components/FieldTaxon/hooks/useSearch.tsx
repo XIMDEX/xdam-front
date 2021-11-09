@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import fetch from '../services/search'
 
-const DEFAULT_PARAMS = {
-    labellang: 'en',
-    label: 'en'
-}
+const DEFAULT_LANG = 'en'
 
 
 const URI_SEARCH = process.env.REACT_APP_XTAGS_API_BASE_URL + '/vocabularies/search?q='
@@ -37,7 +34,7 @@ const useSearch = () => {
     }
 
     const searchThesauro = async (txt) => {
-        const response = await fetch(URI_SEARCH, txt + '&langlabel=' + DEFAULT_PARAMS.labellang + '&langsearch=' + DEFAULT_PARAMS.labellang)
+        const response = await fetch(URI_SEARCH, txt + '&lang=' + DEFAULT_LANG)
 
         if (Array.isArray(response)) setOpts(response)
     };

@@ -1,13 +1,18 @@
-import React from 'react'
+import React, { useState } from 'react'
 import './Input.css';
 
 function Input(props) {
+    const [isHover, setIsHover] = useState(false);
+
+    const handleHover = (value) => setIsHover(value) 
+
     return (
         <input 
-            value={props.value}
-            onChange={props?.onChange}
             type='text'
-            style={props?.style}
+            style={!isHover ? props?.style : {...props?.style, ...props?.onHoverStyle }}
+            onMouseEnter={()=> handleHover(true)}
+            onMouseLeave={()=> handleHover(false)}
+            {...props}
         />
     )
 }
