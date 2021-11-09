@@ -9,7 +9,6 @@ function Layout(props) {
     const [suggestions, setSuggestion] = useState([])
     const [data, setData] = useState(props.formData)
 
-    let style = { }
     let customClass = '';
 
     const addSuggestions = (values) => {
@@ -46,7 +45,7 @@ function Layout(props) {
     }
     
     return (
-            <div style={style}>  
+            <>  
                 <Taxon 
                     {...props} 
                     addSuggestions={addSuggestions} 
@@ -54,17 +53,19 @@ function Layout(props) {
                     handleData={handleData} 
                     checkIfExists={checkIfExists}
                 />
-                <Suggestions 
-                    className={`suggestions ${customClass}`} 
-                    suggestions={suggestions} 
-                    checkIfExists={checkIfExists} 
-                    items={props.items} 
-                    handleAddTaxon={props.onAddClick}
-                    handleData={handleData}
-                    removeSuggestion={removeSuggestion}
-                    numSuggestions={NUM_SUGGESTIONS}
-                />
-            </div>
+                {suggestions.length > 0 && (
+                    <Suggestions 
+                        className={`suggestions ${customClass}`} 
+                        suggestions={suggestions} 
+                        checkIfExists={checkIfExists} 
+                        items={props.items} 
+                        handleAddTaxon={props.onAddClick}
+                        handleData={handleData}
+                        removeSuggestion={removeSuggestion}
+                        numSuggestions={NUM_SUGGESTIONS}
+                    />)
+                }
+            </>
             
     )
 }

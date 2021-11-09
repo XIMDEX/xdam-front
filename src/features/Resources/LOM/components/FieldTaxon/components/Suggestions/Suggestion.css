@@ -34,3 +34,21 @@
     align-items: center;
 
 }
+
+.suggestions-more {
+    font-size: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-top: 15px;
+    text-align: right;
+}
+
+.suggestions-more span {
+    cursor: pointer;
+    color: teal;
+    transition: color ease-out 0.3s;
+}
+
+.suggestions-more span:hover {
+    color: black;
+}

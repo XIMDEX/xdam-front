@@ -55,8 +55,8 @@ function Suggestions({items, handleData, removeSuggestion, numSuggestions, sugge
     const showSuggestions = showMore ? suggestions : suggestionsToShow;
 
     return (
-        <>
-        <h4 >Suggestions</h4>
+        <div>
+            <h4 >Suggestions</h4>
             <div className={`${props.className} suggestion-wrap`}>
                 {showSuggestions.map(e => (
                     <div key={e.id} className='suggestion-unit' onClick={(evt) => handleAddSuggestion(e, evt)}>
@@ -64,11 +64,11 @@ function Suggestions({items, handleData, removeSuggestion, numSuggestions, sugge
                         <span>{e.name}</span>
                     </div>
                 ))}
-                {suggestions.length > numSuggestions  && (
-                    <Button circular color='teal' icon={showMore ? 'minus' : 'plus'} size='mini' onClick={toggleShowMore} toggle={showMore} />
-                )}
             </div>
-        </>
+            {suggestions.length > numSuggestions  && (
+                <div className='suggestions-more'><span onClick={toggleShowMore}>Show {showMore ? 'less' : 'more'}</span></div>
+            )}
+        </div>
     )
 }
 export interface ISignUpData {
