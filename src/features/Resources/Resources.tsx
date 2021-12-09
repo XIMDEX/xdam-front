@@ -18,6 +18,7 @@ import BatchDialog from './Modals/MassiveUpload/BatchDialog';
 import store from '../../app/store';
 import { SelectableGroup, createSelectable } from 'react-selectable';
 
+
 const useStyles = makeStyles((theme) => ({
   root: {
     paddingTop: 0,
@@ -102,6 +103,7 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
 
     if (typeof selectedColl !== 'undefined') {
       const catalogue = await mainService.getCatalogue(selectedColl.id, '?' + param(query) + (facetsQuery ? '&' + buildFacetsQuery(facetsQuery) : ''));
+      // const catalogue = mockup;
       let pages = {
         ...catalogue
       };
@@ -340,13 +342,15 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
     // })
 
 
-    const ContainerGrid = localResources.map((item: any, key) => {
-      return (
-        <Grid key={key} item sm={12} md={3} lg={2} xl={1} >
-          <Resource data={item} resourceType={selectedColl.resource_type} listMode={listMode} />
-        </Grid>
-      )
-    })
+    const ContainerGrid = Array.isArray(localResources) 
+      ? localResources.map((item: any, key) => {
+          return (
+            <Grid key={key} item sm={12} md={3} lg={2} xl={1} >
+              <Resource data={item} resourceType={selectedColl.resource_type} listMode={listMode} />
+            </Grid>
+          )
+        })
+      : null
 
     return (<>
       {
@@ -407,7 +411,7 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
 
           <Grid item sm={6} >
             {
-              localResources.length > 0 ? (
+              localResources && localResources.length > 0 ? (
                 <>
                   <Label style={{ marginTop: 10 }}>{pagination.total} Resource{pagination.total > 1 ? 's' : ''} found</Label>
                   {
@@ -427,7 +431,7 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
 
           <Grid item sm={6} style={{ zIndex: 2 }} className={classes.actionBtns} >
             {
-              localResources.length > 0 ? (
+              localResources && localResources.length > 0 ? (
                 <>
                   <PageLimit />
                   {/* <OrderBy /> */}
@@ -455,19 +459,19 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
           </Grid>
 
           {
-            localResources.length > 0 ? (
+            localResources && localResources.length > 0 ? (
               <Grid container style={{ marginTop: 3 }}>
                 <Grid item sm={12} > <Chips data={facetsQuery} />  </Grid>
               </Grid>) : null
           }
 
           {
-            localResources.length > 0 ? <ResCont /> : (resourcesLoading ? '' : <ResourcesNotFound />)
+            localResources && localResources.length > 0 ? <ResCont /> : (resourcesLoading ? '' : <ResourcesNotFound />)
           }
 
           <Grid container>
             {
-              localResources.length > 0 ? (
+              localResources && localResources.length > 0 ? (
                 <Pagination
                   disabled={resourcesLoading}
                   variant="outlined" shape="rounded"
