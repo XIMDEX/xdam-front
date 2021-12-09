@@ -20,7 +20,7 @@ export const LOM_NORMAS = {
 }
 export const VALIDS_LOM = [
   //* This is the order of the tab generation
-  { name: 'LOM-ES', key: LOM_NORMAS.LOMES },
+  // { name: 'LOM-ES', key: LOM_NORMAS.LOMES },
   { name: 'LOM', key: LOM_NORMAS.LOM }
 ]
 
