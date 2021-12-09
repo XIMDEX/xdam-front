@@ -16,7 +16,6 @@ const handleData = (e) => {
   return e.formData;
 }
 
-
 const METHODS = {
   [LOM_NORMAS.LOM]: {
     select: selectLomSchema,
