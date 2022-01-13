@@ -12,6 +12,7 @@ export const AUDIO = "audio";
 export const BOOK = 'book';
 export const ACTIVITY = 'activity';
 export const ASSESSMENT = 'assessment';
+export const DOCUMENT = 'document';
 
 // LOM Standars
 export const LOM_NORMAS = {

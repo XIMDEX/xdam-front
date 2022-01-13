@@ -81,7 +81,7 @@ interface IBody {
   collection_id: string
 }
 
-export default function DynamicForm({ resourceType, action, schema, dataForUpdate = null, handleClose }) {
+export default function DynamicForm({ resourceType, action, schema, dataForUpdate = null, handleClose, showLom = true, canImportData = true }) {
   const classes = useStyles();
   let collection_id = useSelector(selectCollection);
   //let storeFormData = useSelector(selectFormData);
@@ -109,26 +109,28 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
       }
     } else if (action === 'edit') {
       
-      const fetchLomesSchema = async () => { 
-        let lomesSchema = await MainService().getLomesSchema();
-        dispatch(setLomesSchema(lomesSchema));
-      }
+      if (showLom) {
+        const fetchLomesSchema = async () => { 
+          let lomesSchema = await MainService().getLomesSchema();
+          dispatch(setLomesSchema(lomesSchema));
+        }
 
-      const fecthLomSchema = async () => {
-        const lomSchema = await MainService().getLomSchema();
-        dispatch(setLomSchema(lomSchema));
-      }
-      
-      let lomesl = localStorage.getItem('lomes_loaded');
-      if(lomesl === null || lomesl === '0') {
-        fetchLomesSchema()
-        localStorage.setItem('lomes_loaded', '1');
-      }
+        const fecthLomSchema = async () => {
+          const lomSchema = await MainService().getLomSchema();
+          dispatch(setLomSchema(lomSchema));
+        }
 
-      let loml = localStorage.getItem('lom_loaded');
-      if(loml === null || loml === '0') {
-        fecthLomSchema()
-        localStorage.setItem('lom_loaded', '1');
+        let lomesl = localStorage.getItem('lomes_loaded');
+        if(lomesl === null || lomesl === '0') {
+          fetchLomesSchema()
+          localStorage.setItem('lomes_loaded', '1');
+        }
+
+        let loml = localStorage.getItem('lom_loaded');
+        if(loml === null || loml === '0') {
+          fecthLomSchema()
+          localStorage.setItem('lom_loaded', '1');
+        }
       }
       
       const getResourceData = async () => {
@@ -259,7 +261,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   }
 
   const metaData = { menuItem: 'Main Data', render: () => <Tab.Pane > <MainData /></Tab.Pane> };
-  const lomsData = VALIDS_LOM.map(typeLom => ({menuItem: typeLom.name, render: () => (<Tab.Pane><LomForm data={dataForUpdate} standard={typeLom.key}/></Tab.Pane>)}))
+  const lomsData = !showLom ? [] : VALIDS_LOM.map(typeLom => ({menuItem: typeLom.name, render: () => (<Tab.Pane><LomForm data={dataForUpdate} standard={typeLom.key}/></Tab.Pane>)}))
 
   const pane = [metaData];
   const panes = [metaData, ...lomsData];
@@ -344,24 +346,25 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
               }
             </Btn>
             
-              <Dropdown
-                  text='Import data'
-                  icon='clone'
-                  color='teal'
-                  labeled
-                  button
-                  className='icon teal'
-              >
-                <Dropdown.Menu>
-                  <Dropdown.Item onClick={updateResourceFromLastCreated}>
-                    last resource created
-                  </Dropdown.Item>
-                  <Dropdown.Item onClick={updateResourceFromLastUpdated}>
-                    last resource updated
-                  </Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-            
+              {canImportData && (
+                <Dropdown
+                    text='Import data'
+                    icon='clone'
+                    color='teal'
+                    labeled
+                    button
+                    className='icon teal'
+                >
+                  <Dropdown.Menu>
+                    <Dropdown.Item onClick={updateResourceFromLastCreated}>
+                      last resource created
+                    </Dropdown.Item>
+                    <Dropdown.Item onClick={updateResourceFromLastUpdated}>
+                      last resource updated
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
+              )}
         </div>
         <div className='form-messages'>    
           <Message color={msg.ok ? 'teal' : 'red'} className={msg.display ? 'zoom-message' : 'hidden-message'} info onDismiss={() => setMessage(messageDefaultState)}>
