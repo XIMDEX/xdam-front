@@ -77,7 +77,6 @@ export default function ViewResource( { resData } ) {
 
 
     const copied = (e, a) => {
-      console.log(e, a)
       var x = e.clientX;
       var y = e.clientY;
       console.log(x, y)
@@ -107,7 +106,6 @@ export default function ViewResource( { resData } ) {
 
     function renderField (label, d) 
     {
-      //console.log(d)
       let field = <></>;
       
       if (typeof d === 'string' || typeof d === 'boolean' ) {
@@ -115,10 +113,6 @@ export default function ViewResource( { resData } ) {
           field = <p><strong>{label}:</strong> {d.toString()}</p>
         }
       }
-
-      // if (typeof d === 'object' && !_.isEmpty(d)) {
-      //   field = <p>{label}: undefined component</p>
-      // }
 
       if (Array.isArray(d)) {
         if(label !== 'organization') {
@@ -159,16 +153,11 @@ export default function ViewResource( { resData } ) {
           {resourceData !== null ? (
               <>
                 <div style={{backgroundImage: 'url('+preview+')'}} className={classes.imgView}/>
-                <Grid container spacing={3}>
+                <Grid key='paco' container spacing={3}>
                   <Grid item sm={5} hidden={resourceData.files?.length < 1}>
                     <div>{resourceData.files?.length > 0 ? <RelatedFiles resData={resourceData} files={resourceData.files} withPlayer={true} /> : <Label>No files attached</Label>}</div>  
                   </Grid>
                   <Grid item sm={resourceData.files?.length > 0 ? 7 : 12}>
-                    {/* <SemanticForm 
-                      schema={resSchema as JSONSchema7} 
-                      formData={data} 
-                      ArrayFieldTemplate={ArrayFieldTemplate}
-                    /> */}
                     <Label>Meta data</Label>
                     {
                       resourceDataFacet !== null ? (
@@ -181,10 +170,6 @@ export default function ViewResource( { resData } ) {
                         </Card>
                       ) : ''
                     }
-                    
-                    {/* <p><span>Name:</span> {name || data.description?.name || data.description?.course_title}</p>
-                    <p><span>{categories?.length > 1 ? 'Categories:' : 'Category:'}</span> {categories?.join(', ')}</p>
-                    <p><span>Tags:</span> {tags?.join(', ')}</p> */}
                   </Grid>
                 </Grid>
               </>

@@ -72,6 +72,7 @@ const useStyles = makeStyles((theme: Theme) =>
     imgView: {
       width: '100%'
     }
+    
   }),
 );
 
@@ -82,7 +83,7 @@ interface IBody {
   collection_id: string
 }
 
-export default function DynamicForm({ resourceType, action, schema, dataForUpdate = null, handleClose, showLom = true, canImportData = true }) {
+export default function DynamicDocForm({ resourceType, action, schema, dataForUpdate = null, handleClose, showLom = true, canImportData = true }) {
   const classes = useStyles();
   let collection_id = useSelector(selectCollection);
   //let storeFormData = useSelector(selectFormData);
@@ -277,8 +278,14 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const uiSchema={
     
     "description": {
-      "ui:order": ["active", "*"],
+      "ui:order": ["active", 'enhanced', 'enhanced_interactive', "*"],
       "active": {
+        "ui:widget": CustomToggle,
+      },
+      "enhanced": {
+        "ui:widget": CustomToggle,
+      },
+      "enhanced_interactive": {
         "ui:widget": CustomToggle,
       },
       "course_source": {
@@ -286,6 +293,12 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
         "ui:options":{
           label: 'Course source'
         }
+      },
+      "id": {
+          "ui:options": {
+            "ui:disable": true
+          },
+          "ui:disabled": true
       },
       "partials": {
         "pages": {
@@ -420,7 +433,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const FilesAndActions = () => {
     return (
       <Grid item sm={6}>
-          <ButtonGroup orientation='vertical'>
+          {dataForUpdate?.data?.description?.image == '' && (<ButtonGroup orientation='vertical'>
             <Grid item sm={12} style={{ minWidth: 400 }}>
               <span
                 className={`${classes.addPreview}`}
@@ -450,30 +463,10 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
               ) : null}
             </Grid>
 
-            <Grid item sm={12}>
-              <Button
-                variant="outlined"
-                component="label"
-                fullWidth
-              >
-                Attach files
-                <input
-                  type="file"
-                  multiple
-                  accept={resourceType === MULTIMEDIA ? "audio/*,video/*,image/*" : '*'}
-                  onChange={(e)=> handleFiles(e)}
-                  name='File'
-                  hidden
-                />
-              </Button>
-              {/* {resourceType === MULTIMEDIA ? (
-                  <Label> You will upload a {mediaType}</Label>
-              ) : null} */}
-            </Grid>
-          </ButtonGroup>
+          </ButtonGroup>)}
           <div style={{ margin: '15px 42px 0px 0px' }}>
             {
-              action === 'view' || action === 'edit' ? (
+              (action === 'view' || action === 'edit' )  && dataForUpdate?.data?.description?.image == '' ? (
                 <RelatedFiles
                   resData={resourceData}
                   files={theFiles}
@@ -482,7 +475,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                   setTheFiles={setTheFiles}
                   DynamicFormResourceData={setResourceData}
                 />
-              ) : null
+              ) : <img src={dataForUpdate?.data?.description?.image} className={classes.imgView} />
             }
             
             {

@@ -1,5 +1,5 @@
 import { Cookies } from 'react-cookie';
-import { COURSE, BOOK, MULTIMEDIA, IMAGE, VIDEO, AUDIO, ACTIVITY, ASSESSMENT } from '../constants';
+import { COURSE, BOOK, MULTIMEDIA, IMAGE, VIDEO, AUDIO, ACTIVITY, ASSESSMENT, DOCUMENT } from '../constants';
 
 class ResourcesService {
 
@@ -55,6 +55,13 @@ class ResourcesService {
       }
     }
 
+    getDocumentActions()
+    {
+      return {
+        create: { href: '', label: '' } 
+      }
+    }
+
     getActions(resource) {
       let ra = {}
 
@@ -75,6 +82,9 @@ class ResourcesService {
           ra = this.getActivityActions();
           break;
         case ASSESSMENT:
+          ra = this.getAssessmentActions();
+          break;
+        case DOCUMENT:
           ra = this.getAssessmentActions();
           break;
         default:

@@ -108,13 +108,17 @@ export function Resource( { data, listMode, resourceType } ) {
                 <div className="dam-preview">
                     <div className="dam-preview-img">
                         <LazyImage
-                            src={preview}
+                            src={(data.type == 'document' && data?.data?.description?.image) || preview}
                             alt='lazy_img'
                             grid
                         /> 
                     </div>
                     <div className="dam-preview-title" title={data.name || data.data.description.course_title}> 
-                        <strong>{data.name || data.data.description.course_title || 'no name set'} </strong>
+                        <strong>{
+                            data.name || 
+                            data.data.description.course_title || 
+                            (data.type == 'document' && data.title) ||
+                            'no name set'} </strong>
                     </div>
                 </div>
                 <div className="dam-item-actions ">

@@ -36,13 +36,13 @@ export default function ListResource( props ) {
                 <ListItemAvatar>
                     <Avatar variant='rounded' style={{width: 100, height: 80}}>
                         <LazyImage
-                            src={preview}
+                            src={data.data.description.image || preview}
                             alt='lazy_img'
                         />  
                     </Avatar>
                 </ListItemAvatar>
                 <ListItemText style={{marginLeft: 10}}
-                    primary={truncate(data.name || data.data.description.course_title || data.data.description.name, 74)}
+                    primary={truncate(data.name || data.data.description.course_title || data.data.description.name || data.title, 74)}
                 />
                 {/* <ListItemSecondaryAction >
                     <IconButton edge="end" aria-label="delete" onClick={remove}>

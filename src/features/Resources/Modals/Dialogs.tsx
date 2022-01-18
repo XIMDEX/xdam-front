@@ -14,8 +14,10 @@ import { useSelector, useDispatch } from 'react-redux';
 import { selectSchemas, reloadCatalogue, setResourcesLoading } from '../../../appSlice';
 import { Button as Btn, Dropdown } from 'semantic-ui-react';
 import ViewResource from './ViewResource';
+import ViewDocumentResource from './ViewDocumentResource';
 import ResourcesActions from '../../../utils/ResourcesService';
 import BatchDialog from './MassiveUpload/BatchDialog';
+import DynamicDocForm from './DynamicDocForm';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -93,7 +95,7 @@ export default function Dialogs( { resourceType, action, dialogOpen = false, res
           form = (<DynamicForm handleClose={handleClose} resourceType={resourceType} action={action} schema={schemas.assessment_validator} dataForUpdate={resourceData} />);
         break;
       case DOCUMENT:
-          form = (<DynamicForm handleClose={handleClose} resourceType={resourceType} action={action} schema={schemas.document_validator} dataForUpdate={resourceData} showLom={false} canImportData={false} />)
+          form = (<DynamicDocForm handleClose={handleClose} resourceType={resourceType} action={action} schema={schemas.document_validator} dataForUpdate={resourceData} showLom={false} canImportData={false} />)
         break;
       default:
         form = (<Typography>Corrupted resource: type of "{resourceType}" is not allowed</Typography>);
@@ -114,7 +116,7 @@ export default function Dialogs( { resourceType, action, dialogOpen = false, res
         </DialogContentText>
         <Grid container spacing={2}>
           <Grid item sm={12}>
-            <ViewResource resData={resourceData} />
+            {resourceType === 'document' ? <ViewDocumentResource resData={resourceData} /> : <ViewResource resData={resourceData} /> }
           </Grid>
         </Grid>
       </DialogContent>
