@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Button, Icon } from 'semantic-ui-react';
-import { getColorEntities } from '../../../Modals/ViewDocumentResource';
+import { getColorEntities, getIconName } from '../../../Modals/ViewDocumentResource';
 import './Tag.css';
 
 export default function Tag(props) {
@@ -54,6 +54,7 @@ export default function Tag(props) {
                     />
                     <Button id='edit'
                         icon={`${isEdit ? 'edit' : null}`} 
+                        disabled={isEdit}
                         color='grey'
                         size='small'
                         className={`edit-tag ${!isEdit && 'hidden'}` }
@@ -68,20 +69,9 @@ export default function Tag(props) {
 }
 
 function IconTag({type, width, color, ...props}) {
-    let name;
-    switch (type) {
-        case 'Person':
-            name ='user circle'
-            break;
-        case 'Place':
-            name = 'map marker alternate'
-            break;
-        case 'Other':
-            name = 'tags'
-            break;
-    }
+    
     return ( 
         <div className={` ${props.className}`} style={{backgroundColor: color}}>
-            <Icon name={name} size='large' color='grey' inverted />
+            <Icon name={getIconName(type)} size='large' color='grey' inverted />
         </div> )
 }

@@ -84,8 +84,8 @@ export default function ViewDocumentResource( { resData } ) {
         setEntities_linked(resourceDataFacet?.data?.description?.entities_linked ?? []);
         setEntities_non_linked(resourceDataFacet?.data?.description?.entities_non_linked ?? []);
         const allEntities = [
-          ...resourceDataFacet?.data?.description?.entities_linked, 
-          ...resourceDataFacet?.data?.description?.entities_non_linked
+          ...resourceDataFacet?.data?.description?.entities_linked ?? [], 
+          ...resourceDataFacet?.data?.description?.entities_non_linked ?? []
         ];
         allEntities.sort((a,b) => a.start - b.start);
         setAllEntities(allEntities);
@@ -215,29 +215,30 @@ export default function ViewDocumentResource( { resData } ) {
       const key = `${entity.name}_${entity.start}_${entity.end}`
       return entity.uri ? (
         <a 
+          rel='noreferrer'
           key={key} 
           target='_blank' 
           title={`Type: ${entity.type} \nEntity: ${entity.name}${entity.uri ? '\nURL: ' + entity.uri : ''}`}
           href={entity.uri} 
           style={{
-            backgroundColor: getColorEntities(entity.type), 
-            // opacity: (expanded !== entity.type ? 0.5 : 1),
-            padding: '1px 7px',
+            backgroundColor: getColorEntities(entity.type),
+            padding: '0px 5px',
             borderRadius: 5,
             fontWeight: 'bold',
-            color: 'black'
+            color: 'white',
+            border: '1px solid transparent'
           }}
         >{entity.name}</a>
       ) : (
         <span 
-          title='prueba'
+          title={`Type: ${entity.type} \nEntity: ${entity.name}${entity.uri ? '\nURL: ' + entity.uri : ''}`}
           key={key} 
           style={{
-            backgroundColor: getColorEntities(entity.type), 
-            // opacity: (expanded !== entity.type ? 0.5 : 1),
-            padding: '1px 7px',
+            padding: '0px 5px',
             borderRadius: 5,
-            fontWeight: 'bold'
+            fontWeight: 'bold',
+            color: 'black',
+            border: '2px solid ' + getColorEntities(entity.type) 
           }}
         >{entity.name}</span>
       )
@@ -288,11 +289,11 @@ export default function ViewDocumentResource( { resData } ) {
                 </Card>
               </Grid>
               <Grid item sm={3}>
-                <Accordion style={{backgroundColor: getColorEntities('Person')}}  expanded={expanded === 'Person'} onChange={handleChange('Person')}>
+                <Accordion style={{backgroundColor: getColorEntities('Person'), marginBottom: '10px'}}  expanded={expanded === 'Person'} onChange={handleChange('Person')}>
                   <AccordionSummary id='xtags-person'>
                     <div>
-                      <Icon name='user circle' size='big' color='grey' className='icon-xtags icon-xtags-person' /> 
-                      <span style={{marginLeft: 10}}>PERSONAS</span>
+                      <Icon name='user circle' size='big' color='grey' inverted className='icon-xtags icon-xtags-person' /> 
+                      <span style={{marginLeft: 10, color: "white", fontWeight: 'bold'}}>PERSONAS</span>
                     </div>
                   </AccordionSummary>
                   <AccordionDetails style={{backgroundColor: 'white'}}>
@@ -311,16 +312,16 @@ export default function ViewDocumentResource( { resData } ) {
                     </ul>
                   </AccordionDetails>
                 </Accordion>
-                <Accordion style={{backgroundColor: getColorEntities('Place')}}  expanded={expanded === 'Place'} onChange={handleChange('Place')}>
+                <Accordion style={{backgroundColor: getColorEntities('Place'), marginBottom: '10px'}}  expanded={expanded === 'Place'} onChange={handleChange('Place')}>
                   <AccordionSummary id='xtags-place'>
                     <div>
-                      <Icon name='map marker alternate' size='big'  color='grey'  className='icon-xtags icon-xtags-person' /> 
-                      <span style={{marginLeft: 10}}>LUGARES</span>
+                      <Icon name='map marker alternate' size='big'  color='grey' inverted className='icon-xtags icon-xtags-person' /> 
+                      <span style={{marginLeft: 10, color: "white", fontWeight: 'bold'}}>LUGARES</span>
                     </div>
                   </AccordionSummary>
                   <AccordionDetails style={{backgroundColor: 'white'}}>
                     <ul>
-                      {allEntities?.filter(entity =>(entity.type == 'Place')).map((e, i) => {
+                      {allEntities?.filter(entity =>(entity.type == 'Place' || entity.type == 'Location')).map((e, i) => {
                         return (
                           <li key={e.name + '_' + i}>
                             {
@@ -334,18 +335,48 @@ export default function ViewDocumentResource( { resData } ) {
                     </ul>
                   </AccordionDetails>
                 </Accordion>
-                <Accordion style={{backgroundColor: getColorEntities('Other')}}  expanded={expanded === 'Other'} onChange={handleChange('Other')}>
+                <Accordion style={{backgroundColor: getColorEntities('Other'), marginBottom: '10px'}}  expanded={expanded === 'Other'} onChange={handleChange('Other')}>
                   <AccordionSummary id='xtags-person'>
                     <div>
-                      <Icon name='tags' size='big'  color='grey'  className='icon-xtags icon-xtags-person' /> 
-                      <span style={{marginLeft: 10}}>OTROS</span>
+                      <Icon name='tags' size='big'  color='grey' inverted className='icon-xtags icon-xtags-person' /> 
+                      <span style={{marginLeft: 10, color: "white", fontWeight: 'bold'}}>OTROS</span>
                     </div>
                   </AccordionSummary>
                   <AccordionDetails style={{backgroundColor: 'white'}}>
                     <ul>
-                      {allEntities?.filter(entity =>(entity.type == 'Other')).map((e, i) => {
+                      {allEntities?.filter(entity =>(
+                        entity.type == 'Other' || 
+                        entity.type == 'Thing' || 
+                        entity.type == 'Custom'  
+                        )).map((e, i) => {
                         return (
                           <li key={e.name + '_' + i}>
+                            {
+                              e.uri 
+                                ? ( <a href={e.uri} target='_blank'>{e.name}</a> ) 
+                                : e.name
+                            }
+                          </li>
+                        )
+                      })}
+                    </ul>
+                  </AccordionDetails>
+                </Accordion>
+                <Accordion style={{backgroundColor: getColorEntities('Organization'), marginBottom: '10px'}}  expanded={expanded === 'Organization'} onChange={handleChange('Organization')}>
+                  <AccordionSummary id='xtags-organization'>
+                    <div>
+                      <Icon name='map marker alternate' size='big'  color='grey' inverted className='icon-xtags icon-xtags-organization' /> 
+                      <span style={{marginLeft: 10, color: "white", fontWeight: 'bold'}}>ORGANIZATION</span>
+                    </div>
+                  </AccordionSummary>
+                  <AccordionDetails style={{backgroundColor: 'white', color: 'black'}}>
+                    <ul>
+                      {allEntities?.filter(entity =>(
+                        entity.type == 'Organization' ||
+                        entity.type == 'Organisation' || 
+                        entity.type == 'Institution' )).map((e, i) => {
+                        return (
+                          <li key={e.name + '_' + i} style={{color: 'black'}}>
                             {
                               e.uri 
                                 ? ( <a href={e.uri} target='_blank'>{e.name}</a> ) 
@@ -365,23 +396,52 @@ export default function ViewDocumentResource( { resData } ) {
     )
   }
 
-  
+export const getIconName = type => {
+
+  let name;
+  switch (type) {
+      case 'Person':
+        name ='user circle'
+        break;
+      case 'Place':
+      case 'Location':
+        name = 'map marker alternate'
+        break;
+      case 'Other':
+      case 'Thing':
+      case 'Custom':
+        name = 'tags'
+        break;
+      case 'Corporation':
+      case 'Institution':
+      case 'Organisation':
+      case 'Organization':
+        name = 'tag'
+        break;
+  }
+  return name
+}
+
 export const getColorEntities = (type) => {
     let backgroundColor;
     switch (type) {
       case 'Person':
-        backgroundColor = '#f78181'
+        backgroundColor = '#e42e3f'
         break;
       case 'Place':
-        backgroundColor = '#6acf97'
+      case 'Location':
+        backgroundColor = '#43c35b'
         break;
       case 'Other':
-      case 'Things':
-        backgroundColor = '#669cff' 
+      case 'Thing':
+      case 'Custom':
+        backgroundColor = '#5c9eda' 
         break;
-      case 'Corporations':
-      case 'Institutions':
-        backgroundColor = '#edbc63' // 
+      case 'Corporation':
+      case 'Institution':
+      case 'Organisation':
+      case 'Organization':
+        backgroundColor = '#dabe60' // 
         break;
       default:
         backgroundColor = ' #fff' // #fff

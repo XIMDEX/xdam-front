@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react'
-import { Grid, LinearProgress, Container } from '@material-ui/core';
+import { Grid, LinearProgress, Container, Button } from '@material-ui/core';
 import { Dropdown, Label } from 'semantic-ui-react'
 import { makeStyles } from '@material-ui/core/styles';
 import MainService from '../../api/service';
@@ -93,6 +93,8 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
   const [selectedKeys, setSelectedKeys] = React.useState([]);
   const isSelectable = false;
   const [mainContextAction, setMainContextAction] = useState(null)
+
+  const [createResourceloading, setCreateResourceLoading] = useState(false);
 
   function toggleListMode(evt) {
     var val = evt.target.getAttribute('data-value') === '1' ? true : false;
@@ -394,6 +396,12 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
     setOpenCreate(true);
   }
 
+  const createResourceInes = async (enhanced = false) => {
+    setCreateResourceLoading(true)
+    const resp = await MainService().createResourceInes(enhanced);
+    setCreateResourceLoading(false)
+  }
+
   return (
     <Grid container justify='flex-start' className={sidebarOpen ? classes.root : classes.rootWithoutSidebar} >
       <Grid item sm={12}>
@@ -458,11 +466,43 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
 
           </Grid>
 
+
           {
             localResources && localResources.length > 0 ? (
               <Grid container style={{ marginTop: 3 }}>
                 <Grid item sm={12} > <Chips data={facetsQuery} />  </Grid>
               </Grid>) : null
+          }
+
+          {
+            selectedColl?.resource_type == 'document' && (
+
+              <Grid container  style={{ marginTop: 3 }}>
+                <Grid item sm={12} className={classes.actionBtns}>
+
+                  <Button 
+                    color="primary" 
+                    style={{marginRight: 27}} 
+                    variant='contained'
+                    disabled={createResourceloading}
+                    onClick={() => createResourceInes(true)} 
+                    // className={classes.clearAllFilters}
+                  >
+                    GET Enhanced
+                  </Button>
+                  <Button 
+                    color="primary" 
+                    style={{marginRight: 27}} 
+                    variant='contained'
+                    disabled={createResourceloading}
+                    onClick={() => createResourceInes(false)} 
+                    // className={classes.clearAllFilters}
+                  >
+                    GET
+                  </Button>
+                </Grid>
+              </Grid>
+            )
           }
 
           {

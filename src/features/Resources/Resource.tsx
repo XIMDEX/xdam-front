@@ -11,7 +11,7 @@ import Dialogs from "./Modals/Dialogs";
 import { render } from "../../utils/render";
 
 import { Icon } from 'semantic-ui-react'
-import { MULTIMEDIA } from "../../constants";
+import { DOCUMENT, MULTIMEDIA } from "../../constants";
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -102,9 +102,14 @@ export function Resource( { data, listMode, resourceType } ) {
     }
 
     const RCard = () => {
+        const name = resourceType === MULTIMEDIA 
+            ? 'multimedia' 
+            : resourceType === DOCUMENT 
+                ? data.data.description.category 
+                : resourceType;
         return (
             <div className={`dam-item ${blured ? classes.blur : null}`}  onClick={itemView}>
-                <div className="dam-type">{resourceType === MULTIMEDIA ? 'multimedia' : resourceType}</div>
+                <div className="dam-type">{name}</div>
                 <div className="dam-preview">
                     <div className="dam-preview-img">
                         <LazyImage

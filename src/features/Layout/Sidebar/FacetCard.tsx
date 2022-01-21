@@ -198,6 +198,7 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
     }
 
     function FacetItems( { fixed } ): any {
+        const parsedFacetValues = deleteNumbers(true)
         if (facet.key === COLLECTION || facet.key === ORGANIZATION ) {
             return (
                 Object.keys(facetValues).map((name, index) => (
@@ -218,7 +219,7 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
             )
         }
         
-        if (facetValues) {
+        if (parsedFacetValues) {
             switch (facet.key) {
                 // case 'cost':
                     
@@ -227,22 +228,23 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
                 //     break;
             
                 default:
+                    console.log(parsedFacetValues)
                     return (
-                        Object.keys(facetValues).map((name, index) => (
+                        Object.keys(parsedFacetValues).map((name, index) => (
                             //switch lines to hidden facets values in zero
                             // <li key={index} style={{listStyleType: "none"}} className={facetValues[name].count < 1 ? classes.hidden : null}>
                             <li key={index} style={{listStyleType: "none"}}>
                                 <input 
-                                    type={facetValues[name].radio ? 'radio' : 'checkbox'} 
+                                    type={parsedFacetValues[name].radio ? 'radio' : 'checkbox'} 
                                     name={facet.key}
                                     // disabled={facetValues[name].count < 1}
-                                    value={fixed ? facetValues[name].id : name} 
-                                    onChange={facetValues[name].radio ? filterRadio : filterCheck}
-                                    checked={getChecked(fixed ? facetValues[name].id : name, facet.key)} 
-                                    id={(facet.key +'-'+ name +'-'+facetValues[name].id).replace(/ /g,'--')}
+                                    value={fixed ? parsedFacetValues[name].id : name} 
+                                    onChange={parsedFacetValues[name].radio ? filterRadio : filterCheck}
+                                    checked={getChecked(fixed ? parsedFacetValues[name].id : name, facet.key)} 
+                                    id={(facet.key +'-'+ name +'-'+parsedFacetValues[name].id).replace(/ /g,'--')}
                                 /> 
-                                <label htmlFor={(facet.key +'-'+ name +'-'+facetValues[name].id).replace(/ /g,'--')}>
-                                    <span>{ name } <strong>({ facetValues[name].count })</strong></span>
+                                <label htmlFor={(facet.key +'-'+ name +'-'+parsedFacetValues[name].id).replace(/ /g,'--')}>
+                                    <span>{ name } <strong>({ parsedFacetValues[name].count })</strong></span>
                                 </label>
                                 
                             </li>
@@ -258,7 +260,42 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
         }
         
     }
-    
+            
+
+    function deleteNumbers(others) {
+
+        const label_name = label();
+        const values = {}
+        Object.keys(facetValues).forEach(value => {
+            if (label_name === 'entities_linked' || label_name === 'entities_non_linked' ) {
+                if (value == '104%'){
+                    console.log(0)
+                }
+                let checkvalue = value.replaceAll('.', '').replaceAll(',','').replaceAll('%', '')
+                if (others) {
+                    checkvalue = checkvalue
+                        .replaceAll('millones', '')
+                        .replaceAll('de', '')
+                        .replaceAll('euros', '')
+                        .replaceAll('años', '')
+                        .replaceAll('kilómetros', '')
+                        .replaceAll('decámetros', '')
+                        .replaceAll('metros', '')
+                        .replaceAll('cuadrados', '')
+                        .replaceAll('días', '')
+                    }
+
+
+                if (isNaN(+checkvalue)) {
+                    values[value] = facetValues[value]
+                }
+            } else {
+                values[value] = facetValues[value] 
+            }
+            
+        })
+        return values;
+    }
 
 
     return (
@@ -332,5 +369,3 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
         
     );
 }
-
-

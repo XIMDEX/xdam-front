@@ -63,6 +63,10 @@ const api = () => {
             method: 'POST',   
             url: baseUrl + '/resource'
         },
+        createResourceInes: (enhanced) => ({    
+            method: 'GET',   
+            url: baseUrl + '/semantic/enhance/automatic' + (!enhanced ?  '?only-text=1' :'')
+        }),
         createBatchOfResources: {    
             method: 'POST',   
             url: baseUrl + '/resource/createBatch'

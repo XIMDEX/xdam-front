@@ -66,6 +66,7 @@
     flex-direction: column;
     padding: 10px 20px 10px 10px;
     transition: background-color 0.5s ease 0s;
+    justify-content: center;
 }
 
 
