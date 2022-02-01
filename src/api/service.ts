@@ -194,7 +194,7 @@ class AppService {
       const res = await (await fetch(_api.url, request)).json();
 
       const taxones = await this.getTaxons(resource_id)
-      let isAdded = res.data.some((tab, i) => {
+      let isAdded = res?.data?.some((tab, i) => {
         if (tab.title === "Classification") {
           res.data[i].formData['Taxon Path'] = taxones
           return true;
