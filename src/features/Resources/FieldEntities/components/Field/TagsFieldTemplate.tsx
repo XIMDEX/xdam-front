@@ -7,9 +7,11 @@ const TagsFieldTemplate = (props) => {
 
     return (
       <>
-        <h3 style={{marginBottom: 25}}>{props.title}{props.canAdd && (
-            <Button icon='plus' circular size='mini' color='teal' className='forms-btn-addArrayItem' onClick={props.onAddClick} />
-        )}</h3>
+        {false && (
+            <h3 style={{marginBottom: 25}}>{props.title}{props.canAdd && (
+                <Button icon='plus' disabled circular size='mini' color='teal' className='forms-btn-addArrayItem' onClick={props.onAddClick} />
+            )}</h3>
+        )}
         
             {
                 props.title !== 'Entities Linked' &&  props.title !== 'Entities Non-Linked' 

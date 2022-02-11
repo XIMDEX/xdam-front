@@ -4,7 +4,7 @@ import { Dropdown, Label } from 'semantic-ui-react'
 import { makeStyles } from '@material-ui/core/styles';
 import MainService from '../../api/service';
 import { useSelector, useDispatch } from 'react-redux';
-import { setFacets, setResources, setFixedFacets, selectResourcesLoading, setResourcesLoading, setLoading, setSchemas, selectCatalogueFlag } from '../../appSlice';
+import { setFacets, setResources, setFixedFacets, selectResourcesLoading, setResourcesLoading, setLoading, setSchemas, selectCatalogueFlag, reloadCatalogue, reloadApp } from '../../appSlice';
 import IFacet from '../../interfaces/IFacet';
 import { selectQuery, selectFacetsQuery, setQuery } from '../../slices/organizationSlice';
 import param from '../../utils/querybuilder';
@@ -398,8 +398,10 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
 
   const createResourceInes = async (enhanced = false) => {
     setCreateResourceLoading(true)
-    const resp = await MainService().createResourceInes(enhanced);
+    
+    await MainService().createResourceInes(enhanced);
     setCreateResourceLoading(false)
+    dispatch(reloadCatalogue());
   }
 
   return (
