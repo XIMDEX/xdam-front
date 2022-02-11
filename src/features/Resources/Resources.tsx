@@ -492,16 +492,18 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
                   >
                     GET Enhanced
                   </Button>
-                  <Button 
-                    color="primary" 
-                    style={{marginRight: 27}} 
-                    variant='contained'
-                    disabled={createResourceloading}
-                    onClick={() => createResourceInes(false)} 
-                    // className={classes.clearAllFilters}
-                  >
-                    GET
-                  </Button>
+                  {false && (
+                    <Button 
+                      color="primary" 
+                      style={{marginRight: 27}} 
+                      variant='contained'
+                      disabled={createResourceloading}
+                      onClick={() => createResourceInes(false)} 
+                      // className={classes.clearAllFilters}
+                    >
+                      GET
+                    </Button>
+                  )}
                 </Grid>
               </Grid>
             )
