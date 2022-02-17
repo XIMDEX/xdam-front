@@ -194,7 +194,7 @@ class AppService {
       const res = await (await fetch(_api.url, request)).json();
 
       const taxones = await this.getTaxons(resource_id)
-      let isAdded = res.data.some((tab, i) => {
+      let isAdded = res?.data?.some((tab, i) => {
         if (tab.title === "Classification") {
           res.data[i].formData['Taxon Path'] = taxones
           return true;
@@ -375,11 +375,17 @@ class AppService {
       return res;
     }
 
-    render(damUrl: string): string
+    render(url: string): string
     {
-      const _api = api().render(damUrl);
+      const isDamResource = this.isDamResource(url);
+      const _api = api().render(url, isDamResource);
       const res = _api.url
       return res;
+    }
+
+    isDamResource(url)
+    {
+      return url.includes('@@@dam:@');
     }
 
     async downloadFile(file) 
@@ -390,7 +396,6 @@ class AppService {
         headers: this.httpOptions.headers
       }
       const res = await fetch(_api.url, request); 
-      console.log(res);
       streamSaver.WritableStream = ponyfill.WritableStream
 
       const blob = await res.blob();
