@@ -51,9 +51,9 @@ const api = () => {
             method: 'GET',   
             url: baseUrl + '/resource/download/' + dam_url
         }),
-        render: (damUrl) => ({    
+        render: (url, isDamResource = false) => ({    
             method: 'GET',   
-            url: baseUrl + '/resource/render/' + damUrl
+            url: isDamResource ? `${baseUrl}/resource/render/${url}` : url
         }),
         setWorkspace: {    
             method: 'POST',   
