@@ -5,6 +5,7 @@ import './Suggestion.css'
 
 function Suggestions({items, handleData, removeSuggestion, numSuggestions, suggestions,  ...props}) {
     const [itemsKeys, setItemsKeys] = useState(undefined);
+    const [itemsIds, setItemsIds] = useState(undefined);
     const [newTaxon, setNewTaxon] = useState(undefined);
     const [newItem, setNewItem] = useState(undefined);
     const [suggestionsToShow, setSuggestions] = useState([]);
@@ -12,8 +13,10 @@ function Suggestions({items, handleData, removeSuggestion, numSuggestions, sugge
 
     useEffect(()=> {
         let keys = items.map(item => item.key)
-        setItemsKeys(keys);        
-    },[])
+        let ids = items.map(item => item.children.props.formData.Id)
+        setItemsKeys(keys);
+        setItemsIds(ids);
+    },[items])
 
     useEffect(()=> {
         let _suggestions = suggestions.slice(0, numSuggestions);
@@ -21,16 +24,18 @@ function Suggestions({items, handleData, removeSuggestion, numSuggestions, sugge
     },[suggestions, numSuggestions])
 
     useEffect(()=> {
-        if (itemsKeys && itemsKeys.length !== items.length) {
-            let newItem = items.filter(item => !itemsKeys.includes(item.key))
-            setNewItem(newItem?.[0])
+        if (itemsKeys && itemsKeys.length !== items.length && newTaxon) {
+            let new_item = items.filter(item => !itemsKeys.includes(item.key))
+            setNewItem(new_item?.[0].key)
         }
     },[itemsKeys, items])
-
+    
     useEffect(()=> {
         if (newTaxon?.id && newTaxon?.name && newItem) {
             let data = {'Id': newTaxon.id, 'Entry': newTaxon.name}
-            newItem?.children?.props?.onChange?.(data)
+            let new_item = items.filter(item => item.key === newItem)
+
+            new_item?.[0]?.children?.props?.onChange?.(data)
             handleData(data);
             removeSuggestion(data);
             resetState();
@@ -41,7 +46,6 @@ function Suggestions({items, handleData, removeSuggestion, numSuggestions, sugge
         const {handleAddTaxon} = props
         handleAddTaxon(evt);
         setNewTaxon(element);
-        console.log({element, evt})
     }
 
     const resetState = () => {

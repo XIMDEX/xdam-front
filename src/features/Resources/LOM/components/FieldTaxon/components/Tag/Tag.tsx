@@ -18,7 +18,7 @@ export default function Tag({id, addSuggestions,...props}) {
             setInfo(info)
             if (info.suggestions.length > 0 ) setSuggestions((info.suggestions))
         }
-        handleInfo()
+        '' === id ? handleDelete() : handleInfo()
     }, [id])
 
 

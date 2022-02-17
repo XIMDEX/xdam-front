@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { NUM_SUGGESTIONS } from '../../../../../../../constants'
 import { checkValueExistInArray } from '../../services/utils'
 import Suggestions from '../Suggestions/Suggestions'
@@ -13,10 +13,7 @@ function Layout(props) {
 
     const addSuggestions = (values) => {
         let newValues = []
-        values.forEach(value => ifExists(value)
-            ? null
-            : newValues.push(value)
-        );
+        values.forEach(value => !ifExists(value) ? newValues.push(value) : null );
         newValues.sort(()=> Math.random() - 0.5)
         setSuggestion([...suggestions, ...newValues])
     }
@@ -55,6 +52,7 @@ function Layout(props) {
                 />
                 {suggestions.length > 0 && (
                     <Suggestions 
+                        formData={props.formData}
                         className={`suggestions ${customClass}`} 
                         suggestions={suggestions} 
                         checkIfExists={checkIfExists} 
