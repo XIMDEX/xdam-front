@@ -5,7 +5,6 @@ import './Suggestion.css'
 
 function Suggestions({items, handleData, removeSuggestion, numSuggestions, suggestions,  ...props}) {
     const [itemsKeys, setItemsKeys] = useState(undefined);
-    const [itemsIds, setItemsIds] = useState(undefined);
     const [newTaxon, setNewTaxon] = useState(undefined);
     const [newItem, setNewItem] = useState(undefined);
     const [suggestionsToShow, setSuggestions] = useState([]);
@@ -13,9 +12,7 @@ function Suggestions({items, handleData, removeSuggestion, numSuggestions, sugge
 
     useEffect(()=> {
         let keys = items.map(item => item.key)
-        let ids = items.map(item => item.children.props.formData.Id)
         setItemsKeys(keys);
-        setItemsIds(ids);
     },[items])
 
     useEffect(()=> {
@@ -29,7 +26,7 @@ function Suggestions({items, handleData, removeSuggestion, numSuggestions, sugge
             setNewItem(new_item?.[0].key)
         }
     },[itemsKeys, items])
-    
+
     useEffect(()=> {
         if (newTaxon?.id && newTaxon?.name && newItem) {
             let data = {'Id': newTaxon.id, 'Entry': newTaxon.name}
