@@ -51,7 +51,7 @@ function Layout(props) {
                     checkIfExists={checkIfExists}
                 />
                 {suggestions.length > 0 && (
-                    <Suggestionsq
+                    <Suggestions
                         className={`suggestions ${customClass}`} 
                         suggestions={suggestions} 
                         checkIfExists={checkIfExists} 
