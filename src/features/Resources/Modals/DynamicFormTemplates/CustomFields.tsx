@@ -78,3 +78,46 @@ export const CustomDropdown = (props) => {
         </div>
     )
 }
+
+export const CustomBookNumberOfUnitsSelector = (props) => {
+
+    const maxUnits = props.options.max || 50;
+    const options = []
+
+    const formatUnits = (number: number) => {
+
+        number = number || 0;
+
+        return number.toLocaleString('en-US', {
+            minimumIntegerDigits: 2,
+            useGrouping: false
+        })
+    }
+
+
+    for(let i = 0; i <= maxUnits; i++){
+        options.push(
+            <Dropdown.Item onClick={(event, data) => {props.onChange(data.children)}}>
+                {formatUnits(i)}
+            </Dropdown.Item>
+        )
+    }
+
+    return (
+        <div className={`forms-textField `}>
+            <section>
+                <label htmlFor={props.id}>{props.label} {props.required ? '*' : ''}</label>
+                <Dropdown 
+                    placeholder={formatUnits(props.value).toString()}
+                    fluid
+                    selection
+                    selectOnBlur={false}
+                    >
+                    <Dropdown.Menu>
+                    {options}
+                    </Dropdown.Menu>
+                </Dropdown>
+            </section>
+        </div>
+    )
+}
