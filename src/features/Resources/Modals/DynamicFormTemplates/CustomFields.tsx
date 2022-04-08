@@ -81,26 +81,13 @@ export const CustomDropdown = (props) => {
 
 export const CustomBookNumberOfUnitsSelector = (props) => {
 
-    const maxUnits = props.options.max || 50;
-    const options = []
+    const maxUnits = props.options.max + 1 || 51;
 
-    const formatUnits = (number: number) => {
-
-        number = number || 0;
-
+    const formatUnits = (number: number = 0) => {
         return number.toLocaleString('en-US', {
             minimumIntegerDigits: 2,
             useGrouping: false
         })
-    }
-
-
-    for(let i = 0; i <= maxUnits; i++){
-        options.push(
-            <Dropdown.Item onClick={(event, data) => {props.onChange(data.children)}}>
-                {formatUnits(i)}
-            </Dropdown.Item>
-        )
     }
 
     return (
@@ -114,7 +101,12 @@ export const CustomBookNumberOfUnitsSelector = (props) => {
                     selectOnBlur={false}
                     >
                     <Dropdown.Menu>
-                    {options}
+                    {    Array.from(Array(maxUnits).keys()).map((i, _) => (
+                            <Dropdown.Item onClick={(event, data) => {props.onChange(data.children)}}>
+                                {formatUnits(i)}
+                            </Dropdown.Item>
+                        ))
+                    }
                     </Dropdown.Menu>
                 </Dropdown>
             </section>
