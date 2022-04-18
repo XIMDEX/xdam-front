@@ -34,3 +34,5 @@ export const XTAGS =  {
 export const NUM_SUGGESTIONS = 5;
 
 export const PATH_TAXONS_DATA = '9.formData.Taxon Path';
+
+export const MAX_BOOK_UNITS = 50;

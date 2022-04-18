@@ -1,5 +1,6 @@
 import React from 'react';
 import { Dropdown, Radio } from "semantic-ui-react"
+import { MAX_BOOK_UNITS } from '../../../../constants';
 
 export const InputText = (props) => {
     return (
@@ -81,7 +82,7 @@ export const CustomDropdown = (props) => {
 
 export const CustomBookNumberOfUnitsSelector = (props) => {
 
-    const maxUnits = props.options.max + 1 || 51;
+    const maxUnits = MAX_BOOK_UNITS + 1;
 
     const formatUnits = (number: number = 0) => {
         return number.toLocaleString('en-US', {
