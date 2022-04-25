@@ -80,11 +80,14 @@ export const CustomDropdown = (props) => {
     )
 }
 
-export const CustomBookNumberOfUnitsSelector = (props) => {
+export const CustomBookNumberOfUnitSelector = (props) => {
 
     const maxUnits = MAX_BOOK_UNITS + 1;
 
-    const formatUnits = (number: number = 0) => {
+    const formatUnits = (number: number) => {
+
+        if(!number) return;
+
         return number.toLocaleString('en-US', {
             minimumIntegerDigits: 2,
             useGrouping: false
@@ -93,24 +96,23 @@ export const CustomBookNumberOfUnitsSelector = (props) => {
 
     return (
         <div className={`forms-textField `}>
-            <section>
-                <label htmlFor={props.id}>{props.label} {props.required ? '*' : ''}</label>
-                <Dropdown 
-                    placeholder={formatUnits(props.value).toString()}
-                    fluid
-                    selection
-                    selectOnBlur={false}
-                    >
-                    <Dropdown.Menu>
-                    {    Array.from(Array(maxUnits).keys()).map((i, _) => (
-                            <Dropdown.Item onClick={(event, data) => {props.onChange(data.children)}}>
-                                {formatUnits(i)}
-                            </Dropdown.Item>
-                        ))
-                    }
-                    </Dropdown.Menu>
-                </Dropdown>
-            </section>
+            <label htmlFor={props.id}>{props.label} {props.required ? '*' : ''}</label>
+            <Dropdown 
+                fluid
+                selection
+                selectOnBlur={false}
+                placeholder={formatUnits(props.value)  || "Introduce the book units"}
+                value={formatUnits(props.value)}
+                >
+                <Dropdown.Menu>
+                {    Array.from(Array(maxUnits).keys()).map((i, _) => (
+                        <Dropdown.Item onClick={(event, data) => {props.onChange(data.children)}} value={i}>
+                            {formatUnits(i)}
+                        </Dropdown.Item>
+                    ))
+                }
+                </Dropdown.Menu>
+            </Dropdown>
         </div>
     )
 }

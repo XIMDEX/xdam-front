@@ -4,7 +4,7 @@ const isbnRegex = /^(?:ISBN(?:-10)?:?●)?(?=[0-9X]{10}$|(?=(?:[0-9]+[-●]){3})
 
 export interface Book {
     isbn: string,
-    units: number
+    unit: number
 }
 
 
@@ -26,17 +26,14 @@ function validateIsbn(isbn: string): string | null {
 
 export default function bookValidator(resource: Book): Promise < void> {
 
-    console.log(resource);
-
     return new Promise((resolve, reject) => {
         const messages = [
             validateIsbn(resource.isbn),
-            evaluate(validateUnits(resource.units), `Invalid number of units: ${resource.units}`)
+            evaluate(validateUnits(resource.unit), `Invalid number of units: ${resource.unit}`)
         ].filter(m => m);
 
         messages.length > 0
             ? reject(messages.join(" | "))
             : resolve();
     });
-
 }
