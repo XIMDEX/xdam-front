@@ -82,7 +82,7 @@ export const CustomDropdown = (props) => {
 
 export const CustomBookNumberOfUnitSelector = (props) => {
 
-    const maxUnits = MAX_BOOK_UNITS + 1;
+    const maxUnits = (props.maxOptions || MAX_BOOK_UNITS) + 1;
 
     const formatUnits = (number: number) => {
 

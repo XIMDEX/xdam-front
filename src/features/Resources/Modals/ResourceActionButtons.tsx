@@ -4,14 +4,14 @@ import ResourcesActions from "../../../utils/ResourcesService";
 import ResourceValidationService from "../../../utils/validation/ResourceValidationService";
 import { Alert } from "@material-ui/lab";
 
-const ValidationError = (message: string) => {
+const ValidationError = ({ message }: { message: string }) => {
   return (
     <Alert variant="outlined" severity="error" className="mb-2">{message}</Alert> 
   );
 }
 
-function ResourceActionButton(
-  { index, resource, action, validate, handleError }: { index: number, resource: any, action: any, validate: (resource: any) => Promise<void>, handleError: any }) {
+const ResourceActionButton = (
+  { index, resource, action, validate, handleError }: { index: number, resource: any, action: any, validate: (resource: any) => Promise<void>, handleError: any }) => {
 
   return (
     <Button
@@ -41,20 +41,21 @@ function ResourceActionButtons( { resource } ) {
 
   return (
     <>
-    { errorMessage.length > 0 && ValidationError(errorMessage) }
+    { errorMessage.length > 0  && <ValidationError message={errorMessage} />
+    }
     <ButtonGroup orientation='horizontal' fullWidth id='forms-btn-actions' >
       {
         Object.keys(actions)
           .filter(action => action !== 'create')
           .map((action, index) => (
-            ResourceActionButton({
-              index,
-              resource,
-              action: actions[action],
-              validate: ResourceValidationService.create(action, resource.type),
-              handleError: setErrorMessage
-            })
-          ))
+            <ResourceActionButton
+              index={index}
+              resource={resource}
+              action={actions[action]}
+              validate={ResourceValidationService.create(action, resource.type)}
+              handleError={setErrorMessage}
+            />)
+          )
       }
     </ButtonGroup>
     </>
