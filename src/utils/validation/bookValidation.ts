@@ -1,6 +1,6 @@
 import { MAX_BOOK_UNITS } from "../../constants";
 
-const isbnRegex = /^(?:ISBN(?:-10)?:?●)?(?=[0-9X]{10}$|(?=(?:[0-9]+[-●]){3})[-●0-9X]{13}$)[0-9]{1,5}[-●]?[0-9]+[-●]?[0-9]+[-●]?[0-9X]$/
+const isbnRegex = /[ `!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]\´-/
 
 export interface Book {
     isbn: string,
@@ -20,6 +20,8 @@ function evaluate(isValid: boolean, message: string): string | null {
 
 function validateIsbn(isbn: string): string | null {
     if(!isbn) return "The ISBN can't be empty";
+
+    if(isbn.length < 5) return `ISBN to short`;
 
     return evaluate(isbnRegex.test(isbn), `Invalid isbn: ${isbn}`);
 }
