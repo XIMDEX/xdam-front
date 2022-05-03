@@ -16,6 +16,7 @@ import { Button as Btn, Dropdown } from 'semantic-ui-react';
 import ViewResource from './ViewResource';
 import ResourcesActions from '../../../utils/ResourcesService';
 import BatchDialog from './MassiveUpload/BatchDialog';
+import ResourceForm from './ResourceForm/ResourceForm';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -89,7 +90,7 @@ export default function Dialogs( { resourceType, action, dialogOpen = false, res
 
         overridedBookSchema?.properties?.description?.required.push("unit");
 
-        form = (<DynamicForm handleClose={handleClose} resourceType={resourceType} action={action} schema={overridedBookSchema} dataForUpdate={resourceData} />);
+        form = (<ResourceForm handleClose={handleClose} resourceType={resourceType} schema={overridedBookSchema} dataForUpdate={resourceData} />);
         break;
       case ACTIVITY:
           form = (<DynamicForm handleClose={handleClose} resourceType={resourceType} action={action} schema={schemas.activity_validator} dataForUpdate={resourceData} />);

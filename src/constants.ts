@@ -36,3 +36,29 @@ export const NUM_SUGGESTIONS = 5;
 export const PATH_TAXONS_DATA = '9.formData.Taxon Path';
 
 export const MAX_BOOK_UNITS = 50;
+
+export const RESOURCE_FORM_ACTION_DICTIONARY = {
+  "UPDATE": {
+    "en": {
+      "completed": "updated",
+      "action": "save"
+    }
+  },
+  "CREATE": {
+    "en": {
+      "completed": "created",
+      "action": "submit"
+    }
+  }
+}
+
+export enum ResourceType {
+  COURSE = 'course',
+  MULTIMEDIA = 'multimedia',
+  IMAGE = "image",
+  VIDEO = "video",
+  AUDIO = "audio",
+  BOOK = 'book',
+  ACTIVITY = 'activity',
+  ASSESSMENT = 'assessment',
+}
