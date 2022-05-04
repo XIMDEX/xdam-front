@@ -1,7 +1,8 @@
 import { DialogContent, DialogContentText, Grid } from "@material-ui/core";
-import React, { useReducer } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import { useSelector } from "react-redux";
 import { Button } from "semantic-ui-react";
+import MainService from "../../../../api/service";
 import { ResourceType } from "../../../../constants";
 import { selectCollection } from "../../../../slices/organizationSlice";
 import FormButtons from "./FormButtons";
@@ -60,6 +61,30 @@ function resourceFormReducer(state: FormContext, action: { type: string, payload
                 message: ''
             }
         }
+        case 'fileRemoved': {
+            return {
+                ...state,
+                files: state.files.filter(file => file[action.payload.filterBy] !== action.payload.value)
+            }
+        }
+        case 'filesAttached': {
+            return {
+                ...state,
+                files: [...state.files, ...action.payload ? action.payload : []]
+            }
+        }
+        case 'resourceRetrived': {
+            return {
+                ...state,
+                files: action.payload
+            }
+        }
+        case 'previewChanged': {
+            return {
+                ...state,
+                previewImage: action.payload
+            }
+        }
         case 'loadLastCreated': {
             // const data = updateResourceFrom('lastCreated');
             // setForm(data);
@@ -78,6 +103,7 @@ const ResourceForm = (
 
     const _refForm = React.useRef(null);
     const collectionId = useSelector(selectCollection);
+    const [lastSync, setLastSync] = useState(Date.now());
     const [state, dispatch] = useReducer(
         resourceFormReducer,
         {
@@ -91,6 +117,16 @@ const ResourceForm = (
             resourceId: dataForUpdate?.id
         });
 
+    useEffect(() => {
+        async function fetchFiles() {
+            const resource = await MainService().getResource(state.resourceId);
+            dispatch({ type: 'resourceRetrived', payload: resource.files });
+        }
+
+        if (state.resourceId) {
+            fetchFiles();
+        }
+    }, [lastSync]);
 
     const submit = async () => {
         dispatch({ type: 'begin_submit' });
@@ -100,7 +136,7 @@ const ResourceForm = (
         await submitResource(
             state.action,
             state.formMetaData,
-            state.formFiles,
+            state.files,
             state.previewImage,
             state.resourceType,
             state.resourceId,
@@ -111,6 +147,8 @@ const ResourceForm = (
         .catch(error => dispatch({ type: 'error', payload: error.message }))
 
         dispatch({ type: 'finish_submit'});
+
+        setLastSync(Date.now());
     }
 
     return (

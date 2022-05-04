@@ -388,6 +388,31 @@ class AppService {
       return url.includes('@@@dam:@');
     }
 
+    async downloadFileFromUrl(name, url)
+    {
+      const _api = api().downloadFile(url);
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers
+      }
+      const res = await fetch(_api.url, request);
+      streamSaver.WritableStream = ponyfill.WritableStream
+
+      const blob = await res.blob();
+      const newBlob = new Blob([blob]);
+
+      const blobUrl = window.URL.createObjectURL(newBlob);
+
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.setAttribute('download', `${name}`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+
+      window.URL.revokeObjectURL(blob as unknown as string);
+    }
+
     async downloadFile(file) 
     {
       const _api = api().downloadFile(file.dam_url);

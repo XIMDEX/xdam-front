@@ -20,7 +20,6 @@ function setType(resourceType: ResourceType, files, resourceData) {
 
 export const submitResource = async (action, formData, files, previewImage, resourceType: ResourceType, resourceId: string, collectionId): Promise<Response> => {
     const data = formData;
-    debugger;
     /*
     IMPORTANTE: DEFINE MEDIA TYPE ON MULTIMEDIA COLLECTION.
     En la version acutal, el tipo de multimedia se define con esta logica:

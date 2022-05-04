@@ -22,8 +22,9 @@ export type FormContext = {
     dataForUpdate: any,
     collectionId: number,
     formMetaData: object,
-    formFiles: any[],
-    resourceId: string
+    files: any[],
+    resourceId: string,
+    resource: any
 }
 
 export const resourceFormInitalState: FormContext = {
@@ -39,11 +40,12 @@ export const resourceFormInitalState: FormContext = {
     schema: null,
     previewImage: null,
     resourceType: null,
-    formFiles: [],
+    files: [],
     dataForUpdate: {},
     collectionId: null,
     formMetaData: {},
-    resourceId: null
+    resourceId: null,
+    resource: null
 }
 
 export const ResourceMetaDataForm = React.createContext<{
