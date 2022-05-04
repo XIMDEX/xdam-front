@@ -1,5 +1,5 @@
 import { Cookies } from 'react-cookie';
-import { COURSE, BOOK, MULTIMEDIA, IMAGE, VIDEO, AUDIO, ACTIVITY, ASSESSMENT } from '../constants';
+import { COURSE, BOOK, MULTIMEDIA, IMAGE, VIDEO, AUDIO, ACTIVITY, ASSESSMENT, BOOK_EDITOR_URL, COURSE_EDITOR_URL } from '../constants';
 
 class ResourcesService {
 
@@ -17,7 +17,7 @@ class ResourcesService {
 
     getBookActions(resourceId)
     {
-      let baseUrl = process.env.REACT_APP_BOOK_EDITOR_URL;
+      let baseUrl = BOOK_EDITOR_URL;
       let edit = 'edit/';
       let convert = 'convert/';
       let token = 'vd9NxuORVjd8xlkZfqAfEQjJw4rXuuPEVysaEV1T';
@@ -49,9 +49,9 @@ class ResourcesService {
     {
       return {
         create: () => {
-          window.open(process.env.REACT_APP_COURSE_EDITOR_URL, '_blank').focus()
+          window.open(COURSE_EDITOR_URL, '_blank').focus()
         },
-        edit: { href: process.env.REACT_APP_COURSE_EDITOR_URL, label: 'Editor' }
+        edit: { href: COURSE_EDITOR_URL, label: 'Editor' }
       }
     }
 

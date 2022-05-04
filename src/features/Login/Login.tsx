@@ -10,7 +10,8 @@ import { useHistory } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    maxWidth: '50%',
+    maxWidth: '400px',
+    padding: '0 20px',
     margin: '25vh auto',
   },
   mbText: {
