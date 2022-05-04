@@ -5,16 +5,12 @@ import {
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import MainService from '../../../api/service';
 
-import { render, renderFromUrl } from '../../../utils/render';
+import { render } from '../../../utils/render';
 import RelatedFiles from './RelatedFiles';
-import { Button, Icon, Label } from 'semantic-ui-react';
+import { Button, Label } from 'semantic-ui-react';
 import _ from 'lodash';
-import SemanticForm from "@rjsf/semantic-ui";
-import { JSONSchema7 } from 'json-schema';
 import { useSelector } from 'react-redux';
-import { selectSchemas } from '../../../appSlice';
-import { BOOK, MULTIMEDIA, IMAGE, VIDEO, AUDIO, COURSE, ACTIVITY, ASSESSMENT } from '../../../constants';
-import ArrayFieldTemplate from './DynamicFormTemplates/ArrayFieldTemplate';
+import { API_BASE_URL } from '../../../constants';
 import { selectCollection } from '../../../slices/organizationSlice';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 
@@ -107,7 +103,6 @@ export default function ViewResource( { resData } ) {
 
     function renderField (label, d) 
     {
-      //console.log(d)
       let field = <></>;
       
       if (typeof d === 'string' || typeof d === 'boolean' ) {
@@ -115,10 +110,6 @@ export default function ViewResource( { resData } ) {
           field = <p><strong>{label}:</strong> {d.toString()}</p>
         }
       }
-
-      // if (typeof d === 'object' && !_.isEmpty(d)) {
-      //   field = <p>{label}: undefined component</p>
-      // }
 
       if (Array.isArray(d)) {
         if(label !== 'organization') {
@@ -135,7 +126,7 @@ export default function ViewResource( { resData } ) {
             <ul>
               {d.map((dam_url, key) => (
                 <li key={key} onClick={(evt) => copied(evt, dam_url)}>
-                  <CopyToClipboard text={process.env.REACT_APP_API_BASE_URL + '/resource/render/' + dam_url}>
+                  <CopyToClipboard text={API_BASE_URL + '/resource/render/' + dam_url}>
                     <span>{dam_url}</span>
                   </CopyToClipboard>
                 </li>
@@ -156,40 +147,30 @@ export default function ViewResource( { resData } ) {
           <Button circular onClick={closeModal} icon='close' color='teal' className='read-card-close-button' />
         </Grid>
         <Grid item sm={12}>
-          {resourceData !== null ? (
-              <>
-                <div style={{backgroundImage: 'url('+preview+')'}} className={classes.imgView}/>
-                <Grid container spacing={3}>
-                  <Grid item sm={5} hidden={resourceData.files?.length < 1}>
-                    <div>{resourceData.files?.length > 0 ? <RelatedFiles resData={resourceData} files={resourceData.files} withPlayer={true} /> : <Label>No files attached</Label>}</div>  
-                  </Grid>
-                  <Grid item sm={resourceData.files?.length > 0 ? 7 : 12}>
-                    {/* <SemanticForm 
-                      schema={resSchema as JSONSchema7} 
-                      formData={data} 
-                      ArrayFieldTemplate={ArrayFieldTemplate}
-                    /> */}
-                    <Label>Meta data</Label>
-                    {
-                      resourceDataFacet !== null ? (
-                        <Card variant='outlined' style={{marginTop: 14, padding: 12}}>
-                          {Object.keys(resourceDataFacet).map((e, i) => (
-                            <div key={i} className='resource-metadata'>
-                              {renderField(e, resourceDataFacet[e])}
-                            </div>
-                          ))}
-                        </Card>
-                      ) : ''
-                    }
-                    
-                    {/* <p><span>Name:</span> {name || data.description?.name || data.description?.course_title}</p>
-                    <p><span>{categories?.length > 1 ? 'Categories:' : 'Category:'}</span> {categories?.join(', ')}</p>
-                    <p><span>Tags:</span> {tags?.join(', ')}</p> */}
-                  </Grid>
+          {resourceData !== null && (
+            <>
+              <div style={{backgroundImage: 'url('+preview+')'}} className={classes.imgView}/>
+              <Grid container spacing={3}>
+                <Grid item sm={5} hidden={resourceData.files?.length < 1}>
+                  <div>{resourceData.files?.length > 0 ? <RelatedFiles resData={resourceData} files={resourceData.files} withPlayer={true} /> : <Label>No files attached</Label>}</div>  
                 </Grid>
-              </>
-          ) : ''}
-          
+                <Grid item sm={resourceData.files?.length > 0 ? 7 : 12}>
+                  <Label>Meta data</Label>
+                  {
+                    resourceDataFacet !== null ? (
+                      <Card variant='outlined' style={{marginTop: 14, padding: 12}}>
+                        {Object.keys(resourceDataFacet).map((e, i) => (
+                          <div key={i} className='resource-metadata'>
+                            {renderField(e, resourceDataFacet[e])}
+                          </div>
+                        ))}
+                      </Card>
+                    ) : ''
+                  }
+                </Grid>
+              </Grid>
+            </>
+          )}
         </Grid>
       </Grid>
     )
