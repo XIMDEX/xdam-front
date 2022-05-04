@@ -63,7 +63,20 @@
     "build:all": "npm run build:mhe:pre && npm run build:kak:pre && npm run build:mhe:pro && npm run build:kak:pro"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": "react-app",
+    "rules": {
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": "off",
+      "no-useless-escape": "off",
+      "@typescript-eslint/no-useless-constructor": "off",
+      "no-unreachable": "off",
+      "eqeqeq": "off",
+      "react-hooks/exhaustive-deps": "off",
+      "no-useless-computed-key": "off",
+      "array-callback-return": "off",
+      "jsx-a11y/anchor-is-valid": "off",
+      "jsx-a11y/alt-text": "off"
+    }
   },
   "browserslist": {
     "production": [
