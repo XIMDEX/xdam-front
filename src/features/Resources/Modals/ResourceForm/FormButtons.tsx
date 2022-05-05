@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { Button, Dropdown, Icon } from "semantic-ui-react";
 import MainService from "../../../../api/service";
 import { RESOURCE_FORM_ACTION_DICTIONARY } from "../../../../constants";
-import { ResourceMetaDataForm } from "./ResourceFormContext";
+import { ResourceFormContex } from "./ResourceFormContext";
 import { selectCollection } from '../../../../slices/organizationSlice';
 
 
@@ -19,7 +19,7 @@ enum LastActions {
 };
 
 const FormButtons = ({ save }) => {
-    const { state, dispatch } = useContext(ResourceMetaDataForm);
+    const { state, dispatch } = useContext(ResourceFormContex);
     const collectionId = useSelector(selectCollection);
     const action = RESOURCE_FORM_ACTION_DICTIONARY[state.action]["en"].action;
 

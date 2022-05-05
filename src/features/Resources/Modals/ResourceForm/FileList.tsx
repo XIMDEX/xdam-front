@@ -2,7 +2,7 @@ import { Card, createStyles, makeStyles } from "@material-ui/core";
 import React, { useState } from "react";
 import { useContext } from "react";
 import { Icon, Label, List } from "semantic-ui-react";
-import { FormAction, ResourceMetaDataForm } from "./ResourceFormContext";
+import { FormAction, ResourceFormContex } from "./ResourceFormContext";
 import { renderFromUrl } from '../../../../utils/render';
 import { iconHandler } from "../../../../utils/iconHandler";
 import MainService from '../../../../api/service';
@@ -53,7 +53,7 @@ const MediaPlayer = ({ mime_type, url }) => {
 }
 
 const MediaControlls = ({fileId, fileName, fileMimeType, resourceId, fileUrl}) => {
-    const { dispatch } = useContext(ResourceMetaDataForm);
+    const { dispatch } = useContext(ResourceFormContex);
 
     const View = () => {
         const [show, setShow] = useState(false);
@@ -129,7 +129,7 @@ const FileGroup = ({name, files, resourceId}) => {
 }
 
 export const FileList = () => {
-    const { state } = useContext(ResourceMetaDataForm);
+    const { state } = useContext(ResourceFormContex);
 
     return (
         <>

@@ -6,7 +6,7 @@ export enum FormAction {
     UPDATE = 'UPDATE'
 } 
 
-export type FormContext = {
+export type ResourceFormState = {
     message: string,
     succes: boolean,
     displayMetaDataMessage: boolean,
@@ -28,7 +28,7 @@ export type FormContext = {
     formMetaDataFilled: boolean
 }
 
-export const resourceFormInitalState: FormContext = {
+export const resourceFormInitalState: ResourceFormState = {
     message: '',
     succes: true,
     displayMetaDataMessage: false,
@@ -50,8 +50,8 @@ export const resourceFormInitalState: FormContext = {
     formMetaDataFilled: false
 }
 
-export const ResourceMetaDataForm = React.createContext<{
-    state: FormContext;
+export const ResourceFormContex = React.createContext<{
+    state: ResourceFormState;
     dispatch: React.Dispatch<any>;
 }>({
     state: resourceFormInitalState,

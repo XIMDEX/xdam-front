@@ -5,7 +5,7 @@ import {
     Grid} from '@material-ui/core';
 import ResourceActionButtons from "../ResourceActionButtons"
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import { ResourceMetaDataForm } from "./ResourceFormContext"
+import { ResourceFormContex } from "./ResourceFormContext"
 import { FileList } from "./FileList";
 import { AttachFilesButton } from "./AttachFilesButton";
 import { PreviewImage } from "./PreviewImage";
@@ -59,7 +59,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export const ResourceFiles = () => {
     const classes = useStyles();
-    const { state } = useContext(ResourceMetaDataForm);
+    const { state } = useContext(ResourceFormContex);
     
     return (
         <>

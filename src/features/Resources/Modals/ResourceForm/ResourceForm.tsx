@@ -7,10 +7,10 @@ import { ResourceType } from "../../../../constants";
 import { selectCollection } from "../../../../slices/organizationSlice";
 import FormButtons from "./FormButtons";
 import MainDataForm from "./MainDataForm";
-import { ResourceMetaDataForm, resourceFormInitalState, FormAction, FormContext } from "./ResourceFormContext";
+import { ResourceFormContex, resourceFormInitalState, FormAction, ResourceFormState } from "./ResourceFormContext";
 import { submitResource } from "./submitResource";
 
-function resourceFormReducer(state: FormContext, action: { type: string, payload?: any }) {
+function resourceFormReducer(state: ResourceFormState, action: { type: string, payload?: any }): ResourceFormState {
 
     switch (action.type) {
         case 'updateForm': {
@@ -164,7 +164,7 @@ const ResourceForm = (
     }
 
     return (
-        <ResourceMetaDataForm.Provider value={{ state, dispatch }}>
+        <ResourceFormContex.Provider value={{ state, dispatch }}>
             <DialogContent className='edit-create-dialog-content'>
                 <DialogContentText>
                     <Button color='teal' circular icon='close' onClick={() => handleClose()} className='read-card-close-button' />
@@ -176,7 +176,7 @@ const ResourceForm = (
                     </Grid>
                 </Grid>
             </DialogContent>
-        </ResourceMetaDataForm.Provider>
+        </ResourceFormContex.Provider>
     );
 }
 

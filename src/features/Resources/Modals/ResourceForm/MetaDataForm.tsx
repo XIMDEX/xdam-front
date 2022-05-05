@@ -5,7 +5,7 @@ import SemanticForm from "@rjsf/semantic-ui";
 import { JSONSchema7 } from 'json-schema';
 import { CustomToggle, CustomDropdown, CustomBookNumberOfUnitSelector, InputTextArea, CustomInputText, InputText } from "../DynamicFormTemplates/CustomFields";
 import { RESOURCE_FORM_ACTION_DICTIONARY } from "../../../../constants";
-import { ResourceMetaDataForm } from "./ResourceFormContext";
+import { ResourceFormContex } from "./ResourceFormContext";
 
 const uiSchema = {
 
@@ -54,10 +54,10 @@ const customWidgets = {
 };
 
 const MetaDataForm = () => {
-    const { state, dispatch } = useContext(ResourceMetaDataForm);
+    const { state, dispatch } = useContext(ResourceFormContex);
 
     return (
-        <ResourceMetaDataForm.Provider value={{ state, dispatch }}>
+        <ResourceFormContex.Provider value={{ state, dispatch }}>
             <div className='form-messages'>
                 {state.displayMetaDataMessage && <FeedbackMessage /> }
             </div>
@@ -73,12 +73,12 @@ const MetaDataForm = () => {
             >
                 <button ref={state._refForm} type="submit" style={{ display: "none" }} />
             </SemanticForm>
-        </ResourceMetaDataForm.Provider>
+        </ResourceFormContex.Provider>
     )
 };
 
 const FeedbackMessage = () => {
-    const { state, dispatch } = useContext(ResourceMetaDataForm);
+    const { state, dispatch } = useContext(ResourceFormContex);
     const [completedAction] = useState(RESOURCE_FORM_ACTION_DICTIONARY[state.action]["en"].completed);
 
     return (

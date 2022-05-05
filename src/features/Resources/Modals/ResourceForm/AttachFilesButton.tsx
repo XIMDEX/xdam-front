@@ -1,10 +1,10 @@
 import { Button } from "@material-ui/core"
 import React, { useContext } from "react"
 import { MULTIMEDIA } from "../../../../constants"
-import { ResourceMetaDataForm } from "./ResourceFormContext";
+import { ResourceFormContex } from "./ResourceFormContext";
 
 export const AttachFilesButton = () => {
-    const { state, dispatch } = useContext(ResourceMetaDataForm);
+    const { state, dispatch } = useContext(ResourceFormContex);
 
     return (
         <Button

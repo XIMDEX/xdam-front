@@ -2,7 +2,7 @@ import { Button } from "@material-ui/core"
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import React, { useContext } from "react"
 import { render } from "../../../../utils/render";
-import { ResourceMetaDataForm } from "./ResourceFormContext";
+import { ResourceFormContex } from "./ResourceFormContext";
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export const PreviewImage = () => {
     const classes = useStyles();
-    const { state, dispatch } = useContext(ResourceMetaDataForm);
+    const { state, dispatch } = useContext(ResourceFormContex);
 
     const styleBtnPreview = {
         backgroundImage: 'url(' + (state.previewImage ? URL.createObjectURL(state.previewImage) : (state.dataForUpdate ? render(state.dataForUpdate) : 'noimg.png')) + ')',
