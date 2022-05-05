@@ -73,12 +73,12 @@ const MediaControlls = ({fileId, fileName, fileMimeType, resourceId, fileUrl}) =
     const Remove = () => {
         async function removeFile(resourceId: string, fileName: string, fileId?: string) {
             if(!fileId) {
-                dispatch({ type: 'fileRemoved', payload: {filterBy: 'name', value: fileName} });
+                dispatch({ type: 'file_removed', payload: {filterBy: 'name', value: fileName} });
                 return;
             }
             
             await MainService().removeMedia(resourceId, fileId);
-            dispatch({ type: 'fileRemoved', payload: { filterBy: 'id', value: fileId } });
+            dispatch({ type: 'file_removed', payload: { filterBy: 'id', value: fileId } });
         }
         
         return (

@@ -77,7 +77,7 @@ export const PreviewImage = () => {
                 <input
                     accept="image/*"
                     type="file"
-                    onChange={(e) => dispatch({ type: 'previewChanged', payload: e.target.files[0] }) }
+                    onChange={(e) => dispatch({ type: 'preview_changed', payload: e.target.files[0] }) }
                     name='Preview'
                     hidden
                     />

@@ -63,7 +63,7 @@ const MetaDataForm = () => {
             </div>
             <SemanticForm
                 id='sfu'
-                // className={fillAlert ? 'fill-alert' : ''}
+                className={state.formMetaDataFilled ? 'fill-alert' : ''}
                 uiSchema={uiSchema}
                 schema={state.schema as JSONSchema7}
                 formData={state.formMetaData}
@@ -86,7 +86,7 @@ const FeedbackMessage = () => {
             color={state.succes ? 'teal' : 'red'}
             className={state.displayMetaDataMessage ? 'zoom-message' : 'hidden-message'}
             info
-            onDismiss={() => dispatch({ type: 'dismissMetaDataAlert' })}>
+            onDismiss={() => dispatch({ type: 'dismiss_meta_data_alert' })}>
             {
                 state.succes ? (
                     <>

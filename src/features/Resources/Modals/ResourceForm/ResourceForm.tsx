@@ -31,8 +31,19 @@ function resourceFormReducer(state: FormContext, action: { type: string, payload
             return {
                 ...state,
                 displayMetaDataMessage: true,
-                processing: false,
-                action: FormAction.UPDATE
+                processing: false
+            }
+        }
+        case 'end_processing': {
+            return {
+                ...state,
+                processing: false
+            }
+        }
+        case 'change_action': {
+            return {
+                ...state,
+                action: action.payload
             }
         }
         case 'succes': {
@@ -54,42 +65,42 @@ function resourceFormReducer(state: FormContext, action: { type: string, payload
                 processing: false
             }
         }
-        case 'dismissMetaDataAlert': {
+        case 'dismiss_meta_data_alert': {
             return {
                 ...state,
                 displayMetaDataMessage: false,
                 message: ''
             }
         }
-        case 'fileRemoved': {
+        case 'file_removed': {
             return {
                 ...state,
                 files: state.files.filter(file => file[action.payload.filterBy] !== action.payload.value)
             }
         }
-        case 'filesAttached': {
+        case 'files_attached': {
             return {
                 ...state,
                 files: [...state.files, ...action.payload ? action.payload : []]
             }
         }
-        case 'resourceRetrived': {
+        case 'resource_retrived': {
             return {
                 ...state,
                 files: action.payload
             }
         }
-        case 'previewChanged': {
+        case 'preview_changed': {
             return {
                 ...state,
                 previewImage: action.payload
             }
         }
-        case 'loadLastCreated': {
-            // const data = updateResourceFrom('lastCreated');
-            // setForm(data);
+        case 'last_resource_loaded': {
             return {
                 ...state,
+                formMetaData: action.payload,
+                formMetaDataFilled: true
             }
         }
         default:
@@ -120,7 +131,7 @@ const ResourceForm = (
     useEffect(() => {
         async function fetchFiles() {
             const resource = await MainService().getResource(state.resourceId);
-            dispatch({ type: 'resourceRetrived', payload: resource.files });
+            dispatch({ type: 'resource_retrived', payload: resource.files });
         }
 
         if (state.resourceId) {
@@ -147,6 +158,7 @@ const ResourceForm = (
         .catch(error => dispatch({ type: 'error', payload: error.message }))
 
         dispatch({ type: 'finish_submit'});
+        dispatch({ type: 'change_action', payload: FormAction.UPDATE});
 
         setLastSync(Date.now());
     }
