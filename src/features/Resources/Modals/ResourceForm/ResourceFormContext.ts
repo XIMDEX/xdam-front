@@ -25,7 +25,7 @@ export type ResourceFormState = {
     files: any[],
     resourceId: string,
     resource: any,
-    formMetaDataFilled: boolean
+    formMetaDataFilled: boolean,
 }
 
 export const resourceFormInitalState: ResourceFormState = {
@@ -47,7 +47,7 @@ export const resourceFormInitalState: ResourceFormState = {
     formMetaData: {},
     resourceId: null,
     resource: null,
-    formMetaDataFilled: false
+    formMetaDataFilled: false,
 }
 
 export const ResourceFormContex = React.createContext<{

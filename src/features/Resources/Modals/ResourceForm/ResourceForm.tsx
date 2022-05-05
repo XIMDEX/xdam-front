@@ -1,14 +1,13 @@
 import { DialogContent, DialogContentText, Grid } from "@material-ui/core";
 import React, { useEffect, useReducer, useState } from "react";
-import { useSelector } from "react-redux";
-import { Button } from "semantic-ui-react";
+import { useDispatch } from "react-redux";
+import { Button, Tab } from "semantic-ui-react";
 import MainService from "../../../../api/service";
-import { ResourceType } from "../../../../constants";
-import { selectCollection } from "../../../../slices/organizationSlice";
-import FormButtons from "./FormButtons";
-import MainDataForm from "./MainDataForm";
+import { ResourceType, VALIDS_LOM } from "../../../../constants";
 import { ResourceFormContex, resourceFormInitalState, FormAction, ResourceFormState } from "./ResourceFormContext";
-import { submitResource } from "./submitResource";
+import LomForm from '../../LOM/LomForm';
+import { setLomesSchema, setLomSchema } from '../../../../appSlice';
+import { MainDataTab } from "./MainDataTab";
 
 function resourceFormReducer(state: ResourceFormState, action: { type: string, payload?: any }): ResourceFormState {
 
@@ -108,13 +107,69 @@ function resourceFormReducer(state: ResourceFormState, action: { type: string, p
     }
 }
 
+function useLoms(action, data) {
+    const dispatch = useDispatch();
+    const [lomPanes, setLomPanes] = useState([]);
+
+    useEffect(() => {
+
+        if (action === FormAction.CREATE) {
+            setLomPanes([]);
+            return;
+        }
+
+        const fetchLomesSchema = async () => {
+            let lomesSchema = await MainService().getLomesSchema();
+            dispatch(setLomesSchema(lomesSchema));
+        }
+
+        const fecthLomSchema = async () => {
+            const lomSchema = await MainService().getLomSchema();
+            dispatch(setLomSchema(lomSchema));
+        }
+
+        let lomesl = localStorage.getItem('lomes_loaded');
+        if (lomesl === null || lomesl === '0') {
+            fetchLomesSchema()
+            localStorage.setItem('lomes_loaded', '1');
+        }
+
+        let loml = localStorage.getItem('lom_loaded');
+        if (loml === null || loml === '0') {
+            fecthLomSchema()
+            localStorage.setItem('lom_loaded', '1');
+        }
+
+        const panes = VALIDS_LOM.map(lom => ({
+            menuItem: lom.name,
+            render: () => (
+                <Tab.Pane>
+                    <LomForm
+                        data={data}
+                        standard={lom.key}
+                    />
+                </Tab.Pane>
+            )})
+        );
+
+        setLomPanes(panes);
+    }, [action]);
+
+    return lomPanes;
+}
+
+function useMainData() {
+    return {
+        menuItem: 'Main Data',
+        render: () => (<Tab.Pane><MainDataTab /></Tab.Pane>)
+    }
+}
+
 const ResourceForm = (
     { resourceType, schema, dataForUpdate = null, handleClose }:
         { resourceType: ResourceType, schema: any, dataForUpdate?: any, handleClose: () => void }) => {
 
     const _refForm = React.useRef(null);
-    const collectionId = useSelector(selectCollection);
-    const [lastSync, setLastSync] = useState(Date.now());
     const [state, dispatch] = useReducer(
         resourceFormReducer,
         {
@@ -128,40 +183,8 @@ const ResourceForm = (
             resourceId: dataForUpdate?.id
         });
 
-    useEffect(() => {
-        async function fetchFiles() {
-            const resource = await MainService().getResource(state.resourceId);
-            dispatch({ type: 'resource_retrived', payload: resource.files });
-        }
-
-        if (state.resourceId) {
-            fetchFiles();
-        }
-    }, [lastSync]);
-
-    const submit = async () => {
-        dispatch({ type: 'begin_submit' });
-
-        state._refForm.current.click();
-
-        await submitResource(
-            state.action,
-            state.formMetaData,
-            state.files,
-            state.previewImage,
-            state.resourceType,
-            state.resourceId,
-            collectionId
-        )
-        .then(response => response.json())
-        .then(resource => dispatch({ type: 'succes', payload: resource }))
-        .catch(error => dispatch({ type: 'error', payload: error.message }))
-
-        dispatch({ type: 'finish_submit'});
-        dispatch({ type: 'change_action', payload: FormAction.UPDATE});
-
-        setLastSync(Date.now());
-    }
+    const mainPane = useMainData();
+    const lomsPanes = useLoms(state.action, dataForUpdate);
 
     return (
         <ResourceFormContex.Provider value={{ state, dispatch }}>
@@ -171,8 +194,7 @@ const ResourceForm = (
                 </DialogContentText>
                 <Grid container spacing={2}>
                     <Grid item sm={12} id='form-content'>
-                        <FormButtons save={submit} />
-                        <MainDataForm />
+                        <Tab panes={[mainPane, ...lomsPanes]} />
                     </Grid>
                 </Grid>
             </DialogContent>
