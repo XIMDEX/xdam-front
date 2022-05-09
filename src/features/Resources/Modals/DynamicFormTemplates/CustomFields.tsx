@@ -106,7 +106,7 @@ export const CustomBookNumberOfUnitSelector = (props) => {
                 >
                 <Dropdown.Menu>
                 {    Array.from(Array(maxUnits).keys()).map((i, _) => (
-                        <Dropdown.Item onClick={(event, data) => {props.onChange(data.children)}} value={i}>
+                        <Dropdown.Item key={i} onClick={(event, data) => {props.onChange(data.children)}} value={i}>
                             {formatUnits(i)}
                         </Dropdown.Item>
                     ))
