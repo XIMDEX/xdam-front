@@ -180,7 +180,7 @@ const ResourceForm = (
             resourceType,
             dataForUpdate,
             formMetaData: dataForUpdate?.data ?? {},
-            resourceId: dataForUpdate?.id
+            resourceId: dataForUpdate?.id,
         });
 
     const mainPane = useMainData();

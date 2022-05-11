@@ -55,6 +55,16 @@ const customWidgets = {
 
 const MetaDataForm = () => {
     const { state, dispatch } = useContext(ResourceFormContex);
+    const [data, setData] = useState(state.formMetaData);
+
+    useEffect(() => {
+        debugger;
+        setData(state.formMetaData);
+    }, [state.formMetaData]);
+
+    // useEffect(() => {
+    //     setData({ ...state.formMetaData });
+    // }, []);
 
     return (
         <ResourceFormContex.Provider value={{ state, dispatch }}>
@@ -66,8 +76,11 @@ const MetaDataForm = () => {
                 className={state.formMetaDataFilled ? 'fill-alert' : ''}
                 uiSchema={uiSchema}
                 schema={state.schema as JSONSchema7}
-                formData={state.formMetaData}
-                onChange={(form) => dispatch({ type: 'updateForm', payload: form.formData})}
+                formData={data}
+                onChange={(form) => {
+                    dispatch({ type: 'updateForm', payload: form.formData});
+                    // setData(form.formData);
+                }}
                 ArrayFieldTemplate={ArrayFieldTemplate}
                 widgets={customWidgets}
             >
