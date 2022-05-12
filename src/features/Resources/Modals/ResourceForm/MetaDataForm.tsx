@@ -55,16 +55,11 @@ const customWidgets = {
 
 const MetaDataForm = () => {
     const { state, dispatch } = useContext(ResourceFormContex);
-    const [data, setData] = useState(state.formMetaData);
+    const [lastDataChange, setLastDataChange] = useState(Date.now());
 
     useEffect(() => {
-        debugger;
-        setData(state.formMetaData);
+        setLastDataChange(Date.now())
     }, [state.formMetaData]);
-
-    // useEffect(() => {
-    //     setData({ ...state.formMetaData });
-    // }, []);
 
     return (
         <ResourceFormContex.Provider value={{ state, dispatch }}>
@@ -73,14 +68,12 @@ const MetaDataForm = () => {
             </div>
             <SemanticForm
                 id='sfu'
+                key={lastDataChange}
                 className={state.formMetaDataFilled ? 'fill-alert' : ''}
                 uiSchema={uiSchema}
                 schema={state.schema as JSONSchema7}
-                formData={data}
-                onChange={(form) => {
-                    dispatch({ type: 'updateForm', payload: form.formData});
-                    // setData(form.formData);
-                }}
+                formData={{ ...state.formMetaData }}
+                onChange={(form) => dispatch({ type: 'updateForm', payload: form.formData })}
                 ArrayFieldTemplate={ArrayFieldTemplate}
                 widgets={customWidgets}
             >

@@ -16,15 +16,13 @@ const buttonsWrapperStyles = {
     paddingRight: "25px"
 }
 
-const FormButtons = ({sync}) => {
+const FormButtons = ({ sync }) => {
     const collectionId = useSelector(selectCollection);
     const { state, dispatch } = useContext(ResourceFormContex);
     const action = RESOURCE_FORM_ACTION_DICTIONARY[state.action]["en"].action;
 
     const submit = async () => {
         dispatch({ type: 'begin_submit' });
-
-        state._refForm.current.click();
 
         await submitResource(
             state.action,
@@ -40,7 +38,10 @@ const FormButtons = ({sync}) => {
             .catch(error => dispatch({ type: 'error', payload: error.message }))
 
         dispatch({ type: 'finish_submit' });
-        dispatch({ type: 'change_action', payload: FormAction.UPDATE });
+
+        if(state.action === FormAction.CREATE) {
+            dispatch({ type: 'change_action', payload: FormAction.UPDATE });
+        }
 
         sync(Date.now());
     }
@@ -55,6 +56,7 @@ const FormButtons = ({sync}) => {
             })
             .catch(error => dispatch({ type: 'error', payload: error.message }))
             .finally(() => dispatch({ type: 'end_processing' }));
+
     }
 
     return (

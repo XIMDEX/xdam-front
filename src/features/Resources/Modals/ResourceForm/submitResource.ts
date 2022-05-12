@@ -38,9 +38,11 @@ export const submitResource = async (action, formData, files, previewImage, reso
     })
 
     if (files) {
-        for (var i = 0; i < files.length; i++) {
-            theFormData.append('File[]', files[i]);
-        }
+        files
+            .filter(file => !file?.dam_url)
+            .forEach(file => {
+                theFormData.append('File[]', file);
+            });
     }
 
     if (previewImage) {
@@ -50,6 +52,10 @@ export const submitResource = async (action, formData, files, previewImage, reso
     const response = action === "UPDATE"
         ? MainService().updateResource(resourceId, theFormData)
         : MainService().createResource(theFormData);
+ 
+    return await response.then(r => {
+        if (r.status > 200) throw new Error();
 
-    return await response;
+        return r;
+    });
 }

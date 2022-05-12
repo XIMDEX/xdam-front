@@ -10,7 +10,6 @@ export const MainDataTab = () => {
     const { state, dispatch } = useContext(ResourceFormContex);
     const [lastSync, setLastSync] = useState(Date.now());
 
-    
     useEffect(() => {
         async function fetchFiles() {
             const resource = await MainService().getResource(state.resourceId);
