@@ -26,6 +26,7 @@ import ResourceActionButtons from './ResourceActionButtons';
 import { iconHandler } from '../../../utils/iconHandler';
 import { InputText, InputTextArea, CustomToggle, CustomInputText, CustomDropdown, CustomBookNumberOfUnitsSelector } from './DynamicFormTemplates/CustomFields';
 import LomForm from '../LOM/LomForm';
+import { ResourceLanguage } from './DynamicFormTemplates/ResourceLanguage';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -310,6 +311,13 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
           "title": 'External url'
         }
       },
+      "language": {
+        "ui:widget": ResourceLanguage,
+        "ui:options": {
+          opt: ["es", "cat", "en"],
+          label: 'Language'
+        }
+      }
     }
   }
 
