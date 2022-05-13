@@ -24,7 +24,7 @@ import store from '../../../app/store';
 import ArrayFieldTemplate from './DynamicFormTemplates/ArrayFieldTemplate';
 import ResourceActionButtons from './ResourceActionButtons';
 import { iconHandler } from '../../../utils/iconHandler';
-import { InputText, InputTextArea, CustomToggle, CustomInputText, CustomDropdown, CustomBookNumberOfUnitsSelector } from './DynamicFormTemplates/CustomFields';
+import { InputText, InputTextArea, CustomToggle, CustomInputText, CustomDropdown, CustomBookNumberOfUnitSelector } from './DynamicFormTemplates/CustomFields';
 import LomForm from '../LOM/LomForm';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -284,8 +284,8 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
           label: 'Course source'
         }
       },
-      "units": {
-        "ui:widget": CustomBookNumberOfUnitsSelector,
+      "unit": {
+        "ui:widget": CustomBookNumberOfUnitSelector,
         "ui:options": {
           "max": 50
         }
@@ -440,9 +440,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
 
             <Grid item sm={12} className={classes.divider}>
               {dataForUpdate ? (
-                <ButtonGroup orientation='horizontal' fullWidth id='forms-btn-actions'>    
-                    <ResourceActionButtons resource={dataForUpdate} />
-                </ButtonGroup>
+                <ResourceActionButtons resource={dataForUpdate} />
               ) : null}
             </Grid>
 
