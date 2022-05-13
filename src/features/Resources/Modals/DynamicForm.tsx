@@ -311,10 +311,10 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
           "title": 'External url'
         }
       },
-      "language": {
+      "lang": {
         "ui:widget": ResourceLanguage,
         "ui:options": {
-          opt: ["es", "cat", "en"],
+          opt: ["es", "ca", "en"],
           label: 'Language'
         }
       }
