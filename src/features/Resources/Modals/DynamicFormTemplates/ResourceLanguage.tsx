@@ -12,6 +12,9 @@ function capitalize(text: string): string {
 }
 
 export const ResourceLanguage = (props) => {
+
+    const handleClick = (value) => props.onChange(value);
+
     return (
         <div className='forms-textField'>
             <section>
@@ -30,7 +33,7 @@ export const ResourceLanguage = (props) => {
                             <Dropdown.Item 
                                 key={option}
                                 value={option}
-                                onClick={(_, data) => props.onChange(data.value) }>
+                                onClick={(_, data) => handleClick(data.value)}>
                                 {capitalize(languages[option])}
                             </Dropdown.Item>
                         ))}
