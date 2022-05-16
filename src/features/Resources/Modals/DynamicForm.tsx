@@ -26,6 +26,8 @@ import ResourceActionButtons from './ResourceActionButtons';
 import { iconHandler } from '../../../utils/iconHandler';
 import { InputText, InputTextArea, CustomToggle, CustomInputText, CustomDropdown, CustomBookNumberOfUnitSelector } from './DynamicFormTemplates/CustomFields';
 import LomForm from '../LOM/LomForm';
+import { ResourceLanguage } from './DynamicFormTemplates/ResourceLanguage';
+import { ExtraBookData } from './DynamicFormTemplates/CustomFields/ExtraBookData';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -271,6 +273,9 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const customWidgets = {
     TextWidget: InputText,
   };
+
+  const fields = { bookExtraData: ExtraBookData };
+
   const uiSchema={
     
     "description": {
@@ -310,6 +315,16 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
           "title": 'External url'
         }
       },
+      "lang": {
+        "ui:widget": ResourceLanguage,
+        "ui:options": {
+          opt: ["es", "ca", "en"],
+          label: 'Language'
+        }
+      },
+      "extra": {
+        "ui:field": "bookExtraData",
+      }
     }
   }
 
@@ -397,6 +412,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
           onChange={(fd)=> setForm(fd.formData)}
           ArrayFieldTemplate={ArrayFieldTemplate}
           widgets={customWidgets}
+          fields={fields}
         >
           <button ref={_refForm} type="submit" style={{ display: "none" }} />
         </SemanticForm> 
