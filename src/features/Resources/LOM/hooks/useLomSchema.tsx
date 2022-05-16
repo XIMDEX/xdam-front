@@ -19,12 +19,12 @@ const useLomSchema = (type) => {
   });
 
   const METHODS = useMemo(() => ({
-    [LOM_NORMAS.LOM]: {
+    [LOM_NORMAS.lom.key]: {
       select: selectLomSchema,
       getData: mainServices.getLomData,
       postData: mainServices.postLomData
     },
-    [LOM_NORMAS.LOMES]: {
+    [LOM_NORMAS.lomes.key]: {
       select: selectLomesSchema,
       getData: mainServices.getLomesData,
       postData: mainServices.postLomesData

@@ -1,9 +1,10 @@
 import { Cookies } from 'react-cookie';
+import { API_BASE_URL, XTAGS_API_BASE_URL } from '../constants';
 
 const api = () => {
     let cookies = new Cookies();
-    let baseUrl = process.env.REACT_APP_API_BASE_URL;
-    let baseUrlXTags = process.env.REACT_APP_XTAGS_API_BASE_URL; 
+    let baseUrl = API_BASE_URL;
+    let baseUrlXTags = XTAGS_API_BASE_URL; 
     let mapper = {
         baseUrl: baseUrl,
         auth: cookies.get('JWT') ? 'Bearer ' + cookies.get('JWT') : null,

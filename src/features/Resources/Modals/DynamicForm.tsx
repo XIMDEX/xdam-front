@@ -24,7 +24,7 @@ import store from '../../../app/store';
 import ArrayFieldTemplate from './DynamicFormTemplates/ArrayFieldTemplate';
 import ResourceActionButtons from './ResourceActionButtons';
 import { iconHandler } from '../../../utils/iconHandler';
-import { InputText, InputTextArea, CustomToggle, CustomInputText, CustomDropdown, CustomBookNumberOfUnitsSelector } from './DynamicFormTemplates/CustomFields';
+import { InputText, InputTextArea, CustomToggle, CustomInputText, CustomDropdown, CustomBookNumberOfUnitSelector } from './DynamicFormTemplates/CustomFields';
 import LomForm from '../LOM/LomForm';
 import { ResourceLanguage } from './DynamicFormTemplates/ResourceLanguage';
 import { ExtraBookData } from './DynamicFormTemplates/CustomFields/ExtraBookData';
@@ -290,7 +290,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
         }
       },
       "unit": {
-        "ui:widget": CustomBookNumberOfUnitsSelector,
+        "ui:widget": CustomBookNumberOfUnitSelector,
         "ui:options": {
           "max": 50
         }
@@ -456,9 +456,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
 
             <Grid item sm={12} className={classes.divider}>
               {dataForUpdate ? (
-                <ButtonGroup orientation='horizontal' fullWidth id='forms-btn-actions'>    
-                    <ResourceActionButtons resource={dataForUpdate} />
-                </ButtonGroup>
+                <ResourceActionButtons resource={dataForUpdate} />
               ) : null}
             </Grid>
 

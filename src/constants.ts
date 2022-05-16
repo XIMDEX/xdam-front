@@ -1,3 +1,14 @@
+import { getValidLoms } from "./utils/utils";
+
+//CONSTANTS
+export const {
+  REACT_APP_API_BASE_URL: API_BASE_URL,
+  REACT_APP_COURSE_EDITOR_URL: COURSE_EDITOR_URL,
+  REACT_APP_BOOK_EDITOR_URL: BOOK_EDITOR_URL, 
+  REACT_APP_XTAGS_API_BASE_URL: XTAGS_API_BASE_URL
+} = process.env
+export const VALID_LOMS = process.env.REACT_APP_VALID_LOMS?.split(',') ?? []
+
 //ENTITIES
 export const ORGANIZATION = 'organization';
 export const COLLECTION = 'collection';
@@ -15,14 +26,11 @@ export const ASSESSMENT = 'assessment';
 
 // LOM Standars
 export const LOM_NORMAS = {
-  LOM: 'lom',
-  LOMES: 'lomes'
+  lom: {name: 'LOM', key: 'lom'},
+  lomes: {name: 'LOM-ES', key:'lomes'}
 }
-export const VALIDS_LOM = [
-  //* This is the order of the tab generation
-  // { name: 'LOM-ES', key: LOM_NORMAS.LOMES },
-  { name: 'LOM', key: LOM_NORMAS.LOM }
-]
+
+export const VALIDS_LOM = getValidLoms()
 
 export const XTAGS =  {
   vocabularyId: 1, 
@@ -34,3 +42,5 @@ export const XTAGS =  {
 export const NUM_SUGGESTIONS = 5;
 
 export const PATH_TAXONS_DATA = '9.formData.Taxon Path';
+
+export const MAX_BOOK_UNITS = 50;
