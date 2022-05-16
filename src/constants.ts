@@ -34,3 +34,9 @@ export const XTAGS =  {
 export const NUM_SUGGESTIONS = 5;
 
 export const PATH_TAXONS_DATA = '9.formData.Taxon Path';
+
+export enum bookLanguages {
+  en = "english",
+  es = "castellano",
+  ca = "catalan"
+}

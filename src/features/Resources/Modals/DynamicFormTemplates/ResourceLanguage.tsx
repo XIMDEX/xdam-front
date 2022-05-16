@@ -1,14 +1,14 @@
 import React from "react"
 import { Dropdown } from "semantic-ui-react"
+import { bookLanguages } from "../../../../constants";
 
-enum languages {
-    en = "english",
-    es = "castellano",
-    ca = "catalan"
-}
-
-function capitalize(text: string): string {
-    return text.charAt(0).toUpperCase() + text.slice(1);
+const styles = {
+    dropdown: {
+        textTransform: "capitalize"
+    },
+    item: {
+        textTransform: "capitalize"
+    },
 }
 
 export const ResourceLanguage = (props) => {
@@ -22,19 +22,21 @@ export const ResourceLanguage = (props) => {
                     {props.options.label} {props.required ? '*' : ''}
                 </label>
                 <Dropdown
-                    placeholder={props.value && languages[props.value] ? capitalize(languages[props.value]) : "Language"}
+                    placeholder={props.value && bookLanguages[props.value] ? bookLanguages[props.value] : "Language"}
                     fluid
                     selection
                     selectOnBlur={false}
-                    value={languages[props.value]}
+                    value={bookLanguages[props.value]}
+                    style={styles.dropdown}
                 >
                     <Dropdown.Menu>
                         {props.options.opt.map((option: string) => (
                             <Dropdown.Item 
                                 key={option}
                                 value={option}
+                                style={styles.item}
                                 onClick={(_, data) => handleClick(data.value)}>
-                                {capitalize(languages[option])}
+                                {bookLanguages[option]}
                             </Dropdown.Item>
                         ))}
                     </Dropdown.Menu>
