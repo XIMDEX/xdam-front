@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
+import { XTAGS_API_BASE_URL } from '../../../../../../constants'
 import fetch from '../services/search'
 
 const DEFAULT_LANG = 'en'
 
 
-const URI_SEARCH = process.env.REACT_APP_XTAGS_API_BASE_URL + '/vocabularies/search?q='
+const URI_SEARCH = XTAGS_API_BASE_URL + '/vocabularies/search?q='
 
 const useSearch = () => {
     const [txt, setTxt] = useState('');
