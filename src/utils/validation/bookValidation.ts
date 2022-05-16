@@ -23,7 +23,10 @@ function validateIsbn(isbn: string): string | null {
 
     if(isbn.length < 5) return `ISBN to short`;
 
-    return evaluate(isbnRegex.test(isbn), `Invalid isbn: ${isbn}`);
+    // let validateRegex = isbnRegex.test(isbn);
+    let validateRegex = true;
+
+    return evaluate(validateRegex, `Invalid isbn: ${isbn}`);
 }
 
 export default function bookValidator(resource: Book): Promise < void> {
