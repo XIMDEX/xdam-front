@@ -2,6 +2,9 @@ import api from './urlMapper'
 import { Cookies } from 'react-cookie';
 import * as ponyfill from 'web-streams-polyfill/ponyfill';
 import { PATH_TAXONS_DATA, XTAGS } from '../constants';
+import OrganizationsService from './OrganizationsSevice';
+import CollectionsService from './CollectionsService';
+import CatalogueService from './CatalogueService';
 const streamSaver = require('streamsaver')
 
 class AppService {
@@ -10,9 +13,10 @@ class AppService {
      */
     private httpOptions = { headers: {} as any, headersForm: {}, params: {} };
     private cookies: Cookies;
-    /**
-     * @ignore
-     */
+    private organizationService: OrganizationsService;
+    private collectionService: CollectionsService;
+    private catalogueService: CatalogueService;
+
     constructor() 
     {
         this.cookies = new Cookies()
@@ -25,6 +29,22 @@ class AppService {
           Authorization: this.getToken()
         };
 
+      this.organizationService = new OrganizationsService(() => this.getToken());
+      this.collectionService = new CollectionsService(() => this.getToken());
+      this.catalogueService = new CatalogueService(() => this.getToken());
+
+    }
+
+    public organizations() {
+      return this.organizationService;
+    }
+
+    public collections() {
+      return this.collectionService;
+    }
+
+    public catalogue() {
+      return this.catalogueService;
     }
 
     getToken()
@@ -32,14 +52,14 @@ class AppService {
       return this.cookies.get('JWT') ? 'Bearer ' + this.cookies.get('JWT') : null
     }
 
-    setToken(name, value)
+    setToken(name: string, value: string, maxAge: number)
     {
       return this.cookies.set(name, value, {
-        maxAge: 31536000
+        maxAge: maxAge
       });
     }
 
-    async login (email: String, password: String) 
+    async login (email: String, password: String): Promise<any>
     {
       const request = {
         method: api().login.method,
@@ -47,44 +67,31 @@ class AppService {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email: email, // Use your own property name / key
+          username: email, // Use your own property name / key
           password: password,
         }),
       }
-      const res = await fetch(api().login.url, request);
-      const resToJson = await res.json();
-    
-      return resToJson;
+
+      const url = api().login.url;
+
+      return fetch(url, request)
+        .then((response: Response) => {
+          if (response.status === 401) throw new Error("Bad creadentials");
+          if (response.status !== 200) throw new Error("Bad creadentials");
+
+          return response;
+        })
+        .then(data => {
+          return data.json();
+        });
     }
 
     async logout()
     {
-      const request = {
-        method: api().logout.method,
-        headers: this.httpOptions.headers,
-        body: JSON.stringify({}),
-      }
-      const res = await fetch(api().logout.url, request);
-      const resToJson = await res.json();
-      if (resToJson.code === 200) {
-        this.cookies.remove('JWT');
-        window.location.assign('/');
-      } else {
-        alert('error on logout');
-        throw new Error(JSON.stringify(resToJson));
-      }
+      this.cookies.remove('JWT');
+      window.location.assign('/');
     }
     
-    async getUser () 
-    {
-      const request = {
-        method: api().getUser.method,
-        headers: this.httpOptions.headers
-      }
-      const res = await (await fetch(api().getUser.url, request)).json();
-      return res;
-    }
-
     async getSchemas () 
     {
       const request = {

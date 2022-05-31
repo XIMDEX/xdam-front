@@ -6,7 +6,7 @@ import MainService from '../../api/service';
 import { useSelector, useDispatch } from 'react-redux';
 import { setFacets, setResources, setFixedFacets, selectResourcesLoading, setResourcesLoading, setLoading, setSchemas, selectCatalogueFlag } from '../../appSlice';
 import IFacet from '../../interfaces/IFacet';
-import { selectQuery, selectFacetsQuery, setQuery } from '../../slices/organizationSlice';
+import { selectQuery, selectFacetsQuery, setQuery, selectCollection } from '../../slices/organizationSlice';
 import param from '../../utils/querybuilder';
 import { Resource } from './Resource';
 import { ORGANIZATION, COLLECTION, WORKPSACES, COURSE } from '../../constants';
@@ -74,13 +74,18 @@ const useStyles = makeStyles((theme) => ({
 }
 ));
 
-export function Resources({ collection, organization, sidebarOpen, _user }) {
+export function Resources({ collection, organization, sidebarOpen }) {
   const mainService = MainService();
   const query = useSelector(selectQuery);
   const dispatch = useDispatch();
   const classes = useStyles();
-  const selectedOrg = getOrgData(_user, organization);
-  const selectedColl = getCollData(selectedOrg, collection);
+  // const selectedOrg = getOrgData(_user, organization);
+  // const selectedColl = getCollData(selectedOrg, collection);
+
+  const [selectedColl, setSelectedColl] = useState(null);
+
+  
+  
   const facetsQuery = useSelector(selectFacetsQuery);
   const [localResources, setLocalResources] = useState([]);
   const resourcesLoading = useSelector(selectResourcesLoading);
@@ -94,15 +99,55 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
   const isSelectable = false;
   const [mainContextAction, setMainContextAction] = useState(null)
 
+  const collection_id = useSelector(selectCollection);
+
+  useEffect(() => {
+    const obtainCollection = async () => {
+      const collectionData = await (await MainService().collections().getCollections(collection)).json();
+      console.log(collectionData);
+      setSelectedColl(collectionData);
+    }
+
+    obtainCollection();
+  }, []);
+
+
+  useEffect(() => {
+    const obtainsCatalogue = async () => {
+      if (!selectedColl) return;
+      const response = await MainService().catalogue().getCatalogue(selectedColl.id, { page: 1, query: '' });
+      const catalogue = await response.json();
+
+      let pages = {
+        ...catalogue
+      };
+      delete pages.facets;
+      delete pages.data;
+      
+      setPagination(pages);
+
+      dispatch(setResources(catalogue.data));
+      setLocalResources(catalogue.data);
+      dispatch(setResourcesLoading(false));
+      console.log(catalogue);
+    }
+
+    if (selectedColl) obtainsCatalogue();
+  }, [selectedColl]);
+
+
   function toggleListMode(evt) {
     var val = evt.target.getAttribute('data-value') === '1' ? true : false;
     setListMode(val);
   }
 
   const fetchCatalogue = async () => {
-
-    if (typeof selectedColl !== 'undefined') {
-      const catalogue = await mainService.getCatalogue(selectedColl.id, '?' + param(query) + (facetsQuery ? '&' + buildFacetsQuery(facetsQuery) : ''));
+    
+    if (selectedColl && typeof selectedColl !== 'undefined') {
+      console.log(selectedColl);
+      // const catalogue = await mainService.getCatalogue(selectedColl.id, '?' + param(query) + (facetsQuery ? '&' + buildFacetsQuery(facetsQuery) : ''));
+      const response = await MainService().catalogue().getCatalogue(selectedColl.id, { page: 1, query: '' });
+      const catalogue = await response.json();
       // const catalogue = mockup;
       let pages = {
         ...catalogue
@@ -129,55 +174,55 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
     return q;
   }
 
-  const renderFixedFacets = () => {
-    let orgFacetValues = {}
-    let collectionsFacets = {}
-    let wspFacet = {}
+  // const renderFixedFacets = () => {
+  //   let orgFacetValues = {}
+  //   let collectionsFacets = {}
+  //   let wspFacet = {}
 
-    let org = selectedOrg
+  //   let org = selectedOrg
 
-    _user.data.organizations.forEach((og) => {
-      orgFacetValues[og.name] = {
-        count: og.org_resource_count,
-        id: og.id
-      }
-    })
+  //   _user.data.organizations.forEach((og) => {
+  //     orgFacetValues[og.name] = {
+  //       count: og.org_resource_count,
+  //       id: og.id
+  //     }
+  //   })
 
-    if (org.id === organization) {
-      org.collections.forEach((cid) => {
-        collectionsFacets[cid.name] = {
-          count: cid.coll_resource_count,
-          id: cid.id
-        }
-      })
+  //   if (org.id === organization) {
+  //     org.collections.forEach((cid) => {
+  //       collectionsFacets[cid.name] = {
+  //         count: cid.coll_resource_count,
+  //         id: cid.id
+  //       }
+  //     })
 
-      // org.workspaces.forEach((wsp) => {
-      //   wspFacet[wsp.name] = {
-      //     count: wsp.wsp_resource_count,
-      //     id: wsp.id
-      //   }
-      // })
-    }
+  //     // org.workspaces.forEach((wsp) => {
+  //     //   wspFacet[wsp.name] = {
+  //     //     count: wsp.wsp_resource_count,
+  //     //     id: wsp.id
+  //     //   }
+  //     // })
+  //   }
 
-    let OFF: IFacet = {
-      key: ORGANIZATION,
-      label: 'Organization',
-      values: orgFacetValues
-    }
+  //   let OFF: IFacet = {
+  //     key: ORGANIZATION,
+  //     label: 'Organization',
+  //     values: orgFacetValues
+  //   }
 
-    let CFF: IFacet = {
-      key: COLLECTION,
-      label: 'Collection',
-      values: collectionsFacets
-    }
+  //   let CFF: IFacet = {
+  //     key: COLLECTION,
+  //     label: 'Collection',
+  //     values: collectionsFacets
+  //   }
 
-    // let WFF : IFacet =  {
-    //   key: WORKPSACES,
-    //   label: 'Workspaces',
-    //   values: wspFacet
-    // }
-    dispatch(setFixedFacets([OFF, CFF]))
-  }
+  //   // let WFF : IFacet =  {
+  //   //   key: WORKPSACES,
+  //   //   label: 'Workspaces',
+  //   //   values: wspFacet
+  //   // }
+  //   dispatch(setFixedFacets([OFF, CFF]))
+  // }
 
   const getSchemas = async () => {
     const schemas = await MainService().getSchemas();
@@ -185,7 +230,11 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
   }
 
   useEffect(() => {
-    renderFixedFacets();
+    fetchCatalogue();
+  }, [collection_id]);
+
+  useEffect(() => {
+    // renderFixedFacets();
     fetchCatalogue();
     if (store.getState().app.schemas === null) {
       //we only need one fetch by session
@@ -392,6 +441,10 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
   const newResource = () => {
     setMainContextAction('create');
     setOpenCreate(true);
+  }
+
+  if (!selectedColl) {
+    return (<span>Loading </span>)
   }
 
   return (

@@ -6,7 +6,8 @@ import MainService from '../../api/service';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { useHistory } from 'react-router-dom';
+import { login, parseJWT } from '../../api/XdirAuthService';
+import { useNavigate } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,8 +24,8 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export function Login() {
-  let history = useHistory();
+export const Login = () => {
+  let navigate = useNavigate();
   const classes = useStyles();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
@@ -39,18 +40,24 @@ export function Login() {
     setPassword(e.target.value);
   };
 
-  const log = async () => {
+  const loginCheck = async () => {
     setLoading(true);
-    let user = await MainService().login(email, password);
-    if (user.error) {
-      setLoginStatus(user.error);
-      setLoading(false);
-      return;
-    }
-    MainService().setToken('JWT', user.data.access_token);
-    setLoginStatus('Login success. Loading user data, please wait.');
-    history.push('/home');
-    dispatch(reloadApp());
+
+    login({username: email, password})
+      .then((token: string) => {
+        const payload = parseJWT(token);
+        MainService().setToken('JWT', token, payload.expiration);
+
+        setLoginStatus('Login success. Loading user data, please wait.');
+
+        setLoading(false);
+        navigate('/home');
+        dispatch(reloadApp());
+      })
+      .catch(error => {
+        setLoginStatus(error);
+        setLoading(false);
+      });
   };
 
   function RenderStatus() {
@@ -71,7 +78,6 @@ export function Login() {
 
   return (
     <div className={classes.root}>
-      {/* <Typography gutterBottom variant='h5' align='center' className={classes.mbText}>Login</Typography> */}
       <img
         src="ximdex_dam_login.png"
         style={{ width: '100%', marginBottom: 30 }}
@@ -97,7 +103,7 @@ export function Login() {
         fullWidth
         color="primary"
         variant="contained"
-        onClick={log}
+        onClick={loginCheck}
         disabled={loading}
       >
         {loading ? <CircularProgress size={24} /> : 'LOGIN'}

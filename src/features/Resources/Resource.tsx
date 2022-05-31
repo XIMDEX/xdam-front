@@ -80,13 +80,13 @@ export function Resource( { data, listMode, resourceType } ) {
 
     async function remove_endpoint(data) {
         let res = await MainService().removeResource(data.id)
-        if(res.ok) {
-            let updatedUser = await MainService().getUser();
-            dispatch(setUser(updatedUser));
-            dispatch(reloadCatalogue());
-            return true
-        }
-        throw new Error('Error 1.1: On remove resource')
+        // if(res.ok) {
+        //     let updatedUser = await MainService().getUser();
+        //     dispatch(setUser(updatedUser));
+        //     dispatch(reloadCatalogue());
+        //     return true
+        // }
+        // throw new Error('Error 1.1: On remove resource')
     }
 
     async function remove (e) {

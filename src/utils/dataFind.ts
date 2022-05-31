@@ -1,4 +1,5 @@
 export const getOrgData = (user, oid) => {
+    console.log(user, oid);
     let org = user.data.organizations.find(organization => organization.id == oid);
     return org;    
 }

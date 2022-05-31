@@ -1,69 +1,47 @@
 import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { selectOrganization, setOrganization, setFacetsQuery } from '../../../slices/organizationSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectOrganization, setOrganization} from '../../../slices/organizationSlice';
 import MainService from '../../../api/service';
-import { setResourcesLoading } from '../../../appSlice';
 import { Dropdown } from 'semantic-ui-react'
 
-export default function OrganizationSwitch( { organizations, user } ) {
-  const [selected, setSelected] = React.useState(null);
-  
-  const organization = useSelector(selectOrganization);
-  const dispatch = useDispatch();
-  
-  const switchOrg = async (evt, data) => {
-    const oid = data.value
-    let org = user.data.organizations.find(x => x.id === oid);
-    let col = org.collections[0];
-    /*SET WORKSPACE. AND SWITCH ORG NOT USED YET
-    let wsp = org.workspaces.find(x => x.type === 'corporate');
-    if (wsp === undefined) {
-        wsp = org.workspaces.find(x => x.type === 'public');
-        if (wsp === undefined) {
-            // setErrors(['Error ocurred selecting default organization workspace'])
-            throw new Error('Error ocurred selecting default organization workspace')
+export default function OrganizationSwitch({ switchOrganizationId }) {
+    const [organizations, setOrganizations] = React.useState([]);
+    const dispatch = useDispatch();
+    
+    const organization = useSelector(selectOrganization);
+
+    const changeOrganization = (_, data) => {
+        switchOrganizationId(data.value);
+        dispatch(setOrganization(data.value));
+    };
+
+    useEffect(() => {
+
+        const obtainOrganizations = async () => {
+            const response = await MainService().organizations().getOrganizations();
+            const organizations = await response.json();
+            setOrganizations(organizations.map(organization => ({
+                key: organization.id,
+                value: organization.id,
+                text: organization.name
+            })));
+
+            if (organization && organizations.find(option => option.value === organization)) {
+                setOrganization(organization);
+            }
         }
-    }
+        
+        obtainOrganizations();
+    }, [])
 
-    const res = await MainService().setWorkspace(wsp.id)
-
-    if (res.data['selected workspace']) {
-        setSelected(org.name);
-        dispatch(setOrganization({oid: oid, cid: col.id}))
-        dispatch(setFacetsQuery({}))
-        dispatch(setResourcesLoading(true))
-    } else {
-        //setErrors(['Error changing organization'])
-        throw new Error('Error changing organization')
-    }
-    */
-    return;
-  };
-
-  useEffect(() => {
-    let org = user.data.organizations.find(x => x.id === organization);
-    setSelected(org.name);
-  }, [])
-
-  return (
-    <>
+    return (
         <Dropdown
-            text={selected}
-            // icon='users'
+            selection
             floating
-            // labeled
             button
-            // className='icon'
-        >
-            <Dropdown.Menu>
-                {/* <Dropdown.Header icon='users' content='Filter by tag' /> */}
-                {
-                    Object.keys(organizations).map((key, ix) => (
-                        <Dropdown.Item onClick={switchOrg} key={ix} disabled={organizations[key].id == organization} value={organizations[key].id}>{key}</Dropdown.Item>
-                    ))
-                }
-            </Dropdown.Menu>
-        </Dropdown>
-    </>
-  );
+            defaultValue={organizations[0]?.value}
+            options={organizations}
+            onChange={changeOrganization}
+        />
+    );
 }

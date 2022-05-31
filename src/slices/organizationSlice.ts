@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../app/store';
 
 interface UserState {
-  organization: null|number,
+  organization: null|string,
   collection: null|number,
   query: Record<any, any>,
   facets: null|Record<any, any>
@@ -37,8 +37,8 @@ export const organizationSlice = createSlice({
       state.collection = payload;
     },
     setOrganization: (state, { payload } ) => {
-      state.organization = payload.oid;
-      state.collection = payload.cid
+      state.organization = payload;
+      // state.collection = payload.cid
     }
   },
 });

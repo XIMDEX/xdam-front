@@ -1,28 +1,27 @@
 import { Cookies } from 'react-cookie';
-import { API_BASE_URL, XTAGS_API_BASE_URL } from '../constants';
+import { API_BASE_URL, XTAGS_API_BASE_URL, XDIR_URL, XDAM_V2_URL } from '../constants';
 
 const api = () => {
     let cookies = new Cookies();
     let baseUrl = API_BASE_URL;
+    const xdamV2 = XDAM_V2_URL;
+    let authUrl = XDIR_URL;
     let baseUrlXTags = XTAGS_API_BASE_URL; 
     let mapper = {
         baseUrl: baseUrl,
+        authUrl: XDIR_URL,
         auth: cookies.get('JWT') ? 'Bearer ' + cookies.get('JWT') : null,
         login: {    
             method: 'POST',   
-            url: baseUrl + '/auth/login'
+            url: authUrl + '/login-check'
         },
         logout: {    
             method: 'POST',   
             url: baseUrl + '/user/logout'
         },
-        getUser: {    
-            method: 'GET',   
-            url: baseUrl + '/user/me'
-        },
         getSchemas: {    
             method: 'GET',   
-            url: baseUrl + '/resourcesSchema'
+            url: xdamV2 + '/resourcesSchema'
         },
         getLomesSchema: {    
             method: 'GET',   
