@@ -12,7 +12,7 @@ const ResourcesPagination = ({pagination}) => {
         })
     }
 
-    if(pagination.last_page === query.page) {
+    if (!pagination || pagination.last_page === query.page) {
         return <></>;
     }
 

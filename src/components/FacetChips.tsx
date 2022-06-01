@@ -6,7 +6,7 @@ const FacetChips = ({ facets }) => {
     if(!facets) {
         return <></>;
     }
-
+    return <></>;
     return (
         facets
             .filter((facet: any) => Object.values(facet.values).some((value: any) => value.selected))

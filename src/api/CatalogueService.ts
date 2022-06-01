@@ -6,7 +6,8 @@ type TokenProvider = () => string
 interface catalogueOptions {
     page: number, 
     query: string,
-    limit: number
+    limit: number,
+    facets?: Record<any, any>
 }
 
 export default class CatalogueService {
@@ -21,6 +22,21 @@ export default class CatalogueService {
             'Content-Type': 'application/json',
             Authorization: this.tokenProvider()
         }
+    }
+
+    private serializeFacetsToUrlQuery(facets) {
+        
+        const entries = Object.entries(facets);
+
+        return entries
+                .map((a: [string, string[]]): any => {
+
+                    return a[1]
+                        .map(value => `facets[${a[0]}][]=${value}`)
+                        .join('&')
+                }).join('&');
+
+
     }
 
     private async expectOkResponse(request: Promise<Response>): Promise<Response> {
@@ -38,8 +54,10 @@ export default class CatalogueService {
             headers: this.authorizedRequestHeaders()
         }
 
+        const facetsQuery = this.serializeFacetsToUrlQuery(options.facets);
+
         const request = fetch(
-            `${XDAM_V2_URL}/catalogue/${collectionId}?page=${options.page}&search=${options.query}&limit=${options.limit || 48}`,
+            `${XDAM_V2_URL}/catalogue/${collectionId}?page=${options.page}&search=${options.query}&limit=${options.limit || 48}&${facetsQuery}`,
             init
         );
 

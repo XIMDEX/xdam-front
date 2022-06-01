@@ -27,27 +27,47 @@ const useStyles = makeStyles((theme) => {
     }
 });
 
+interface Catalogue {
+    data: any,
+    facets: any,
+    per_page: any,
+    last_page: any,
+    next_page: any,
+    prev_page: any,
+    total: any
+}
+
+interface Facet {
+    key: string,
+    label: string,
+    values: { [x: string]: any },
+}
+
 export const Home = () => {
     const classes = useStyles();
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const facetsQuery = useSelector(selectFacetsQuery);
 
-    const [catalogue, setCatalogue] = useState({});
+    const [catalogue, setCatalogue] = useState(true);
+    const [resources, setResources] = useState([]);
+    const [facets, setFacets] = useState<Facet[]>([]);
+    const [pagination, setPagination] = useState(null);
 
     const [query, dispatch] = useReducer(
         resourceQueryReducers,
         {
             organizationId: null,
             collection: null,
+            facets: [],
             search: '',
             limit: 48,
             page: 1
         }
         );
 
-    const clearAllFilters = () => {
+    const clearFacets = () => {
         dispatch({
-            type: QueryActions.ClearFilters
+            type: QueryActions.ClearFacets
         })
     }
 
@@ -64,18 +84,41 @@ export const Home = () => {
 
     useEffect(() => {
         const getCatalogue =async (collectionId: number) => {
-            const { page, search, limit } = query;
+            const { page, search, limit, facets } = query;
             
             const reponse = await MainService().catalogue().getCatalogue(
                 collectionId,
                 {
                     page,
                     query: search,
-                    limit
+                    limit,
+                    facets
                 });
 
             const json = await reponse.json();
-            setCatalogue(json)
+            setResources(json.data);
+            
+            const pagination = {
+                perPage: json.per_page,
+                lastPage: json.last_page,
+                nextPage: json.next_page,
+                prevPage: json.prev_page,
+                total: json.total
+            };
+            
+            setPagination(pagination);
+            // if(facets.length >= 0) {
+            //     const f = json.facets.forEach(facet => {
+            //         delete facet.values;
+            //     });
+            //     setFacets(f);
+            // }
+
+            console.log(json.facets);
+            setFacets(json.facets);
+            
+
+            // setCatalogue(json);
         }
 
         if (!query.collection)
@@ -99,18 +142,17 @@ export const Home = () => {
                         </button>
                     </Grid>
                     {!isEmpty(facetsQuery) ? (
-                        <Button color="primary" style={{ marginRight: 27 }} variant='outlined' onClick={clearAllFilters} className={classes.clearAllFilters}>
+                        <Button color="primary" style={{ marginRight: 27 }} variant='outlined' onClick={clearFacets} className={classes.clearAllFilters}>
                             Clear all filters
                         </Button>
                     ) : null}
-                    {(query.collection && query.collection.id && query.organizationId) ? (
-                        <Sidebar
-                            collection={query.collection.id}
-                            organization={query.organizationId} />
+                    {(catalogue && query.collection && query.collection.id && query.organizationId) ? (
+                        <Sidebar facets={facets}/>
                     ) : ''}
                 </div>
                 <div style={{ marginTop: 4 }} className={!sidebarOpen ? 'RCFullWidth' : 'RCWithSidear'} id='main-r-c'>
-                    <Resources collection={query.collection} catalogue={catalogue} />
+                    { catalogue ? 
+                        <Resources collection={query.collection} pagination={pagination} facets={facets} resources={resources} /> : '' }
                 </div>
             </div>
         </ResourceQueryContex.Provider>

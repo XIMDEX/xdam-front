@@ -6,7 +6,11 @@ export enum QueryActions {
     UpdateSearch,
     UpdateLimit,
     UpdatePage,
-    ClearFilters
+    ClearFacets,
+    UpdateFacets,
+    PushFacet,
+    PopFacet,
+    OverrideFacet,
 }
 
 export interface ResourceQuery {
@@ -15,10 +19,10 @@ export interface ResourceQuery {
     search: string,
     limit: number,
     page: number,
+    facets: any
 }
 
 export function resourceQueryReducers(query: ResourceQuery, action: { type: QueryActions, payload?: any }): ResourceQuery {
-    // debugger;
     switch (action.type) {
         case QueryActions.UpdataCollection:
             return {
@@ -45,11 +49,53 @@ export function resourceQueryReducers(query: ResourceQuery, action: { type: Quer
                 ...query,
                 page: action.payload
             }
-        case QueryActions.ClearFilters:
+        case QueryActions.ClearFacets:
             return {
                 ...query,
-                search: ''
+                facets: {}
             }
+        case QueryActions.UpdateFacets:
+            return {
+                ...query,
+                facets: action.payload
+            }
+        case QueryActions.PushFacet:
+
+            const facet = query.facets[action.payload.key];
+
+
+            const values = facet
+                ? [...facet, action.payload.value]
+                : [action.payload.value]
+
+             return {
+                ...query,
+                facets: {
+                    ...query.facets,
+                    [action.payload.key]: values
+                }
+            }
+        case QueryActions.PopFacet:
+
+            const facets = { ...query.facets };
+
+            Object.keys(query.facets)
+                .filter(key => key === action.payload.key)
+                .forEach(key => facets[key].pop(action.payload.value));
+          
+            return {
+                ...query,
+                facets
+            }
+        case QueryActions.OverrideFacet:
+            return {
+                ...query,
+                facets: {
+                    ...query.facets,
+                    [action.payload.key]: action.payload.value
+                }
+            }
+
         default:
             const exhaustiveCheck: never = action.type;
             throw new Error(exhaustiveCheck);
@@ -65,7 +111,8 @@ export const ResourceQueryContex = React.createContext<{
         collection: null,
         search: '',
         limit: 48,
-        page: 1
+        page: 1,
+        facets: null
     },
     dispatch: () => null
 });

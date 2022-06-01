@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { Grid, Button, IconButton, Typography, TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -11,6 +11,7 @@ import { Icon } from 'semantic-ui-react';
 import EFacetNameMapping from './EFacetNameMapping';
 import { mapping, EFilterTypes } from './EMapFacetKeysToFilterType';
 import RangeFilter from './RangeFilter/RangeFilter';
+import { QueryActions, ResourceQueryContex } from '../../../reducers/ResourceQueryReducer';
 
 const useStyles = makeStyles((theme) => ({
     sidebarRoot: {
@@ -56,24 +57,23 @@ const useStyles = makeStyles((theme) => ({
   }
 ));
 
-export function FacetCard({ facet, fixed, resources, collection, organization, facetsQuery, _user }) { 
+export function FacetCard({ facet }) {
     const classes = useStyles()
     const values = facet.values ?? {}
-    const dispatch = useDispatch()
-    const [facetValues, setFacetValues] = useState(values)
+    // const dispatch = useDispatch()
     const [errors, setErrors] = useState([])
     const [cardOpen, setCardOpen] = useState(facet.key === COLLECTION || facet.key === ORGANIZATION ? false : true)
-    const selectedOrg = organization
-    const selectedColl = collection
     const [search, setSearch] = useState('')
-    const currentFacets = JSON.parse(JSON.stringify(facetsQuery));
+    const { query, dispatch } = useContext(ResourceQueryContex);
+    const currentFacets = facet;
     const cQuery = useSelector(selectQuery);
-    
-    useEffect( () => {
-        if (search === '') {
-            setFacetValues(facet.values)
-        }
-    }, [collection, facetsQuery, organization, resources])
+
+    const [, reload] = useState(0);
+
+    useEffect(() => {
+            console.log('rel');
+            reload(Date.now());
+    }, [facet])
     
     function onFilterChange(e) {
         setSearch(e.target.value);
@@ -81,8 +81,9 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
             
             return _.includes(key.toLowerCase(), e.target.value.toLowerCase());
         });
-        setFacetValues(result)
+        // setFacetValues(result)
     }
+
     async function filterRadio (evt)
     {
         evt.target.checked = true;
@@ -99,9 +100,12 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
             ...cQuery
         };
         nQ.page = 1
-        dispatch(setResourcesLoading(true))
-        dispatch(setQuery(nQ));
-        dispatch(setFacetsQuery(currentFacets));
+        // dispatch(setResourcesLoading(true))
+        dispatch({
+            type: QueryActions.PopFacet,
+            payload: { key: facet.key, value: facetValue }
+        });
+        // dispatch(setFacetsQuery(currentFacets));
 
     }
     async function filterCheck (evt)
@@ -136,9 +140,13 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
             ...cQuery
         };
         nQ.page = 1
-        dispatch(setResourcesLoading(true))
-        dispatch(setQuery(nQ));
-        dispatch(setFacetsQuery(currentFacets))
+        // dispatch(setResourcesLoading(true))
+
+        dispatch({
+            type: checked ? QueryActions.PushFacet : QueryActions.PopFacet,
+            payload: { key: facet.key, value: facetValue }
+        });
+        // dispatch(setFacetsQuery(currentFacets))
     }
 
     function Errors(): any
@@ -150,19 +158,13 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
         )
     }
 
-    function getChecked(toCheck, key): boolean
+    function getChecked(toCheck): boolean
     {
-        let check = Object.keys(currentFacets)
-        let isChecked = false;
-        check.forEach(item => {
-            if (key === item) {
-                if (currentFacets[item].includes(toCheck.toString())) {
-                    isChecked = true;
-                    return;
-                }
-            }
-        })
-        return isChecked;
+        if (query.facets && !Object.keys(query.facets).includes(facet.key)) {
+            return false;
+        }
+
+        return query.facets[facet.key].includes(toCheck);
     }
     
     function clearFilter(evt)
@@ -171,8 +173,8 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
         if (currentFacets.hasOwnProperty(facetKey)) {
             delete currentFacets[facetKey]
         }
-        dispatch(setResourcesLoading(true))
-        dispatch(setFacetsQuery(currentFacets))
+        // dispatch(setResourcesLoading(true))
+        // dispatch(setFacetsQuery(currentFacets))
     }
 
     function toggleCard()
@@ -181,14 +183,7 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
         setCardOpen(toggle)
     }
 
-    function label()
-    {
-        if (facet.key === ORGANIZATION && typeof selectedOrg === 'object') {
-            return selectedOrg.name
-        }
-        if (facet.key === COLLECTION && typeof selectedColl === 'object') {
-            return selectedColl.name
-        }
+    function label() {
 
         if (facet.key in EFacetNameMapping) {
             return EFacetNameMapping[facet.key];
@@ -197,70 +192,63 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
         return facet.label
     }
 
-    function FacetItems( { fixed } ): any {
+
+    function FacetItems(): any {
+        
         if (facet.key === COLLECTION || facet.key === ORGANIZATION ) {
+            
             return (
-                Object.keys(facetValues).map((name, index) => (
-                    <li key={index} style={{listStyleType: "none"}}>
-                        <input type="radio"
-                            name={facet.key} 
-                            value={facetValues[name].id} 
-                            onChange={filterRadio} 
-                            defaultChecked={facet.key === COLLECTION ? (collection.id === facetValues[name].id) : (organization.id === facetValues[name].id)}
-                            id={(facet.key +'-'+ name +'-'+facetValues[name].id).replace(/ /g,'--')}
-                        /> 
-                        <label htmlFor={(facet.key +'-'+ name +'-'+facetValues[name].id).replace(/ /g,'--')}>
-                            <span>{ name.replace('collection', '') } <strong>({facetValues[name].count})</strong> </span>
-                        </label>
-                    </li>
+                Object.keys(facet.values).map((name, index) => {
+                    return (
+                        <li key={index} style={{ listStyleType: "none" }}>
+                            <input type="radio"
+                                name={facet.key}
+                                value={facet.values[name].id}
+                                onChange={filterRadio}
+                                defaultChecked={facet.key === COLLECTION ? (query.collection.id === facet.values[name].id) : (query.organizationId === facet.values[name].id)}
+                                id={(facet.key + '-' + name + '-' + facet.values[name].id).replace(/ /g, '--')}
+                            />
+                            <label htmlFor={(facet.key + '-' + name + '-' + facet.values[name].id).replace(/ /g, '--')}>
+                                <span>{name.replace('collection', '')} <strong>({facet.values[name].count})</strong> </span>
+                            </label>
+                        </li>
                     )
+                }
                 )
             )
         }
-        
-        if (facetValues) {
-            switch (facet.key) {
-                // case 'cost':
-                    
-                //     var comp = <RangeFilter values={facetValues} fkey={facet.key}/>
-                //     return comp
-                //     break;
-            
-                default:
-                    return (
-                        Object.keys(facetValues).map((name, index) => (
-                            //switch lines to hidden facets values in zero
-                            // <li key={index} style={{listStyleType: "none"}} className={facetValues[name].count < 1 ? classes.hidden : null}>
-                            <li key={index} style={{listStyleType: "none"}}>
-                                <input 
-                                    type={facetValues[name].radio ? 'radio' : 'checkbox'} 
-                                    name={facet.key}
-                                    // disabled={facetValues[name].count < 1}
-                                    value={fixed ? facetValues[name].id : name} 
-                                    onChange={facetValues[name].radio ? filterRadio : filterCheck}
-                                    checked={getChecked(fixed ? facetValues[name].id : name, facet.key)} 
-                                    id={(facet.key +'-'+ name +'-'+facetValues[name].id).replace(/ /g,'--')}
-                                /> 
-                                <label htmlFor={(facet.key +'-'+ name +'-'+facetValues[name].id).replace(/ /g,'--')}>
-                                    <span>{ name } <strong>({ facetValues[name].count })</strong></span>
-                                </label>
-                                
-                            </li>
-                            )
-                        )
-                    )
-                    break;
-            }
-        } else {
-            return (
-                <></>
-            )
+
+        if (!facet.values) {
+            return (<></>);
         }
+        
+        return (
+            Object.keys(facet.values).map((name, index) => {
+                return (
+                    //switch lines to hidden facets values in zero
+                    // <li key={index} style={{listStyleType: "none"}} className={facet.values[name].count < 1 ? classes.hidden : null}>
+                    <li key={index} style={{ listStyleType: "none" }}>
+                        <input
+                            type={facet.values[name].radio ? 'radio' : 'checkbox'}
+                            name={facet.key}
+                            // disabled={facet.values[name].count < 1}
+                            value={name}
+                            onChange={facet.values[name].radio ? filterRadio : filterCheck}
+                            checked={getChecked(name)}
+                            id={(facet.key + '-' + name + '-' + facet.values[name].id).replace(/ /g, '--')}
+                        />
+                        <label htmlFor={(facet.key + '-' + name + '-' + facet.values[name].id).replace(/ /g, '--')}>
+                            <span>{name} <strong>({facet.values[name].count})</strong></span>
+                        </label>
+
+                    </li>
+                )
+            }
+            )
+        )
         
     }
     
-
-
     return (
         
         <Grid container className={`${classes.sidebarRoot} ${cardOpen ? 'cardOpen' : null} facetCard facets-context`} >
@@ -270,26 +258,26 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
                 </Grid>
                 {/* Facet title */}
                 <Grid container>
-                    <Grid item sm={!fixed && currentFacets.hasOwnProperty(facet.key) ? 11 : 12}>
-                        <Button aria-label="facet-title" 
-                            onClick={toggleCard} 
-                            fullWidth 
-                            endIcon={cardOpen ? (<Icon name='minus' size='small'/>) : (<Icon name='plus' size='small' />)}
+                    <Grid item sm={currentFacets.hasOwnProperty(facet.key) ? 11 : 12}>
+                        <Button aria-label="facet-title"
+                            onClick={toggleCard}
+                            fullWidth
+                            endIcon={cardOpen ? (<Icon name='minus' size='small' />) : (<Icon name='plus' size='small' />)}
                         >
                             <Grid container>
                                 <Grid item sm={12}>
                                     <Typography className={classes.capitalize} align='left' color='primary'>
                                         <strong className={!cardOpen ? 'darkLabel' : 'whiteLabel'}>{label()}</strong>
-                                    </Typography>    
+                                    </Typography>
                                 </Grid>
                             </Grid>
                         </Button>
                     </Grid>
                     {
-                        !fixed && currentFacets.hasOwnProperty(facet.key) ? (
+                        currentFacets.hasOwnProperty(facet.key) ? (
                             <Grid item sm={1}>
                                 <IconButton color='primary' size='small' onClick={clearFilter} className={classes.clearIcon}>
-                                    <ClearIcon color='secondary'/>
+                                    <ClearIcon color='secondary' />
                                 </IconButton>
                             </Grid>
                         ) : null
@@ -297,7 +285,7 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
                 </Grid>
                 <div className={cardOpen ? classes.cardFacet : classes.hidden}>
                     {
-                        Object.keys(facetValues).length > 4 && search === '' ? (
+                        Object.keys(facet.values).length > 4 && search === '' ? (
                         // true ? (
                             <Grid item sm={12}>
                                 <TextField 
@@ -322,9 +310,7 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
                     {/* Facet values */}
                     <Grid item sm={12}>
                     <ul> 
-                        {
-                            organization && collection ? (<FacetItems fixed={fixed}/>) : ''
-                        }
+                        <FacetItems />
                     </ul>
                     </Grid>
                 </div>
