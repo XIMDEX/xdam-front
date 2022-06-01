@@ -1,9 +1,14 @@
 import { LinearProgress, Button, makeStyles } from "@material-ui/core"
-import React, { useState } from "react"
+import { PlaylistAddOutlined } from "@material-ui/icons"
+import React, { useContext, useReducer, useState } from "react"
+import { useEffect } from "react"
 import { useSelector } from "react-redux"
-import { Grid, Icon, Sidebar } from "semantic-ui-react"
+import { Grid, Icon } from "semantic-ui-react"
+import MainService from "../api/service"
 import { Header } from "../features/Layout/Header/Header"
+import Sidebar from "../features/Layout/Sidebar/Sidebar"
 import { Resources } from "../features/Resources/Resources"
+import { QueryActions, ResourceQueryContex, resourceQueryReducers } from "../reducers/ResourceQueryReducer"
 import { selectFacetsQuery } from '../slices/organizationSlice';
 
 
@@ -27,9 +32,24 @@ export const Home = () => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const facetsQuery = useSelector(selectFacetsQuery);
 
-    const [collectionId, setCollectionId] = useState(null);
-    const [organizationId, setOrganizationId] = useState(null);
-    const [searchTerm, setSearchTerm] = useState(null);
+    const [catalogue, setCatalogue] = useState({});
+
+    const [query, dispatch] = useReducer(
+        resourceQueryReducers,
+        {
+            organizationId: null,
+            collection: null,
+            search: '',
+            limit: 48,
+            page: 1
+        }
+        );
+
+    const clearAllFilters = () => {
+        dispatch({
+            type: QueryActions.ClearFilters
+        })
+    }
 
     const isEmpty = (facets: null | Record<any, any>): boolean => {
         if(!facets) return false;
@@ -42,65 +62,57 @@ export const Home = () => {
         setSidebarOpen(toggle)
     }
 
-    const clearAllFilters = () => {
-        let newQuery = {
-            // ...query
-        };
+    useEffect(() => {
+        const getCatalogue =async (collectionId: number) => {
+            const { page, search, limit } = query;
+            
+            const reponse = await MainService().catalogue().getCatalogue(
+                collectionId,
+                {
+                    page,
+                    query: search,
+                    limit
+                });
 
-        newQuery.page = 1;
-        newQuery.search = '';
-        // dispatch(setQuery(newQuery));
+            const json = await reponse.json();
+            setCatalogue(json)
+        }
 
-        // dispatch(setResourcesLoading(true))
-        // dispatch(setFacetsQuery({}))
-    } 
+        if (!query.collection)
+            return;
+
+        getCatalogue(query.collection.id);
+
+    }, [query]);
 
     return (
-        <>
-            <Header
-                updateOrganizationId={setOrganizationId}
-                updateCollectionId={setCollectionId}
-                updateSearchTerm={setSearchTerm}
-            />
-        <div className={!sidebarOpen ? 'sidebarAndResourcesConainerFW' : 'sidebarAndResourcesConainer'}>
-            <div className={!sidebarOpen ? 'sideBarHidden' : 'sideBar'}>
-                <Grid container className='justifyContentBetween mt-2'>
-                    <span className='facets_title mt-2 '>
-                        <strong className={'darkLabel'}>FACETS</strong>
-                    </span>
-                    <button hidden={!sidebarOpen} onClick={toggleSidebar} className='xdam-btn-primary bg-primary float-right btn-round-left btn-half-square toggleFacetsClose'>
-                        <Icon name='angle left' />
-                    </button>
-                </Grid>
-                {!isEmpty(facetsQuery) ? (
-                    <Button color="primary" style={{ marginRight: 27 }} variant='outlined' onClick={clearAllFilters} className={classes.clearAllFilters}>
-                        Clear all filters
-                    </Button>
-                ) : null}
-                    {(collectionId && organizationId) ? (
-                    <Sidebar
-                        collection={collectionId}
-                        organization={organizationId} />
-                ) : ''}
-            </div>
-            <div style={{ marginTop: 4 }} className={!sidebarOpen ? 'RCFullWidth' : 'RCWithSidear'} id='main-r-c'>
-                    <span>
-                        organization: {organizationId}
-                        <br />
-                        collection: {collectionId}
-                    </span>
-
-                    <LinearProgress id='circular-progress' className={'dnone'}></LinearProgress>
-                    {(organizationId && collectionId) ? (
-                        <Resources
-                            sidebarOpen={sidebarOpen}
-                            collection={collectionId}
-                            organization={organizationId}
-                            />
+        <ResourceQueryContex.Provider value={{ query, dispatch }}>
+            <Header/>
+            <div className={!sidebarOpen ? 'sidebarAndResourcesConainerFW' : 'sidebarAndResourcesConainer'}>
+                <div className={!sidebarOpen ? 'sideBarHidden' : 'sideBar'}>
+                    <Grid container className='justifyContentBetween mt-2'>
+                        <span className='facets_title mt-2 '>
+                            <strong className={'darkLabel'}>FACETS</strong>
+                        </span>
+                        <button hidden={!sidebarOpen} onClick={toggleSidebar} className='xdam-btn-primary bg-primary float-right btn-round-left btn-half-square toggleFacetsClose'>
+                            <Icon name='angle left' />
+                        </button>
+                    </Grid>
+                    {!isEmpty(facetsQuery) ? (
+                        <Button color="primary" style={{ marginRight: 27 }} variant='outlined' onClick={clearAllFilters} className={classes.clearAllFilters}>
+                            Clear all filters
+                        </Button>
+                    ) : null}
+                    {(query.collection && query.collection.id && query.organizationId) ? (
+                        <Sidebar
+                            collection={query.collection.id}
+                            organization={query.organizationId} />
                     ) : ''}
-
+                </div>
+                <div style={{ marginTop: 4 }} className={!sidebarOpen ? 'RCFullWidth' : 'RCWithSidear'} id='main-r-c'>
+                    <Resources collection={query.collection} catalogue={catalogue} />
+                </div>
             </div>
-        </div>
-        </>
+        </ResourceQueryContex.Provider>
     );
 }

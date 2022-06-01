@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState, useCallback, useReducer, useContext } from 'react'
 import { Grid, LinearProgress, Container } from '@material-ui/core';
 import { Dropdown, Label } from 'semantic-ui-react'
 import { makeStyles } from '@material-ui/core/styles';
@@ -17,6 +17,14 @@ import { Button as Btn, Icon as Icn } from 'semantic-ui-react';
 import BatchDialog from './Modals/MassiveUpload/BatchDialog';
 import store from '../../app/store';
 import { SelectableGroup, createSelectable } from 'react-selectable';
+import { ResourceQueryContex, resourceQueryReducers } from '../../reducers/ResourceQueryReducer';
+import ToggleView from '../../components/ToggleView';
+import ResourceCreationDropdown from '../../components/ResourceCreationDropdown';
+import LoadingResources from '../../components/LoadingResources';
+import ResourcesPaginationControll from './ResourcesPaginationControll';
+import ResourcesPagination from './ResourcesPagination';
+import FacetChips from '../../components/FacetChips';
+import ResCont from './ResourcesDisplay';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -31,15 +39,6 @@ const useStyles = makeStyles((theme) => ({
 
     paddingRight: 10,
     position: 'relative'
-  },
-  loadingResources: {
-    width: '100%',
-    '& p': {
-      position: 'relative',
-      textAlign: 'center',
-      left: '0',
-      top: '200px'
-    }
   },
   selectedFilters: {
     display: 'inline-flex',
@@ -65,104 +64,38 @@ const useStyles = makeStyles((theme) => ({
 
 
   },
-  listContainer: {
-    marginTop: 15
-  },
-  gridContainer: {
-    marginTop: 15
+  controlls: {
+    width: '100%',
+    display: 'inline-grid',
+    'grid-template-columns': 'auto 250px'
   }
 }
 ));
 
-export function Resources({ collection, organization, sidebarOpen }) {
-  const mainService = MainService();
-  const query = useSelector(selectQuery);
-  const dispatch = useDispatch();
+export function Resources({ collection, catalogue }) {
   const classes = useStyles();
-  // const selectedOrg = getOrgData(_user, organization);
-  // const selectedColl = getCollData(selectedOrg, collection);
-
-  const [selectedColl, setSelectedColl] = useState(null);
-
-  
   
   const facetsQuery = useSelector(selectFacetsQuery);
-  const [localResources, setLocalResources] = useState([]);
   const resourcesLoading = useSelector(selectResourcesLoading);
   const [listMode, setListMode] = useState(false);
   const reload = useSelector(selectCatalogueFlag);
-  const [pagination, setPagination] = useState(null);
+  const pagination = {
+    perPage: catalogue.per_page,
+    lastPage: catalogue.last_page,
+    nextPage: catalogue.next_page,
+    prevPage: catalogue.prev_page,
+    total: catalogue.total
+  };
+
+  const localResources = catalogue.data;
   const currentQuery = useSelector(selectQuery);
   const [openBatch, setOpenBatch] = React.useState(false);
   const [openCreate, setOpenCreate] = React.useState(false);
-  const [selectedKeys, setSelectedKeys] = React.useState([]);
-  const isSelectable = false;
-  const [mainContextAction, setMainContextAction] = useState(null)
+  const [mainContextAction, setMainContextAction] = useState(null);
+  const { query, dispatch } = useContext(ResourceQueryContex);
 
   const collection_id = useSelector(selectCollection);
 
-  useEffect(() => {
-    const obtainCollection = async () => {
-      const collectionData = await (await MainService().collections().getCollections(collection)).json();
-      console.log(collectionData);
-      setSelectedColl(collectionData);
-    }
-
-    obtainCollection();
-  }, []);
-
-
-  useEffect(() => {
-    const obtainsCatalogue = async () => {
-      if (!selectedColl) return;
-      const response = await MainService().catalogue().getCatalogue(selectedColl.id, { page: 1, query: '' });
-      const catalogue = await response.json();
-
-      let pages = {
-        ...catalogue
-      };
-      delete pages.facets;
-      delete pages.data;
-      
-      setPagination(pages);
-
-      dispatch(setResources(catalogue.data));
-      setLocalResources(catalogue.data);
-      dispatch(setResourcesLoading(false));
-      console.log(catalogue);
-    }
-
-    if (selectedColl) obtainsCatalogue();
-  }, [selectedColl]);
-
-
-  function toggleListMode(evt) {
-    var val = evt.target.getAttribute('data-value') === '1' ? true : false;
-    setListMode(val);
-  }
-
-  const fetchCatalogue = async () => {
-    
-    if (selectedColl && typeof selectedColl !== 'undefined') {
-      console.log(selectedColl);
-      // const catalogue = await mainService.getCatalogue(selectedColl.id, '?' + param(query) + (facetsQuery ? '&' + buildFacetsQuery(facetsQuery) : ''));
-      const response = await MainService().catalogue().getCatalogue(selectedColl.id, { page: 1, query: '' });
-      const catalogue = await response.json();
-      // const catalogue = mockup;
-      let pages = {
-        ...catalogue
-      };
-      delete pages.facets;
-      delete pages.data;
-      setPagination(pages);
-      dispatch(setFacets(catalogue.facets));
-      dispatch(setResources(catalogue.data));
-      setLocalResources(catalogue.data);
-      dispatch(setResourcesLoading(false));
-      dispatch(setLoading(false));
-    }
-
-  }
 
   function buildFacetsQuery(f) {
     let q = ''
@@ -224,107 +157,6 @@ export function Resources({ collection, organization, sidebarOpen }) {
   //   dispatch(setFixedFacets([OFF, CFF]))
   // }
 
-  const getSchemas = async () => {
-    const schemas = await MainService().getSchemas();
-    dispatch(setSchemas(schemas));
-  }
-
-  useEffect(() => {
-    fetchCatalogue();
-  }, [collection_id]);
-
-  useEffect(() => {
-    // renderFixedFacets();
-    fetchCatalogue();
-    if (store.getState().app.schemas === null) {
-      //we only need one fetch by session
-      getSchemas();
-    }
-  }, [facetsQuery, collection, organization, reload, query])
-
-  const Chips = ({ data }): any => (
-    Object.keys(data).map(key => (
-      data[key].map((value, ix) => (
-        <Label >
-          {key === WORKPSACES ? (value) : (value === 'true' || value === 'false' ? key + ': ' + value : value)}
-        </Label>
-      ))
-    ))
-  )
-
-  const LoadingResources = (): any => {
-    return (
-      <div className={classes.loadingResources}>
-        <LinearProgress />
-      </div>
-    )
-  }
-
-  const ResourcesNotFound = (): any => {
-    return (
-      <div className={classes.loadingResources}>
-        <p>Resources not found</p>
-      </div>
-    )
-  }
-
-  const changePageLimit = (evt, data): any => {
-
-    dispatch(setResourcesLoading(true))
-
-    let newQuery = {
-      ...query
-    }
-
-    newQuery.limit = data.value;
-
-    dispatch(setQuery(newQuery));
-  }
-
-  const changePage = (page): any => {
-    dispatch(setResourcesLoading(true))
-    let newQuery = {
-      ...query
-    }
-    newQuery.page = page;
-    dispatch(setQuery(newQuery));
-  }
-
-  const PageLimit = () => {
-    const opts = [
-      {
-        key: '12',
-        text: '12',
-        value: 12,
-      },
-      {
-        key: '24',
-        text: '24',
-        value: 24,
-      },
-      {
-        key: '36',
-        text: '36',
-        value: 36,
-      },
-      {
-        key: '48',
-        text: '48',
-        value: 48,
-      }
-    ]
-    return (
-      <Dropdown
-        style={{ minWidth: 40, marginRight: 4 }}
-        onChange={changePageLimit}
-        placeholder={pagination.per_page}
-        selection
-        selectOnBlur={false}
-        defaultValue={pagination.per_page}
-        options={opts}
-      />
-    )
-  }
 
   const OrderBy = () => {
     const opts = [
@@ -366,67 +198,7 @@ export function Resources({ collection, organization, sidebarOpen }) {
     //setSelectedKeys(selectedKeys)
   }
 
-  const ResCont = (): JSX.Element => {
-    const ContainerList = localResources.map((item: any, key) => (
-      <Grid item xs={12} key={key} className='striped'>
-        <Resource data={item} resourceType={selectedColl.resource_type} listMode={listMode} />
-      </Grid>
-    ))
 
-
-    //const R = createSelectable(Resource);
-    
-    // const ContainerGridSelectable = localResources.map((item: any, key) => {
-    //   let selected = selectedKeys.indexOf(item.id) > -1;
-    //   return (
-    //     <Grid key={key} item sm={12} md={3} lg={2} xl={1} style={selected === item.id ? {border: '1px solid red'} : {}}>
-    //       <R key={key} selected={selected} selectableKey={item.id}
-    //         data={item} resourceType={selectedColl.resource_type} listMode={listMode}
-    //       >
-    //         {/* <Resource data={item} resourceType={selectedColl.resource_type} listMode={listMode} /> */}
-    //       </R>
-          
-    //     </Grid>
-    //   )
-    // })
-
-
-    const ContainerGrid = Array.isArray(localResources) 
-      ? localResources.map((item: any, key) => {
-          return (
-            <Grid key={key} item sm={12} md={3} lg={2} xl={1} >
-              <Resource data={item} resourceType={selectedColl.resource_type} listMode={listMode} />
-            </Grid>
-          )
-        })
-      : null
-
-    return (<>
-      {
-        listMode ? (
-          <Grid container className={classes.listContainer}>
-              {ContainerList}
-          </Grid>
-        ) :
-          (
-            // isSelectable ? (
-            //   <SelectableGroup onSelection={handleSelection}>
-            //     <Grid container spacing={1} className={classes.gridContainer}>
-            //         {ContainerGridSelectable}
-            //     </Grid>
-            //   </SelectableGroup>
-            // ) : (
-            //   <Grid container spacing={1} className={classes.gridContainer}>
-            //     {ContainerGrid}
-            //   </Grid>
-            // )
-            <Grid container spacing={1} className={classes.gridContainer}>
-                {ContainerGrid}
-            </Grid>
-          )
-      }
-    </>);
-  }
 
   const newBatch = () => {
     console.log('new batch');
@@ -434,120 +206,98 @@ export function Resources({ collection, organization, sidebarOpen }) {
     setOpenBatch(true);
   }
 
-  const options = [
-    { key: 'batch', icon: 'database', text: 'New batch', value: 'batch', onClick: newBatch },
-  ]
-
   const newResource = () => {
     setMainContextAction('create');
     setOpenCreate(true);
   }
-
-  if (!selectedColl) {
-    return (<span>Loading </span>)
-  }
-
+  
   return (
-    <Grid container justify='flex-start' className={sidebarOpen ? classes.root : classes.rootWithoutSidebar} >
-      <Grid item sm={12}>
-        <Grid container className={resourcesLoading ? classes.disableActionsWhileLoading : ''}>
-          {
-            resourcesLoading ? (
-              <div style={{ opacity: 1, width: '100%', marginBottom: 2 }}>
-                <LoadingResources />
-              </div>)
-              :
-              (<div style={{ opacity: 0, width: '100%', marginBottom: 2 }}>
-                <LoadingResources />
-              </div>)
-          }
+    <div>
+      <LoadingResources loading={resourcesLoading} />
+      <div className={classes.controlls}>
+        <div>
+          <FacetChips facets={catalogue.facets} />
+        </div>
+        <div>
+          <ResourcesPaginationControll pagination={pagination} />
+          <ToggleView setListMode={setListMode} />
+          <ResourceCreationDropdown options={
+            [
+              { key: 'batch', icon: 'database', text: 'New batch', value: 'batch', onClick: newBatch },
+            ]
+          }/>
+        </div>
+      </div>
+      <div>
+          <ResCont 
+            resources={catalogue.data}
+            collection={collection}
+            listMode={listMode}
+          />
+        <ResourcesPagination pagination={pagination} />
+      </div>
+    </div>
+    //   <Grid container justify='flex-start' >
+      
+    //   <Grid item sm={12}>
+    //     <Grid container className={resourcesLoading ? classes.disableActionsWhileLoading : ''}>
 
-          <Grid item sm={6} >
-            {
-              localResources && localResources.length > 0 ? (
-                <>
-                  <Label style={{ marginTop: 10 }}>{pagination.total} Resource{pagination.total > 1 ? 's' : ''} found</Label>
-                  {
-                    currentQuery.search !== '' ? (
-                      // <Label style={{marginTop: 6}}>Searching for "{currentQuery.search}"</Label>
-                      <Label style={{ marginTop: 10 }} >
-                        Searching for "{currentQuery.search}"
-                          <Icn onClick={removeSearch} name='delete' />
-                      </Label>
-                    ) : null
-                  }
-                </>
-              ) : ''
-            }
+    //       {/* <Grid item sm={6} >
+    //         {
+    //           localResources && localResources.length > 0 ? (
+    //             <>
+    //               <Label style={{ marginTop: 10 }}>{pagination.total} Resource{pagination.total > 1 ? 's' : ''} found</Label>
+    //               {
+    //                 currentQuery.search !== '' ? (
+    //                   // <Label style={{marginTop: 6}}>Searching for "{currentQuery.search}"</Label>
+    //                   <Label style={{ marginTop: 10 }} >
+    //                     Searching for "{currentQuery.search}"
+    //                       <Icn onClick={removeSearch} name='delete' />
+    //                   </Label>
+    //                 ) : null
+    //               }
+    //             </>
+    //           ) : ''
+    //         }
 
-          </Grid>
+    //       </Grid> */}
+    //       {
+    //         localResources && localResources.length > 0 ? (
+    //           <Grid container style={{ marginTop: 3 }}>
+    //             <Grid item sm={12} >  </Grid>
+    //           </Grid>) : null
+    //       }
 
-          <Grid item sm={6} style={{ zIndex: 2 }} className={classes.actionBtns} >
-            {
-              localResources && localResources.length > 0 ? (
-                <>
-                  <PageLimit />
-                  {/* <OrderBy /> */}
-                </>
-              ) : ''
-            }
-            <Btn.Group>
-              <Btn toggle icon onClick={toggleListMode} color={listMode ? 'teal' : null} data-value='1' >
-                <Icn name='list layout' data-value='1' />
-              </Btn>
-              <Btn toggle icon onClick={toggleListMode} color={!listMode ? 'teal' : null} data-value='0'>
-                <Icn name='grid layout' data-value='0' />
-              </Btn>
-            </Btn.Group>
-            <Btn.Group color='teal' style={{ marginLeft: 4, borderRadius: '.28571429rem' }}>
-              <Btn onClick={newResource} >{'New ' + selectedColl.resource_type}</Btn>
-              <Dropdown
-                className='button icon'
-                floating
-                options={options}
-                trigger={<></>}
-              />
-            </Btn.Group>
+    //       {
+    //         localResources && localResources.length > 0 ? <ResCont /> : (resourcesLoading ? '' : <ResourcesNotFound />)
+    //       }
 
-          </Grid>
+    //       <Grid container>
+    //         {
+    //           localResources && localResources.length > 0 ? (
+    //             <Pagination
+    //               disabled={resourcesLoading}
+    //               variant="outlined" shape="rounded"
+    //               count={pagination.last_page}
+    //               page={query.page}
+    //               style={{ margin: '15px auto' }} onChange={(event, val) => changePage(val)} />
+    //           ) : ''
+    //         }
 
-          {
-            localResources && localResources.length > 0 ? (
-              <Grid container style={{ marginTop: 3 }}>
-                <Grid item sm={12} > <Chips data={facetsQuery} />  </Grid>
-              </Grid>) : null
-          }
-
-          {
-            localResources && localResources.length > 0 ? <ResCont /> : (resourcesLoading ? '' : <ResourcesNotFound />)
-          }
-
-          <Grid container>
-            {
-              localResources && localResources.length > 0 ? (
-                <Pagination
-                  disabled={resourcesLoading}
-                  variant="outlined" shape="rounded"
-                  count={pagination.last_page}
-                  page={query.page}
-                  style={{ margin: '15px auto' }} onChange={(event, val) => changePage(val)} />
-              ) : ''
-            }
-
-          </Grid>
-        </Grid>
-      </Grid>
-      <Dialogs
-        dialogOpen={openCreate}
-        setDialogOpen={setOpenCreate}
-        resourceType={selectedColl.resource_type}
-        action={mainContextAction}
-      />
-      <BatchDialog
-        open={openBatch}
-        action={mainContextAction}
-        setOpenBatch={setOpenBatch}
-      />
-    </Grid>
+    //       </Grid>
+    //     </Grid>
+    //   </Grid>
+    //   <Dialogs
+    //     dialogOpen={openCreate}
+    //     setDialogOpen={setOpenCreate}
+    //     resourceType={selectedColl.resource_type}
+    //     action={mainContextAction}
+    //   />
+    //   <BatchDialog
+    //     open={openBatch}
+    //     action={mainContextAction}
+    //     setOpenBatch={setOpenBatch}
+    //   />
+    // </Grid>
   );
 }

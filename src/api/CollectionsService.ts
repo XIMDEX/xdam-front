@@ -46,7 +46,7 @@ export default class CollectionsService {
         return this.expectOkResponse(request);
     }
 
-    public getCollections(collectionId: string) {
+    public getCollection(collectionId: number) {
         const init = {
             method: 'GET',
             headers: this.authorizedRequestHeaders()

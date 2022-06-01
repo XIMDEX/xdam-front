@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Link } from "react-router-dom";
+import React, { useContext, useState } from 'react'
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 import { Grid, Typography } from '@material-ui/core';
 import { Dropdown, Image } from 'semantic-ui-react'
@@ -9,6 +9,7 @@ import { setLoading, selectFixedFacets } from '../../../appSlice';
 import { selectQuery } from '../../../slices/organizationSlice';
 import { Search } from '../../Resources/Search';
 import OrganizationSwitch from './OrganizationSwitch';
+import { QueryActions, ResourceQueryContex } from '../../../reducers/ResourceQueryReducer';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -40,9 +41,11 @@ const useStyles = makeStyles((theme) => ({
 
     headerWrapper: {
       width: '100%',
+      height: '82px',
       display: 'flex',
       justifyContent: 'flex-end',
-      padding: '15px'
+      padding: '15px',
+      backgroundColor: '#214f61'
     },
     controlls: {
       display: 'flex',
@@ -54,24 +57,36 @@ const useStyles = makeStyles((theme) => ({
   }
 ));
 
-export function Header({ updateOrganizationId, updateCollectionId, updateSearchTerm }) { 
+export function Header() { 
+  let navigate = useNavigate();
   const classes = useStyles();
-  const dispatch = useDispatch();
-
-  const [organizationId, setOrganizationId] = useState(null);
+  // const dispatch = useDispatch();
+  const { query, dispatch } = useContext(ResourceQueryContex);
+  // const [organizationId, setOrganizationId] = useState(null);
   
   const logout = () => {
     dispatch(setLoading(true))
-    MainService().logout()
+    MainService().logout();
+    navigate('/login');
   }
-  const changeOrganizationId = (organizationId) => {
-    setOrganizationId(organizationId);
-    updateOrganizationId(organizationId);
-  }
+  // const changeOrganizationId = (organizationId) => {
+  //   dispatch({
+  //     type: QueryActionTypes.UpdataOrganizationId,
+  //     payload: organizationId
+  //   });
 
-  const changeCollectionId = (collectionId) => {
-    updateCollectionId(collectionId);
-  }
+  //   // setOrganizationId(organizationId);
+  //   // updateOrganizationId(organizationId);
+  // }
+
+  // const changeCollectionId = (collectionId) => {
+  //   dispatch({
+  //     type: QueryActionTypes.UpdataCollectionId,
+  //     payload: collectionId
+  //   });
+
+  //   // updateCollectionId(collectionId);
+  // }
 
   return (
     <div id="header" className={classes.headerWrapper}>
@@ -80,13 +95,10 @@ export function Header({ updateOrganizationId, updateCollectionId, updateSearchT
       </Link>
 
       <div className={classes.controlls}>
-
-          {
-            <div className={classes.divSearch}>
-            <Search organizationId={organizationId} switchCollection={changeCollectionId} />
-            </div>
-          }
-        <OrganizationSwitch switchOrganizationId={changeOrganizationId} />
+        <div className={classes.divSearch}>
+          <Search />
+        </div>
+        <OrganizationSwitch />
       </div>
 
       <div className={classes.rightHeader}>

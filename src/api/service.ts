@@ -89,7 +89,6 @@ class AppService {
     async logout()
     {
       this.cookies.remove('JWT');
-      window.location.assign('/');
     }
     
     async getSchemas () 

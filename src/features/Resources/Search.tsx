@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
-import { useDispatch, useSelector } from 'react-redux';
-import { setQuery, selectCollection, setCollection, setFacetsQuery, selectQuery, selectOrganization } from '../../slices/organizationSlice';
+import { setQuery } from '../../slices/organizationSlice';
 import { Input, Dropdown } from 'semantic-ui-react'
 
-import { setResourcesLoading } from '../../appSlice';
 import _ from 'lodash'
 import MainService from '../../api/service';
+import { QueryActions, ResourceQueryContex } from '../../reducers/ResourceQueryReducer';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -35,37 +34,56 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export interface Props {
-  currentQuery?: any;
-  collections?: any;
-}
-
-export function Search({ organizationId, switchCollection }) {  
+export function Search() {
+  const { query, dispatch } = useContext(ResourceQueryContex);
   const [collections, setCollections] = useState([]);
   const [defaultValue, setDefaultValue] = useState(null);
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
   const classes = useStyles();
 
   const changeCollection = ((_, data) => {
-    switchCollection(data.value);
-    dispatch(setCollection(data.value));
+    const collectionId = data.value;
+
+    MainService().collections().getCollection(collectionId)
+    .then(response => response.json())
+    .then(collection => {
+      dispatch({
+        type: QueryActions.UpdataCollection,
+        payload: collection
+      });
+    })
+
+
+    // dispatch(setCollection(data.value));
   });
 
-  // const goSearch = () => {
-  //   dispatch(setResourcesLoading(true))
-  //   let newQuery = {
-  //     ...currentQuery
-  //   };
-  //   newQuery.page = 1;
-  //   let cleanSearch = search.replace(/[`~!@#$%^&*()+\;:'"<>\{\}\[\]\\\/]/gi, '');
-  //   newQuery.search = cleanSearch;
-  //   dispatch(setQuery(newQuery))
-  // }
+  const goSearch = () => {
+    // let newQuery = {
+    //   ...currentQuery
+    // };
+    // newQuery.page = 1;
+    // let cleanSearch = search.replace(/[`~!@#$%^&*()+\;:'"<>\{\}\[\]\\\/]/gi, '');
+    // newQuery.search = cleanSearch;
+    // dispatch(setQuery(newQuery))
+  }
+
+  const changeSearch = (event) => {
+    dispatch({
+      type: QueryActions.UpdateSearch,
+      payload: event.target.value
+    })
+  }
+
+  const SeachKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      goSearch()
+    }
+  }
 
   useEffect(() => {
     const obtainCollections = async () => {
-      const response = await MainService().collections().getOrganizationCollections(organizationId);
+      const response = await MainService().collections().getOrganizationCollections(query.organizationId);
       const collections = await response.json();
 
       setCollections(collections.map(collection => (
@@ -77,16 +95,20 @@ export function Search({ organizationId, switchCollection }) {
       )));
 
       setDefaultValue(collections[0].value);
-      dispatch(setQuery({
-        page: 1,
-        search: ''
-      }))
+      // dispatch({
+      //   type: QueryActionTypes.UpdataCollection,
+      //   payload: collections[0].value
+      // })
+      // dispatch(setQuery({
+      //   page: 1,
+      //   search: ''
+      // }))
     }
 
-    if(organizationId) {
+    if (query.organizationId) {
       obtainCollections();
     }
-  }, [organizationId]);
+  }, [query.organizationId]);
 
   return (
     <>
@@ -100,8 +122,8 @@ export function Search({ organizationId, switchCollection }) {
       />
       <Input
         fluid
-        // onKeyDown={}
-        // onChange={}
+        onKeyDown={SeachKeyDown}
+        onChange={changeSearch}
         placeholder='Search...'
         labelPosition='left'
         className={classes.input}

@@ -5,7 +5,8 @@ type TokenProvider = () => string
 
 interface catalogueOptions {
     page: number, 
-    query: string
+    query: string,
+    limit: number
 }
 
 export default class CatalogueService {
@@ -38,7 +39,7 @@ export default class CatalogueService {
         }
 
         const request = fetch(
-            `${XDAM_V2_URL}/catalogue/${collectionId}?page=${options.page}&search=${options.query}`,
+            `${XDAM_V2_URL}/catalogue/${collectionId}?page=${options.page}&search=${options.query}&limit=${options.limit || 48}`,
             init
         );
 

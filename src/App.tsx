@@ -77,6 +77,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <BrowserRouter>
         <Routes>
+          <Route path="/" element={<Navigate to="/home" replace /> } />
           <Route path="login" element={<Login />} />
           <Route path="home" element={
             <RequireAuth>

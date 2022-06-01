@@ -42,9 +42,9 @@ export default function BatchDialog( {open, setOpenBatch, action} ) {
                 headers: {
                     authorization: api().auth,
                 }
-            });
-            console.log(res);
-            if(res.status === 200) {
+            }).catch(console.error);
+            
+            if(res && res.status === 200) {
 
                 setServerConf(res.data);
             }

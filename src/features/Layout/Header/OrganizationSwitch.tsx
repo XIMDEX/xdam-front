@@ -1,18 +1,25 @@
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectOrganization, setOrganization} from '../../../slices/organizationSlice';
 import MainService from '../../../api/service';
 import { Dropdown } from 'semantic-ui-react'
+import { QueryActions, ResourceQueryContex } from '../../../reducers/ResourceQueryReducer';
 
-export default function OrganizationSwitch({ switchOrganizationId }) {
+export default function OrganizationSwitch() {
     const [organizations, setOrganizations] = React.useState([]);
-    const dispatch = useDispatch();
+    const { dispatch } = useContext(ResourceQueryContex);
+
+    // const dispatch = useDispatch();
     
     const organization = useSelector(selectOrganization);
 
     const changeOrganization = (_, data) => {
-        switchOrganizationId(data.value);
-        dispatch(setOrganization(data.value));
+        dispatch({
+            type: QueryActions.UpdataOrganizationId,
+            payload: data.value
+        });
+        // switchOrganizationId(data.value);
+        // dispatch(setOrganization(data.value));
     };
 
     useEffect(() => {
