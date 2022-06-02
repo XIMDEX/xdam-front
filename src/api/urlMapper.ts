@@ -10,6 +10,7 @@ const api = () => {
     let mapper = {
         baseUrl: baseUrl,
         authUrl: XDIR_URL,
+        xdamV2,
         auth: cookies.get('JWT') ? 'Bearer ' + cookies.get('JWT') : null,
         login: {    
             method: 'POST',   
@@ -61,11 +62,11 @@ const api = () => {
         },
         createResource: {    
             method: 'POST',   
-            url: baseUrl + '/resource'
+            url: xdamV2 + '/resource'
         },
         createBatchOfResources: {    
             method: 'POST',   
-            url: baseUrl + '/resource/createBatch'
+            url: xdamV2 + '/resource/createBatch'
         },
         postLomesData: (resource_id) => ({    
             method: 'POST',   

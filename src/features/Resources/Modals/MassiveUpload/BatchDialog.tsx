@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -14,6 +14,7 @@ import api from '../../../../api/urlMapper';
 import MainService from '../../../../api/service';
 import { selectCollection } from '../../../../slices/organizationSlice';
 import axios from 'axios';
+import { ResourceQueryContex } from '../../../../reducers/ResourceQueryReducer';
 
 
 export default function BatchDialog( {open, setOpenBatch, action} ) {
@@ -27,8 +28,8 @@ export default function BatchDialog( {open, setOpenBatch, action} ) {
     const [highlighted, highlightArea] = useState(false);
     const [uploaded, filesUploaded] = useState(false);
     const [errorOnUpload, setErrorOnUpload] = useState(null);
-
-    const collection = useSelector(selectCollection);
+    const { query } = useContext(ResourceQueryContex);
+    const collection = query.collection?.id;
     const dispatch = useDispatch();
     const fileInputRef = useRef(null);
     //const workspaces = useSelector(selectUser).data.selected_org_data.workspaces;
@@ -38,7 +39,7 @@ export default function BatchDialog( {open, setOpenBatch, action} ) {
         console.log('UPDATED')
 
         const get_post_max_size = async () => {
-            let res = await axios.get(api().baseUrl + '/ini_pms', {
+            let res = await axios.get(api().xdamV2 + '/ini_pms', {
                 headers: {
                     authorization: api().auth,
                 }
