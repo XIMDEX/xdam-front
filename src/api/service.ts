@@ -47,15 +47,15 @@ class AppService {
       return this.catalogueService;
     }
 
-    getToken()
-    {
+    getToken() 
+    {      
       return this.cookies.get('JWT') ? 'Bearer ' + this.cookies.get('JWT') : null
     }
 
-    setToken(name: string, value: string, maxAge: number)
+    setToken(name: string, value: string, expiration: number)
     {
       return this.cookies.set(name, value, {
-        maxAge: maxAge
+        expires: new Date(expiration * 1000)
       });
     }
 

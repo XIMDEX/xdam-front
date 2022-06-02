@@ -28,6 +28,8 @@ import { InputText, InputTextArea, CustomToggle, CustomInputText, CustomDropdown
 import LomForm from '../LOM/LomForm';
 import { ResourceLanguage } from './DynamicFormTemplates/ResourceLanguage';
 import { ExtraBookData } from './DynamicFormTemplates/CustomFields/ExtraBookData';
+import { useContext } from 'react';
+import { ResourceQueryContex } from '../../../reducers/ResourceQueryReducer';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -85,7 +87,7 @@ interface IBody {
 
 export default function DynamicForm({ resourceType, action, schema, dataForUpdate = null, handleClose }) {
   const classes = useStyles();
-  let collection_id = useSelector(selectCollection);
+  const { query } = useContext(ResourceQueryContex);
   //let storeFormData = useSelector(selectFormData);
   const dispatch = useDispatch();
   const [previewImage, setPreviewImage] = useState(null);
@@ -211,7 +213,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     let body: IBody = {
       type: setType(),
       data: JSON.stringify(data),
-      collection_id: collection_id.toString()
+      collection_id: query.collection.id.toString()
     }
 
     let theFormData = new FormData();
@@ -329,7 +331,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   }
 
   const updateResourceFromLastCreated = async () => {
-    let lastUpdated = await MainService().getLastResource(collection_id, 'lastCreated');
+    let lastUpdated = await MainService().getLastResource(query.collection.id, 'lastCreated');
     setForm(lastUpdated.data);
     setFillAlert(true);
     triggerReload(!tr);
@@ -338,7 +340,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   }
 
   const updateResourceFromLastUpdated = async () => {
-    let lastUpdated = await MainService().getLastResource(collection_id, 'lastUpdated');
+    let lastUpdated = await MainService().getLastResource(query.collection.id, 'lastUpdated');
     setForm(lastUpdated.data);
     setFillAlert(true);
     triggerReload(!tr);

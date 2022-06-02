@@ -9,17 +9,20 @@ const FacetChips = () => {
     if (!facetsKeys) {
         return <></>;
     }
-    return facetsKeys
+
+    const labels = facetsKeys
         .filter((key) => query.facets[key].length > 0)
         .map((key) => {
             const facet = query.facets[key];
             
             return (
-                <Label style={{textTransform: 'capitalize'}}>
+                <Label style={{textTransform: 'capitalize'}} key={key}>
                     {key}: {facet.join(' ')}
                 </Label>
             )
         })
+
+    return (<>{labels}</>);
 }
 
 export default FacetChips;

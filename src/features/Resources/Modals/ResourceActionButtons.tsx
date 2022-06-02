@@ -49,6 +49,7 @@ function ResourceActionButtons( { resource } ) {
           .filter(action => action !== 'create')
           .map((action, index) => (
             <ResourceActionButton
+              key={index}
               index={index}
               resource={resource}
               action={actions[action]}

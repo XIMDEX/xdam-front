@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { reloadApp } from '../../appSlice';
+import { reloadApp, setSchemas } from '../../appSlice';
 import { Grid, Button } from '@material-ui/core';
 import MainService from '../../api/service';
 import { makeStyles } from '@material-ui/core/styles';
@@ -51,6 +51,10 @@ export const Login = () => {
         setLoginStatus('Login success. Loading user data, please wait.');
 
         setLoading(false);
+
+        MainService().getSchemas()
+          .then((schemas) => dispatch(setSchemas(schemas)));
+
         navigate('/home');
         dispatch(reloadApp());
       })

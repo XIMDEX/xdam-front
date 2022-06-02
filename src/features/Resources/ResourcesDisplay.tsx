@@ -61,7 +61,7 @@ const ResCont = ({ resources, collection, listMode }): JSX.Element => {
                 {
                     resources.map((item: any, key) => (
                         <div key={key} className="element">
-                            <Resource data={item} resourceType={collection?.resource_type} listMode={listMode} />
+                            <Resource data={item} resourceType={collection?.accept} listMode={listMode} />
                         </div>
                     ))
                 }

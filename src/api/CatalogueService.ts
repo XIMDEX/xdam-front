@@ -48,7 +48,6 @@ export default class CatalogueService {
     }
 
     public async getCatalogue(collectionId: number, options: catalogueOptions) {
-        // http://127.0.0.1/projects/xdam/backend/public/index.php/api/v2/catalogue/1?page=1&search=&
         const init = {
             method: 'GET',
             headers: this.authorizedRequestHeaders()

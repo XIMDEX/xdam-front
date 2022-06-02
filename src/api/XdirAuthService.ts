@@ -1,7 +1,7 @@
 import { fromBinaryUUID } from "binary-uuid";
 import { XDIR_URL } from "../constants";
 
-export interface XdirPayload {
+export interface XdirToken {
     id: string,
     name: string,
     surname: string,
@@ -25,7 +25,7 @@ function parse64BasedToken(token: string) {
     return JSON.parse(jsonPayload);
 };
 
-export async function  login({username, password}: {username: string, password: string}): Promise<string> {
+export async function login({username, password}: {username: string, password: string}): Promise<string> {
 
     const response = await fetch(
         `${XDIR_URL}/login-check`,
@@ -47,7 +47,7 @@ export async function  login({username, password}: {username: string, password: 
     return (await response.json()).token;
 }
 
-export function parseJWT(token: string): XdirPayload {
+export function parseJWT(token: string): XdirToken {
     const payload = parse64BasedToken(token);
 
     return {
@@ -62,4 +62,8 @@ export function parseJWT(token: string): XdirPayload {
         roles: payload.roles,
         username: payload.username
     }
+}
+
+export function canIDo(action: string) {
+    
 }

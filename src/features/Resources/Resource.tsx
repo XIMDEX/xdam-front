@@ -4,12 +4,12 @@ import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import MainService from '../../api/service';
 import LazyImage from './LazyImage';
 import ListResource from './ListResource';
-import { useDispatch } from "react-redux";
 import Dialogs from "./Modals/Dialogs";
 import { render } from "../../utils/render";
-
 import { Icon } from 'semantic-ui-react'
 import { MULTIMEDIA } from "../../constants";
+import useCanIDO, { ResourceActions } from "../../hooks/useCanIDo";
+import CanIDo from "../../components/CanIDo";
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -45,7 +45,6 @@ export function Resource( { data, listMode, resourceType } ) {
     const [blured, setBlur] = useState(false)
 
     const preview = render(data)
-
     function truncate(string, length = 150)
     {
         if (typeof string === 'string') {
@@ -115,13 +114,18 @@ export function Resource( { data, listMode, resourceType } ) {
                 </div>
                 <div className="dam-item-actions ">
                     
-                    <button className="xdam-btn-primary bg-primary group" title="Edit" onClick={edit}>
-                        <Icon name='edit' />
-                    </button>
+                    <CanIDo action={ResourceActions.Editresource}>
+                        <button className="xdam-btn-primary bg-primary group" title="Edit" onClick={edit}>
+                            <Icon name='edit' />
+                        </button>
+                    </CanIDo>
+
+                    <CanIDo action={ResourceActions.Deleteresource}>
+                        <button className="xdam-btn-primary bg-primary group" title="Delete"  onClick={remove}>
+                            <Icon name='trash' />
+                        </button>
+                    </CanIDo>
                     
-                    <button className="xdam-btn-primary bg-primary group" title="Delete"  onClick={remove}>
-                        <Icon name='trash' />
-                    </button>
                 </div>
             </div>
         )

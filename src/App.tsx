@@ -11,7 +11,7 @@ import MainService from './api/service'
 import { makeStyles } from '@material-ui/core/styles';
 import { selectCollection, selectOrganization, selectFacetsQuery, selectQuery } from './slices/organizationSlice';
 import _ from 'lodash';
-import { XdirPayload } from './api/XdirAuthService';
+import { XdirToken } from './api/XdirAuthService';
 import { Home } from './pages/Home';
 import { Login } from './features/Login/Login';
 
@@ -40,7 +40,7 @@ function App() {
   let collection_id = useSelector(selectCollection);
   const [initialOrganization, setInitialOrganization] = useState(null);
   const [initialCollection, setInitialCollection] = useState(null);
-  const [localUser, setLocalUser] = useState<XdirPayload>(null);
+  const [localUser, setLocalUser] = useState<XdirToken>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect( () => {

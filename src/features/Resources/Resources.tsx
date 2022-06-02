@@ -12,6 +12,8 @@ import FacetChips from '../../components/FacetChips';
 import ResCont from './ResourcesDisplay';
 import Dialogs from './Modals/Dialogs';
 import BatchDialog from './Modals/MassiveUpload/BatchDialog';
+import CanIDo from '../../components/CanIDo';
+import { ResourceActions } from '../../hooks/useCanIDo';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -119,13 +121,19 @@ export function Resources({ collection, pagination, facets, resources }) {
         <div className={classes.controlls}>
           <ResourcesPaginationControll pagination={pagination} />
           <ToggleView setListMode={setListMode} />
-          <ResourceCreationControll options={
-            [
-              { key: 'batch', icon: 'database', text: 'New batch', value: 'batch', onClick: newBatch },
-            ]
-          }>
-            {collection && <Button onClick={newResource} >{'New ' + collection.accept}</Button>}
-          </ResourceCreationControll>
+          <CanIDo action={ResourceActions.CreateResource}>
+            <ResourceCreationControll options={
+              [
+                { key: 'batch', icon: 'database', text: 'New batch', value: 'batch', onClick: newBatch },
+              ]
+            } >
+              {collection && 
+                <CanIDo action={ResourceActions.CreateResource}>
+                  <Button onClick={newResource} >{'New ' + collection.accept}</Button>
+                </CanIDo>
+              }
+            </ResourceCreationControll>
+          </CanIDo>
         </div>
       </div>
       <div>

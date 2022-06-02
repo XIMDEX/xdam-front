@@ -6,6 +6,8 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Avatar from '@material-ui/core/Avatar';
 import LazyImage from './LazyImage';
 import { Icon } from 'semantic-ui-react';
+import CanIDo from '../../components/CanIDo';
+import { ResourceActions } from '../../hooks/useCanIDo';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -60,13 +62,17 @@ export default function ListResource( props ) {
                 
                 <div className="dam-item-actions in-list">
                     
-                    <button className="xdam-btn-primary btn-rou bg-primary group" title="Edit" onClick={edit}>
-                        <Icon name='edit' />
-                    </button>
+                    <CanIDo action={ResourceActions.Editresource}>
+                        <button className="xdam-btn-primary btn-rou bg-primary group" title="Edit" onClick={edit}>
+                            <Icon name='edit' />
+                        </button>
+                    </CanIDo>
                     
-                    <button className="xdam-btn-primary bg-primary group" title="Delete"  onClick={remove}>
-                        <Icon name='trash' />
-                    </button>
+                    <CanIDo action={ResourceActions.Deleteresource}>
+                        <button className="xdam-btn-primary bg-primary group" title="Delete"  onClick={remove}>
+                            <Icon name='trash' />
+                        </button>
+                    </CanIDo>
                 </div>
             
             </ListItem>

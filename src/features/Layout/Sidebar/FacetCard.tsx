@@ -71,7 +71,6 @@ export function FacetCard({ facet }) {
     const [, reload] = useState(0);
 
     useEffect(() => {
-            console.log('rel');
             reload(Date.now());
     }, [facet])
     

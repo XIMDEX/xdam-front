@@ -50,7 +50,7 @@ export const Home = () => {
             limit: 48,
             page: 1
         }
-        );
+    );
 
     const clearFacets = () => {
         dispatch({

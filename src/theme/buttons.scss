@@ -12,6 +12,13 @@
     color: white;
     text-transform: capitalize;
     cursor: pointer;
+    // &[disabled=""] {
+    //     background-color: lightgrey !important;
+    // }
+    &:disabled {
+        background-color: lighten($primary, 30%) !important;
+        cursor: not-allowed;
+    }
 }
 
 .xdam-btn-secondary {
@@ -24,6 +31,9 @@
 
 .xdam-btn-primary:hover {
     background-color: darken($primary, 5%) !important;
+    &:disabled {
+        background-color: lighten($primary, 20%) !important;
+    }
 }
 
 .xdam-btn-secondary:hover {
