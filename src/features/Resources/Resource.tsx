@@ -1,12 +1,10 @@
 
-import React, { useState, useEffect } from "react";
-import { Grid } from '@material-ui/core';
+import React, { useState } from "react";
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import MainService from '../../api/service';
 import LazyImage from './LazyImage';
 import ListResource from './ListResource';
 import { useDispatch } from "react-redux";
-import { setUser, reloadCatalogue } from "../../appSlice";
 import Dialogs from "./Modals/Dialogs";
 import { render } from "../../utils/render";
 
@@ -41,12 +39,10 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export function Resource( { data, listMode, resourceType } ) { 
     const classes = useStyles();
-    const dispatch = useDispatch(); 
     const [res, setRes] = useState(null)
     const [action, setAction] = useState(null)
     const [dialogOpen, setDialogOpen] = useState(null)
     const [blured, setBlur] = useState(false)
-    const [focusedDom, setFocusedDom] = useState(null)
 
     const preview = render(data)
 

@@ -1,6 +1,5 @@
 import { makeStyles } from "@material-ui/core";
 import React from "react";
-import { Grid } from "semantic-ui-react";
 import { Resource } from "./Resource";
 
 
@@ -18,6 +17,19 @@ const useStyles = makeStyles((theme) => ({
     },
     gridContainer: {
         marginTop: 15
+    },
+    gallery: {
+        display: 'grid',
+        gap: '1rem',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(15rem, 1fr))'
+    },
+    galleryWrapper: {
+        padding: '0 15px'
+    },
+    list: {
+        '& .element:nth-of-type(odd)': {
+            backgroundColor: 'lightgray'
+        }
     }
 }));
 
@@ -41,32 +53,21 @@ const ResCont = ({ resources, collection, listMode }): JSX.Element => {
         return <ResourcesNotFound />
     }
 
-    const ContainerList = resources.map((item: any, key) => (
-        <Grid item xs={12} key={key} className='striped'>
-            <Resource data={item} resourceType={collection?.resource_type} listMode={listMode} />
-        </Grid>
-    ))
+    const style = listMode ? classes.list : classes.gallery;
 
-    const ContainerGrid = resources.map((item: any, key) => (
-        <Grid key={key} item sm={12} md={3} lg={2} xl={1} >
-            <Resource data={item} resourceType={collection.resource_type} listMode={listMode} />
-        </Grid>
-    ))
-
-    return (<>
-        {
-            listMode ? (
-                <Grid container className={classes.listContainer}>
-                    {ContainerList}
-                </Grid>
-            ) :
-                (
-                    <Grid container spacing={1} className={classes.gridContainer}>
-                        {ContainerGrid}
-                    </Grid>
-                )
-        }
-    </>);
+    return (
+        <div className={classes.galleryWrapper}>
+            <div className={style}>
+                {
+                    resources.map((item: any, key) => (
+                        <div key={key} className="element">
+                            <Resource data={item} resourceType={collection?.resource_type} listMode={listMode} />
+                        </div>
+                    ))
+                }
+            </div>
+        </div>
+    );
 }
 
 export default ResCont;

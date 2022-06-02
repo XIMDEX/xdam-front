@@ -1,17 +1,17 @@
-import React, { useState, useContext } from 'react'
-import { Dropdown } from 'semantic-ui-react'
+import React, { useState } from 'react'
+import { Button, Dropdown } from 'semantic-ui-react'
 import { makeStyles } from '@material-ui/core/styles';
 import { useSelector } from 'react-redux';
 import { selectResourcesLoading } from '../../appSlice';
-import { selectQuery } from '../../slices/organizationSlice';
-import { ResourceQueryContex } from '../../reducers/ResourceQueryReducer';
 import ToggleView from '../../components/ToggleView';
-import ResourceCreationDropdown from '../../components/ResourceCreationDropdown';
+import ResourceCreationControll from '../../components/ResourceCreationDropdown';
 import LoadingResources from '../../components/LoadingResources';
 import ResourcesPaginationControll from './ResourcesPaginationControll';
 import ResourcesPagination from './ResourcesPagination';
 import FacetChips from '../../components/FacetChips';
 import ResCont from './ResourcesDisplay';
+import Dialogs from './Modals/Dialogs';
+import BatchDialog from './Modals/MassiveUpload/BatchDialog';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -51,10 +51,15 @@ const useStyles = makeStyles((theme) => ({
 
 
   },
-  controlls: {
+  resourcesHeader: {
     width: '100%',
     display: 'inline-grid',
-    'grid-template-columns': 'auto 250px'
+    'grid-template-columns': 'auto 350px',
+    padding: '0 10px'
+  },
+  controlls: {
+    display: 'flex',
+    justifyContent: 'flex-end'
   }
 }
 ));
@@ -63,25 +68,10 @@ export function Resources({ collection, pagination, facets, resources }) {
   const classes = useStyles();
   
   const resourcesLoading = useSelector(selectResourcesLoading);
-  const [listMode, setListMode] = useState(false);
-
-
-  const currentQuery = useSelector(selectQuery);
+  const [listMode, setListMode] = useState(true);
   const [openBatch, setOpenBatch] = React.useState(false);
   const [openCreate, setOpenCreate] = React.useState(false);
   const [mainContextAction, setMainContextAction] = useState(null);
-  const { query, dispatch } = useContext(ResourceQueryContex);
-
-
-  function buildFacetsQuery(f) {
-    let q = ''
-    Object.keys(f).map(i => {
-      f[i].forEach(v => {
-        q += 'facets[' + i + '][]=' + v + '&'
-      })
-    })
-    return q;
-  }
 
   const OrderBy = () => {
     const opts = [
@@ -110,7 +100,6 @@ export function Resources({ collection, pagination, facets, resources }) {
   }
 
   const newBatch = () => {
-    console.log('new batch');
     setMainContextAction('create');
     setOpenBatch(true);
   }
@@ -123,18 +112,20 @@ export function Resources({ collection, pagination, facets, resources }) {
   return (
     <div>
       <LoadingResources loading={resourcesLoading} />
-      <div className={classes.controlls}>
+      <div className={classes.resourcesHeader}>
         <div>
-          <FacetChips facets={facets} />
+          <FacetChips/>
         </div>
-        <div>
+        <div className={classes.controlls}>
           <ResourcesPaginationControll pagination={pagination} />
           <ToggleView setListMode={setListMode} />
-          <ResourceCreationDropdown options={
+          <ResourceCreationControll options={
             [
               { key: 'batch', icon: 'database', text: 'New batch', value: 'batch', onClick: newBatch },
             ]
-          }/>
+          }>
+            {collection && <Button onClick={newResource} >{'New ' + collection.accept}</Button>}
+          </ResourceCreationControll>
         </div>
       </div>
       <div>
@@ -145,6 +136,17 @@ export function Resources({ collection, pagination, facets, resources }) {
           />
         <ResourcesPagination pagination={pagination} />
       </div>
+      {collection && <Dialogs
+        dialogOpen={openCreate}
+        setDialogOpen={setOpenCreate}
+        resourceType={collection.accept}
+        action={mainContextAction}
+      />}
+      <BatchDialog
+        open={openBatch}
+        action={mainContextAction}
+        setOpenBatch={setOpenBatch}
+      />
     </div>
   );
 }

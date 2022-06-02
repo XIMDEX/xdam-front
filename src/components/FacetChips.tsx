@@ -1,31 +1,25 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Label } from 'semantic-ui-react'
+import { ResourceQueryContex } from '../reducers/ResourceQueryReducer';
 
-const FacetChips = ({ facets }) => {
+const FacetChips = () => {
+    const { query } = useContext(ResourceQueryContex);
+    const facetsKeys = Object.keys(query.facets);
 
-    if(!facets) {
+    if (!facetsKeys) {
         return <></>;
     }
-    return <></>;
-    return (
-        facets
-            .filter((facet: any) => Object.values(facet.values).some((value: any) => value.selected))
-            .map((facet: any) => (
-                <Label >
-                    {Object.values(facet.values).filter((value: any) => value.selected)[0] ?? facet.key}
+    return facetsKeys
+        .filter((key) => query.facets[key].length > 0)
+        .map((key) => {
+            const facet = query.facets[key];
+            
+            return (
+                <Label style={{textTransform: 'capitalize'}}>
+                    {key}: {facet.join(' ')}
                 </Label>
             )
-        )
-    )
+        })
 }
-
-// Object.keys(data).map(key => (
-//   data[key].map((value, ix) => (
-//     <Label >
-//       {key === WORKPSACES ? (value) : (value === 'true' || value === 'false' ? key + ': ' + value : value)}
-//     </Label>
-//   ))
-// ))
-
 
 export default FacetChips;

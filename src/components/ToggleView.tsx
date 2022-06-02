@@ -13,7 +13,7 @@ const ToggleView = ({ setListMode }) => {
 
     return (
         <Button.Group>
-            <Button toggle icon onClick={console.log} color={mode ? 'teal' : null} data-value='1'>
+            <Button toggle icon onClick={toggleListMode} color={mode ? 'teal' : null} data-value='1'>
                 <Icon name='list layout' data-value='1' />
             </Button>
             <Button toggle icon onClick={toggleListMode} color={!mode ? 'teal' : null} data-value='0'>

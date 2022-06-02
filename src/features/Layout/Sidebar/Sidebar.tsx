@@ -1,11 +1,7 @@
-import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux';
+import React, {  } from 'react'
 import { Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { selectFacets, selectFixedFacets, selectResources, selectUser, selectResourcesLoading } from '../../../appSlice';
 import { FacetCard } from './FacetCard';
-import { getOrgData, getCollData } from '../../../utils/dataFind';
-import { selectCollection, selectFacetsQuery, selectOrganization } from '../../../slices/organizationSlice';
 import withWidth from '@material-ui/core/withWidth';
 
 const useStyles = makeStyles((theme) => ({
