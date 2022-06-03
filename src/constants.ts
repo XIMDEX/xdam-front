@@ -48,5 +48,5 @@ export const MAX_BOOK_UNITS = 50;
 export enum bookLanguages {
   en = "english",
   es = "castellano",
-  ca = "catalan"
+  cat = "catalan"
 }

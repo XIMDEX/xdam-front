@@ -318,7 +318,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
       "lang": {
         "ui:widget": ResourceLanguage,
         "ui:options": {
-          opt: ["es", "ca", "en"],
+          opt: ["es", "cat", "en"],
           label: 'Language'
         }
       },
