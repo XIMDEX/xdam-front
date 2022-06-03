@@ -39,15 +39,7 @@ export default class CatalogueService {
 
     }
 
-    private async expectOkResponse(request: Promise<Response>): Promise<Response> {
-        const response = await request;
-        if (!response.ok)
-            throw Error('Request failed');
-
-        return response
-    }
-
-    public async getCatalogue(collectionId: number, options: catalogueOptions) {
+    public async getCatalogue(collectionId: number, options: catalogueOptions): Promise<Response> {
         const init = {
             method: 'GET',
             headers: this.authorizedRequestHeaders()
@@ -55,11 +47,21 @@ export default class CatalogueService {
 
         const facetsQuery = this.serializeFacetsToUrlQuery(options.facets);
 
-        const request = fetch(
+        return fetch(
             `${XDAM_V2_URL}/catalogue/${collectionId}?page=${options.page}&search=${options.query}&limit=${options.limit || 48}&${facetsQuery}`,
             init
         );
+    }
 
-        return this.expectOkResponse(request);
+    public async getResource(collectionId: number, resourceId: string): Promise<Response> {
+        const init = {
+            method: 'GET',
+            headers: this.authorizedRequestHeaders()
+        }
+
+        return fetch(
+            `${XDAM_V2_URL}/catalogue/${collectionId}?facets[id]=${resourceId}`,
+            init
+        );
     }
 }

@@ -1,17 +1,20 @@
+import { useNavigate } from "react-router-dom";
 import MainService from "../api/service";
 import { parseJWT, XdirToken } from "../api/XdirAuthService";
-import { useNavigate } from "react-router-dom";
 
-const useToken = (): XdirToken => {
-    let navigate = useNavigate();
+const useToken = (): XdirToken | null  => {
+    const navigate = useNavigate();
+    const rawToken = MainService().getToken();
 
-    try {
-        const rawToken = MainService().getToken();
-        return parseJWT(rawToken);
-    } catch (error) {
-        console.error(error);
-        navigate("/login", { replace: true });
+    
+    if (!rawToken){ 
+        console.log(rawToken);
+        navigate('/login');
+        return;
     }
+
+    return parseJWT(rawToken);
+
 }
 
 export default useToken;

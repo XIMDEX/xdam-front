@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { selectOrganization, setOrganization} from '../../../slices/organizationSlice';
 import MainService from '../../../api/service';
 import { Dropdown } from 'semantic-ui-react'
@@ -7,10 +7,7 @@ import { QueryActions, ResourceQueryContex } from '../../../reducers/ResourceQue
 
 export default function OrganizationSwitch() {
     const [organizations, setOrganizations] = React.useState([]);
-    const { dispatch } = useContext(ResourceQueryContex);
-
-    // const dispatch = useDispatch();
-    
+    const { dispatch } = useContext(ResourceQueryContex);    
     const organization = useSelector(selectOrganization);
 
     const changeOrganization = (_, data) => {

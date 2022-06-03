@@ -62,6 +62,10 @@ const useStyles = makeStyles((theme) => ({
   controlls: {
     display: 'flex',
     justifyContent: 'flex-end'
+  },
+  chipsWrapper: {
+    display: 'flex',
+    flexWrap: 'wrap',
   }
 }
 ));
@@ -115,25 +119,27 @@ export function Resources({ collection, pagination, facets, resources }) {
     <div>
       <LoadingResources loading={resourcesLoading} />
       <div className={classes.resourcesHeader}>
-        <div>
+        <div className={classes.chipsWrapper}>
           <FacetChips/>
         </div>
         <div className={classes.controlls}>
-          <ResourcesPaginationControll pagination={pagination} />
-          <ToggleView setListMode={setListMode} />
-          <CanIDo action={ResourceActions.CreateResource}>
-            <ResourceCreationControll options={
-              [
-                { key: 'batch', icon: 'database', text: 'New batch', value: 'batch', onClick: newBatch },
-              ]
-            } >
-              {collection && 
-                <CanIDo action={ResourceActions.CreateResource}>
-                  <Button onClick={newResource} >{'New ' + collection.accept}</Button>
-                </CanIDo>
-              }
-            </ResourceCreationControll>
-          </CanIDo>
+          <div>
+            <ResourcesPaginationControll pagination={pagination} />
+            <ToggleView setListMode={setListMode} />
+            <CanIDo action={ResourceActions.CreateResource}>
+              <ResourceCreationControll options={
+                [
+                  { key: 'batch', icon: 'database', text: 'New batch', value: 'batch', onClick: newBatch },
+                ]
+              } >
+                {collection &&
+                  <CanIDo action={ResourceActions.CreateResource}>
+                    <Button onClick={newResource} >{'New ' + collection.accept}</Button>
+                  </CanIDo>
+                }
+              </ResourceCreationControll>
+            </CanIDo>
+          </div>
         </div>
       </div>
       <div>

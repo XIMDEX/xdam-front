@@ -15,8 +15,12 @@ const actions = {
 const useCanIDO = () => {
     const token = useToken();
 
-    return (action: ResourceActions): boolean => {    
+    if(!token)
+        return (action: ResourceActions) => false
+
+    return (action: ResourceActions): boolean => {        
         const rol = actions[action];
+        
         return token.roles.includes(rol);
     }
 

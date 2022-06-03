@@ -16,9 +16,11 @@ const FacetChips = () => {
             const facet = query.facets[key];
             
             return (
-                <Label style={{textTransform: 'capitalize'}} key={key}>
-                    {key}: {facet.join(' ')}
-                </Label>
+                <span style={{margin: '0.2rem'}} key={key}>
+                    <Label style={{textTransform: 'capitalize'}} >
+                        {key}: {facet.join(' ')}
+                    </Label>
+                </span>
             )
         })
 

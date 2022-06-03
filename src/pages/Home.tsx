@@ -7,6 +7,7 @@ import MainService from "../api/service"
 import { Header } from "../features/Layout/Header/Header"
 import Sidebar from "../features/Layout/Sidebar/Sidebar"
 import { Resources } from "../features/Resources/Resources"
+import useAsyncError from "../hooks/useAsyncErrot"
 import { QueryActions, ResourceQueryContex, resourceQueryReducers } from "../reducers/ResourceQueryReducer"
 import { selectFacetsQuery } from '../slices/organizationSlice';
 
@@ -22,6 +23,12 @@ const useStyles = makeStyles((theme) => {
             position: 'absolute',
             top: 12,
             left: 180
+        },
+        facetsHeader: {
+            paddingLeft: '28px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems:'center'
         }
     }
 });
@@ -35,10 +42,10 @@ interface Facet {
 export const Home = () => {
     const classes = useStyles();
     const [sidebarOpen, setSidebarOpen] = useState(true);
-    const facetsQuery = useSelector(selectFacetsQuery);
     const [resources, setResources] = useState([]);
     const [facets, setFacets] = useState<Facet[]>([]);
     const [pagination, setPagination] = useState(null);
+    const throwError = useAsyncError();
 
     const [query, dispatch] = useReducer(
         resourceQueryReducers,
@@ -58,10 +65,14 @@ export const Home = () => {
         })
     }
 
-    const isEmpty = (facets: null | Record<any, any>): boolean => {
-        if(!facets) return false;
+    const thereAreFacetsSelected = (facets): boolean => {
+        if(!facets || facets.length === 0) return false;
 
-        return Object.keys(facets).length > 0;
+        const facetKeys = Object.keys(facets);
+
+        if(!facetKeys || facets.length === 0) return false;
+
+        return facetKeys.some((key) => facets[key].length > 0);
     }
     
     const toggleSidebar = () => {
@@ -73,28 +84,28 @@ export const Home = () => {
         const getCatalogue =async (collectionId: number) => {
             const { page, search, limit, facets } = query;
             
-            const reponse = await MainService().catalogue().getCatalogue(
+            const response = await MainService().catalogue().getCatalogue(
                 collectionId,
                 {
                     page,
                     query: search,
                     limit,
                     facets
-                });
-
-            const json = await reponse.json();
+                })
+                .then(r => r.json())
+                .catch(throwError);
             
             const pagination = {
-                perPage: json.per_page,
-                lastPage: json.last_page,
-                nextPage: json.next_page,
-                prevPage: json.prev_page,
-                total: json.total
+                perPage: response.per_page,
+                lastPage: response.last_page,
+                nextPage: response.next_page,
+                prevPage: response.prev_page,
+                total: response.total
             };
             
-            setResources(json.data);
+            setResources(response.data);
             setPagination(pagination);
-            setFacets(json.facets);
+            setFacets(response.facets);
         }
 
         if (!query.collection)
@@ -109,19 +120,24 @@ export const Home = () => {
             <Header/>
             <div className={!sidebarOpen ? 'sidebarAndResourcesConainerFW' : 'sidebarAndResourcesConainer'}>
                 <div className={!sidebarOpen ? 'sideBarHidden' : 'sideBar'}>
-                    <Grid container className='justifyContentBetween mt-2'>
-                        <span className='facets_title mt-2 '>
-                            <strong className={'darkLabel'}>FACETS</strong>
-                        </span>
+                    <div className="mt-2">
                         <button hidden={!sidebarOpen} onClick={toggleSidebar} className='xdam-btn-primary bg-primary float-right btn-round-left btn-half-square toggleFacetsClose'>
                             <Icon name='angle left' />
                         </button>
+                        <div className={classes.facetsHeader}>
+                            <span className='mt-2 '>
+                                <strong className={'darkLabel'}>FACETS</strong>
+                            </span>
+                            {thereAreFacetsSelected(query.facets) ? (
+                                <Button color="primary" style={{ marginRight: 10 }} variant='outlined' onClick={clearFacets} >
+                                    Clear all filters
+                                </Button>
+                            ) : null}
+                        </div>
+                        
+                    </div>
+                    <Grid container className='justifyContentBetween mt-2'>
                     </Grid>
-                    {!isEmpty(facetsQuery) ? (
-                        <Button color="primary" style={{ marginRight: 27 }} variant='outlined' onClick={clearFacets} className={classes.clearAllFilters}>
-                            Clear all filters
-                        </Button>
-                    ) : null}
                     {(query.collection && query.collection.id && query.organizationId) ? (
                         <Sidebar facets={facets}/>
                     ) : ''}

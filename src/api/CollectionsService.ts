@@ -24,26 +24,16 @@ export default class CollectionsService {
         }
     }
 
-    private async expectOkResponse(request: Promise<Response>): Promise<Response> {
-        const response = await request;
-        if (!response.ok)
-            throw Error('Request failed');
-
-        return response
-    }
-
     public getOrganizationCollections(organizationId: string) {
         const init = {
             method: 'GET',
             headers: this.authorizedRequestHeaders()
         }
 
-        const request = fetch(
+        return fetch(
             `${XDAM_V2_URL}/organization/${organizationId}/collections`,
             init
         );
-
-        return this.expectOkResponse(request);
     }
 
     public getCollection(collectionId: number) {
@@ -52,11 +42,9 @@ export default class CollectionsService {
             headers: this.authorizedRequestHeaders()
         }
 
-        const request = fetch(
+        return fetch(
             `${XDAM_V2_URL}/collection/${collectionId}`,
             init
         );
-
-        return this.expectOkResponse(request);
     }
 }

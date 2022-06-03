@@ -7,6 +7,7 @@ import CollectionsService from './CollectionsService';
 import CatalogueService from './CatalogueService';
 const streamSaver = require('streamsaver')
 
+
 class AppService {
     /**
      * Dict containing options for using with the http client

@@ -24,11 +24,12 @@ const useStyles = makeStyles((theme) => ({
         gridTemplateColumns: 'repeat(auto-fill, minmax(15rem, 1fr))'
     },
     galleryWrapper: {
-        padding: '0 15px'
+        marginTop: '10px',
+        padding: '0 10px'
     },
     list: {
         '& .element:nth-of-type(odd)': {
-            backgroundColor: 'lightgray'
+            backgroundColor: '#e8e8e8'
         }
     }
 }));

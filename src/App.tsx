@@ -2,14 +2,14 @@ import './App.css';
 import 'semantic-ui-css/semantic.min.css'
 import './theme/main.scss';
 import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { selectUser, selectReloadApp } from './appSlice';
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { useSelector } from 'react-redux';
+import { selectReloadApp } from './appSlice';
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { ThemeProvider } from '@material-ui/core/styles';
 import theme from './theme'
 import MainService from './api/service'
 import { makeStyles } from '@material-ui/core/styles';
-import { selectCollection, selectOrganization, selectFacetsQuery, selectQuery } from './slices/organizationSlice';
+import { selectCollection, selectOrganization, selectFacetsQuery } from './slices/organizationSlice';
 import _ from 'lodash';
 import { XdirToken } from './api/XdirAuthService';
 import { Home } from './pages/Home';
@@ -35,13 +35,23 @@ function App() {
   const reloadApp = useSelector(selectReloadApp);
   const mainService = MainService();
   const facetsQuery = useSelector(selectFacetsQuery);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
   let organization_id = useSelector(selectOrganization);
   let collection_id = useSelector(selectCollection);
   const [initialOrganization, setInitialOrganization] = useState(null);
   const [initialCollection, setInitialCollection] = useState(null);
   const [localUser, setLocalUser] = useState<XdirToken>(null);
   const [loading, setLoading] = useState(true);
+  const [forceLoginPopup, setForceLoginPopup] = useState(false);
+
+  const RequireAuth = ({ children }: { children: JSX.Element }) => {
+    const token = MainService().getToken();
+
+    if(!token) {
+      return <Navigate to='/login' />
+    }
+    
+    return children;
+  }
 
   useEffect( () => {
     const loadLoggedUserInfo = async () => {
@@ -75,30 +85,20 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Navigate to="/home" replace /> } />
-          <Route path="login" element={<Login />} />
-          <Route path="home" element={
-            <RequireAuth>
-              <Home />
-            </RequireAuth>
-          } />
-        </Routes>
-      </BrowserRouter>
+
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Navigate to="/home" replace /> } />
+            <Route path="login" element={<Login />} />
+            <Route path="home" element={
+              <RequireAuth>
+                <Home />
+              </RequireAuth>
+            } />
+          </Routes>
+        </BrowserRouter>
     </ThemeProvider>        
   )
 }
 
 export default App;
-
-function RequireAuth({ children }: { children: JSX.Element }) {
-
-  const token = MainService().getToken();
-
-  if (!token) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return children;
-}

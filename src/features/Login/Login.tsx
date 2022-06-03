@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { reloadApp, setSchemas } from '../../appSlice';
 import { Grid, Button } from '@material-ui/core';
@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const Login = () => {
-  let navigate = useNavigate();
+  const navigate = useNavigate();
   const classes = useStyles();
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
@@ -55,8 +55,9 @@ export const Login = () => {
         MainService().getSchemas()
           .then((schemas) => dispatch(setSchemas(schemas)));
 
-        navigate('/home');
         dispatch(reloadApp());
+
+        navigate('/home');
       })
       .catch(error => {
         setLoginStatus(error);

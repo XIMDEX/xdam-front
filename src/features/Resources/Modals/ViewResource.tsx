@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   Grid, Card
 } from '@material-ui/core';
@@ -13,6 +13,7 @@ import { useSelector } from 'react-redux';
 import { API_BASE_URL } from '../../../constants';
 import { selectCollection } from '../../../slices/organizationSlice';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
+import { ResourceQueryContex } from '../../../reducers/ResourceQueryReducer';
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -45,7 +46,8 @@ export default function ViewResource( { resData } ) {
     const { id } = resData;
     const [resourceData, setResourceData] = useState(null)
     const [resourceDataFacet, setResourceDataFacet] = useState(null)
-    const coll = useSelector(selectCollection);
+    const { query } = useContext(ResourceQueryContex);
+    const coll = query.collection.id;
 
     useEffect(() => {
         const getResourceData = async () => {
@@ -54,8 +56,9 @@ export default function ViewResource( { resData } ) {
         }
 
         const getResourceDataFaceted = async () => {
-          let resFacet = await MainService().getCatalogue(coll, '?facets[id]='+id);
-          setResourceDataFacet(resFacet.data[0]);
+          const response = await MainService().catalogue().getResource(coll, id);
+          const facet = await response.json();
+          setResourceDataFacet(facet.data[0]);
       }
 
         getResourceData();
