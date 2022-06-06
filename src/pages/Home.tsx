@@ -1,16 +1,12 @@
 import { Button, makeStyles } from "@material-ui/core"
 import React, { useReducer, useState } from "react"
 import { useEffect } from "react"
-import { useSelector } from "react-redux"
 import { Grid, Icon } from "semantic-ui-react"
 import MainService from "../api/service"
 import { Header } from "../features/Layout/Header/Header"
 import Sidebar from "../features/Layout/Sidebar/Sidebar"
 import { Resources } from "../features/Resources/Resources"
-import useAsyncError from "../hooks/useAsyncErrot"
 import { QueryActions, ResourceQueryContex, resourceQueryReducers } from "../reducers/ResourceQueryReducer"
-import { selectFacetsQuery } from '../slices/organizationSlice';
-
 
 const useStyles = makeStyles((theme) => {
     let docHeight = document.body.scrollHeight
@@ -45,7 +41,6 @@ export const Home = () => {
     const [resources, setResources] = useState([]);
     const [facets, setFacets] = useState<Facet[]>([]);
     const [pagination, setPagination] = useState(null);
-    const throwError = useAsyncError();
 
     const [query, dispatch] = useReducer(
         resourceQueryReducers,
@@ -84,7 +79,7 @@ export const Home = () => {
         const getCatalogue =async (collectionId: number) => {
             const { page, search, limit, facets } = query;
             
-            const response = await MainService().catalogue().getCatalogue(
+            const catalogue = await MainService().catalogue().getCatalogue(
                 collectionId,
                 {
                     page,
@@ -92,20 +87,19 @@ export const Home = () => {
                     limit,
                     facets
                 })
-                .then(r => r.json())
-                .catch(throwError);
+                .then(response => response.json())
             
             const pagination = {
-                perPage: response.per_page,
-                lastPage: response.last_page,
-                nextPage: response.next_page,
-                prevPage: response.prev_page,
-                total: response.total
+                perPage: catalogue.per_page,
+                lastPage: catalogue.last_page,
+                nextPage: catalogue.next_page,
+                prevPage: catalogue.prev_page,
+                total: catalogue.total
             };
             
-            setResources(response.data);
+            setResources(catalogue.data);
             setPagination(pagination);
-            setFacets(response.facets);
+            setFacets(catalogue.facets);
         }
 
         if (!query.collection)
@@ -136,8 +130,6 @@ export const Home = () => {
                         </div>
                         
                     </div>
-                    <Grid container className='justifyContentBetween mt-2'>
-                    </Grid>
                     {(query.collection && query.collection.id && query.organizationId) ? (
                         <Sidebar facets={facets}/>
                     ) : ''}
