@@ -14,6 +14,7 @@ import api from '../../../../api/urlMapper';
 import MainService from '../../../../api/service';
 import { selectCollection } from '../../../../slices/organizationSlice';
 import axios from 'axios';
+import MultipleValueTextInput from '../../../../components/forms/MultipleValueTextInput/MultipleValueTextInput';
 
 
 export default function BatchDialog( {open, setOpenBatch, action} ) {
@@ -32,6 +33,7 @@ export default function BatchDialog( {open, setOpenBatch, action} ) {
     const dispatch = useDispatch();
     const fileInputRef = useRef(null);
     //const workspaces = useSelector(selectUser).data.selected_org_data.workspaces;
+    const [genericData, setGenericData] = useState({});
 
     useEffect(() => {
         
@@ -54,6 +56,12 @@ export default function BatchDialog( {open, setOpenBatch, action} ) {
         
     }, [uploaded])
 
+    const updateGenericDataFor = (key: string): (data: any) => void => {
+        return (data: any) => {
+            setGenericData({...genericData, [key]: data})
+        }
+    }
+
     const handleClose = () => {
         setFiles(null);
         setFocus(null);
@@ -61,6 +69,7 @@ export default function BatchDialog( {open, setOpenBatch, action} ) {
         setProgress(null);
         setErrorOnUpload(null);
         setOpenBatch(false);
+        setGenericData({});
     };
 
     const handleOnEntered = () => {
@@ -109,6 +118,10 @@ export default function BatchDialog( {open, setOpenBatch, action} ) {
 
         fd.append('workspace', newWorkspace);
         fd.append('create_wsp', '1');
+
+        if (Object.keys(genericData).length > 0) {
+            fd.append('generic', JSON.stringify(genericData));
+        }
 
         for (var i = 0; i < files.length; i++) {
             fd.append('files[]', files[i]);
@@ -307,7 +320,16 @@ export default function BatchDialog( {open, setOpenBatch, action} ) {
                             />
                         </Message>
                         <Message warning> LIMIT: A total of {server?.pms}{server?.pms.includes('M') || server?.pms.includes('m') ? 'B' : 'MB'} in no more than {server?.mfu} files per batch</Message>
+                        
+                        {collection === 4 // MULTIMEDIA
+                            &&
+                            (<div style={{ display: 'grid', gridTemplateColumns: '50% 50%', columnGap: '1rem' }}>
+                                <MultipleValueTextInput name='Tags' setData={updateGenericDataFor('tags')} />
+                                <MultipleValueTextInput name='Categories' setData={updateGenericDataFor('categories')} />
+                            </div>)
+                        }
                     </div>
+
                     
                     
                     <div

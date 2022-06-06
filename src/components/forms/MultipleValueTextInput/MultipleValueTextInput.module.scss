@@ -1,0 +1,29 @@
+
+
+.multipleValueTextInput {
+
+    margin: 1rem 0;
+    padding: 0.5em 1em;
+    border-radius: .28571429rem;
+    border: 1px solid rgba(34, 36, 38, .15);
+
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    &__label {
+        font-size: 16px;
+        text-transform: capitalize;
+        font-weight: bold;
+    }
+
+    &__input {
+        margin: 5px 0;
+        
+        input {
+            font-size: 13px !important;
+        }
+    }
+}
