@@ -33,7 +33,7 @@ export default function BatchDialog( {open, setOpenBatch, action} ) {
     const dispatch = useDispatch();
     const fileInputRef = useRef(null);
     //const workspaces = useSelector(selectUser).data.selected_org_data.workspaces;
-    const [genereicData, setSegnericData] = useState({});
+    const [genericData, setGenericData] = useState({});
 
     useEffect(() => {
         
@@ -58,7 +58,7 @@ export default function BatchDialog( {open, setOpenBatch, action} ) {
 
     const updateGenericDataFor = (key: string): (data: any) => void => {
         return (data: any) => {
-            setSegnericData({...genereicData, [key]: data})
+            setGenericData({...genericData, [key]: data})
         }
     }
 
@@ -69,7 +69,7 @@ export default function BatchDialog( {open, setOpenBatch, action} ) {
         setProgress(null);
         setErrorOnUpload(null);
         setOpenBatch(false);
-        setSegnericData({});
+        setGenericData({});
     };
 
     const handleOnEntered = () => {
@@ -119,8 +119,8 @@ export default function BatchDialog( {open, setOpenBatch, action} ) {
         fd.append('workspace', newWorkspace);
         fd.append('create_wsp', '1');
 
-        if (Object.keys(genereicData).length > 0) {
-            fd.append('generic', JSON.stringify(genereicData));
+        if (Object.keys(genericData).length > 0) {
+            fd.append('generic', JSON.stringify(genericData));
         }
 
         for (var i = 0; i < files.length; i++) {
