@@ -86,12 +86,20 @@ export const CustomBookNumberOfUnitSelector = (props) => {
 
     const formatUnits = (number: number) => {
 
-        if(!number) return;
+        if(number === undefined || number === null) return;
 
         return number.toLocaleString('en-US', {
             minimumIntegerDigits: 2,
             useGrouping: false
         })
+    }
+
+    const disableItem = (value: string): boolean => {
+        if (!props.unavaliableValues) {
+            return false;
+        }
+        
+        return props.unavaliableValues.includes(value) && props.value !== value;
     }
 
     return (
@@ -105,12 +113,16 @@ export const CustomBookNumberOfUnitSelector = (props) => {
                 value={formatUnits(props.value)}
                 >
                 <Dropdown.Menu>
-                {    Array.from(Array(maxUnits).keys()).map((i, _) => (
-                        <Dropdown.Item key={i} onClick={(event, data) => {props.onChange(data.children)}} value={i}>
-                            {formatUnits(i)}
-                        </Dropdown.Item>
-                    ))
-                }
+                    {Array.from(Array(maxUnits).keys()).map((i, _) => {
+                        const value = formatUnits(i);
+
+                        return (
+                            <Dropdown.Item key={i} onClick={(event, data) => { props.onChange(data.children) }} value={i} disabled={disableItem(value)}>
+                                {value}
+                            </Dropdown.Item>
+                        )
+                    })
+                    }
                 </Dropdown.Menu>
             </Dropdown>
         </div>

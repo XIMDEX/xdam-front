@@ -15,11 +15,12 @@ import MainService from '../../../../api/service';
 import { selectCollection } from '../../../../slices/organizationSlice';
 import axios from 'axios';
 import MultipleValueTextInput from '../../../../components/forms/MultipleValueTextInput/MultipleValueTextInput';
-import { MULTIMEDIA } from '../../../../constants';
-
+import { MULTIMEDIA, BOOK } from '../../../../constants';
+import BookNumberOfUnitSelectorWrapper from '../../../../components/forms/BookNumberOfUnitSelectorWrapper/BookNumberOfUnitSelectorWrapper';
 
 export default function BatchDialog( {open, setOpenBatch, action, resourceType} ) {
     const [files, setFiles] = useState(null);
+    const [filesUnits, setFilesUnits] = useState<Record<string, number>>({});
     const [workspace, setWorkspace] = useState(null);
     const [newWorkspace, setNewWorkspace] = useState('');
     const [focus, setFocus] = useState(null);
@@ -63,6 +64,12 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
         }
     }
 
+    const setUnitToFile = (fileName: string): (unit: number) => void => {
+        return (unit: number) => {
+            setFilesUnits({...filesUnits, [fileName]: unit});
+        }
+    }
+
     const handleClose = () => {
         setFiles(null);
         setFocus(null);
@@ -71,6 +78,7 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
         setErrorOnUpload(null);
         setOpenBatch(false);
         setGenericData({});
+        setFilesUnits({});
     };
 
     const handleOnEntered = () => {
@@ -122,6 +130,10 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
 
         if (Object.keys(genericData).length > 0) {
             fd.append('generic', JSON.stringify(genericData));
+        }
+
+        if (Object.keys(filesUnits).length > 0) {
+            fd.append('filesUnits', JSON.stringify(filesUnits));
         }
 
         for (var i = 0; i < files.length; i++) {
@@ -192,6 +204,16 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
                                 <Message success={uploaded && !errorOnUpload} error={errorOnUpload} size='small'>
                                     {file.name}
                                     <Btn style={uploaded || progress ? {display: 'none'} : {}} size='tiny' circular icon='close' onClick={() => handleFiles(i)} />    
+                                    {
+                                        resourceType === BOOK &&
+                                        <div style={{minWidth: '245px', float: 'right', paddingRight: '20px'}}>
+                                            <BookNumberOfUnitSelectorWrapper 
+                                                onChange={setUnitToFile(file.name)} 
+                                                value={filesUnits[file.name]} 
+                                                unavaliableValues={Object.values(filesUnits)} 
+                                            />
+                                        </div>
+                                    }
                                 </Message> 
                             </div>
                         ))
