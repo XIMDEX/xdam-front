@@ -17,6 +17,7 @@ import axios from 'axios';
 import MultipleValueTextInput from '../../../../components/forms/MultipleValueTextInput/MultipleValueTextInput';
 import { MULTIMEDIA, BOOK } from '../../../../constants';
 import BookNumberOfUnitSelectorWrapper from '../../../../components/forms/BookNumberOfUnitSelectorWrapper/BookNumberOfUnitSelectorWrapper';
+import ResourceLanguageWrapper from '../../../../components/forms/ResourceLanguageWrapper/ResourceLanguageWrapper';
 
 export default function BatchDialog( {open, setOpenBatch, action, resourceType} ) {
     const [files, setFiles] = useState(null);
@@ -238,6 +239,19 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
         )
     }
 
+    const ResourcesLanguage = () => {
+
+        return (
+            <div style={{display: 'inline-block', marginLeft: '10px'}}>
+                <span>And with the language</span>
+                <ResourceLanguageWrapper
+                    value={genericData['lang']} 
+                    onChange={updateGenericDataFor('lang')}
+                />
+            </div>
+        )
+    }
+
     const newBatch = () => {
         setFiles(null);
         setErrorOnUpload(null);
@@ -327,7 +341,10 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
                             <Divider vertical>Or</Divider>
                         </Segment> */}
                         <Message info > 
-                            It will create a new Workspace named:
+                            { resourceType === BOOK
+                                ? 'It will asociate the resource to the ISBN:'
+                                : 'It will create a new Workspace named:'
+                            }
                             <Input 
                                 size='small'
                                 style={(focus === 'exist' ? {minWidth: 200, opacity: 0.5, marginLeft: 10} : {minWidth: 200, opacity: 1, marginLeft: 10})}
@@ -341,6 +358,9 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
                                 }}
                                 value={newWorkspace}
                             />
+                            { resourceType === BOOK &&
+                                <ResourcesLanguage />
+                            }
                         </Message>
                         <Message warning> LIMIT: A total of {server?.pms}{server?.pms.includes('M') || server?.pms.includes('m') ? 'B' : 'MB'} in no more than {server?.mfu} files per batch</Message>
                         
