@@ -15,9 +15,10 @@ import MainService from '../../../../api/service';
 import { selectCollection } from '../../../../slices/organizationSlice';
 import axios from 'axios';
 import MultipleValueTextInput from '../../../../components/forms/MultipleValueTextInput/MultipleValueTextInput';
+import { MULTIMEDIA } from '../../../../constants';
 
 
-export default function BatchDialog( {open, setOpenBatch, action} ) {
+export default function BatchDialog( {open, setOpenBatch, action, resourceType} ) {
     const [files, setFiles] = useState(null);
     const [workspace, setWorkspace] = useState(null);
     const [newWorkspace, setNewWorkspace] = useState('');
@@ -321,7 +322,7 @@ export default function BatchDialog( {open, setOpenBatch, action} ) {
                         </Message>
                         <Message warning> LIMIT: A total of {server?.pms}{server?.pms.includes('M') || server?.pms.includes('m') ? 'B' : 'MB'} in no more than {server?.mfu} files per batch</Message>
                         
-                        {collection === 4 // MULTIMEDIA
+                        {resourceType === MULTIMEDIA
                             &&
                             (<div style={{ display: 'grid', gridTemplateColumns: '50% 50%', columnGap: '1rem' }}>
                                 <MultipleValueTextInput name='Tags' setData={updateGenericDataFor('tags')} />
