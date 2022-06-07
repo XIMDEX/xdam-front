@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
@@ -22,6 +22,8 @@ import ResourceLanguageWrapper from '../../../../components/forms/ResourceLangua
 export default function BatchDialog( {open, setOpenBatch, action, resourceType} ) {
     const [files, setFiles] = useState(null);
     const [filesUnits, setFilesUnits] = useState<Record<string, number>>({});
+    const [filesExtraData, setFilesExtraData] = useState<Record<string, any>>({});
+    const [focusInput, setFocusInput] = useState('');
     const [workspace, setWorkspace] = useState(null);
     const [newWorkspace, setNewWorkspace] = useState('');
     const [focus, setFocus] = useState(null);
@@ -71,6 +73,26 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
         }
     }
 
+    const setExtraDataToFile = (fileName: string) => {
+
+        return (name: string) => {
+            return (event) => {
+                event.preventDefault();
+
+                setFocusInput(`${fileName}_${name}`);
+
+                setFilesExtraData({
+                    ...filesExtraData,
+                    [fileName]: {
+                        ...filesExtraData[fileName],
+                        [name]: event.target.value
+                    }
+                });
+            };
+        }
+
+    }
+
     const handleClose = () => {
         setFiles(null);
         setFocus(null);
@@ -80,6 +102,7 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
         setOpenBatch(false);
         setGenericData({});
         setFilesUnits({});
+        setFilesExtraData({});
     };
 
     const handleOnEntered = () => {
@@ -137,6 +160,10 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
             fd.append('filesUnits', JSON.stringify(filesUnits));
         }
 
+        if (resourceType === BOOK) {
+            fd.append('filesExtraData', JSON.stringify(filesExtraData));
+        }
+
         for (var i = 0; i < files.length; i++) {
             fd.append('files[]', files[i]);
         }
@@ -177,6 +204,38 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
         // return today.toDateString(); // "Sun Jun 14 2020"
     }
 
+    const BookExtraData = ({ fileName }) => {
+
+        const callbackRef = useCallback(inputElement => {
+            if (inputElement && inputElement.id === focusInput) {
+                inputElement.focus();
+            }
+        }, []);
+
+        const values = filesExtraData[fileName];
+        const onChange = setExtraDataToFile(fileName)
+
+        return (
+            <div>
+                <h3>Extra</h3>
+                <div className="ui form grouped fields">
+                    <label htmlFor="link">Link</label>
+                    <input id={`${fileName}_link`} type='text' value={values?.link || ''} onChange={onChange('link')} ref={callbackRef} />
+                </div>
+
+                <div className="ui form grouped fields">
+                    <label htmlFor="hover">Hover</label>
+                    <input id={`${fileName}_hover`} type='text' value={values?.hover || ''} onChange={onChange('hover')} ref={callbackRef}/>
+                </div>
+
+                <div className="ui form grouped fields">
+                    <label htmlFor="content">Content</label>
+                    <input id={`${fileName}_content`} type='text' value={values?.content || ''} onChange={onChange('content')} ref={callbackRef}/>
+                </div>
+            </div>
+        )
+    }
+
     const DropContent = () => {
         return (
             files ? 
@@ -200,8 +259,8 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
                     }
                     
                     {
-                        files.map((file: File, i) => (
-                            <div className='file-item'>
+                        files.map((file: File, i: number) => (
+                            <div className='file-item' key={i}>
                                 <Message success={uploaded && !errorOnUpload} error={errorOnUpload} size='small'>
                                     {file.name}
                                     <Btn style={uploaded || progress ? {display: 'none'} : {}} size='tiny' circular icon='close' onClick={() => handleFiles(i)} />    
@@ -213,6 +272,7 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
                                                 value={filesUnits[file.name]} 
                                                 unavaliableValues={Object.values(filesUnits)} 
                                             />
+                                            <BookExtraData fileName={file.name}/>
                                         </div>
                                     }
                                 </Message> 
