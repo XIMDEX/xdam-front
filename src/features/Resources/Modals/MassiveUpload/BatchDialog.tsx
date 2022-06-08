@@ -113,15 +113,16 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
         }
 
         if (Object.keys(filesInfo).length > 0) {
-            fd.append('filesInfo', JSON.stringify(filesInfo));
-
             for(const fileName of Object.keys(filesInfo)) {
                 const info = filesInfo[fileName];
 
                 if(info['preview']) {
-                    fd.append(`${fileName}_preview`, info['preview'])
+                    fd.append(`${fileName}_preview`, info['preview']);
+                    delete filesInfo[fileName]['preview'];
                 }
             }
+
+            fd.append('filesInfo', JSON.stringify(filesInfo));
         }
 
         for (var i = 0; i < files.length; i++) {
