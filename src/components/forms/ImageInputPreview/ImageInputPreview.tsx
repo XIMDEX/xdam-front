@@ -22,7 +22,6 @@ const ImageInputPreview = ({ onChange }) => {
 
     const handleFiles = (e) => {
         const image = e.target.files[0];
-        debugger;
         if(previewImage && !image) {
             return;
         }
