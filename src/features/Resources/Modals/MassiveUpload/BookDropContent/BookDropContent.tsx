@@ -1,7 +1,7 @@
 import React from "react";
 import BookExtraData from "../../../../../components/forms/BookExtraData/BookExtraData";
 import BookNumberOfUnitSelectorWrapper from "../../../../../components/forms/BookNumberOfUnitSelectorWrapper/BookNumberOfUnitSelectorWrapper";
-import ImageInputPreview from "../../../../../components/forms/ImageInputPreview/ImageInputPreview";
+import ImageInput from "../../../../../components/forms/ImageInput/ImageInput";
 import styles from "./BookDropContent.module.scss";
 
 const BookDropContent = ({ filesInfo, setFilesInfo, file, children}) => {
@@ -55,7 +55,7 @@ const BookDropContent = ({ filesInfo, setFilesInfo, file, children}) => {
     return (
         <div className={styles.bookDropContent}>
             <div className={styles.bookDropContent__previewInput}>
-                <ImageInputPreview onChange={setPreviewImageToFile(file.name)} />
+                <ImageInput onChange={setPreviewImageToFile(file.name)} />
             </div>
             <div>
                 {children}

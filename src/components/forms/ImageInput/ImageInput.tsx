@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Button } from "semantic-ui-react";
-import styles from './ImageInputPreview.module.scss';
+import styles from './ImageInput.module.scss';
 
-const ImageInputPreview = ({ onChange }) => {
+const ImageInput = ({ onChange }) => {
 
     const [previewImage, setPreviewImage] = useState(null);
     const hiddenFileInput = React.useRef(null);
@@ -51,4 +51,4 @@ const ImageInputPreview = ({ onChange }) => {
     )
 }
 
-export default ImageInputPreview;
+export default ImageInput;
