@@ -75,6 +75,7 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
         setErrorOnUpload(null);
         setOpenBatch(false);
         setGenericData({});
+        setFilesInfo({});
     };
 
     const handleOnEntered = () => {
@@ -113,6 +114,14 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
 
         if (Object.keys(filesInfo).length > 0) {
             fd.append('filesInfo', JSON.stringify(filesInfo));
+
+            for(const fileName of Object.keys(filesInfo)) {
+                const info = filesInfo[fileName];
+
+                if(info['preview']) {
+                    fd.append(`${fileName}_preview`, info['preview'])
+                }
+            }
         }
 
         for (var i = 0; i < files.length; i++) {

@@ -1,0 +1,7 @@
+
+.bookDropContent {
+    display: grid;
+    grid-template-columns: 100px auto;
+    grid-template-rows: auto;
+    grid-column-gap: .5rem;
+}
