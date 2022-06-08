@@ -54,7 +54,7 @@ const BookDropContent = ({ filesInfo, setFilesInfo, file, children}) => {
 
     return (
         <div className={styles.bookDropContent}>
-            <div style={{ maxHeight: '122px'}}>
+            <div className={styles.bookDropContent__previewInput}>
                 <ImageInputPreview onChange={setPreviewImageToFile(file.name)} />
             </div>
             <div>
