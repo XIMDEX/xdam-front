@@ -18,12 +18,12 @@ import MultipleValueTextInput from '../../../../components/forms/MultipleValueTe
 import { MULTIMEDIA, BOOK } from '../../../../constants';
 import BookNumberOfUnitSelectorWrapper from '../../../../components/forms/BookNumberOfUnitSelectorWrapper/BookNumberOfUnitSelectorWrapper';
 import ResourceLanguageWrapper from '../../../../components/forms/ResourceLanguageWrapper/ResourceLanguageWrapper';
+import BookExtraData from '../../../../components/forms/BookExtraData/BookExtraData';
 
 export default function BatchDialog( {open, setOpenBatch, action, resourceType} ) {
     const [files, setFiles] = useState(null);
     const [filesUnits, setFilesUnits] = useState<Record<string, number>>({});
     const [filesExtraData, setFilesExtraData] = useState<Record<string, any>>({});
-    const [focusInput, setFocusInput] = useState('');
     const [workspace, setWorkspace] = useState(null);
     const [newWorkspace, setNewWorkspace] = useState('');
     const [focus, setFocus] = useState(null);
@@ -78,8 +78,6 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
         return (name: string) => {
             return (event) => {
                 event.preventDefault();
-
-                setFocusInput(`${fileName}_${name}`);
 
                 setFilesExtraData({
                     ...filesExtraData,
@@ -204,38 +202,6 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
         // return today.toDateString(); // "Sun Jun 14 2020"
     }
 
-    const BookExtraData = ({ fileName }) => {
-
-        const callbackRef = useCallback(inputElement => {
-            if (inputElement && inputElement.id === focusInput) {
-                inputElement.focus();
-            }
-        }, []);
-
-        const values = filesExtraData[fileName];
-        const onChange = setExtraDataToFile(fileName)
-
-        return (
-            <div>
-                <h3>Extra</h3>
-                <div className="ui form grouped fields">
-                    <label htmlFor="link">Link</label>
-                    <input id={`${fileName}_link`} type='text' value={values?.link || ''} onChange={onChange('link')} ref={callbackRef} />
-                </div>
-
-                <div className="ui form grouped fields">
-                    <label htmlFor="hover">Hover</label>
-                    <input id={`${fileName}_hover`} type='text' value={values?.hover || ''} onChange={onChange('hover')} ref={callbackRef}/>
-                </div>
-
-                <div className="ui form grouped fields">
-                    <label htmlFor="content">Content</label>
-                    <input id={`${fileName}_content`} type='text' value={values?.content || ''} onChange={onChange('content')} ref={callbackRef}/>
-                </div>
-            </div>
-        )
-    }
-
     const DropContent = () => {
         return (
             files ? 
@@ -262,20 +228,25 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
                         files.map((file: File, i: number) => (
                             <div className='file-item' key={i}>
                                 <Message success={uploaded && !errorOnUpload} error={errorOnUpload} size='small'>
-                                    {file.name}
-                                    <Btn style={uploaded || progress ? {display: 'none'} : {}} size='tiny' circular icon='close' onClick={() => handleFiles(i)} />    
-                                    {
-                                        resourceType === BOOK &&
-                                        <div style={{minWidth: '245px', float: 'right', paddingRight: '20px'}}>
-                                            <BookNumberOfUnitSelectorWrapper 
-                                                onChange={setUnitToFile(file.name)} 
-                                                value={filesUnits[file.name]} 
-                                                unavaliableValues={Object.values(filesUnits)} 
-                                            />
-                                            <BookExtraData fileName={file.name}/>
-                                        </div>
-                                    }
-                                </Message> 
+                                    <div>
+                                        {file.name}
+                                        <Btn style={uploaded || progress ? {display: 'none'} : {}} size='tiny' circular icon='close' onClick={() => handleFiles(i)} />    
+                                        { resourceType === BOOK &&
+                                            <div style={{minWidth: '245px', float: 'right', paddingRight: '20px'}}>
+                                                <BookNumberOfUnitSelectorWrapper 
+                                                    onChange={setUnitToFile(file.name)} 
+                                                    value={filesUnits[file.name]} 
+                                                    unavaliableValues={Object.values(filesUnits)} 
+                                                />
+                                            </div>
+                                        }
+                                    </div>
+                                    <BookExtraData 
+                                        values={filesExtraData[file.name]}
+                                        fileName={file.name} 
+                                        onChange={setExtraDataToFile(file.name)}
+                                    />
+                                </Message>
                             </div>
                         ))
                     }
@@ -302,7 +273,7 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
     const ResourcesLanguage = () => {
 
         return (
-            <div style={{display: 'inline-block', marginLeft: '10px'}}>
+            <div style={{display: 'inline-block'}}>
                 <span>And with the language</span>
                 <ResourceLanguageWrapper
                     value={genericData['lang']} 
@@ -400,24 +371,26 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
                             </Grid>
                             <Divider vertical>Or</Divider>
                         </Segment> */}
-                        <Message info > 
-                            { resourceType === BOOK
-                                ? 'It will asociate the resource to the ISBN:'
-                                : 'It will create a new Workspace named:'
-                            }
-                            <Input 
-                                size='small'
-                                style={(focus === 'exist' ? {minWidth: 200, opacity: 0.5, marginLeft: 10} : {minWidth: 200, opacity: 1, marginLeft: 10})}
-                                placeholder='Create a new one' 
-                                onFocus={() => {
-                                    setFocus('new')
-                                    setWorkspace(null)
-                                }}
-                                onChange={(e, d) => {
-                                    setNewWorkspace(d.value)
-                                }}
-                                value={newWorkspace}
-                            />
+                        <Message info >
+                            <span style={{marginRight: '10px'}}>
+                                { resourceType === BOOK
+                                    ? 'It will asociate the resource to the ISBN:'
+                                    : 'It will create a new Workspace named:'
+                                }
+                                <Input 
+                                    size='small'
+                                    style={(focus === 'exist' ? {minWidth: 200, opacity: 0.5, marginLeft: 10} : {minWidth: 200, opacity: 1, marginLeft: 10})}
+                                    placeholder='Create a new one' 
+                                    onFocus={() => {
+                                        setFocus('new')
+                                        setWorkspace(null)
+                                    }}
+                                    onChange={(e, d) => {
+                                        setNewWorkspace(d.value)
+                                    }}
+                                    value={newWorkspace}
+                                />
+                            </span>
                             { resourceType === BOOK &&
                                 <ResourcesLanguage />
                             }
