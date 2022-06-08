@@ -99,7 +99,7 @@ export const CustomBookNumberOfUnitSelector = (props) => {
             return false;
         }
         
-        return props.unavaliableValues.includes(value) && props.value !== value;
+        return props.unavaliableValues.includes(parseInt(value)) && props.value !== value;
     }
 
     return (

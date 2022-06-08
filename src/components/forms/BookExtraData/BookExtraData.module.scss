@@ -7,9 +7,11 @@
 
     &__header {
         display: flex;
+        align-items: center;
         font-size: large;
         padding: 10px;
         background-color: #f8ffff;
+        border-radius: .28571429rem;
         color: #276f86;
     }
 
@@ -20,8 +22,4 @@
         padding: 15px 15px;
     }
 
-}
-
-.active {
-    transform: rotate(-90deg);
 }
