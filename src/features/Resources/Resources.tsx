@@ -494,6 +494,7 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
         open={openBatch}
         action={mainContextAction}
         setOpenBatch={setOpenBatch}
+        resourceType={selectedColl.resource_type}
       />
     </Grid>
   );
