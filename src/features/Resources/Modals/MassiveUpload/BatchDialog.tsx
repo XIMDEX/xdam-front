@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, createRef, useContext } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { FileDrop } from 'react-file-drop';
-import { Button as Btn, Input, Message, Label, Icon } from 'semantic-ui-react';
+import { Button as Btn, Input, Message, Label, Icon, Radio, Segment, Button } from 'semantic-ui-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { reloadCatalogue } from '../../../../appSlice';
 import api from '../../../../api/urlMapper';
@@ -15,6 +15,7 @@ import MultipleValueTextInput from '../../../../components/forms/MultipleValueTe
 import { MULTIMEDIA, BOOK } from '../../../../constants';
 import ResourceLanguageWrapper from '../../../../components/forms/ResourceLanguageWrapper/ResourceLanguageWrapper';
 import DropContent from './DropContent';
+import RequiredValuesContext, { RequireValues } from './RequiredValuesContext';
 
 export default function BatchDialog( {open, setOpenBatch, action, resourceType} ) {
     const [files, setFiles] = useState(null);
@@ -33,6 +34,9 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
     //const workspaces = useSelector(selectUser).data.selected_org_data.workspaces;
     const [genericData, setGenericData] = useState({});
     const [filesInfo, setFilesInfo] = useState<Record<string, any>>({});
+    const [requiredFields, setRequiredFields] = useState<RequireValues>({
+        conversionAfterUpload: false
+    });
 
     useEffect(() => {
         
@@ -61,6 +65,17 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
         }
     }
 
+    const toggleRequiredFields = (fields: keyof RequireValues) => {
+        return (event) => {
+            event.preventDefault();
+
+            setRequiredFields({
+                ...requiredFields,
+                [fields]: !requiredFields?.[fields]
+            });
+        }
+    }
+
     const onFileInputChange = (event) => {
         const { files } = event.target;
         setFiles(Array.from(files));
@@ -76,6 +91,9 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
         setOpenBatch(false);
         setGenericData({});
         setFilesInfo({});
+        setRequiredFields({
+            conversionAfterUpload: false
+        })
     };
 
     const handleOnEntered = () => {
@@ -208,10 +226,26 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
             >
                 <DialogTitle >New batch</DialogTitle>
                 <DialogContent style={{height: '100vh'}}>
+                    <RequiredValuesContext.Provider value={requiredFields}>
                     <Btn icon='close' circular onClick={handleClose} color="teal" className='read-card-close-button'/>    
                     
-                    
                     <DialogActions >
+                        {resourceType === BOOK && 
+                            <Btn as='div' labelPosition='left' onClick={toggleRequiredFields('conversionAfterUpload')} >
+                                <Label as='a' basic pointing='right'>
+                                    Convert after upload
+                                </Label>
+                                {requiredFields.conversionAfterUpload ?
+                                    <Btn icon color='green'>
+                                        <Icon name='check' />
+                                    </Btn>
+                                    :
+                                    <Btn icon color='red'>
+                                        <Icon name='close' />
+                                    </Btn>
+                                }
+                            </Btn>
+                        }
                         <Btn 
                                 disabled={files === null}
                                 onClick={uploaded ? newBatch : handleUpload} 
@@ -341,16 +375,17 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
                             onTargetClick={files ? null : onTargetClick}
                         >
                             {files ?
-                                <DropContent
-                                    files={files}
-                                    updateFiles={filesModified}
-                                    progress={progress}
-                                    uploaded={uploaded}
-                                    errorOnUpload={errorOnUpload}
-                                    resourceType={resourceType}
-                                    filesInfo={filesInfo}
-                                    setFilesInfo={setFilesInfo}
-                                />
+                                
+                                    <DropContent
+                                        files={files}
+                                        updateFiles={filesModified}
+                                        progress={progress}
+                                        uploaded={uploaded}
+                                        errorOnUpload={errorOnUpload}
+                                        resourceType={resourceType}
+                                        filesInfo={filesInfo}
+                                        setFilesInfo={setFilesInfo}
+                                    />
                                 :
                                 <>
                                     <div className='label-drop'>
@@ -369,8 +404,8 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
                             }  
                         </FileDrop>
                     </div>
+                    </RequiredValuesContext.Provider>
                 </DialogContent>
-                
             </Dialog>
         </div>
     );

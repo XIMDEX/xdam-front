@@ -1,8 +1,25 @@
+@import '../../../theme/_formElements.scss';
 
 .imageInputPreview {
-    background-position: center !important;
-    background-size: cover !important;
-    background-repeat: no-repeat !important;
+
     height: 100%;
     width: 100%;
+    @extend .formElement;
+    
+    &__button {
+        background-position: center !important;
+        background-size: cover !important;
+        background-repeat: no-repeat !important;
+        height: 100%;
+        width: 100%;
+    }
+
+    button {
+        margin-right: 0 !important;
+    }
+}
+
+.error {
+    border: 1px solid tomato !important;
+    border-radius: .28rem;
 }

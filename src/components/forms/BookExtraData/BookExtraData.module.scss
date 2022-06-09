@@ -1,9 +1,14 @@
+@import '../../../theme/_formElements.scss';
 
 .bookExtraData {
-    
+    @extend .formElement;
     border: 1px solid #a9d5de;
     margin-top: 18px;
     border-radius: .28571429rem;
+
+    &.error {
+        border-color: tomato
+    }
 
     &__header {
         display: flex;
@@ -22,4 +27,8 @@
         padding: 15px 15px;
     }
 
+    &__fieldError {
+        border-color: tomato !important;
+    }
 }
+

@@ -18,9 +18,11 @@ export const ResourceLanguage = (props) => {
     return (
         <div className='forms-textField'>
             <section>
-                <label style={{ display: 'block', marginBottom: 9 }} htmlFor={props.id}>
-                    {props.options.label} {props.required ? '*' : ''}
-                </label>
+                {props.options.label &&
+                    <label style={{ display: 'block', marginBottom: 9 }} htmlFor={props.id}>
+                        {props.options.label} {props.required ? '*' : ''}
+                    </label>
+                }
                 <Dropdown
                     placeholder={props.value && bookLanguages[props.value] ? bookLanguages[props.value] : "Language"}
                     fluid

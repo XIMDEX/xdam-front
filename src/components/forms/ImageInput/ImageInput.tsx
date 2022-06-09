@@ -1,11 +1,17 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Button } from "semantic-ui-react";
+import RequiredValuesContext from "../../../features/Resources/Modals/MassiveUpload/RequiredValuesContext";
 import styles from './ImageInput.module.scss';
 
 const ImageInput = ({ onChange }) => {
 
     const [previewImage, setPreviewImage] = useState(null);
     const hiddenFileInput = React.useRef(null);
+    const requiredValues = useContext(RequiredValuesContext);
+
+    const noFileAndRequired = () => {
+        return requiredValues.conversionAfterUpload && !previewImage
+    }
 
     const handleClick = () => {
         hiddenFileInput.current.click();
@@ -31,23 +37,25 @@ const ImageInput = ({ onChange }) => {
     }
     
     return (
-        <Button
-            className={styles.imageInputPreview}
-            onClick={handleClick}
-            style={previewBackground()}
-            component="label"
-            fullWidth
-            variant='outlined'
-        >
-            <input
-                accept="image/*"
-                type="file"
-                ref={hiddenFileInput}
-                onChange={(e) => handleFiles(e)}
-                name='Preview'
-                hidden
-            />
-        </Button>
+        <div className={`${styles.imageInputPreview} ${noFileAndRequired() ? styles.error : ''}`}>
+            <Button
+                className={styles.imageInputPreview__button}
+                onClick={handleClick}
+                style={previewBackground()}
+                component="label"
+                fullWidth
+                variant='outlined'
+            >
+                <input
+                    accept="image/*"
+                    type="file"
+                    ref={hiddenFileInput}
+                    onChange={(e) => handleFiles(e)}
+                    name='Preview'
+                    hidden
+                />
+            </Button>
+        </div>
     )
 }
 

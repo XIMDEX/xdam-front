@@ -1,12 +1,15 @@
-
+@import '../../../theme/_formElements.scss';
 
 .bookNumberOfUnitSelectorWrapper {
 
     display: flex;
     justify-items: flex-end;
+    @extend .formElement;
 
     &__selector {
         width: 100%;
+        max-height: 35px;
+        
         * {
             border-top-right-radius: 0 !important;
             border-bottom-right-radius: 0 !important;
@@ -18,4 +21,13 @@
         border-top-left-radius: 0 !important;
         border-bottom-left-radius: 0 !important;
     }
+
+    button {
+        margin-right: 0 !important;
+    }
+}
+
+.error {
+    border: 1px solid tomato !important;
+    border-radius: .28rem;
 }

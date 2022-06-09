@@ -1,7 +1,12 @@
+@import '../../../theme/_formElements.scss';
 
 .resourceLanguageWrapper {
-    
+    @extend .formElement;
     max-width: 110px;
     display: inline-block;
     margin-left: 10px;
+
+    &.error {
+        border-color: tomato;
+    }
 }
