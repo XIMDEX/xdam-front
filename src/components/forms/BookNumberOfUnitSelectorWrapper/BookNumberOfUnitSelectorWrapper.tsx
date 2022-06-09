@@ -10,7 +10,7 @@ const BookNumberOfUnitSelectorWrapper = ({ onChange, maxUnit, unavaliableValues 
     const requiredValues = useContext(RequiredValuesContext);
 
     const isEmptyAndRequired = () => {
-        return requiredValues.conversionAfterUpload && !value;
+        return requiredValues.conversionAfterUpload && (value === null || value === undefined);
     }
 
     const unsetValue = () => {

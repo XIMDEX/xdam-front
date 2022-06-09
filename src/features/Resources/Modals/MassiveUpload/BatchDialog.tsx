@@ -16,6 +16,8 @@ import { MULTIMEDIA, BOOK } from '../../../../constants';
 import ResourceLanguageWrapper from '../../../../components/forms/ResourceLanguageWrapper/ResourceLanguageWrapper';
 import DropContent from './DropContent';
 import RequiredValuesContext, { RequireValues } from './RequiredValuesContext';
+import useAditionalActions, { AditionalAction } from '../../../../hooks/useAditionalActions';
+import bookRequiredDataValidation from './Validations/bookRequiredDataValidation';
 
 export default function BatchDialog( {open, setOpenBatch, action, resourceType} ) {
     const [files, setFiles] = useState(null);
@@ -34,6 +36,8 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
     //const workspaces = useSelector(selectUser).data.selected_org_data.workspaces;
     const [genericData, setGenericData] = useState({});
     const [filesInfo, setFilesInfo] = useState<Record<string, any>>({});
+    const [missingFields, setMissingFields] = useState<boolean>(false);
+    const { aditionalActions, setAditinalActions} = useAditionalActions();
     const [requiredFields, setRequiredFields] = useState<RequireValues>({
         conversionAfterUpload: false
     });
@@ -57,30 +61,68 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
         
         get_post_max_size();
         
-    }, [uploaded])
+    }, [uploaded]);
 
-    const updateGenericDataFor = (key: string): (data: any) => void => {
-        return (data: any) => {
-            setGenericData({...genericData, [key]: data})
+    const updateMissingFields = ({ fields = requiredFields, generic = genericData, files = filesInfo }) => {
+        if (fields.conversionAfterUpload) {
+            setMissingFields(!bookRequiredDataValidation(generic, files));
+        } else {
+            setMissingFields(false);
         }
     }
 
-    const toggleRequiredFields = (fields: keyof RequireValues) => {
+    const filesInfoChanged = (values) =>{
+        setFilesInfo(values);
+        updateMissingFields({files: values});
+    }
+
+    const updateGenericDataFor = (key: string): (data: any) => void => {
+        return (data: any) => {
+            const newGenericData = { ...genericData, [key]: data }
+            setGenericData(newGenericData);
+            updateMissingFields({generic: newGenericData});
+        }
+    }
+
+    const toggleAditionalAction = (action: AditionalAction) => {
+
+        const obtainNewActions = () => {
+
+            if (!aditionalActions.includes(action)) {
+                return [...aditionalActions, action];
+            }
+
+            const index = aditionalActions.indexOf(action, 0);
+            const copy = [...aditionalActions];
+
+            copy.splice(index, 1);
+            return copy;
+        }
+
         return (event) => {
             event.preventDefault();
 
-            setRequiredFields({
+            const newActions = obtainNewActions();
+            const newRequiredFiels = {
                 ...requiredFields,
-                [fields]: !requiredFields?.[fields]
-            });
+                conversionAfterUpload: newActions.includes(AditionalAction.CONVERT_BOOKS_AFETER_UPDATE)
+            };
+
+            setAditinalActions(newActions);
+            setRequiredFields(newRequiredFiels);
+
+            updateMissingFields({fields: newRequiredFiels});
         }
+    }
+
+    const actionIsSet = (action: AditionalAction): boolean => {
+        return aditionalActions.includes(action);
     }
 
     const onFileInputChange = (event) => {
         const { files } = event.target;
         setFiles(Array.from(files));
     }
-
 
     const handleClose = () => {
         setFiles(null);
@@ -94,6 +136,7 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
         setRequiredFields({
             conversionAfterUpload: false
         })
+        setAditinalActions([]);
     };
 
     const handleOnEntered = () => {
@@ -228,14 +271,13 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
                 <DialogContent style={{height: '100vh'}}>
                     <RequiredValuesContext.Provider value={requiredFields}>
                     <Btn icon='close' circular onClick={handleClose} color="teal" className='read-card-close-button'/>    
-                    
                     <DialogActions >
                         {resourceType === BOOK && 
-                            <Btn as='div' labelPosition='left' onClick={toggleRequiredFields('conversionAfterUpload')} >
+                                <Btn as='div' labelPosition='left' onClick={toggleAditionalAction(AditionalAction.CONVERT_BOOKS_AFETER_UPDATE)} >
                                 <Label as='a' basic pointing='right'>
                                     Convert after upload
                                 </Label>
-                                {requiredFields.conversionAfterUpload ?
+                                    {actionIsSet(AditionalAction.CONVERT_BOOKS_AFETER_UPDATE) ?
                                     <Btn icon color='green'>
                                         <Icon name='check' />
                                     </Btn>
@@ -247,7 +289,7 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
                             </Btn>
                         }
                         <Btn 
-                                disabled={files === null}
+                                disabled={files === null || missingFields}
                                 onClick={uploaded ? newBatch : handleUpload} 
                                 color="teal"
                                 loading={progress && !uploaded}    
@@ -384,7 +426,7 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
                                         errorOnUpload={errorOnUpload}
                                         resourceType={resourceType}
                                         filesInfo={filesInfo}
-                                        setFilesInfo={setFilesInfo}
+                                        setFilesInfo={filesInfoChanged}
                                     />
                                 :
                                 <>

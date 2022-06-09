@@ -26,26 +26,33 @@ const BookExtraData = ({ fileName, onChange }) => {
     }
 
     const changeValue = (name: string) => {
-        return (event) => {
-            event.preventDefault();
+        
+        return onChange(name);
 
-            onChange(name)(event.target.value);
-        }
+
+        // return (event) => {
+        //     event.preventDefault();
+
+        //     onChange(name)(event.target.value);
+        // }
     }
     
     const updateLink = (event) => {
         event.preventDefault()
         setLink(event.target.value);
+        changeValue('Link')(event.target.value);
     }
     
     const updateHover = (event) => {
         event.preventDefault()
         setHover(event.target.value);
+        changeValue('Hover')(event.target.value);
     }
     
     const updateContent = (event) => {
         event.preventDefault()
         setContent(event.target.value);
+        changeValue('Content')(event.target.value);
     }
 
     return (
@@ -62,7 +69,7 @@ const BookExtraData = ({ fileName, onChange }) => {
                             type='text' 
                             value={link} 
                             onChange={updateLink} 
-                            onBlur={changeValue('link')} 
+                            // onBlur={changeValue('link')} 
                             className={fieldEmptyAndRequired(link) ? styles.bookExtraData__fieldError: ''} 
                         />
                     </div>
@@ -73,7 +80,7 @@ const BookExtraData = ({ fileName, onChange }) => {
                             type='text' 
                             value={hover} 
                             onChange={updateHover} 
-                            onBlur={changeValue('hover')}
+                            // onBlur={changeValue('hover')}
                             className={fieldEmptyAndRequired(hover) ? styles.bookExtraData__fieldError : ''} 
                         />
                     </div>
@@ -84,7 +91,7 @@ const BookExtraData = ({ fileName, onChange }) => {
                             type='text' 
                             value={content} 
                             onChange={updateContent} 
-                            onBlur={changeValue('content')}
+                            // onBlur={changeValue('content')}
                             className={fieldEmptyAndRequired(content) ? styles.bookExtraData__fieldError : ''} 
                         />
                     </div>
