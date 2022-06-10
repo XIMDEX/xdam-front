@@ -154,6 +154,16 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
         
     }
 
+    const changeWorkspace = (event, data) => {
+        event.preventDefault();
+
+        setNewWorkspace(data.value);
+
+        if(resourceType === BOOK) {
+            updateGenericDataFor('isbn')(data.value);
+        }
+    }
+
     function now () {
         var today = new Date();
         var date = today.getDate()+'-'+(today.getMonth()+1)+'-'+today.getFullYear();
@@ -278,9 +288,7 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
                                         setFocus('new')
                                         setWorkspace(null)
                                     }}
-                                    onChange={(e, d) => {
-                                        setNewWorkspace(d.value)
-                                    }}
+                                    onChange={changeWorkspace}
                                     value={newWorkspace}
                                 />
                             </span>
