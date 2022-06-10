@@ -1,15 +1,18 @@
-import React from "react"
+import React, { useState } from "react"
 import { Button, Icon } from "semantic-ui-react";
 import { CustomBookNumberOfUnitSelector } from "../../../features/Resources/Modals/DynamicFormTemplates/CustomFields"
 import styles from "./BookNumberOfUnitSelectorWrapper.module.scss";
 
-const BookNumberOfUnitSelectorWrapper = ({ value, onChange, maxUnit, unavaliableValues }: { value: number, onChange: (value: number) => void, maxUnit?: number, unavaliableValues: number[] }) => {
+const BookNumberOfUnitSelectorWrapper = ({ onChange, maxUnit, unavaliableValues }: { onChange: (value: number) => void, maxUnit?: number, unavaliableValues: number[] }) => {
+
+    const [value, setValue] = useState<number>(null);
 
     const unsetValue = () => {
         onChange(null);
     }
 
     const onChangeAsInt = (value: string) => {
+        setValue(parseInt(value));
         onChange(parseInt(value));
     }
 

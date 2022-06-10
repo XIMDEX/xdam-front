@@ -1,0 +1,11 @@
+
+.bookDropContent {
+    display: grid;
+    grid-template-columns: 100px auto;
+    grid-template-rows: auto;
+    grid-column-gap: .5rem;
+
+    &__previewInput {
+        max-height: 100px;
+    }
+}
