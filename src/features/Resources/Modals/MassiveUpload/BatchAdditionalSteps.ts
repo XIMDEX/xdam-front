@@ -1,0 +1,3 @@
+export enum AdditionalSteps {
+    CONVERT_BOOKS_AFETER_UPDATE = "CONVERT_BOOKS_AFETER_UPDATE"
+}

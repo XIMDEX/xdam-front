@@ -16,8 +16,8 @@ import { MULTIMEDIA, BOOK } from '../../../../constants';
 import ResourceLanguageWrapper from '../../../../components/forms/ResourceLanguageWrapper/ResourceLanguageWrapper';
 import DropContent from './DropContent';
 import RequiredValuesContext, { RequireValues } from './RequiredValuesContext';
-import useAditionalActions, { AditionalAction } from '../../../../hooks/useAditionalActions';
 import bookRequiredDataValidation from './Validations/bookRequiredDataValidation';
+import { AdditionalSteps } from './BatchAdditionalSteps';
 
 export default function BatchDialog( {open, setOpenBatch, action, resourceType} ) {
     const [files, setFiles] = useState(null);
@@ -37,7 +37,7 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
     const [genericData, setGenericData] = useState({});
     const [filesInfo, setFilesInfo] = useState<Record<string, any>>({});
     const [missingFields, setMissingFields] = useState<boolean>(false);
-    const { aditionalActions, setAditinalActions} = useAditionalActions();
+    const [additionalSteps, setAdditinalSteps] = useState<AdditionalSteps[]>([]);
     const [requiredFields, setRequiredFields] = useState<RequireValues>({
         conversionAfterUpload: false
     });
@@ -84,16 +84,16 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
         }
     }
 
-    const toggleAditionalAction = (action: AditionalAction) => {
+    const toggleAditionalAction = (action: AdditionalSteps) => {
 
         const obtainNewActions = () => {
 
-            if (!aditionalActions.includes(action)) {
-                return [...aditionalActions, action];
+            if (!additionalSteps.includes(action)) {
+                return [...additionalSteps, action];
             }
 
-            const index = aditionalActions.indexOf(action, 0);
-            const copy = [...aditionalActions];
+            const index = additionalSteps.indexOf(action, 0);
+            const copy = [...additionalSteps];
 
             copy.splice(index, 1);
             return copy;
@@ -105,18 +105,18 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
             const newActions = obtainNewActions();
             const newRequiredFiels = {
                 ...requiredFields,
-                conversionAfterUpload: newActions.includes(AditionalAction.CONVERT_BOOKS_AFETER_UPDATE)
+                conversionAfterUpload: newActions.includes(AdditionalSteps.CONVERT_BOOKS_AFETER_UPDATE)
             };
 
-            setAditinalActions(newActions);
+            setAdditinalSteps(newActions);
             setRequiredFields(newRequiredFiels);
 
             updateMissingFields({fields: newRequiredFiels});
         }
     }
 
-    const actionIsSet = (action: AditionalAction): boolean => {
-        return aditionalActions.includes(action);
+    const actionIsSet = (action: AdditionalSteps): boolean => {
+        return additionalSteps.includes(action);
     }
 
     const onFileInputChange = (event) => {
@@ -136,7 +136,7 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
         setRequiredFields({
             conversionAfterUpload: false
         })
-        setAditinalActions([]);
+        setAdditinalSteps([]);
     };
 
     const handleOnEntered = () => {
@@ -184,6 +184,10 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
             }
 
             fd.append('filesInfo', JSON.stringify(filesInfo));
+        }
+
+        for(const step of additionalSteps) {
+            fd.append('additionalSteps[]', step);
         }
 
         for (var i = 0; i < files.length; i++) {
@@ -273,11 +277,11 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
                     <Btn icon='close' circular onClick={handleClose} color="teal" className='read-card-close-button'/>    
                     <DialogActions >
                         {resourceType === BOOK && 
-                                <Btn as='div' labelPosition='left' onClick={toggleAditionalAction(AditionalAction.CONVERT_BOOKS_AFETER_UPDATE)} >
+                                <Btn as='div' labelPosition='left' onClick={toggleAditionalAction(AdditionalSteps.CONVERT_BOOKS_AFETER_UPDATE)} >
                                 <Label as='a' basic pointing='right'>
                                     Convert after upload
                                 </Label>
-                                    {actionIsSet(AditionalAction.CONVERT_BOOKS_AFETER_UPDATE) ?
+                                    {actionIsSet(AdditionalSteps.CONVERT_BOOKS_AFETER_UPDATE) ?
                                     <Btn icon color='green'>
                                         <Icon name='check' />
                                     </Btn>
