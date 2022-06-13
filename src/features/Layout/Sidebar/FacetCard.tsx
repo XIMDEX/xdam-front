@@ -11,6 +11,7 @@ import { Icon } from 'semantic-ui-react';
 import EFacetNameMapping from './EFacetNameMapping';
 import { mapping, EFilterTypes } from './EMapFacetKeysToFilterType';
 import RangeFilter from './RangeFilter/RangeFilter';
+import WorkspaceFacetCardWrapper from './FacetCards/WorkspaceFacetCardWrapper/WorkspaceFacetCardWrapper';
 
 const useStyles = makeStyles((theme) => ({
     sidebarRoot: {
@@ -220,6 +221,29 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
         
         if (facetValues) {
             switch (facet.key) {
+                case 'workspaces':
+                    return (
+                        Object.keys(facetValues).map((name, index) => (
+                            <li key={index} style={{ listStyleType: "none" }}>
+                                <WorkspaceFacetCardWrapper workspaceName={name}>
+                                    <input
+                                        type={facetValues[name].radio ? 'radio' : 'checkbox'}
+                                        name={facet.key}
+                                        // disabled={facetValues[name].count < 1}
+                                        value={fixed ? facetValues[name].id : name}
+                                        onChange={facetValues[name].radio ? filterRadio : filterCheck}
+                                        checked={getChecked(fixed ? facetValues[name].id : name, facet.key)}
+                                        id={(facet.key + '-' + name + '-' + facetValues[name].id).replace(/ /g, '--')}
+                                        />
+                                    <label htmlFor={(facet.key + '-' + name + '-' + facetValues[name].id).replace(/ /g, '--')}>
+                                        <span>{name} <strong>({facetValues[name].count})</strong></span>
+                                    </label>
+                                </WorkspaceFacetCardWrapper>
+
+                            </li>
+                        )
+                        )
+                    )
                 // case 'cost':
                     
                 //     var comp = <RangeFilter values={facetValues} fkey={facet.key}/>
