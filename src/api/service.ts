@@ -1,7 +1,7 @@
 import api from './urlMapper'
 import { Cookies } from 'react-cookie';
 import * as ponyfill from 'web-streams-polyfill/ponyfill';
-import { PATH_TAXONS_DATA, XTAGS } from '../constants';
+import { XTAGS } from '../constants';
 const streamSaver = require('streamsaver')
 
 class AppService {
@@ -373,6 +373,21 @@ class AppService {
       }
       const res = await (await fetch(_api.url, request)).json();
       return res;
+    }
+
+  async updateWorkspace({ organizationId, oldWorkspaceName, newWorkspaceName, force }: { organizationId: number, oldWorkspaceName: string, newWorkspaceName: string, force: boolean }) {
+    const _api = api().updateWorkspace(organizationId);
+
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers,
+        body: JSON.stringify({
+          name: newWorkspaceName,
+          force
+        })
+      }
+
+    return await fetch(`${_api.url}/${oldWorkspaceName}`, request);
     }
 
     render(url: string): string

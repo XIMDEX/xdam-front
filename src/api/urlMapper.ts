@@ -60,7 +60,11 @@ const api = () => {
             method: 'POST',   
             url: baseUrl + '/user/workspaces/select'
         },
-        createResource: {    
+        updateWorkspace: (organizationId) => ({
+            method: 'POST',
+            url: `${baseUrl}/organization/${organizationId}/workspace/update/byName`,
+        }),
+        createResource: {
             method: 'POST',   
             url: baseUrl + '/resource'
         },
