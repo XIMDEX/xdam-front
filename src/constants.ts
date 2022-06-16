@@ -46,7 +46,12 @@ export const PATH_TAXONS_DATA = '9.formData.Taxon Path';
 export const MAX_BOOK_UNITS = 50;
 
 export enum bookLanguages {
-  en = "english",
-  es = "castellano",
-  cat = "catalan"
+  en = "English",
+  es = "Castellano",
+  cat = "Catalán"
+}
+
+export enum activeLanguages {
+  true = "Activo",
+  false = "No activo"
 }
