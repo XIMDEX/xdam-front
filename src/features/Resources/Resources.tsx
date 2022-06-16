@@ -9,7 +9,7 @@ import IFacet from '../../interfaces/IFacet';
 import { selectQuery, selectFacetsQuery, setQuery } from '../../slices/organizationSlice';
 import param from '../../utils/querybuilder';
 import { Resource } from './Resource';
-import { ORGANIZATION, COLLECTION, WORKPSACES, COURSE, LANGUAGE_FACET, bookLanguages } from '../../constants';
+import { ORGANIZATION, COLLECTION, WORKPSACES, COURSE, LANGUAGE_FACET, ACTIVE_FACET, bookLanguages, activeLanguages } from '../../constants';
 import { getOrgData, getCollData } from '../../utils/dataFind';
 import Dialogs from './Modals/Dialogs';
 import Pagination from '@material-ui/lab/Pagination';
@@ -17,7 +17,6 @@ import { Button as Btn, Icon as Icn } from 'semantic-ui-react';
 import BatchDialog from './Modals/MassiveUpload/BatchDialog';
 import store from '../../app/store';
 import { SelectableGroup, createSelectable } from 'react-selectable';
-
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -197,7 +196,11 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
     Object.keys(data).map(key => (
       data[key].map((value, ix) => (
         <Label >
-          {key === WORKPSACES ? (value) : (key === LANGUAGE_FACET ? (value in bookLanguages ? bookLanguages[value] : value) : (value === 'true' || value === 'false' ? key + ': ' + value : value))}
+          {
+            key === WORKPSACES ? (value) : (key === ACTIVE_FACET ? (value in activeLanguages ? activeLanguages[value] : value)
+              : (key === LANGUAGE_FACET ? (value in bookLanguages ? bookLanguages[value] : value) :
+              (value === 'true' || value === 'false' ? key + ': ' + value : value)))
+          }
         </Label>
       ))
     ))

@@ -59,3 +59,12 @@ export enum activeLanguages {
   true = "Activo",
   false = "No activo"
 }
+
+export enum facetLanguages {
+  lang = "Idioma",
+  active = "Activo",
+  units = "Unidades",
+  isbn = "ISBN",
+  workspaces = "Espacios",
+  tags = "Etiquetas"
+}
