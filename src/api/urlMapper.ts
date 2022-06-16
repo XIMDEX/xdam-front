@@ -60,6 +60,10 @@ const api = () => {
             method: 'POST',   
             url: baseUrl + '/user/workspaces/select'
         },
+        getWorkspaces: {
+            method: 'GET',
+            url: `${baseUrl}/workspace/getMultiple`
+        },
         createResource: {    
             method: 'POST',   
             url: baseUrl + '/resource'

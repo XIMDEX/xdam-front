@@ -434,6 +434,25 @@ class AppService {
 
       return true;
     }
+
+    async getWorkspaces(workspacesId: number[]): Promise<any>
+    {
+      const _api = api().getWorkspaces;
+
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers
+      }
+
+      const urlParameters = workspacesId
+        .map(id => `workspacesId[]=${id}`)
+        .join('&');
+      const url = `${_api.url}?${urlParameters}`;
+
+      const response = await fetch(url, request);
+
+      return await response.json();
+    }
 }
 
 export default function MainService()
