@@ -24,6 +24,10 @@ export const BOOK = 'book';
 export const ACTIVITY = 'activity';
 export const ASSESSMENT = 'assessment';
 
+//FACETS
+export const ACTIVE_FACET = 'active';
+export const LANGUAGE_FACET = 'lang';
+
 // LOM Standars
 export const LOM_NORMAS = {
   lom: {name: 'LOM', key: 'lom'},
