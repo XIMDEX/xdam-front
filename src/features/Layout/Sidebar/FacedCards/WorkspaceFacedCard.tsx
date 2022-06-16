@@ -2,18 +2,22 @@ import React from "react";
 import useWorkspaces from "../../../../hooks/useWorkspaces";
 import { Facet } from "../../../../types/Facet";
 
-
-const WorkspaceFacetCard = (
+const WorkspaceFacetItems = (
     { facet, fixed, isChecked, updateFacet }: 
     { facet: Facet, fixed: boolean, isChecked: (name: string, facetKey: string) => boolean, updateFacet: (isRadio: boolean) => (value: any, checked: boolean) => void} ) => {
     
     const workspacesData = useWorkspaces(Object.keys(facet.values).map(name => parseInt(name)));
 
-    const changeFacet = (event, isRadio: boolean) => {
-        const checked = event.target.checked;
-        const value = event.target.value;
+    const changeFacet = (isRadio: boolean): (event) => void => {
 
-        updateFacet(isRadio)(value, checked);
+        const update = updateFacet(isRadio);
+
+        return (event) => {
+            const checked = event.target.checked;
+            const value = event.target.value;
+
+            update(value, checked);
+        }
     }
 
     if(Object.keys(workspacesData).length === 0) return null;
@@ -29,8 +33,8 @@ const WorkspaceFacetCard = (
                                 type={values.radio ? 'radio' : 'checkbox'}
                                 name={workspaceId}
                                 value={workspaceId}
+                                onChange={changeFacet(values.radio)}
                                 checked={isChecked(fixed ? values.id : workspaceId, facet.key)}
-                                onChange={event => { changeFacet(event, values.radio)}}
                                 id={(facet.key + '-' + workspaceId + '-' + values.id).replace(/ /g, '--')}
                             />
                             <label htmlFor={(facet.key + '-' + workspaceId + '-' + values.id).replace(/ /g, '--')}>
@@ -44,4 +48,4 @@ const WorkspaceFacetCard = (
     );
 }
 
-export default WorkspaceFacetCard;
+export default WorkspaceFacetItems;
