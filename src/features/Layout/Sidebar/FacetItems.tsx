@@ -2,8 +2,8 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setResourcesLoading } from "../../../appSlice";
 import { setQuery, setFacetsQuery, selectQuery } from "../../../slices/organizationSlice";
-import DefaultFacetItems from "./FacedCards/DefaultFacetItems";
-import WorkspaceFacetItems from "./FacedCards/WorkspaceFacedCard";
+import DefaultFacetItems from "./FacetCards/DefaultFacetItems";
+import WorkspaceFacetItems from "./FacetCards/WorkspaceFacetCard";
 
 const FacetItems = ({ fixed, facet, facetValues, currentFacets}) => {
     const dispatch = useDispatch();

@@ -1,0 +1,29 @@
+.workspaceRenameModal {
+
+    &__edit {
+        display: inline;
+        border-radius: 0.28rem;
+        float: right;
+        margin-right: 10px;
+
+        i {
+            margin: 2px !important;
+        }
+
+        &:hover {
+            background-color: lightgray;
+        }
+    }
+
+    &__message {
+        margin-bottom: 15px;
+    }
+
+    &__confirmation {
+        margin-top: 15px;
+    }
+
+    &__workspaceNameInput {
+        width: 100%;
+    }
+} 

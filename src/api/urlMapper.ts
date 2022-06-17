@@ -64,6 +64,10 @@ const api = () => {
             method: 'GET',
             url: `${baseUrl}/workspace/getMultiple`
         },
+        updateWorkspace: {
+            method: 'POST',
+            url: `${baseUrl}/workspace/update`
+        },
         createResource: {    
             method: 'POST',   
             url: baseUrl + '/resource'

@@ -375,6 +375,23 @@ class AppService {
       return res;
     }
 
+  async renameWorkspace(workspaceId: number, newName: string)
+    {
+      const _api = api().updateWorkspace;
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers,
+        body: JSON.stringify({
+          workspace_id: workspaceId,
+          name: newName
+        })
+      }
+
+      const res = await fetch(_api.url, request);
+
+      return res;
+    }
+
     render(url: string): string
     {
       const isDamResource = this.isDamResource(url);

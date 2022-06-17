@@ -12,7 +12,7 @@ const useWorkspaces = (workspacesId: WorkspaceId[]) => {
         const fetchWorkspaces = async () => {
             const { data } = await MainService().getWorkspaces(workspacesId)
 
-            const workspaces: Array<Workspace> = data.map((raw: any) => ({
+            const fetchedWorkspaces: Array<Workspace> = data.map((raw: any) => ({
                 id: raw.id,
                 name: raw.name,
                 organizationId: raw.organizationId,
@@ -20,20 +20,21 @@ const useWorkspaces = (workspacesId: WorkspaceId[]) => {
                 updatedAt: raw.updated_at,
             }));
 
-            const nextWorkspaces = workspaces.reduce((indexedWorkspaces: Record<WorkspaceId, Workspace>, currentWorkspace: Workspace) => ({ ...indexedWorkspaces, [currentWorkspace.id]: currentWorkspace }), {});
+
+            const nextWorkspaces = fetchedWorkspaces.reduce((indexedWorkspaces: Record<WorkspaceId, Workspace>, currentWorkspace: Workspace) => ({ ...indexedWorkspaces, [currentWorkspace.id]: currentWorkspace }), {});
 
             setWorkspaces(nextWorkspaces);
+
+            didRun.current = true
         }
 
         if(didRun.current) {
-            return;
-        }
-        
-        if(workspacesId.length === 0) {
+            didRun.current = false;
+
             return;
         }
 
-        if (workspacesId.every(id => Object.keys(workspaces).includes(id.toString()))) {
+        if(workspacesId.length === 0) {
             return;
         }
         
