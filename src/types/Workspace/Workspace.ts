@@ -6,5 +6,5 @@ export interface Workspace {
     organizationId: number,
     type: string,
     createdAt: Date,
-    updatedAd: Date
+    updatedAt: Date
 }

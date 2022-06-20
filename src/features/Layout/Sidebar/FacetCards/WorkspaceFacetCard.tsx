@@ -1,8 +1,6 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
 import MainService from "../../../../api/service";
 import useWorkspaces from "../../../../hooks/useWorkspaces";
-import { selectFacetsQuery, setFacetsQuery } from "../../../../slices/organizationSlice";
 import { Facet } from "../../../../types/Facet";
 import FacetActionsWrapper from "../FacetActionsWrapper/FacetActionsWrapper";
 
@@ -10,9 +8,7 @@ const WorkspaceFacetItems = (
     { facet, fixed, isChecked, updateFacet }: 
     { facet: Facet, fixed: boolean, isChecked: (name: string, facetKey: string) => boolean, updateFacet: (isRadio: boolean) => (value: any, checked: boolean) => void} ) => {
     
-    const facets = useSelector(selectFacetsQuery);
-    const dispatch = useDispatch();
-    const workspacesData = useWorkspaces(Object.keys(facet.values).map(name => parseInt(name)));
+    const { workspaces, setWorkspaces } = useWorkspaces(Object.keys(facet.values).map(name => parseInt(name)));
 
     const changeFacet = (isRadio: boolean): (event) => void => {
 
@@ -26,35 +22,41 @@ const WorkspaceFacetItems = (
         }
     }
 
-    const renameWorkspace = (id: number, oldName: string) => {
+    const renameWorkspace = (id: number) => {
 
         return async (newName: string) => {
             await MainService().renameWorkspace(id, newName);
+            const { data } = await MainService().getWorkspaces([id]);
 
-            if (facets?.workspaces && facets.workspaces.includes(oldName)) {
-                const newFacets = {
-                    ...facets,
-                    workspaces: [...facets?.workspaces, newName].filter(w => w !== oldName)
+            const updatedWorkspaces = data[0];
+
+            setWorkspaces({
+                ...workspaces,
+                [id]: {
+                    id: updatedWorkspaces.id,
+                    name: updatedWorkspaces.name,
+                    organizationId: updatedWorkspaces.organizationId,
+                    type: updatedWorkspaces.type,
+                    createdAt: updatedWorkspaces.created_at,
+                    updatedAt: updatedWorkspaces.updated_at,
                 }
-
-                dispatch(setFacetsQuery(newFacets));
-            }
+            });
         }
     }
 
-    if(Object.keys(workspacesData).length === 0) return null;
+    if(Object.keys(workspaces).length === 0) return null;
 
     return (<>
             {Object.keys(facet.values).map((workspaceId, index) =>
                 {
                     const values = facet.values[workspaceId];
 
-                    if (!workspacesData[workspaceId]) {
+                    if (!workspaces[workspaceId]) {
                         return null;
                     }
 
                     return (
-                        <FacetActionsWrapper name={workspacesData[workspaceId].name} rename={renameWorkspace(workspacesData[workspaceId].id, workspacesData[workspaceId].name)}>
+                        <FacetActionsWrapper name={workspaces[workspaceId].name} rename={renameWorkspace(workspaces[workspaceId].id)}>
                             <li key={index} style={{ listStyleType: "none" }}>
                                 <input
                                     type={values.radio ? 'radio' : 'checkbox'}
@@ -65,7 +67,7 @@ const WorkspaceFacetItems = (
                                     id={(facet.key + '-' + workspaceId + '-' + values.id).replace(/ /g, '--')}
                                     />
                                 <label htmlFor={(facet.key + '-' + workspaceId + '-' + values.id).replace(/ /g, '--')}>
-                                    <span>{workspacesData[workspaceId].name} <strong>({values.count})</strong></span>
+                                    <span>{workspaces[workspaceId].name} <strong>({values.count})</strong></span>
                                 </label>
                             </li>
                         </FacetActionsWrapper>

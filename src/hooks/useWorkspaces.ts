@@ -16,21 +16,18 @@ const useWorkspaces = (workspacesId: WorkspaceId[]) => {
                 id: raw.id,
                 name: raw.name,
                 organizationId: raw.organizationId,
-                createdAt: raw.created_at,
-                updatedAt: raw.updated_at,
+                type: raw.type,
+                createdAt: new Date(raw.created_at),
+                updatedAt: new Date(raw.updated_at),
             }));
 
 
             const nextWorkspaces = fetchedWorkspaces.reduce((indexedWorkspaces: Record<WorkspaceId, Workspace>, currentWorkspace: Workspace) => ({ ...indexedWorkspaces, [currentWorkspace.id]: currentWorkspace }), {});
 
             setWorkspaces(nextWorkspaces);
-
-            didRun.current = true
         }
 
         if(didRun.current) {
-            didRun.current = false;
-
             return;
         }
 

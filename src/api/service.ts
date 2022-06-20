@@ -452,7 +452,7 @@ class AppService {
       return true;
     }
 
-    async getWorkspaces(workspacesId: number[]): Promise<any>
+    async getWorkspaces(workspacesId: number[]): Promise<{data: any[]}>
     {
       const _api = api().getWorkspaces;
 
