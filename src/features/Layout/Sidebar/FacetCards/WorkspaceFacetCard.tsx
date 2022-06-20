@@ -56,8 +56,8 @@ const WorkspaceFacetItems = (
                     }
 
                     return (
-                        <FacetActionsWrapper name={workspaces[workspaceId].name} rename={renameWorkspace(workspaces[workspaceId].id)}>
-                            <li key={index} style={{ listStyleType: "none" }}>
+                        <li key={index} style={{ listStyleType: "none" }}>
+                            <FacetActionsWrapper name={workspaces[workspaceId].name} rename={renameWorkspace(workspaces[workspaceId].id)}>
                                 <input
                                     type={values.radio ? 'radio' : 'checkbox'}
                                     name={workspaceId}
@@ -69,8 +69,8 @@ const WorkspaceFacetItems = (
                                 <label htmlFor={(facet.key + '-' + workspaceId + '-' + values.id).replace(/ /g, '--')}>
                                     <span>{workspaces[workspaceId].name} <strong>({values.count})</strong></span>
                                 </label>
-                            </li>
-                        </FacetActionsWrapper>
+                            </FacetActionsWrapper>
+                        </li>
                     )
                 }
             )}

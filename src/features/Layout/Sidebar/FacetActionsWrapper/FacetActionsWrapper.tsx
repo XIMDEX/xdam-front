@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import RenameResource from "../../../Resources/Modals/RenameResource/RenameResource";
 import styles from './FacetActionsWrapper.module.scss';
 
-const FacetActionsWrapper = ({ name, rename, children }: {name: string, rename: (newName: string) => void, children: React.ReactNode }) => {
+const FacetActionsWrapper = ({ name, rename, children }: {name: string, rename?: (newName: string) => void, children: React.ReactNode }) => {
 
     const [showEditButton, setShowEditButton] = useState(false);
 
@@ -16,10 +16,14 @@ const FacetActionsWrapper = ({ name, rename, children }: {name: string, rename: 
 
     return (
         <div onMouseEnter={displayEditButton} onMouseLeave={hiddeEditButton} className={styles.facetActionsWrapper } >
-            { showEditButton &&
-            <RenameResource currentName={name} hiddeEditButton={ hiddeEditButton } action={rename} />
-            }
-            { children }
+            <div className={styles.facetActionsWrapper__content}>
+                { children }
+            </div>
+            <div className={styles.facetActionsWrapper__buttons}>
+                { showEditButton &&
+                <RenameResource currentName={name} hiddeEditButton={ hiddeEditButton } action={rename} />
+                }
+            </div>
         </div>
     );
 }
