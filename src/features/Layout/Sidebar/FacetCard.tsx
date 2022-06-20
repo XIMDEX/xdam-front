@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Grid, Button, IconButton, Typography, TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import _ from 'lodash'
-import { ORGANIZATION, COLLECTION, ACTIVE_FACET, LANGUAGE_FACET, bookLanguages, activeLanguages, facetLanguages } from '../../../constants';
+import { ORGANIZATION, COLLECTION, ACTIVE_FACET, LANGUAGE_FACET, bookLanguages } from '../../../constants';
 import { setFacetsQuery, setQuery, selectQuery } from '../../../slices/organizationSlice';
 import { setResourcesLoading } from '../../../appSlice';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -193,13 +193,8 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
         if (facet.key === ORGANIZATION && typeof selectedOrg === 'object') {
             return selectedOrg.name
         }
-
         if (facet.key === COLLECTION && typeof selectedColl === 'object') {
             return selectedColl.name
-        }
-
-        if (facet.key in facetLanguages) {
-            return facetLanguages[facet.key]
         }
 
         if (facet.key in EFacetNameMapping) {
@@ -274,10 +269,6 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
                 //     var comp = <RangeFilter values={facetValues} fkey={facet.key}/>
                 //     return comp
                 //     break;
-                case ACTIVE_FACET:
-                    var auxFacetValues = translateFacetItems(facetValues, activeLanguages);              
-                    return returnFacetItems(auxFacetValues);
-                    break;
 
                 case LANGUAGE_FACET:
                     var auxFacetValues = translateFacetItems(facetValues, bookLanguages);              
