@@ -1,16 +1,16 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import MainService from "../api/service"
-import { Workspace } from "../types/Workspace";
-
-type WorkspaceId = number;
+import { Workspace } from "../types/Workspace/Workspace";
+import { WorkspaceId } from "../types/Workspace/WorkspaceId";
 
 const useWorkspaces = (workspacesId: WorkspaceId[]) => {
     const [workspaces, setWorkspaces] = useState<Record<WorkspaceId,Workspace>>({});
+    const didRun = useRef(false);
 
     useEffect(() => {
 
         const fetchWorkspaces = async () => {
-            const {data} = await MainService().getWorkspaces(workspacesId)
+            const { data } = await MainService().getWorkspaces(workspacesId)
 
             const workspaces: Array<Workspace> = data.map((raw: any) => ({
                 id: raw.id,
@@ -20,11 +20,15 @@ const useWorkspaces = (workspacesId: WorkspaceId[]) => {
                 updatedAt: raw.updated_at,
             }));
 
-            const nextWorkspace = workspaces.reduce((indexedWorkspaces: Record<WorkspaceId, Workspace>, currentWorkspace: Workspace) => ({ ...indexedWorkspaces, [currentWorkspace.id]: currentWorkspace }), {});
+            const nextWorkspaces = workspaces.reduce((indexedWorkspaces: Record<WorkspaceId, Workspace>, currentWorkspace: Workspace) => ({ ...indexedWorkspaces, [currentWorkspace.id]: currentWorkspace }), {});
 
-            setWorkspaces(nextWorkspace);
+            setWorkspaces(nextWorkspaces);
         }
 
+        if(didRun.current) {
+            return;
+        }
+        
         if(workspacesId.length === 0) {
             return;
         }
@@ -32,12 +36,13 @@ const useWorkspaces = (workspacesId: WorkspaceId[]) => {
         if (workspacesId.every(id => Object.keys(workspaces).includes(id.toString()))) {
             return;
         }
-
+        
         fetchWorkspaces();
+        didRun.current = true;
 
     }, [workspacesId]);
 
-    return workspaces;
+    return { workspaces, setWorkspaces };
 }
 
 export default useWorkspaces;

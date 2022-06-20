@@ -1,6 +1,7 @@
+import { WorkspaceId } from "./WorkspaceId";
 
 export interface Workspace {
-    id: number,
+    id: WorkspaceId,
     name: string,
     organizationId: number,
     type: string,

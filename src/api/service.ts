@@ -441,7 +441,7 @@ class AppService {
 
       const request = {
         method: _api.method,
-        headers: this.httpOptions.headers
+        headers: this.httpOptions.headers,
       }
 
       const urlParameters = workspacesId
