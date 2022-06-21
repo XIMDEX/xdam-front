@@ -35,10 +35,10 @@ const WorkspacesChips = ({ facetValues }: { facetValues: FacetValues}) => {
 
 const FacetChips = ({facetsQuery}: {facetsQuery: FacetsQuery}) => {
 
-    const chips =  Object.keys(facetsQuery).map(facetName => {
+    const chips =  Object.keys(facetsQuery).map((facetName: string, index: number) => {
 
         if (facetName === WORKPSACES) {
-            return <WorkspacesChips facetValues={facetsQuery[facetName]} />;
+            return <WorkspacesChips key={`${facetName}-${index}`} facetValues={facetsQuery[facetName]} />;
         }
 
         return facetsQuery[facetName].map((value: any, i: number) => {
@@ -47,7 +47,9 @@ const FacetChips = ({facetsQuery}: {facetsQuery: FacetsQuery}) => {
                 : null;
 
             return (<Chip key={i} name={name} value={value} />);
-        })
+        });
+
+
     });
 
     return <>{chips}</>;
