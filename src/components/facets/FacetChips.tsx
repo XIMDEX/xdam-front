@@ -24,10 +24,10 @@ const WorkspacesChips = ({ facetValues }: { facetValues: FacetValues}) => {
 
     if (!workspaces) return null;
 
-    const chips = facetValues.map((workspaceId: string, i: number) => {
+    const chips = facetValues.map((workspaceId: string) => {
         const workspaceName = workspaces[workspaceId].name;
 
-        return (<Chip key={i} value={workspaceName} />);
+        return (<Chip key={workspaceId} value={workspaceName} />);
     });
 
     return <>{chips}</>;
