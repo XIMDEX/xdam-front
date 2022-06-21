@@ -4,6 +4,8 @@ import { useDispatch } from "react-redux";
 import styles from './RenameResource.module.scss';
 import { reloadCatalogue } from "../../../../appSlice";
 
+const MINIMUM_NAME_LENGTH = 3;
+
 const RenameResource = ({ currentName, action, hiddeEditButton }: { currentName: string, action: (newName: string) => void, hiddeEditButton: () => void }) => {
 
     const [open, setOpen] = useState(false);
@@ -17,7 +19,7 @@ const RenameResource = ({ currentName, action, hiddeEditButton }: { currentName:
     }
 
     const cannotSave = (): boolean => {
-        return newName.length === 0 || currentName === newName;
+        return newName.length < MINIMUM_NAME_LENGTH || currentName === newName;
     }
 
     const openModal = () => {
