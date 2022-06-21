@@ -8,8 +8,8 @@ export const parseWorkspace = (raw: any): Workspace => {
         name: raw.name,
         organizationId: raw.organizationId,
         type: raw.type,
-        createdAt: new Date(raw.created_at),
-        updatedAt: new Date(raw.updated_at),
+        createdAt: raw.created_at,
+        updatedAt: raw.updated_at,
     }
 }
 
