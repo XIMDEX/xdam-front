@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Grid, Button, IconButton, Typography, TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import _ from 'lodash'
-import { ORGANIZATION, COLLECTION, ACTIVE_FACET, LANGUAGE_FACET, bookLanguages } from '../../../constants';
+import { ORGANIZATION, COLLECTION, ACTIVE_FACET, LANGUAGE_FACET, bookLanguages, activeOptions } from '../../../constants';
 import { setFacetsQuery, setQuery, selectQuery } from '../../../slices/organizationSlice';
 import { setResourcesLoading } from '../../../appSlice';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -269,6 +269,11 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
                 //     var comp = <RangeFilter values={facetValues} fkey={facet.key}/>
                 //     return comp
                 //     break;
+
+                case ACTIVE_FACET:
+                    var auxFacetValues = translateFacetItems(facetValues, activeOptions);              
+                    return returnFacetItems(auxFacetValues);
+                    break;
 
                 case LANGUAGE_FACET:
                     var auxFacetValues = translateFacetItems(facetValues, bookLanguages);              

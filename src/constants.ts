@@ -25,6 +25,7 @@ export const ACTIVITY = 'activity';
 export const ASSESSMENT = 'assessment';
 
 //FACETS
+export const ACTIVE_FACET = 'active';
 export const LANGUAGE_FACET = 'lang';
 
 // LOM Standars
@@ -52,4 +53,9 @@ export enum bookLanguages {
   en = "English",
   es = "Castellano",
   cat = "Catalán"
+}
+
+export enum activeOptions {
+  true = "Activo",
+  false = "No activo"
 }
