@@ -4,14 +4,14 @@ import styles from './FacetActionsWrapper.module.scss';
 
 const FacetActionsWrapper = ({ name, rename, children }: {name: string, rename?: (newName: string) => void, children: React.ReactNode }) => {
 
-    const [showEditButton, setShowEditButton] = useState(false);
+    const [editButtonVisibility, setEditButtonVisibility] = useState<'visible'| 'hidden'>('hidden');
 
     const displayEditButton = () => {
-        setShowEditButton(true);
+        setEditButtonVisibility('visible');
     }
 
     const hiddeEditButton = () => {
-        setShowEditButton(false);
+        setEditButtonVisibility('hidden');
     }
 
     return (
@@ -19,8 +19,11 @@ const FacetActionsWrapper = ({ name, rename, children }: {name: string, rename?:
             <div className={styles.facetActionsWrapper__content}>
                 { children }
             </div>
-            <div className={styles.facetActionsWrapper__buttons}>
-                { showEditButton &&
+            <div 
+                className={styles.facetActionsWrapper__buttons}
+                style={{ "--visibility": editButtonVisibility} as React.CSSProperties}    
+            >
+                { editButtonVisibility &&
                 <RenameResource currentName={name} hiddeEditButton={ hiddeEditButton } action={rename} />
                 }
             </div>

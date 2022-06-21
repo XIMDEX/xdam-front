@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
   }
 ));
 
-export function FacetCard({ facet, fixed, resources, collection, organization, facetsQuery, supplementaryDataProvider }) { 
+export function FacetCard({ facet, fixed, resources, collection, organization, facetsQuery }) { 
     const classes = useStyles()
     const values = facet.values ?? {}
     const dispatch = useDispatch()

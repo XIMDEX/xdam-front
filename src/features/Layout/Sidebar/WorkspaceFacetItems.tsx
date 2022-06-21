@@ -61,8 +61,11 @@ const WorkspaceFacetItems = ({ facet, filteredFacetValues, fixed, isChecked, cha
                                     checked={isChecked(fixed ? values.id : workspaceId, facet.key)}
                                     id={(facet.key + '-' + workspaceId + '-' + values.id).replace(/ /g, '--')}
                                     />
-                                <label htmlFor={(facet.key + '-' + workspaceId + '-' + values.id).replace(/ /g, '--')}>
-                                    <span>{workspaces[workspaceId].name} <strong>({values.count})</strong></span>
+                                <label 
+                                    htmlFor={(facet.key + '-' + workspaceId + '-' + values.id).replace(/ /g, '--')}
+                                    title={workspaces[workspaceId].name}
+                                    >
+                                    <span>{workspaces[workspaceId].name}</span><strong>{`(${values.count})`}</strong>
                                 </label>
                             </FacetActionsWrapper>
                         </li>
