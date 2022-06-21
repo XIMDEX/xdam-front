@@ -7,6 +7,7 @@ import { FacetCard } from './FacetCard';
 import { getOrgData, getCollData } from '../../../utils/dataFind';
 import { selectFacetsQuery } from '../../../slices/organizationSlice';
 import withWidth from '@material-ui/core/withWidth';
+import workspacesProvider from '../../../api/providers/workspacesProvider';
 
 const useStyles = makeStyles((theme) => ({
     sidebarComp: { 
@@ -36,10 +37,17 @@ function Sidebar( { collection, organization } ) {
   const facets = useSelector(selectFacets)
   const resources = useSelector(selectResources)
   const resourcesLoading = useSelector(selectResourcesLoading)
-  
-  useEffect(() => {
-  }, [currentQuery, organization, collection, facets, fixedFacets, resources, user])
 
+  const provider = (facet: string) => {
+    
+    switch(facet) {
+      case 'workspaces': 
+        return workspacesProvider;
+    }
+
+    return null;
+  }
+  
   return (
     <Grid container className={`${classes.sidebarComp}`} > 
       <Grid item sm={12}>
@@ -54,7 +62,7 @@ function Sidebar( { collection, organization } ) {
                   collection={selectedColl} 
                   organization={selectedOrg} 
                   facetsQuery={currentQuery}
-                  _user={user}
+                  supplementaryDataProvider={provider(item.key)}
                 />
               )
             })

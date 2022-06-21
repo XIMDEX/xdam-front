@@ -10,6 +10,7 @@ import ClearIcon from '@material-ui/icons/Clear';
 import { Icon } from 'semantic-ui-react';
 import EFacetNameMapping from './EFacetNameMapping';
 import FacetItems from './FacetItems';
+import useSupplementaryData from '../../../hooks/useSupplementaryData';
 
 const useStyles = makeStyles((theme) => ({
     sidebarRoot: {
@@ -55,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
   }
 ));
 
-export function FacetCard({ facet, fixed, resources, collection, organization, facetsQuery, _user }) { 
+export function FacetCard({ facet, fixed, resources, collection, organization, facetsQuery, supplementaryDataProvider }) { 
     const classes = useStyles()
     const values = facet.values ?? {}
     const dispatch = useDispatch()
@@ -67,6 +68,7 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
     const [search, setSearch] = useState('')
     const currentFacets = JSON.parse(JSON.stringify(facetsQuery));
     const cQuery = useSelector(selectQuery);
+    const supplementaryData = useSupplementaryData(facet);
     
     useEffect( () => {
         if (search === '') {
@@ -77,8 +79,9 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
     function onFilterChange(e) {
         setSearch(e.target.value);
         var result = _.pickBy(values, function(value, key) {
-            
-            return _.includes(key.toLowerCase(), e.target.value.toLowerCase());
+            const k = supplementaryData[key]?.name || key;
+
+            return _.includes(k.toLowerCase(), e.target.value.toLowerCase());
         });
         setFacetValues(result)
     }
@@ -186,7 +189,7 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
                     <Grid item sm={12}>
                     <ul> 
                         {
-                            organization && collection ? (<FacetItems fixed={fixed} facet={facet} facetValues={facetValues} currentFacets={currentFacets}/>) : ''
+                            organization && collection ? (<FacetItems supplementaryData={supplementaryData} fixed={fixed} facet={facet} facetValues={facetValues} currentFacets={currentFacets}/>) : ''
                         }
                     </ul>
                     </Grid>

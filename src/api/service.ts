@@ -2,6 +2,7 @@ import api from './urlMapper'
 import { Cookies } from 'react-cookie';
 import * as ponyfill from 'web-streams-polyfill/ponyfill';
 import { PATH_TAXONS_DATA, XTAGS } from '../constants';
+import { RedoOutlined } from '@material-ui/icons';
 const streamSaver = require('streamsaver')
 
 class AppService {
@@ -452,8 +453,11 @@ class AppService {
       return true;
     }
 
-    async getWorkspaces(workspacesId: number[]): Promise<{data: any[]}>
-    {
+    async getWorkspaces(workspacesId: number[]): Promise<{data: any[]}> {
+
+      if (!workspacesId || !Array.isArray(workspacesId))
+        return;
+
       const _api = api().getWorkspaces;
 
       const request = {

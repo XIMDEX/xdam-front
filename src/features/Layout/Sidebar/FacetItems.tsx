@@ -2,14 +2,32 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setResourcesLoading } from "../../../appSlice";
 import { setQuery, setFacetsQuery, selectQuery } from "../../../slices/organizationSlice";
-import DefaultFacetItems from "./FacetCards/DefaultFacetItems";
-import WorkspaceFacetItems from "./FacetCards/WorkspaceFacetCard";
+import WorkspaceFacetItems from "./WorkspaceFacetItems";
 
-const FacetItems = ({ fixed, facet, facetValues, currentFacets}) => {
+
+const FacetItem = ({name, facet, fixed, facetValues, supplementaryData, changeFacet, facetIsActive}) => {
+
+    return (
+        <>
+            <input
+                type={facetValues[name].radio ? 'radio' : 'checkbox'}
+                name={supplementaryData ? supplementaryData.name : facet.key}
+                value={fixed ? facetValues[name].id : name}
+                onChange={changeFacet(facetValues[name].radio)}
+                checked={facetIsActive(fixed ? facetValues.id : name, facet.key)}
+                id={(facet.key + '-' + name + '-' + facetValues[name].id).replace(/ /g, '--')} />
+            <label htmlFor={(facet.key + '-' + name + '-' + facetValues[name].id).replace(/ /g, '--')}>
+                <span>{supplementaryData?.[name] ? supplementaryData[name].name : name} <strong>({facetValues[name].count})</strong></span>
+            </label>
+        </>
+    )
+}
+
+const FacetItems = ({ supplementaryData, fixed, facet, facetValues, currentFacets}) => {
     const dispatch = useDispatch();
     const cQuery = useSelector(selectQuery);
 
-    function facetIsActive(toCheck: string | number, key: string): boolean {
+    const facetIsActive = (toCheck: string | number, key: string): boolean => {
         let check = Object.keys(currentFacets)
         let isChecked = false;
         check.forEach(item => {
@@ -23,7 +41,7 @@ const FacetItems = ({ fixed, facet, facetValues, currentFacets}) => {
         return isChecked;
     }
 
-    const filterRadioValue = (value: any, _checked = true) => {
+    const filterRadio = (value: any, _checked = true) => {
         const facetKey = facet.key;
 
         if (currentFacets.hasOwnProperty(facetKey)) {
@@ -41,7 +59,7 @@ const FacetItems = ({ fixed, facet, facetValues, currentFacets}) => {
         dispatch(setFacetsQuery(currentFacets));
     }
 
-    const filterCheckValue = (value: any, checked: boolean) => {
+    const filterCheck = (value: any, checked: boolean) => {
         const facetKey = facet.key;
 
         if (currentFacets.hasOwnProperty(facetKey)) {
@@ -75,19 +93,32 @@ const FacetItems = ({ fixed, facet, facetValues, currentFacets}) => {
         dispatch(setFacetsQuery(currentFacets))
     }
 
-    const updateSelectedFacets = (isRadio: boolean): (value: any, checked?: boolean) => void => {
-        return isRadio ? filterRadioValue : filterCheckValue;
+    const changeFacet = (isRadio: boolean): (event) => void => {
+
+        const update = isRadio ? filterRadio : filterCheck;
+
+        return (event) => {
+            const checked = event.target.checked;
+            const value = event.target.value;
+
+            update(value, checked);
+        }
     }
 
     if (!facetValues) return null;
 
-
-    switch (facet.key) {
-        case 'workspaces':
-            return <WorkspaceFacetItems facet={facet} fixed={fixed} isChecked={facetIsActive} updateFacet={updateSelectedFacets} />
-        default:
-            return <DefaultFacetItems facet={facet} fixed={fixed} isChecked={facetIsActive} updateFacet={updateSelectedFacets} />
+    if (facet.key === 'workspaces') {
+        return <WorkspaceFacetItems facet={facet} filteredFacetValues={facetValues} fixed={fixed} isChecked={facetIsActive} changeFacet={changeFacet} supplementaryData={supplementaryData}/>
     }
+
+    return (<>
+        {Object.keys(facetValues).map((name, index) => (
+            <li key={index} style={{ listStyleType: "none" }}>
+                <FacetItem name={name} facet={facet} fixed={fixed} facetValues={facetValues} supplementaryData={supplementaryData} changeFacet={changeFacet} facetIsActive={facetIsActive} />
+            </li>
+        )
+        )}
+    </>);
 }
 
 export default FacetItems;

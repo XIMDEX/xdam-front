@@ -1,26 +1,27 @@
-import React from "react";
-import MainService from "../../../../api/service";
-import useWorkspaces from "../../../../hooks/useWorkspaces";
-import { Facet } from "../../../../types/Facet";
-import FacetActionsWrapper from "../FacetActionsWrapper/FacetActionsWrapper";
+import React, { useEffect, useState } from "react";
+import { parseWorkspace } from "../../../api/providers/workspacesProvider";
+import MainService from "../../../api/service";
+import { Facet } from "../../../types/Facet";
+import { Workspace } from "../../../types/Workspace/Workspace";
+import { WorkspaceId } from "../../../types/Workspace/WorkspaceId";
+import FacetActionsWrapper from "./FacetActionsWrapper/FacetActionsWrapper";
 
-const WorkspaceFacetItems = (
-    { facet, fixed, isChecked, updateFacet }: 
-    { facet: Facet, fixed: boolean, isChecked: (name: string, facetKey: string) => boolean, updateFacet: (isRadio: boolean) => (value: any, checked: boolean) => void} ) => {
+interface Props { 
+    facet: Facet,
+    filteredFacetValues: Facet["values"],
+    fixed: boolean,
+    isChecked: (name: string, facetKey: string) => boolean,
+    changeFacet: (isRadio: boolean) => (event) => void,
+    supplementaryData: Record<WorkspaceId, Workspace>
+}
+
+const WorkspaceFacetItems = ({ facet, filteredFacetValues, fixed, isChecked, changeFacet, supplementaryData }: Props ) => {
     
-    const { workspaces, setWorkspaces } = useWorkspaces(Object.keys(facet.values).map(name => parseInt(name)));
+    const [workspaces, setWorkspaces] = useState<Record<WorkspaceId, Workspace>>(null);
 
-    const changeFacet = (isRadio: boolean): (event) => void => {
-
-        const update = updateFacet(isRadio);
-
-        return (event) => {
-            const checked = event.target.checked;
-            const value = event.target.value;
-
-            update(value, checked);
-        }
-    }
+    useEffect(() => {
+        setWorkspaces(supplementaryData)
+    }, [supplementaryData]);
 
     const renameWorkspace = (id: number) => {
 
@@ -28,28 +29,22 @@ const WorkspaceFacetItems = (
             await MainService().renameWorkspace(id, newName);
             const { data } = await MainService().getWorkspaces([id]);
 
-            const updatedWorkspaces = data[0];
+            const nextWorkspace = parseWorkspace(data[0]);
 
             setWorkspaces({
                 ...workspaces,
-                [id]: {
-                    id: updatedWorkspaces.id,
-                    name: updatedWorkspaces.name,
-                    organizationId: updatedWorkspaces.organizationId,
-                    type: updatedWorkspaces.type,
-                    createdAt: updatedWorkspaces.created_at,
-                    updatedAt: updatedWorkspaces.updated_at,
-                }
+                [id]: nextWorkspace
             });
         }
     }
 
-    if(Object.keys(workspaces).length === 0) return null;
+    if (!workspaces) return null;
+    if (Object.keys(workspaces).length === 0) return null;
 
     return (<>
-            {Object.keys(facet.values).map((workspaceId, index) =>
+            {Object.keys(filteredFacetValues).map((workspaceId, index) =>
                 {
-                    const values = facet.values[workspaceId];
+                    const values = filteredFacetValues[workspaceId];
 
                     if (!workspaces[workspaceId]) {
                         return null;
