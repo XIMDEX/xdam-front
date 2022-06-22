@@ -49,7 +49,7 @@ export function Header( {_user} ) {
 
   const logout = () => {
     dispatch(setLoading(true))
-    MainService().logout()
+    MainService.logout()
   }
   
   return (

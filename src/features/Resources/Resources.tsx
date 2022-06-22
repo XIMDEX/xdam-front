@@ -75,7 +75,7 @@ const useStyles = makeStyles((theme) => ({
 ));
 
 export function Resources({ collection, organization, sidebarOpen, _user }) {
-  const mainService = MainService();
+  const mainService = MainService;
   const query = useSelector(selectQuery);
   const dispatch = useDispatch();
   const classes = useStyles();
@@ -180,7 +180,7 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
   }
 
   const getSchemas = async () => {
-    const schemas = await MainService().getSchemas();
+    const schemas = await MainService.getSchemas();
     dispatch(setSchemas(schemas));
   }
 

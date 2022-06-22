@@ -49,12 +49,12 @@ export default function ViewResource( { resData } ) {
 
     useEffect(() => {
         const getResourceData = async () => {
-            let res = await MainService().getResource(id);
+            let res = await MainService.getResource(id);
             setResourceData(res);
         }
 
         const getResourceDataFaceted = async () => {
-          let resFacet = await MainService().getCatalogue(coll, '?facets[id]='+id);
+          let resFacet = await MainService.getCatalogue(coll, '?facets[id]='+id);
           setResourceDataFacet(resFacet.data[0]);
       }
 

@@ -25,7 +25,7 @@ export default function OrganizationSwitch( { organizations, user } ) {
         }
     }
 
-    const res = await MainService().setWorkspace(wsp.id)
+    const res = await MainService.setWorkspace(wsp.id)
 
     if (res.data['selected workspace']) {
         setSelected(org.name);

@@ -41,7 +41,7 @@ function App() {
   const user = useSelector(selectUser);
   const reloadApp = useSelector(selectReloadApp);
   const dispatch = useDispatch();
-  const mainService = MainService();
+  const mainService = MainService;
   const facetsQuery = useSelector(selectFacetsQuery);
   const query = useSelector(selectQuery);
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -76,11 +76,12 @@ function App() {
     const initUser = async () => {
       if (mainService.getToken()) {
         if(!localUser) {
-          let fetchedUser = await MainService().getUser();
+          let fetchedUser = await MainService.getUser();
           console.log(fetchedUser);
           if (fetchedUser.error) {
             alert('Error loading user: ' + fetchedUser.error);
-            throw new Error('Error1.1: ' + fetchedUser.error);
+            // throw new Error('Error1.1: ' + fetchedUser.error);
+            fetchedUser = null;
           }
           setLocalUser(fetchedUser);
           dispatch(setUser(fetchedUser));

@@ -16,15 +16,30 @@ class AppService {
     constructor() 
     {
         this.cookies = new Cookies()
-        this.httpOptions.headers = {
-            'Content-Type': 'application/json',
-            Authorization: this.getToken()
-        };
+        // this.getOptionsHeaders() = {
+        //     'Content-Type': 'application/json',
+        //     Authorization: this.getToken()
+        // };
 
-        this.httpOptions.headersForm = {
-          Authorization: this.getToken()
-        };
+        // this.getOptionsHeadersForm() = {
+        //   Authorization: this.getToken()
+        // };
 
+    }
+
+    getOptionsHeaders()
+    {
+      return {
+        'Content-Type': 'application/json',
+        Authorization: this.getToken()
+      }
+    }
+
+    getOptionsHeadersForm()
+    {
+      return {
+        Authorization: this.getToken()
+      }
     }
 
     getToken()
@@ -42,7 +57,7 @@ class AppService {
     async login (email: String, password: String) 
     {
       const request = {
-        method: api().login.method,
+        method: api.login.method,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -51,7 +66,7 @@ class AppService {
           password: password,
         }),
       }
-      const res = await fetch(api().login.url, request);
+      const res = await fetch(api.login.url, request);
       const resToJson = await res.json();
     
       return resToJson;
@@ -60,11 +75,11 @@ class AppService {
     async logout()
     {
       const request = {
-        method: api().logout.method,
-        headers: this.httpOptions.headers,
+        method: api.logout.method,
+        headers: this.getOptionsHeaders(),
         body: JSON.stringify({}),
       }
-      const res = await fetch(api().logout.url, request);
+      const res = await fetch(api.logout.url, request);
       const resToJson = await res.json();
       if (resToJson.code === 200) {
         this.cookies.remove('JWT');
@@ -78,30 +93,30 @@ class AppService {
     async getUser () 
     {
       const request = {
-        method: api().getUser.method,
-        headers: this.httpOptions.headers
+        method: api.getUser.method,
+        headers: this.getOptionsHeaders()
       }
-      const res = await (await fetch(api().getUser.url, request)).json();
+      const res = await (await fetch(api.getUser.url, request)).json();
       return res;
     }
 
     async getSchemas () 
     {
       const request = {
-        method: api().getSchemas.method,
-        headers: this.httpOptions.headers
+        method: api.getSchemas.method,
+        headers: this.getOptionsHeaders()
       }
-      const res = await (await fetch(api().getSchemas.url, request)).json();
+      const res = await (await fetch(api.getSchemas.url, request)).json();
       return res;
     }
 
     async _getLomesSchema () 
     {
       const request = {
-        method: api().getSchemas.method,
-        headers: this.httpOptions.headers
+        method: api.getSchemas.method,
+        headers: this.getOptionsHeaders()
       }
-      const res = await (await fetch(api().getLomesSchema.url, request)).json();
+      const res = await (await fetch(api.getLomesSchema.url, request)).json();
       return res;
     }
     getLomesSchema = this._getLomesSchema.bind(this)
@@ -109,20 +124,20 @@ class AppService {
     async _getLomSchema ()
     {
       const request = {
-        method: api().getSchemas.method,
-        headers: this.httpOptions.headers
+        method: api.getSchemas.method,
+        headers: this.getOptionsHeaders()
       }
-      const res = (await (await fetch(api().getLomSchema.url, request)).json());
+      const res = (await (await fetch(api.getLomSchema.url, request)).json());
 
       return res;
     }
     getLomSchema = this._getLomSchema.bind(this)
 
     async _postLomesData (resource_id, body) {
-      const _api = api().postLomesData(resource_id)
+      const _api = api.postLomesData(resource_id)
       const request = {
         method: _api.method,
-        headers: this.httpOptions.headers,
+        headers: this.getOptionsHeaders(),
         body: JSON.stringify(body),
       }
       const res = await (await fetch(_api.url, request)).json();
@@ -131,10 +146,10 @@ class AppService {
     postLomesData = this._postLomesData.bind(this)
 
     async _postLomData (resource_id, body) {
-      const _api = api().postLomData(resource_id)
+      const _api = api.postLomData(resource_id)
       const request = {
         method: _api.method,
-        headers: this.httpOptions.headers,
+        headers: this.getOptionsHeaders(),
         body: JSON.stringify(body),
       }
       const res = await (await fetch(_api.url, request)).json();
@@ -148,7 +163,7 @@ class AppService {
 
     async postTaxonsData (resource_id, taxons)
     {
-      const _apiXTags = api().postTags(resource_id);
+      const _apiXTags = api.postTags(resource_id);
 
       const bodyTags = {
         resourceId: resource_id,
@@ -165,7 +180,7 @@ class AppService {
 
       const requestTags = {
         method: _apiXTags.method,
-        headers: this.httpOptions.headers,
+        headers: this.getOptionsHeaders(),
         body: JSON.stringify(bodyTags),
       }
 
@@ -174,10 +189,10 @@ class AppService {
 
     async _getLomesData (resource_id) 
     {
-      const _api = api().getLomesData(resource_id)
+      const _api = api.getLomesData(resource_id)
       const request = {
         method: _api.method,
-        headers: this.httpOptions.headers,
+        headers: this.getOptionsHeaders(),
       }
       const res = await (await fetch(_api.url, request)).json();
       return res;
@@ -186,10 +201,10 @@ class AppService {
 
     async _getLomData (resource_id) 
     {
-      const _api = api().getLomData(resource_id)
+      const _api = api.getLomData(resource_id)
       const request = {
         method: _api.method,
-        headers: this.httpOptions.headers,
+        headers: this.getOptionsHeaders(),
       }
       const res = await (await fetch(_api.url, request)).json();
 
@@ -219,10 +234,10 @@ class AppService {
 
     async getTaxons (resource_id)
     {
-      const _api = api().getTags(resource_id)
+      const _api = api.getTags(resource_id)
       const request = {
         method: _api.method,
-        headers: this.httpOptions.headers,
+        headers: this.getOptionsHeaders(),
       }
       const {tags} = await (await fetch(_api.url, request)).json();
       
@@ -235,10 +250,10 @@ class AppService {
 
     async _getTaxonDetails (id, vocabulary = XTAGS.vocabularyId, lang = XTAGS.lang)
     {
-      const _api = api().getTaxonDetails(id, lang, vocabulary);
+      const _api = api.getTaxonDetails(id, lang, vocabulary);
       const request = {
         method: _api.method,
-        headers: this.httpOptions.headers,
+        headers: this.getOptionsHeaders(),
       }
       const res = await (await fetch(_api.url, request)).json();
 
@@ -248,10 +263,10 @@ class AppService {
 
     async getResource (resource_id) 
     {
-      const _api = api().getResource(resource_id)
+      const _api = api.getResource(resource_id)
       const request = {
         method: _api.method,
-        headers: this.httpOptions.headers,
+        headers: this.getOptionsHeaders(),
       }
       const res = await (await fetch(_api.url, request)).json();
       return res;
@@ -260,30 +275,30 @@ class AppService {
     async createResource (body) 
     {
       const request = {
-        method: api().createResource.method,
-        headers: this.httpOptions.headersForm,
+        method: api.createResource.method,
+        headers: this.getOptionsHeadersForm(),
         body: body
       }
-      const res = await fetch(api().createResource.url, request);
+      const res = await fetch(api.createResource.url, request);
       return res;
     }
 
     createBatchOfResources (formData) 
     {
-      const _api = api().createBatchOfResources;
+      const _api = api.createBatchOfResources;
       const request = {
         method: _api.method,
-        headers: this.httpOptions.headersForm,
+        headers: this.getOptionsHeadersForm(),
         body: formData
       }
       return {_api, request};
     }
 
     async updateResource (id, body) {
-      const _api = api().updateResource(id)
+      const _api = api.updateResource(id)
       const request = {
         method: _api.method,
-        headers: this.httpOptions.headersForm,
+        headers: this.getOptionsHeadersForm(),
         body: body
       }
       const res = await fetch(_api.url, request);
@@ -291,20 +306,20 @@ class AppService {
     }
 
     async updateResourceFromLastCreated (resource_to_update) {
-      const _api = api().updateResourceFromOther(resource_to_update, true, false, null)
+      const _api = api.updateResourceFromOther(resource_to_update, true, false, null)
       const request = {
         method: _api.method,
-        headers: this.httpOptions.headers
+        headers: this.getOptionsHeaders()
       }
       const res = await (await fetch(_api.url, request)).json();
       return res;
     }
 
     async updateResourceFromLastUpdated (resource_to_update) {
-      const _api = api().updateResourceFromOther(resource_to_update, false, true, null)
+      const _api = api.updateResourceFromOther(resource_to_update, false, true, null)
       const request = {
         method: _api.method,
-        headers: this.httpOptions.headers
+        headers: this.getOptionsHeaders()
       }
       const res = await (await fetch(_api.url, request)).json();
       return res;
@@ -321,10 +336,10 @@ class AppService {
         throw new Error('invalid parameter: check enum AVAILABLES')
       }
 
-      const _api = api().getLastResource(collection_id, time);
+      const _api = api.getLastResource(collection_id, time);
       const request = {
         method: _api.method,
-        headers: this.httpOptions.headers
+        headers: this.getOptionsHeaders()
       }
       const res = await (await fetch(_api.url, request)).json();
       return res;
@@ -332,10 +347,10 @@ class AppService {
 
     async removeResource (id) 
     {
-      const _api = api().removeResource(id)
+      const _api = api.removeResource(id)
       const request = {
         method: _api.method,
-        headers: this.httpOptions.headers,
+        headers: this.getOptionsHeaders(),
       }
       const res = await fetch(_api.url, request)
       return res;
@@ -343,10 +358,10 @@ class AppService {
 
     async removeMedia (dam_id, media_id) 
     {
-      const _api = api().removeMedia(dam_id, media_id)
+      const _api = api.removeMedia(dam_id, media_id)
       const request = {
         method: _api.method,
-        headers: this.httpOptions.headers,
+        headers: this.getOptionsHeaders(),
       }
       const res = await(await fetch(_api.url, request)).json()
       return res;
@@ -354,10 +369,10 @@ class AppService {
     
     async getCatalogue(id: number, query: string) 
     {
-      const _api = api().getCatalog(id);
+      const _api = api.getCatalog(id);
       const request = {
         method: _api.method,
-        headers: this.httpOptions.headers
+        headers: this.getOptionsHeaders()
       }
       const res = await (await fetch(_api.url + query , request)).json();
       return res;
@@ -365,10 +380,10 @@ class AppService {
 
     async setWorkspace(id: number) 
     {
-      const _api = api().setWorkspace;
+      const _api = api.setWorkspace;
       const request = {
         method: _api.method,
-        headers: this.httpOptions.headers,
+        headers: this.getOptionsHeaders(),
         body: JSON.stringify({workspace_id: id}),
       }
       const res = await (await fetch(_api.url, request)).json();
@@ -378,7 +393,7 @@ class AppService {
     render(url: string): string
     {
       const isDamResource = this.isDamResource(url);
-      const _api = api().render(url, isDamResource);
+      const _api = api.render(url, isDamResource);
       const res = _api.url
       return res;
     }
@@ -390,10 +405,10 @@ class AppService {
 
     async downloadFile(file) 
     {
-      const _api = api().downloadFile(file.dam_url);
+      const _api = api.downloadFile(file.dam_url);
       const request = {
         method: _api.method,
-        headers: this.httpOptions.headers
+        headers: this.getOptionsHeaders()
       }
       const res = await fetch(_api.url, request); 
       streamSaver.WritableStream = ponyfill.WritableStream
@@ -436,7 +451,4 @@ class AppService {
     }
 }
 
-export default function MainService()
-{
-  return new AppService()
-}
+export default new AppService()

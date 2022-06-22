@@ -145,4 +145,4 @@ const api = () => {
     return mapper;
 }
 
-export default api;
+export default api();

@@ -41,13 +41,13 @@ export function Login() {
 
   const log = async () => {
     setLoading(true);
-    let user = await MainService().login(email, password);
+    let user = await MainService.login(email, password);
     if (user.error) {
       setLoginStatus(user.error);
       setLoading(false);
       return;
     }
-    MainService().setToken('JWT', user.data.access_token);
+    MainService.setToken('JWT', user.data.access_token);
     setLoginStatus('Login success. Loading user data, please wait.');
     history.push('/home');
     dispatch(reloadApp());

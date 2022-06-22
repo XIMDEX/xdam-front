@@ -39,9 +39,9 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
         console.log('UPDATED')
 
         const get_post_max_size = async () => {
-            let res = await axios.get(api().baseUrl + '/ini_pms', {
+            let res = await axios.get(api.baseUrl + '/ini_pms', {
                 headers: {
-                    authorization: api().auth,
+                    authorization: api.auth,
                 }
             });
             console.log(res);
@@ -129,7 +129,7 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
             fd.append('files[]', files[i]);
         }
         
-        const { request, _api } = await MainService().createBatchOfResources(fd);
+        const { request, _api } = await MainService.createBatchOfResources(fd);
         const config = {
             onUploadProgress: progressEvent => {
               //console.log(progressEvent)

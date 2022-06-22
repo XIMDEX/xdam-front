@@ -73,14 +73,14 @@ export default function RelatedFiles( { resData, files,  withPlayer = false, onE
         }
 
         const removeMedia = async (dam, media_id) => {
-            let res = await MainService().removeMedia(dam.id, media_id);
+            let res = await MainService.removeMedia(dam.id, media_id);
             console.log(res)
             setTheFiles(res.files)
             DynamicFormResourceData(res)
         }
 
         const download = async (file) => {
-            await MainService().downloadFile(file);
+            await MainService.downloadFile(file);
         }
         
         if(theFiles) {

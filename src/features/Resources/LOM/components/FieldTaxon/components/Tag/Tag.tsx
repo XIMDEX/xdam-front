@@ -4,7 +4,7 @@ import MainService from '../../../../../../../api/service';
 import IconTag from '../../../IconTag/IconTag'
 import './Tag.css';
 
-const { getTaxonDetails } = MainService();
+const { getTaxonDetails } = MainService;
 
 export default function Tag({id, addSuggestions,...props}) {
     const [info, setInfo] = useState({

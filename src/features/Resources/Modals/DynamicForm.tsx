@@ -112,12 +112,12 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     } else if (action === 'edit') {
       
       const fetchLomesSchema = async () => { 
-        let lomesSchema = await MainService().getLomesSchema();
+        let lomesSchema = await MainService.getLomesSchema();
         dispatch(setLomesSchema(lomesSchema));
       }
 
       const fecthLomSchema = async () => {
-        const lomSchema = await MainService().getLomSchema();
+        const lomSchema = await MainService.getLomSchema();
         dispatch(setLomSchema(lomSchema));
       }
       
@@ -135,7 +135,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
       
       const getResourceData = async () => {
         //get the resource from db. Data for update is faceted data
-        let res = await MainService().getResource(dataForUpdate.id);
+        let res = await MainService.getResource(dataForUpdate.id);
         setResourceData(res);
         setTheFiles(res.files);
       }
@@ -232,9 +232,9 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     let res;
     setProcessing(true)
     if (dataForUpdate) {
-      res = await MainService().updateResource(dataForUpdate.id, theFormData);
+      res = await MainService.updateResource(dataForUpdate.id, theFormData);
     } else {
-      res = await MainService().createResource(theFormData);
+      res = await MainService.createResource(theFormData);
     }
     //FormFiles are the files 'adding'
     if(action !== 'create') {
@@ -329,20 +329,20 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   }
 
   const updateResourceFromLastCreated = async () => {
-    let lastUpdated = await MainService().getLastResource(collection_id, 'lastCreated');
+    let lastUpdated = await MainService.getLastResource(collection_id, 'lastCreated');
     setForm(lastUpdated.data);
     setFillAlert(true);
     triggerReload(!tr);
-    // let res = await MainService().updateResourceFromLastCreated(resourceData.id);
+    // let res = await MainService.updateResourceFromLastCreated(resourceData.id);
     // setResourceData(res);
   }
 
   const updateResourceFromLastUpdated = async () => {
-    let lastUpdated = await MainService().getLastResource(collection_id, 'lastUpdated');
+    let lastUpdated = await MainService.getLastResource(collection_id, 'lastUpdated');
     setForm(lastUpdated.data);
     setFillAlert(true);
     triggerReload(!tr);
-    // let res = await MainService().updateResourceFromLastUpdated(resourceData.id);
+    // let res = await MainService.updateResourceFromLastUpdated(resourceData.id);
     // setForm(res.data);
     // setResourceData(res);
   }

@@ -7,7 +7,7 @@ export const render = (data, quality = 'small'): string =>
     let url;
     
     if (data.hasOwnProperty('previews')) {
-        url = MainService().render(data.previews[0]) + '/' + quality;
+        url = MainService.render(data.previews[0]) + '/' + quality;
         url = url.includes('@@dam:@audio@') ? defaultAudioImage : url;
         return url;
     }
@@ -15,7 +15,7 @@ export const render = (data, quality = 'small'): string =>
     if (data?.data?.description?.hasOwnProperty('media_upload')) {
         return data?.data?.description?.media_upload_type === 'audio' 
             ?  defaultAudioImage 
-            : MainService().render(data.data.description.media_upload)
+            : MainService.render(data.data.description.media_upload)
     }
     
     return defaultImage;
@@ -23,5 +23,5 @@ export const render = (data, quality = 'small'): string =>
 
 export const renderFromUrl = (url, quality = 'small'): string =>
 {
-    return MainService().render(url) + '/' + quality   
+    return MainService.render(url) + '/' + quality   
 }

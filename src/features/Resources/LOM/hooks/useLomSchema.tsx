@@ -13,7 +13,7 @@ const handleData = (e) => {
 const useLomSchema = (type) => {
 
   const [mainServices, setMainServices] = useState(() => {
-    const { getLomesData, postLomesData, getLomData, postLomData } = MainService();
+    const { getLomesData, postLomesData, getLomData, postLomData } = MainService;
 
     return { getLomesData, postLomesData, getLomData, postLomData }
   });
