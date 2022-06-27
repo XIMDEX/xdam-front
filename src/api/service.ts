@@ -268,9 +268,9 @@ class AppService {
       return res;
     }
 
-    createBatchOfResources (formData) 
+    createBatchOfResources (collectionId: number, formData: FormData) 
     {
-      const _api = api().createBatchOfResources;
+      const _api = api().createBatchOfResources(collectionId);
       const request = {
         method: _api.method,
         headers: this.httpOptions.headersForm,

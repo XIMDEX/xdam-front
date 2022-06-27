@@ -38,4 +38,13 @@ var param = function (a) {
     return buildParams('', a).join('&');
 };
 
+
+export function arrayToQuery(param: string, values: Array<any>): string {
+
+    return values
+        .filter(nullabe => nullabe !== null)
+        .map((value: any) => `${param}[]=${value}`)
+        .join('&');
+}
+
 export default param;

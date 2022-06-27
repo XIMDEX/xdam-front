@@ -18,6 +18,7 @@ import DropContent from './DropContent';
 import RequiredValuesContext, { RequireValues } from './RequiredValuesContext';
 import bookRequiredDataValidation from './Validations/bookRequiredDataValidation';
 import { AdditionalSteps } from './BatchAdditionalSteps';
+import { arrayToQuery } from '../../../../utils/querybuilder';
 
 export default function BatchDialog( {open, setOpenBatch, action, resourceType} ) {
     const [files, setFiles] = useState(null);
@@ -155,8 +156,6 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
             setMessage('Please select one Workspace');
             return;
         }
-
-        fd.append('collection', collection.toString());
         
         // if(workspace) {
         //     fd.append('workspace', workspace.id);
@@ -194,7 +193,7 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
             fd.append('files[]', files[i]);
         }
         
-        const { request, _api } = await MainService().createBatchOfResources(fd);
+        const { request, _api } = await MainService().createBatchOfResources(collection, fd);
         const config = {
             onUploadProgress: progressEvent => {
               //console.log(progressEvent)
@@ -202,9 +201,13 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
               setProgress(progress);
             },
             headers: request.headers
-          }
+        }
+
+        const additionalStepsQuery = arrayToQuery('additionalSteps', additionalSteps);
+
+        const url = `${_api.url}?${additionalStepsQuery}`;
           
-        axios.post(_api.url, fd, config).then(res => {
+        axios.post(url, fd, config).then(res => {
             
             if (res.status == 200) {
                 console.log("done: ", res.data.message);
@@ -246,6 +249,12 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
         setProgress(null);
         filesUploaded(false);
         setNewWorkspace(now());
+        setGenericData({});
+        setFilesInfo({});
+        setRequiredFields({
+            conversionAfterUpload: false
+        })
+        setAdditinalSteps([]);
     }
 
     const filesModified = (updatedFiles) => {
@@ -277,7 +286,8 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
                     <Btn icon='close' circular onClick={handleClose} color="teal" className='read-card-close-button'/>    
                     <DialogActions >
                         {resourceType === BOOK && 
-                                <Btn as='div' labelPosition='left' onClick={toggleAditionalAction(AdditionalSteps.CONVERT_BOOKS_AFETER_UPDATE)} >
+                        <>
+                                <Btn as='div' labelPosition='left' onClick={toggleAditionalAction(AdditionalSteps.CONVERT_BOOKS_AFETER_UPDATE)}>
                                 <Label as='a' basic pointing='right'>
                                     Convert after upload
                                 </Label>
@@ -291,6 +301,7 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
                                     </Btn>
                                 }
                             </Btn>
+                        </>
                         }
                         <Btn 
                                 disabled={files === null || missingFields}

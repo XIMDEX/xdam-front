@@ -64,10 +64,10 @@ const api = () => {
             method: 'POST',   
             url: baseUrl + '/resource'
         },
-        createBatchOfResources: {    
+        createBatchOfResources: (collectionId: number) => ({    
             method: 'POST',   
-            url: baseUrl + '/resource/createBatch'
-        },
+            url: `${baseUrl}/resource/${collectionId}/createBatch`,
+        }),
         postLomesData: (resource_id) => ({    
             method: 'POST',   
             url: baseUrl + '/resource/' + resource_id + '/lomes'
