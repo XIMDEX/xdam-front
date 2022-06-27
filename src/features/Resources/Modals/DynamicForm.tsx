@@ -270,7 +270,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     let output_message = ''
     let ouput_ok = res.ok
 
-    if (!showUpgradeButton && resourceType === 'book') {
+    if (!showUpgradeButton && resourceType === 'book' && action !== 'create') {
       const {res: resMetadata} = await saveMetaDataResource()
       if (!resMetadata.ok) {
         return setMessage({display: true, ok: resMetadata.ok, text: 'Resource saved, but save metada is failed' })
