@@ -78,6 +78,18 @@ export function Resource( { data, listMode, resourceType } ) {
         setDialogOpen(true)
     }
 
+    async function get_course_enrollments_endpoint(data) {
+        if (data.type !== "course")
+            return 0;
+
+        let res = await MainService().getCourseEnrollments(data.id)
+        if (res.ok) {
+            let resData = await res.json();
+            return resData.data.length;
+        }
+        throw new Error('Error 1.1: On getting course enrollments')
+    }
+
     async function remove_endpoint(data) {
         let res = await MainService().removeResource(data.id)
         if(res.ok) {
@@ -89,12 +101,34 @@ export function Resource( { data, listMode, resourceType } ) {
         throw new Error('Error 1.1: On remove resource')
     }
 
+    async function remove_course_enrollments_endpoint(data) {
+        let res = await MainService().removeCourseEnrollments(data.id)
+        if (res.ok) {
+            let updatedUser = await MainService().getUser();
+            dispatch(setUser(updatedUser));
+            dispatch(reloadCatalogue());
+            return true;
+        }
+        throw new Error('Error 1.1: On remove course enrollments')
+    }
+
     async function remove (e) {
         setBlur(true)
         e.stopPropagation();
         let yes = window.confirm('sure?');
         if(yes) {
-            let res = await remove_endpoint(data)
+            let enrollmentsRes = await get_course_enrollments_endpoint(data);
+            if (enrollmentsRes > 0) {
+                let enrollmentsYes = window.confirm(`There are ${enrollmentsRes} users enrolled in this course. Are you sure you want to remove it?`);
+                if (enrollmentsYes) {
+                    let removeEnrollmentsRes = await remove_course_enrollments_endpoint(data);
+                    if (removeEnrollmentsRes) {
+                        let res = await remove_endpoint(data);
+                    }
+                }
+            } else {
+                let res = await remove_endpoint(data);
+            }
             setBlur(false)
         } else {
             setBlur(false)

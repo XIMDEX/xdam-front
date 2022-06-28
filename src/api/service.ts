@@ -8,7 +8,7 @@ class AppService {
     /**
      * Dict containing options for using with the http client
      */
-    private httpOptions = { headers: {} as any, headersForm: {}, params: {} };
+    private httpOptions = { headers: {} as any, headersForm: {}, kakumaHeaders: {}, params: {} };
     private cookies: Cookies;
     /**
      * @ignore
@@ -25,6 +25,15 @@ class AppService {
           Authorization: this.getToken()
         };
 
+        this.httpOptions.kakumaHeaders = {
+          'Content-Type': 'application/json',
+          Authorization: this.getKakumaToken()
+        }
+    }
+
+    getKakumaToken()
+    {
+      return 'Bearer ' + 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIzIiwianRpIjoiOGNjZjIxYjMxN2EyYTBiNzc3NmU2YWUyNmZiNzhjYzliZmMwZDRiZDI3ZGY3NDA0OTU3ZDAwOTZmYTBhMDIwZmI1NmMwNjZmMzg1YWZlOGIiLCJpYXQiOiIxNjU2MzM3NTEwLjY0NjA2NSIsIm5iZiI6IjE2NTYzMzc1MTAuNjQ2MDc2IiwiZXhwIjoiMTY4Nzg3MzUxMC41Mzg5NjgiLCJzdWIiOiJiNDZjNzA3MS00NmQ1LTRhMDktYmMzZi04ZDA2ZmEyODU1MTYiLCJzY29wZXMiOltdfQ.H1J28V7iiqPWbDd-DFe0w8_hNPZgzYSeTVwfW_jX6NTUZLvRLML0G2bR43mDWaVHE3h6gugayIM46lTAYVNHN16ZQgC5HdxThggqRxn3KhjlJnuv_6-FwazOmAIyXA_vgXUYwGbNX4rCJ1MYt9Q0-roBRSUvMXOc7EfuOwaSnFcZzUYswV1CDtD9Y3MxGWeSuUHM-TmsHUlaAqmYhBS209QuIFU0jvCpCKC4axgl_kgVDPmhAZFH7QI7-EoIIe7hnAEDPH_XpqJvge57v4oBacdiWaGE2bwLCfyVbIvQeycW_cg4fm5fCwVFqVtrTnJcfaHgyaWdxdnIsh4kr0DeB7bJWdusnj7r6J5-gTBgOa9DgwvE6oSWSDdPbGsfFl0Ggz96VgP7hdQZcAcqK2MGnREyWMs8eopIRg12eRBSbiWLZqoeNin1_Ma4i2I2-z3ydVl1RrPuM-OvVJHyE4CE3Wp9IVYYw2W9NeQudZ42k4rWAi22EZZC7Bodu8prI2lN4-DsGeZh2IsxnNVNidTx84q2E-Ywgnt_8WOkMdi2Qv-YZfAqUU6Gt73iiSDAfb1ay4AGV6nONgnqYtysB9k0VGynY8_n9gJ0GbfvaWGBr6uLUzpnhUuX0DE9Y3flQWfpf1Btx5aTvj1FkcBHPkLIUcAJy0XfmACya4TkRauPT2M';
     }
 
     getToken()
@@ -330,12 +339,33 @@ class AppService {
       return res;
     }
 
+    async getCourseEnrollments (id) {
+      const _api = api().getCourseEnrollments(id)
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.kakumaHeaders,
+      }
+      const res = await fetch(_api.url, request);
+      return res;
+    }
+
     async removeResource (id) 
     {
       const _api = api().removeResource(id)
       const request = {
         method: _api.method,
         headers: this.httpOptions.headers,
+      }
+      const res = await fetch(_api.url, request)
+      return res;
+    }
+
+    async removeCourseEnrollments (id)
+    {
+      const _api = api().removeCourseEnrollments(id)
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.kakumaHeaders
       }
       const res = await fetch(_api.url, request)
       return res;

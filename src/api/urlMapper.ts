@@ -103,6 +103,14 @@ const api = () => {
             method: 'GET',   
             url: baseUrl + '/resource/' + time + '/' + collection_id
         }),
+        getCourseEnrollments: (course_id) => ({
+            method: 'GET',
+            url: `${process.env.REACT_APP_KAKUMA_URL}/course/${course_id}/getEnrollments`
+        }),
+        removeCourseEnrollments: (course_id) => ({
+            method: 'GET',
+            url: `${process.env.REACT_APP_KAKUMA_URL}/course/${course_id}/removeEnrollments`
+        }),
         removeResource: (id) => ({    
             method: 'DELETE',   
             url: baseUrl + '/resource/' + id
