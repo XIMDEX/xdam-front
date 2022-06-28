@@ -2,19 +2,20 @@ import React, { useState } from "react"
 import { Segment } from 'semantic-ui-react'
 
 export const ExtraBookData = (props) => {
-
     const [data, setData] = useState({...props.formData});
 
     const onChange = (name) => {
         return (event) => {
             event.preventDefault();
-            
-            setData({
+
+            const nextData = {
                 ...data,
                 [name]: event.target.value
-            });
+            }
 
-            props.formData[name] = event.target.value;
+            setData(nextData);
+
+            props.onChange(nextData);
         };
     }
 
