@@ -287,7 +287,7 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
                     <DialogActions >
                         {resourceType === BOOK && 
                         <>
-                                <Btn as='div' labelPosition='left' onClick={toggleAditionalAction(AdditionalSteps.CONVERT_BOOKS_AFETER_UPDATE)}>
+                                <Btn as='div' labelPosition='left' onClick={toggleAditionalAction(AdditionalSteps.CONVERT_BOOKS_AFETER_UPDATE)} disabled>
                                 <Label as='a' basic pointing='right'>
                                     Convert after upload
                                 </Label>
