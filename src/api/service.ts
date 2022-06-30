@@ -434,6 +434,17 @@ class AppService {
 
       return true;
     }
+
+    async getAllCategories() {
+      const _api = api().getAllCategories;
+
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers,
+      }
+
+      return await (await fetch(_api.url, request)).json();
+    }
 }
 
 export default function MainService()
