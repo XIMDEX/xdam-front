@@ -1,7 +1,7 @@
-import { CategoryTypes } from "./CategoryTypes"
+import { CategoryType } from "./CategoryTypes"
 
 export default interface Category {
     id: string,
     name: string,
-    type: CategoryTypes
+    type: CategoryType
 }

@@ -15,19 +15,19 @@ import { selectCollection } from '../../../slices/organizationSlice';
 import SemanticForm from "@rjsf/semantic-ui";
 import { JSONSchema7 } from 'json-schema';
 import { render } from '../../../utils/render';
-import { Tab, Label, Icon, Dropdown, Radio } from 'semantic-ui-react'
+import { Tab, Label, Icon, Dropdown } from 'semantic-ui-react'
 import { Button as Btn } from 'semantic-ui-react';
 import { Message } from 'semantic-ui-react';
 import RelatedFiles from './RelatedFiles';
-import { setFormData, selectFormData, reloadCatalogue, setLomesSchema, setLomSchema } from '../../../appSlice';
+import { setFormData, setLomesSchema, setLomSchema } from '../../../appSlice';
 import store from '../../../app/store';
 import ArrayFieldTemplate from './DynamicFormTemplates/ArrayFieldTemplate';
 import ResourceActionButtons from './ResourceActionButtons';
 import { iconHandler } from '../../../utils/iconHandler';
-import { InputText, InputTextArea, CustomToggle, CustomInputText, CustomDropdown, CustomBookNumberOfUnitSelector } from './DynamicFormTemplates/CustomFields';
+import { InputText } from './DynamicFormTemplates/CustomFields';
 import LomForm from '../LOM/LomForm';
-import { ResourceLanguage } from './DynamicFormTemplates/ResourceLanguage';
 import { ExtraBookData } from './DynamicFormTemplates/CustomFields/ExtraBookData';
+import useUiSchema from '../../../hooks/useUiSchema';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -276,57 +276,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
 
   const fields = { bookExtraData: ExtraBookData };
 
-  const uiSchema={
-    
-    "description": {
-      "ui:order": ["active", "*"],
-      "active": {
-        "ui:widget": CustomToggle,
-      },
-      "course_source": {
-        "ui:widget": CustomDropdown,
-        "ui:options":{
-          label: 'Course source'
-        }
-      },
-      "unit": {
-        "ui:widget": CustomBookNumberOfUnitSelector,
-        "ui:options": {
-          "max": 50
-        }
-      },
-      "partials": {
-        "pages": {
-          "ui:widget": "hidden",
-        }
-      },
-      "description": {
-        "ui:widget": InputTextArea,
-        "ui:options": {
-          "rows": 5
-        }
-      },
-      "name": {
-        "ui:widget": CustomInputText,        
-      },
-      "external_url": {
-        "ui:widget": CustomInputText,
-        "ui:options":{
-          "title": 'External url'
-        }
-      },
-      "lang": {
-        "ui:widget": ResourceLanguage,
-        "ui:options": {
-          opt: ["es", "cat", "en"],
-          label: 'Language'
-        }
-      },
-      "extra": {
-        "ui:field": "bookExtraData",
-      }
-    }
-  }
+  const uiSchema = useUiSchema(resourceType);
 
   const updateResourceFromLastCreated = async () => {
     let lastUpdated = await MainService().getLastResource(collection_id, 'lastCreated');

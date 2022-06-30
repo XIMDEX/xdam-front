@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import MainService from "../api/service";
 import Category from "../types/Categories/Category";
-import { CategoryTypes } from "../types/Categories/CategoryTypes";
+import { CategoryType } from "../types/Categories/CategoryTypes";
 
-const useCategories = (type?: CategoryTypes) => {
+const useCategories = (type?: CategoryType) => {
     const [categories, setCategories] = useState<Array<Category>>([]);
 
     useEffect(() => {
@@ -15,7 +15,7 @@ const useCategories = (type?: CategoryTypes) => {
             const parsed = data.map((raw: { id: string; name: string; type: string }) => ({
                 id: raw.id,
                 name: raw.name,
-                type: raw.type as CategoryTypes
+                type: raw.type as CategoryType
             }));
             
             setCategories(parsed);

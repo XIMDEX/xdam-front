@@ -1,5 +1,5 @@
 
-export enum CategoryTypes {
+export enum CategoryType {
     DOCUMENT = 'document',
     VIDEO = 'video',
     IMAGE = 'image',
