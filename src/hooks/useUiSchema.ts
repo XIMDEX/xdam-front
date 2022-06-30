@@ -1,3 +1,4 @@
+import { STRICT_CATEGORIES } from "../constants"
 import ArrayFieldTemplate from "../features/Resources/Modals/DynamicFormTemplates/ArrayFieldTemplate"
 import { CustomToggle, CustomDropdown, CustomBookNumberOfUnitSelector, InputTextArea, CustomInputText } from "../features/Resources/Modals/DynamicFormTemplates/CustomFields"
 import { ResourceLanguage } from "../features/Resources/Modals/DynamicFormTemplates/ResourceLanguage"
@@ -59,7 +60,7 @@ const typeToSchemaMap: Record<keyof typeof ResourceType, any> = {
     COURSE: {
         "description": {
             "categories": {
-                "ui:ArrayFieldTemplate": ArrayFieldTemplate,
+                "ui:ArrayFieldTemplate": STRICT_CATEGORIES ? null : ArrayFieldTemplate,
                 "ui:options": {
                     categories: useCategories,
                     singleCategory: true,
