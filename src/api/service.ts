@@ -2,6 +2,8 @@ import api from './urlMapper'
 import { Cookies } from 'react-cookie';
 import * as ponyfill from 'web-streams-polyfill/ponyfill';
 import { PATH_TAXONS_DATA, XTAGS } from '../constants';
+import Category from '../types/Categories/Category';
+import { CategoryTypes } from '../types/Categories/CategoryTypes';
 const streamSaver = require('streamsaver')
 
 class AppService {
@@ -435,7 +437,7 @@ class AppService {
       return true;
     }
 
-    async getAllCategories() {
+    async getAllCategories(): Promise<Array<Category>> {
       const _api = api().getAllCategories;
 
       const request = {
@@ -443,8 +445,64 @@ class AppService {
         headers: this.httpOptions.headers,
       }
 
-      return await (await fetch(_api.url, request)).json();
+      const { data } = await fetch(_api.url, request).then(response => response.json());
+      
+      return data.map(raw => ({
+        id: raw.id,
+        name: raw.name,
+        type: CategoryTypes[raw.type.toUpderCase()],
+      }));
     }
+
+    async createCategory(category: {name: string, type: CategoryTypes}): Promise<Category> {
+      const _api = api().createCategory;
+
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers,
+        body: JSON.stringify(category),
+      }
+
+      const { data } = await fetch(_api.url, request).then(response => response.json());
+
+      return {
+        id: data.id,
+        name: data.name,
+        type: CategoryTypes[data.type.toUpderCase()],
+      }
+    }
+
+    async updateCategory(category: Category): Promise<Category> {
+      const _api = api().updateCategory(category.id);
+
+      const { name, type } = category;
+
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers,
+        body: JSON.stringify({ name, type }),
+      }
+
+      const { data } = await fetch(_api.url, request).then(response => response.json());
+
+      return {
+        id: data.id,
+        name: data.name,
+        type: CategoryTypes[data.type.toUpderCase()],
+      }
+    }
+
+    async deleteCategory(categoryId: string): Promise<void> {
+      const _api = api().deleteCategory(categoryId);
+
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers,
+      }
+
+      await fetch(_api.url, request);
+    }
+
 }
 
 export default function MainService()

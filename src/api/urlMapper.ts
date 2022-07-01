@@ -144,7 +144,19 @@ const api = () => {
         getAllCategories: {
             method: 'GET',
             url: `${baseUrl}/category`
-        }
+        },
+        createCategory: {
+            method: 'POST',
+            url: `${baseUrl}/category`
+        },
+        updateCategory: (categoryId: string) => ({
+            method: 'POST',
+            url: `${baseUrl}/category/${categoryId}`
+        }),
+        deleteCategory: (categoryId: string) => ({
+            method: 'DELETE',
+            url: `${baseUrl}/category/${categoryId}`
+        }),
     }
     return mapper;
 }
