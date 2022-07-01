@@ -438,7 +438,10 @@ class AppService {
       const request = {
         method: _api.method,
         headers: this.httpOptions.headers,
-        body: JSON.stringify({...resource, token: 'vd9NxuORVjd8xlkZfqAfEQjJw4rXuuPEVysaEV1T'})
+        body: JSON.stringify({
+          ...resource, 
+          token: 'vd9NxuORVjd8xlkZfqAfEQjJw4rXuuPEVysaEV1T'
+        })
       }
       const res = await fetch(_api.url, request);
       return res;

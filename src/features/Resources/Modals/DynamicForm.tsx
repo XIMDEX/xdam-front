@@ -391,11 +391,13 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     const data = formulario?.current?.state?.formData?.description ?? resourceData?.data?.description
     data.id = resourceData.id
     
+    if (resourceData.version === 1) data.upgrading = true
+    
     var form_data = new FormData();
     for ( var key in data ) {
         form_data.append(key, data[key]);
     }
-
+    
     const res = await MainService().upgradeVersionBook(data)
     const resData = res.ok ? await res.json() : {error: await res.text()}
 
