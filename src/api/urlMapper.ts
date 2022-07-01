@@ -140,7 +140,11 @@ const api = () => {
         getTaxonDetails: (id, lang, vocabulary) => ({
             method: 'GET',
             url: `${baseUrlXTags}/vocabularies/info?id=${id}&vocabulary=${vocabulary}&lang=${lang}`
-        })
+        }),
+        getAllCategories: {
+            method: 'GET',
+            url: `${baseUrl}/category`
+        }
     }
     return mapper;
 }
