@@ -450,7 +450,7 @@ class AppService {
       return data.map(raw => ({
         id: raw.id,
         name: raw.name,
-        type: CategoryTypes[raw.type.toUpderCase()],
+        type: CategoryTypes[raw.type.toUpperCase()],
       }));
     }
 
@@ -468,7 +468,7 @@ class AppService {
       return {
         id: data.id,
         name: data.name,
-        type: CategoryTypes[data.type.toUpderCase()],
+        type: CategoryTypes[data.type.toUpperCase()],
       }
     }
 
@@ -488,7 +488,7 @@ class AppService {
       return {
         id: data.id,
         name: data.name,
-        type: CategoryTypes[data.type.toUpderCase()],
+        type: CategoryTypes[data.type.toUpperCase()],
       }
     }
 
