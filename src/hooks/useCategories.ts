@@ -10,15 +10,9 @@ const useCategories = (type?: CategoryTypes) => {
 
         const fetchCategories = async () => {
 
-            const { data } = await MainService().getAllCategories();
-
-            const parsed = data.map((raw: { id: string; name: string; type: string }) => ({
-                id: raw.id,
-                name: raw.name,
-                type: raw.type as CategoryTypes
-            }));
+            const nextCategories = await MainService().getAllCategories();
             
-            setCategories(parsed);
+            setCategories(nextCategories);
         }
 
         fetchCategories();
