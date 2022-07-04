@@ -3,13 +3,12 @@ import MainService from "../api/service";
 import Category from "../types/Categories/Category";
 import { CategoryTypes } from "../types/Categories/CategoryTypes";
 
-const useCategories = (type?: CategoryTypes) => {
+const useCategories = (timestamp: number, type?: CategoryTypes) => {
     const [categories, setCategories] = useState<Array<Category>>([]);
 
     useEffect(() => {
 
         const fetchCategories = async () => {
-
             const nextCategories = await MainService().getAllCategories();
             
             setCategories(nextCategories);
@@ -17,7 +16,7 @@ const useCategories = (type?: CategoryTypes) => {
 
         fetchCategories();
 
-    }, []);
+    }, [timestamp]);
 
     if(!type) {
         return categories;
