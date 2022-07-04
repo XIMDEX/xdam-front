@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Button, Icon, Input } from "semantic-ui-react";
+import { Button, Dropdown, Icon, Input } from "semantic-ui-react";
 import MainService from "../../../../api/service";
 import Category from "../../../../types/Categories/Category";
+import { CategoryTypes } from "../../../../types/Categories/CategoryTypes";
 import styles from "./CategoryEdition.module.scss";
 
 const EditCategory = ({ category: initial, onPersist, updatingCategory }: { category: Category, onPersist: (promise: Promise<any>) => Promise<void>, updatingCategory: (value: boolean) => void }) => {
@@ -20,6 +21,17 @@ const EditCategory = ({ category: initial, onPersist, updatingCategory }: { cate
         }
 
         updatingCategory(initial.name !== nameWithUnderscores);
+
+        setCategory(nextCategory);
+    }
+
+    const updateType = (event: React.SyntheticEvent, { value }: { value: CategoryTypes }): void => {
+        event.preventDefault();
+
+        const nextCategory = {
+            ...category,
+            type: value
+        }
 
         setCategory(nextCategory);
     }
@@ -52,6 +64,12 @@ const EditCategory = ({ category: initial, onPersist, updatingCategory }: { cate
 
     const nameWithoutUnderscores = category.name.replaceAll('_', ' ');
 
+    const typeOptions = Object.values(CategoryTypes).map((type: string, index: number) => ({
+        key: index,
+        text: type,
+        value: type,
+    }));
+
     return (
         <div className={styles.categoryEdition__category}>
             <Input
@@ -60,6 +78,13 @@ const EditCategory = ({ category: initial, onPersist, updatingCategory }: { cate
                 onChange={updateName}
                 className={styles.categoryEdition__name}
                 disabled={updating}
+            />
+            <Dropdown 
+                placeholder='Category type'
+                value={category.type}
+                onChange={updateType}
+                options={typeOptions}
+                selection
             />
             <Button onClick={persistUpdate} disabled={cannotSave} loading={updating} color="teal" size="large" icon>
                 <Icon name="save" />

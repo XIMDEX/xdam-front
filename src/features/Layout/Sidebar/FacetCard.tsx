@@ -196,8 +196,8 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
             return EFacetNameMapping[facet.key];
         }
 
-        if (facet.key === 'categories' && collection.resource_type === COURSE) {
-            return (<>{facet.key} <CategoriesManagement categoryType={CategoryTypes.COURSE} /> </>)
+        if (facet.key === 'categories') {
+            return (<>{facet.key} <CategoriesManagement  /> </>)
         }
 
         return facet.label

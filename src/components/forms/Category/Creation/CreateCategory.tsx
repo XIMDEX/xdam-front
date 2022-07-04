@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { Button, Icon, Input } from "semantic-ui-react";
+import { Button, Dropdown, Icon, Input } from "semantic-ui-react";
 import MainService from "../../../../api/service";
 import { CategoryTypes } from "../../../../types/Categories/CategoryTypes";
 import styles from "./CreateCategory.module.scss";
 
-const CreateCategory = ({ type, onPersist, creatingCategory }: { type: CategoryTypes, onPersist: (promise: Promise<any>) => Promise<void>, creatingCategory: (value: boolean) => void }) => {
+const CreateCategory = ({ type, onPersist, creatingCategory }: { type?: CategoryTypes, onPersist: (promise: Promise<any>) => Promise<void>, creatingCategory: (value: boolean) => void }) => {
 
     const [category, setCategory] = useState<{name: string, type: CategoryTypes}>({
         name: null,
@@ -21,6 +21,17 @@ const CreateCategory = ({ type, onPersist, creatingCategory }: { type: CategoryT
         }
 
         creatingCategory(category.name !== null ? category.name.length > 0 : false);
+
+        setCategory(nextCategory);
+    }
+
+    const updateType = (event: React.SyntheticEvent, { value }: { value: CategoryTypes}): void => {
+        event.preventDefault();
+
+        const nextCategory = {
+            ...category,
+            type: value
+        }
 
         setCategory(nextCategory);
     }
@@ -47,9 +58,14 @@ const CreateCategory = ({ type, onPersist, creatingCategory }: { type: CategoryT
             return true;
         }
 
-
         return false;
     }
+
+    const typeOptions = Object.values(CategoryTypes).map((type: string, index: number) => ({
+        key: index,
+        text: type,
+        value: type,
+    }));
     
     return (
         <div className={styles.createCategory__category}>
@@ -59,6 +75,14 @@ const CreateCategory = ({ type, onPersist, creatingCategory }: { type: CategoryT
                 onChange={updateName}
                 className={styles.createCategory__name}
                 disabled={updating}
+            />
+            <Dropdown 
+                placeholder='Category type' 
+                value={category.type}
+                onChange={updateType}
+                options={typeOptions}
+                disabled={type !== undefined} 
+                selection 
             />
             <Button onClick={persist} disabled={invalidName()} loading={updating} color="teal" size="large" icon>
                 <Icon name="save" />

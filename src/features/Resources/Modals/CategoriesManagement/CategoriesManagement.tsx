@@ -9,7 +9,7 @@ import EditCategory from "../../../../components/forms/Category/Edition/Category
 import CreateCategory from "../../../../components/forms/Category/Creation/CreateCategory";
 import styles from './CategoriesManagement.module.scss';
 
-const CategoriesManagement = ({ categoryType}: { categoryType: CategoryTypes }) => {
+const CategoriesManagement = ({ categoryType}: { categoryType?: CategoryTypes }) => {
 
     const [open, setOpen] = useState(false);
     const [synchronize, setSynchronize] = useState(0);
