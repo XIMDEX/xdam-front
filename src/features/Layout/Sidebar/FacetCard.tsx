@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Grid, Button, IconButton, Typography, TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import _ from 'lodash'
-import { ORGANIZATION, COLLECTION } from '../../../constants';
+import { ORGANIZATION, COLLECTION, COURSE } from '../../../constants';
 import { setFacetsQuery, setQuery, selectQuery } from '../../../slices/organizationSlice';
 import { setResourcesLoading } from '../../../appSlice';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -11,6 +11,8 @@ import { Icon } from 'semantic-ui-react';
 import EFacetNameMapping from './EFacetNameMapping';
 import { mapping, EFilterTypes } from './EMapFacetKeysToFilterType';
 import RangeFilter from './RangeFilter/RangeFilter';
+import CategoriesManagement from '../../Resources/Modals/CategoriesManagement/CategoriesManagement';
+import { CategoryTypes } from '../../../types/Categories/CategoryTypes';
 
 const useStyles = makeStyles((theme) => ({
     sidebarRoot: {
@@ -192,6 +194,10 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
 
         if (facet.key in EFacetNameMapping) {
             return EFacetNameMapping[facet.key];
+        }
+
+        if (facet.key === 'categories' && collection.resource_type === COURSE) {
+            return (<>{facet.key} <CategoriesManagement categoryType={CategoryTypes.COURSE} /> </>)
         }
 
         return facet.label

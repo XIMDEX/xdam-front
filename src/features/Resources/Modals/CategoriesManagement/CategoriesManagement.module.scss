@@ -1,0 +1,23 @@
+.categoriesManagement {
+
+    &__edit {
+        display: inline;
+        border-radius: 0.28rem;
+        float: right;
+        margin-right: 10px;
+
+        i {
+            margin: 2px !important;
+        }
+
+        &:hover {
+            background-color: lightgray;
+        }
+    }
+
+    &__inputsList {
+        & > * + * {
+            margin-top: 10px;
+        }
+    }
+}

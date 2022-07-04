@@ -1,0 +1,21 @@
+.categoryEdition {
+
+    &__category {
+        display: flex;
+        gap: .5rem;
+
+        & > * {
+            margin: 0 !important;
+        }
+
+        i.icon {
+            aspect-ratio: 1 / 1;
+        }
+
+    }
+
+    &__name {
+        flex-grow: 1;
+    }
+
+}

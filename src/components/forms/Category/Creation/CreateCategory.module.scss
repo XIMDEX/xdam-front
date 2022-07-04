@@ -1,0 +1,15 @@
+.createCategory {
+
+    &__category {
+        display: flex;
+        gap: .5rem;
+
+        &>* {
+            margin: 0 !important;
+        }
+    }
+
+    &__name {
+        flex-grow: 1;
+    }
+}
