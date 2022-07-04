@@ -4,7 +4,7 @@ import MainService from "../../../../api/service";
 import Category from "../../../../types/Categories/Category";
 import styles from "./CategoryEdition.module.scss";
 
-const EditCategory = ({ category: initial, onPersist }: { category: Category, onPersist: (promise: Promise<any>) => Promise<void> }) => {
+const EditCategory = ({ category: initial, onPersist, updatingCategory }: { category: Category, onPersist: (promise: Promise<any>) => Promise<void>, updatingCategory: (value: boolean) => void }) => {
 
     const [category, setCategory] = useState<Category>(initial);
     const [updating, setUpdating] = useState(false);
@@ -19,6 +19,8 @@ const EditCategory = ({ category: initial, onPersist }: { category: Category, on
             name: nameWithUnderscores
         }
 
+        updatingCategory(initial.name !== nameWithUnderscores);
+
         setCategory(nextCategory);
     }
 
@@ -27,7 +29,10 @@ const EditCategory = ({ category: initial, onPersist }: { category: Category, on
 
         setUpdating(true);
         onPersist(MainService().updateCategory(category))
-            .finally(() => setUpdating(false));
+            .finally(() => {
+                setUpdating(false);
+                updatingCategory(false);
+            });
     }
 
     const persistRemove = (event: React.SyntheticEvent) => {
@@ -35,7 +40,10 @@ const EditCategory = ({ category: initial, onPersist }: { category: Category, on
 
         setUpdating(true);
         onPersist(MainService().deleteCategory(category.id))
-            .finally(() => setUpdating(false));
+            .finally(() => {
+                setUpdating(false);
+                updatingCategory(false);
+            });
     }
 
     const cannotSave = updating 

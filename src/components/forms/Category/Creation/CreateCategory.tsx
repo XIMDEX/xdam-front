@@ -4,7 +4,7 @@ import MainService from "../../../../api/service";
 import { CategoryTypes } from "../../../../types/Categories/CategoryTypes";
 import styles from "./CreateCategory.module.scss";
 
-const CreateCategory = ({ type, onPersist }: { type: CategoryTypes, onPersist: (promise: Promise<any>) => Promise<void> }) => {
+const CreateCategory = ({ type, onPersist, creatingCategory }: { type: CategoryTypes, onPersist: (promise: Promise<any>) => Promise<void>, creatingCategory: (value: boolean) => void }) => {
 
     const [category, setCategory] = useState<{name: string, type: CategoryTypes}>({
         name: null,
@@ -20,6 +20,8 @@ const CreateCategory = ({ type, onPersist }: { type: CategoryTypes, onPersist: (
             name: event.target.value
         }
 
+        creatingCategory(category.name !== null ? category.name.length > 0 : false);
+
         setCategory(nextCategory);
     }
 
@@ -30,6 +32,7 @@ const CreateCategory = ({ type, onPersist }: { type: CategoryTypes, onPersist: (
         onPersist(MainService().createCategory(category))
             .finally(() => {
                 setUpdating(false);
+                creatingCategory(false);
                 setCategory({name: '', type});
             });
     }

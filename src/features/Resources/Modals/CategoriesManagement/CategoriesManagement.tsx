@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Dimmer, Icon, Loader, Modal } from "semantic-ui-react";
+import { Button, Confirm, Dimmer, Icon, Loader, Modal } from "semantic-ui-react";
 import { useDispatch } from "react-redux";
 import { reloadCatalogue } from "../../../../appSlice";
 import useCategories from "../../../../hooks/useCategories";
@@ -14,6 +14,8 @@ const CategoriesManagement = ({ categoryType}: { categoryType: CategoryTypes }) 
     const [open, setOpen] = useState(false);
     const [synchronize, setSynchronize] = useState(0);
     const [loading, setLoading] = useState(true);
+    const [unsavedChanges, setUnsavedChanges] = useState(true);
+    const [askConfirmation, setAskConfirmation] = useState(false);
     const categories = useCategories(synchronize, categoryType);
     const dispatch = useDispatch();
 
@@ -29,15 +31,26 @@ const CategoriesManagement = ({ categoryType}: { categoryType: CategoryTypes }) 
 
     const openModal = (event: React.SyntheticEvent): void => {
         event.preventDefault();
-        event.stopPropagation();
 
         setOpen(true);
     }
 
-    const closeModal = (): void => {
+    const close = (): void => {
+        setAskConfirmation(false);
         setOpen(false);
-
         dispatch(reloadCatalogue());
+    }
+
+    const saveClose = (): void => {
+        unsavedChanges
+            ? setAskConfirmation(true)
+            : close();
+    }
+
+    const dismissConfirmation = (event: React.SyntheticEvent) => {
+        event.preventDefault();
+
+        setAskConfirmation(false);
     }
 
     const stopEvent = (event: React.SyntheticEvent): React.SyntheticEvent => {
@@ -48,37 +61,45 @@ const CategoriesManagement = ({ categoryType}: { categoryType: CategoryTypes }) 
     }
 
     return (
-        <Modal
-            onClose={() => setOpen(false)}
-            onOpen={() => setOpen(true)}
-            open={open}
-            onClick={stopEvent}
-            trigger={
-                <div className={styles.categoriesManagement__edit} onClick={openModal}>
-                    <Icon name='pencil alternate' size="small" />
-                </div>
-            }
-        >
-            <Modal.Header>Edit {categoryType} categories</Modal.Header>
-            <Modal.Content scrolling>
-                {loading && <Dimmer active inverted>
-                    <Loader>Loading</Loader>
-                </Dimmer>}
-                <div className={styles.categoriesManagement__inputsList}>
-                    <CreateCategory type={categoryType} onPersist={sync} />
-                    {
-                        categories.map((category: Category) => (
-                            <EditCategory key={category.id} category={category} onPersist={sync} />
-                        ))
-                    }
-                </div>
-            </Modal.Content>
-            <Modal.Actions>
-                <Button onClick={closeModal}>
-                    Done
-                </Button>
-            </Modal.Actions>
-        </Modal>
+        <>
+            <Modal
+                open={open}
+                onClick={stopEvent}
+                trigger={
+                    <div className={styles.categoriesManagement__edit} onClick={openModal}>
+                        <Icon name='pencil alternate' size="small" />
+                    </div>
+                }
+            >
+                <Modal.Header>Edit {categoryType} categories</Modal.Header>
+                <Modal.Content scrolling>
+                    {loading && <Dimmer active inverted>
+                        <Loader>Loading</Loader>
+                    </Dimmer>}
+                    <div className={styles.categoriesManagement__inputsList}>
+                        <CreateCategory type={categoryType} onPersist={sync} creatingCategory={setUnsavedChanges} />
+                        {
+                            categories.map((category: Category) => (
+                                <EditCategory key={category.id} category={category} onPersist={sync} updatingCategory={setUnsavedChanges} />
+                            ))
+                        }
+                    </div>
+                </Modal.Content>
+                <Modal.Actions>
+                    <Button onClick={saveClose}>
+                        Done
+                    </Button>
+                </Modal.Actions>
+            </Modal>
+            <Confirm
+                open={askConfirmation}
+                onCancel={dismissConfirmation}
+                onConfirm={close}
+                size='tiny'
+                header='There are unsaved changes'
+                content='Exiting will cause the loss of the changes'
+            />
+        </>
     )
 }
 
