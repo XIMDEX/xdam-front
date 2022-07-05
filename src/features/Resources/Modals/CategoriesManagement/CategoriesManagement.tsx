@@ -5,7 +5,7 @@ import { reloadCatalogue } from "../../../../appSlice";
 import useCategories from "../../../../hooks/useCategories";
 import { CategoryTypes } from "../../../../types/Categories/CategoryTypes";
 import Category from "../../../../types/Categories/Category";
-import EditCategory from "../../../../components/forms/Category/Edition/CategoryEdition";
+import EditCategory from "../../../../components/forms/Category/Edition/EditCategory";
 import CreateCategory from "../../../../components/forms/Category/Creation/CreateCategory";
 import styles from './CategoriesManagement.module.scss';
 
@@ -14,7 +14,7 @@ const CategoriesManagement = ({ categoryType}: { categoryType?: CategoryTypes })
     const [open, setOpen] = useState(false);
     const [synchronize, setSynchronize] = useState(0);
     const [loading, setLoading] = useState(true);
-    const [unsavedChanges, setUnsavedChanges] = useState(true);
+    const [unsavedChanges, setUnsavedChanges] = useState<Record<string, boolean>>({});
     const [askConfirmation, setAskConfirmation] = useState(false);
     const categories = useCategories(synchronize, categoryType);
     const dispatch = useDispatch();
@@ -42,7 +42,7 @@ const CategoriesManagement = ({ categoryType}: { categoryType?: CategoryTypes })
     }
 
     const saveClose = (): void => {
-        unsavedChanges
+        Object.values(unsavedChanges).some(unsavedChange => unsavedChange)
             ? setAskConfirmation(true)
             : close();
     }
@@ -58,6 +58,16 @@ const CategoriesManagement = ({ categoryType}: { categoryType?: CategoryTypes })
         event.stopPropagation();
 
         return event;
+    }
+
+    const updateUnsavedChanges = (key: string, value: boolean): void => {
+        
+        const nextUnsavedChanges = {
+            ...unsavedChanges,
+            [key]: value
+        }
+
+        setUnsavedChanges(nextUnsavedChanges);
     }
 
     return (
@@ -77,10 +87,10 @@ const CategoriesManagement = ({ categoryType}: { categoryType?: CategoryTypes })
                         <Loader>Loading</Loader>
                     </Dimmer>}
                     <div className={styles.categoriesManagement__inputsList}>
-                        <CreateCategory type={categoryType} onPersist={sync} creatingCategory={setUnsavedChanges} />
+                        <CreateCategory type={categoryType} onPersist={sync} creatingCategory={updateUnsavedChanges} />
                         {
                             categories.map((category: Category) => (
-                                <EditCategory key={category.id} category={category} onPersist={sync} updatingCategory={setUnsavedChanges} />
+                                <EditCategory key={category.id} category={category} onPersist={sync} updatingCategory={updateUnsavedChanges} />
                             ))
                         }
                     </div>

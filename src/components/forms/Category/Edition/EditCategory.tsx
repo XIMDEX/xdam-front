@@ -3,9 +3,9 @@ import { Button, Dropdown, Icon, Input } from "semantic-ui-react";
 import MainService from "../../../../api/service";
 import Category from "../../../../types/Categories/Category";
 import { CategoryTypes } from "../../../../types/Categories/CategoryTypes";
-import styles from "./CategoryEdition.module.scss";
+import styles from "./EditCategory.module.scss";
 
-const EditCategory = ({ category: initial, onPersist, updatingCategory }: { category: Category, onPersist: (promise: Promise<any>) => Promise<void>, updatingCategory: (value: boolean) => void }) => {
+const EditCategory = ({ category: initial, onPersist, updatingCategory }: { category: Category, onPersist: (promise: Promise<any>) => Promise<void>, updatingCategory: (key: string, value: boolean) => void }) => {
 
     const [category, setCategory] = useState<Category>(initial);
     const [updating, setUpdating] = useState(false);
@@ -20,7 +20,7 @@ const EditCategory = ({ category: initial, onPersist, updatingCategory }: { cate
             name: nameWithUnderscores
         }
 
-        updatingCategory(initial.name !== nameWithUnderscores);
+        updatingCategory(category.id, initial.name !== nameWithUnderscores);
 
         setCategory(nextCategory);
     }
@@ -43,7 +43,7 @@ const EditCategory = ({ category: initial, onPersist, updatingCategory }: { cate
         onPersist(MainService().updateCategory(category))
             .finally(() => {
                 setUpdating(false);
-                updatingCategory(false);
+                updatingCategory(category.id, false);
             });
     }
 
@@ -54,13 +54,13 @@ const EditCategory = ({ category: initial, onPersist, updatingCategory }: { cate
         onPersist(MainService().deleteCategory(category.id))
             .finally(() => {
                 setUpdating(false);
-                updatingCategory(false);
+                updatingCategory(category.id, false);
             });
     }
 
     const cannotSave = updating 
         ? true
-        : initial.name === category.name;
+        : initial.name === category.name && initial.type === category.type;
 
     const nameWithoutUnderscores = category.name.replaceAll('_', ' ');
 
@@ -71,12 +71,12 @@ const EditCategory = ({ category: initial, onPersist, updatingCategory }: { cate
     }));
 
     return (
-        <div className={styles.categoryEdition__category}>
+        <div className={styles.editCategory__category}>
             <Input
                 placeholder={initial.name}
                 value={nameWithoutUnderscores}
                 onChange={updateName}
-                className={styles.categoryEdition__name}
+                className={styles.editCategory__name}
                 disabled={updating}
             />
             <Dropdown 
