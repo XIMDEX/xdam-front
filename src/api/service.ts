@@ -424,7 +424,7 @@ class AppService {
       try {
         const res = await (await fetch(_api.url, request)).json();
         if (res.error) throw Error(res.error)
-        return res.version
+        return +res.version
       }
       catch (e) {
         console.error(e.message)
