@@ -7,7 +7,7 @@ import styles from "./CreateCategory.module.scss";
 const CreateCategory = ({ type, onPersist, creatingCategory }: { type?: CategoryTypes, onPersist: (promise: Promise<any>) => Promise<void>, creatingCategory: (key: string, value: boolean) => void }) => {
 
     const [category, setCategory] = useState<{name: string, type: CategoryTypes}>({
-        name: null,
+        name: undefined,
         type: type
     });
     const [updating, setUpdating] = useState(false);
@@ -19,8 +19,7 @@ const CreateCategory = ({ type, onPersist, creatingCategory }: { type?: Category
             ...category,
             name: event.target.value
         }
-
-        creatingCategory('', category.name !== null ? event.target.value.length > 0 : false);
+        creatingCategory('', category.name !== undefined ? event.target.value.length > 0 : false);
 
         setCategory(nextCategory);
     }
@@ -48,9 +47,9 @@ const CreateCategory = ({ type, onPersist, creatingCategory }: { type?: Category
             });
     }
 
-    const invalidName = (): boolean => {
+    const cannotBeSaved = (): boolean => {
 
-        if (!category || !category.name) {
+        if (!category || !category.name || !category.type) {
             return true;
         }
 
@@ -84,7 +83,7 @@ const CreateCategory = ({ type, onPersist, creatingCategory }: { type?: Category
                 disabled={type !== undefined} 
                 selection 
             />
-            <Button onClick={persist} disabled={invalidName()} loading={updating} color="teal" size="large" icon>
+            <Button onClick={persist} disabled={cannotBeSaved()} loading={updating} color="teal" size="large" icon>
                 <Icon name="save" />
             </Button>
         </div>
