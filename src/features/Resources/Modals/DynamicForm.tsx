@@ -9,17 +9,17 @@ import {
 } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import MainService from '../../../api/service';
-import { MULTIMEDIA, VALIDS_LOM } from '../../../constants';
+import { CURRENT_BOOK_VERSION, MULTIMEDIA, VALIDS_LOM } from '../../../constants';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectCollection } from '../../../slices/organizationSlice';
 import SemanticForm from "@rjsf/semantic-ui";
 import { JSONSchema7 } from 'json-schema';
 import { render } from '../../../utils/render';
-import { Tab, Label, Icon, Dropdown, Radio } from 'semantic-ui-react'
+import { Tab, Label, Icon, Dropdown } from 'semantic-ui-react'
 import { Button as Btn } from 'semantic-ui-react';
 import { Message } from 'semantic-ui-react';
 import RelatedFiles from './RelatedFiles';
-import { setFormData, selectFormData, reloadCatalogue, setLomesSchema, setLomSchema } from '../../../appSlice';
+import { setFormData,  setLomesSchema, setLomSchema } from '../../../appSlice';
 import store from '../../../app/store';
 import ArrayFieldTemplate from './DynamicFormTemplates/ArrayFieldTemplate';
 import ResourceActionButtons from './ResourceActionButtons';
@@ -86,7 +86,6 @@ interface IBody {
 export default function DynamicForm({ resourceType, action, schema, dataForUpdate = null, handleClose }) {
   const classes = useStyles();
   let collection_id = useSelector(selectCollection);
-  //let storeFormData = useSelector(selectFormData);
   const dispatch = useDispatch();
   const [previewImage, setPreviewImage] = useState(null);
   const [formFiles, setFormFiles] = useState([]);
@@ -100,7 +99,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const [loaded, setLoaded] = useState(false);
   const [tr, triggerReload] = useState(false);
   const [fillAlert, setFillAlert] = useState(false);
-  
+  const formulario = React.useRef(null);
   
   useEffect(() => {
     
@@ -109,7 +108,9 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
         dispatch(setFormData({}));
         triggerReload(!tr)
       }
-    } else if (action === 'edit') {
+    }
+    
+    if (action === 'edit') {
       
       const fetchLomesSchema = async () => { 
         let lomesSchema = await MainService().getLomesSchema();
@@ -122,20 +123,30 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
       }
       
       let lomesl = localStorage.getItem('lomes_loaded');
-      if(lomesl === null || lomesl === '0') {
+      if(
+        (lomesl === null || lomesl === '0') 
+        && VALIDS_LOM.map(type => type.key).includes('lomes')
+      ) {
         fetchLomesSchema()
         localStorage.setItem('lomes_loaded', '1');
       }
 
       let loml = localStorage.getItem('lom_loaded');
-      if(loml === null || loml === '0') {
+      if (
+        (loml === null || loml === '0')
+        && VALIDS_LOM.map(type => type.key).includes('lom')
+      ) {
         fecthLomSchema()
         localStorage.setItem('lom_loaded', '1');
       }
       
       const getResourceData = async () => {
-        //get the resource from db. Data for update is faceted data
+        //* get the resource from db. Data for update is faceted data
         let res = await MainService().getResource(dataForUpdate.id);
+        if (resourceType === 'book' && !res.version) {
+          const version = await MainService().getBookVersion(dataForUpdate.id)
+          res.version = version
+        }
         setResourceData(res);
         setTheFiles(res.files);
       }
@@ -145,15 +156,24 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
         setFillAlert(false);
         setLoaded(true);
       }
-    } else if (action === 'view') { 
+    } 
+    
+    if (action === 'view') { 
+      // TODO
+    } 
 
-    } else {
-
-    }
-    return function cleanup() {
-      //dispatch(setFormData({}));
-    };
+    return function cleanup() {};
   }, [theFiles, resourceData, loaded ])
+
+  useEffect(() => {
+    async function addVersionBook() {
+      const version = await MainService().getBookVersion(resourceData.id);
+      setResourceData({...resourceData, version})
+    }
+    if (resourceType === 'book' && resourceData !== null && !resourceData.hasOwnProperty('version')) {
+      addVersionBook()
+    }
+  }, [resourceData, setResourceData, resourceType])
   
   const styleBtnPreview = {
     backgroundImage: 'url(' + (previewImage ? URL.createObjectURL(previewImage) : (dataForUpdate ? render(dataForUpdate) : 'noimg.png')) + ')',
@@ -161,6 +181,8 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     backgroundSize: 'cover',
     backgroundRepeat: 'no-repeat',
   }
+  
+  const showUpgradeButton = resourceType === 'book' && action === 'edit' && resourceData && resourceData.version !== CURRENT_BOOK_VERSION
 
   const handleFiles = (e) => {
     if (typeof e.target.type === 'string' && e.target.type === 'file' && e.target.name === 'Preview') {
@@ -170,10 +192,8 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
       }
     }
     if (typeof e.target.type === 'string' && e.target.type === 'file' && e.target.name === 'File') {
-      // console.log('file attached', e.target.files)
       setFormFiles(e.target.files)
       if(resourceType === MULTIMEDIA) {
-        // console.log(e.target.files[0].type.split('/')[0])
         setMediaType(e.target.files[0].type.split('/')[0])
       }
     }
@@ -198,6 +218,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   }
 
   const postData = async (form, event) => {
+    event.preventDefault();
     localStorage.setItem('reload_catalogue', '1');
     setMessage(messageDefaultState)
 
@@ -236,26 +257,36 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     } else {
       res = await MainService().createResource(theFormData);
     }
-    //FormFiles are the files 'adding'
+    //* FormFiles are the files 'adding'
     if(action !== 'create') {
       setFormFiles([])
     }
-    setLoaded(false)
-    setProcessing(false)
     const resData = await res.json()
 
+
     if(!res.ok) {
-      setMessage({display: true, ok: res.ok, text: resData.error ?? 'Error 0' })
-    } else {  
-      setForm(resData.data);
-      setMessage({display: true, text: '', ok: res.ok })
+      return setMessage({display: true, ok: res.ok, text: resData.error ?? 'Error 0' })
+    } 
+    let output_message = ''
+    let ouput_ok = res.ok
+
+    if (!showUpgradeButton && resourceType === 'book' && action !== 'create') {
+      const {res: resMetadata} = await saveMetaDataResource()
+      if (!resMetadata.ok) {
+        return setMessage({display: true, ok: resMetadata.ok, text: 'Resource saved, but save metada is failed' })
+      }
+      output_message = 'Resource and metadata saved'
     }
     
-    event.preventDefault();
-    return false; // prevent reload
+    setLoaded(false)
+    setProcessing(false)
+
+    setForm(resData.data);
+    setMessage({display: true, text: output_message, ok: ouput_ok })
   }
 
   const getStoreFormData = () => {
+    const state = store.getState()
     const fd = store.getState().app.formData;
     return fd;
   }
@@ -333,8 +364,6 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     setForm(lastUpdated.data);
     setFillAlert(true);
     triggerReload(!tr);
-    // let res = await MainService().updateResourceFromLastCreated(resourceData.id);
-    // setResourceData(res);
   }
 
   const updateResourceFromLastUpdated = async () => {
@@ -342,17 +371,43 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     setForm(lastUpdated.data);
     setFillAlert(true);
     triggerReload(!tr);
-    // let res = await MainService().updateResourceFromLastUpdated(resourceData.id);
-    // setForm(res.data);
-    // setResourceData(res);
+  }
+
+  const handleUpdateMetadataResource = async () => {
+    setMessage(messageDefaultState)
+
+    const {res, resData} = await saveMetaDataResource()
+    
+    if(!res.ok) {
+      setMessage({display: true, ok: res.ok, text: resData.error ?? 'Error 0' })
+    } else {
+      setMessage({display: true, text: 'Book updated at V2', ok: res.ok })
+    }
+
+  }
+
+  const saveMetaDataResource = async () => {
+    
+    const data = formulario?.current?.state?.formData?.description ?? resourceData?.data?.description
+    data.id = resourceData.id
+    
+    if (resourceData.version === 1) data.upgrading = true
+    
+    var form_data = new FormData();
+    for ( var key in data ) {
+        form_data.append(key, data[key]);
+    }
+    
+    const res = await MainService().upgradeVersionBook(data)
+    const resData = res.ok ? await res.json() : {error: await res.text()}
+
+    return {res, resData}
   }
 
   const MetaDataForm = () => {
     return (
       <Grid item sm={6}>
         <div className='forms-main-btns'>
-            {/* <Btn onClick={dispatchForm} loading={processing}>Update</Btn> */}
-            
             <Btn color='teal' icon='facebook' onClick={() =>  _refForm.current.click()} loading={processing}> 
               {dataForUpdate ? (
                 <>
@@ -364,25 +419,28 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                 </>
               }
             </Btn>
-            
-              <Dropdown
-                  text='Import data'
-                  icon='clone'
-                  color='teal'
-                  labeled
-                  button
-                  className='icon teal'
-              >
-                <Dropdown.Menu>
-                  <Dropdown.Item onClick={updateResourceFromLastCreated}>
-                    last resource created
-                  </Dropdown.Item>
-                  <Dropdown.Item onClick={updateResourceFromLastUpdated}>
-                    last resource updated
-                  </Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-            
+            <Dropdown
+                text='Import data'
+                icon='clone'
+                color='teal'
+                labeled
+                button
+                className='icon teal'
+            >
+              <Dropdown.Menu>
+                <Dropdown.Item onClick={updateResourceFromLastCreated}>
+                  last resource created
+                </Dropdown.Item>
+                <Dropdown.Item onClick={updateResourceFromLastUpdated}>
+                  last resource updated
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+            { showUpgradeButton && (
+              <Btn color='teal' onClick={handleUpdateMetadataResource} >
+                <Icon name='angle double up' /> Upgrade v2
+              </Btn>
+            )}
         </div>
         <div className='form-messages'>    
           <Message color={msg.ok ? 'teal' : 'red'} className={msg.display ? 'zoom-message' : 'hidden-message'} info onDismiss={() => setMessage(messageDefaultState)}>
@@ -390,7 +448,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                 msg.ok ? (
                   <>
                     <Message.Header>Done</Message.Header>
-                    <p>Resource {dataForUpdate ? 'updated' : 'created'}</p>
+                    <p>{msg.text !== '' ? msg.text : `Resource ${dataForUpdate ? 'updated' : 'created'}`}</p>
                   </>
                 ) : (
                   <>
