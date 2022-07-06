@@ -182,7 +182,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     backgroundRepeat: 'no-repeat',
   }
   
-  const showUpgradeButton = resourceType === 'book' && action === 'edit' && resourceData && resourceData.version !== CURRENT_BOOK_VERSION
+  const showUpgradeButton = resourceType === 'book' && action === 'edit' && resourceData && +resourceData.version !== CURRENT_BOOK_VERSION
 
   const handleFiles = (e) => {
     if (typeof e.target.type === 'string' && e.target.type === 'file' && e.target.name === 'Preview') {
