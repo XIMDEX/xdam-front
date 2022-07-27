@@ -453,27 +453,39 @@ class AppService {
 
       window.URL.revokeObjectURL(blob as unknown as string);
 
-      // const fileStream = streamSaver.createWriteStream(file.file_name);
-        
-      // const writer = fileStream.getWriter();
-
-      // const reader = res.body.getReader();
-      // console.log(reader);
-      // const pump = () => reader.read()
-      //   .then(({ value, done }) => {
-      //     if (done) writer.close();
-      //     else {
-      //       writer.write(value);
-      //       return writer.ready.then(pump);
-      //     }
-      //   });
-
-      // await pump()
-      //   .then(() => console.log('Closed the stream, Done writing'))
-      //   .catch(err => console.log(err));
-     
-
       return true;
+    }
+
+    async getBookVersion(bookid)
+    {
+      const _api = api().getBookVersion(bookid);
+      const request = {
+        method: _api.method
+      }
+      try {
+        const res = await (await fetch(_api.url, request)).json();
+        if (res.error) throw Error(res.error)
+        return +res.version
+      }
+      catch (e) {
+        console.error(e.message)
+        return 0;
+      } 
+    }
+
+    async upgradeVersionBook(resource)
+    {
+      const _api = api().postBookMetadata()
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers,
+        body: JSON.stringify({
+          ...resource, 
+          token: 'vd9NxuORVjd8xlkZfqAfEQjJw4rXuuPEVysaEV1T'
+        })
+      }
+      const res = await fetch(_api.url, request);
+      return res;
     }
 }
 

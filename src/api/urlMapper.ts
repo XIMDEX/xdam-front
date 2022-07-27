@@ -1,5 +1,5 @@
 import { Cookies } from 'react-cookie';
-import { API_BASE_URL, XTAGS_API_BASE_URL } from '../constants';
+import { API_BASE_URL, BOOK_EDITOR_URL, XTAGS_API_BASE_URL } from '../constants';
 
 const api = () => {
     let cookies = new Cookies();
@@ -152,6 +152,14 @@ const api = () => {
         getTaxonDetails: (id, lang, vocabulary) => ({
             method: 'GET',
             url: `${baseUrlXTags}/vocabularies/info?id=${id}&vocabulary=${vocabulary}&lang=${lang}`
+        }),
+        getBookVersion: (bookId) => ({
+            method: 'GET',
+            url: `${BOOK_EDITOR_URL}api/book/${bookId}/version`
+        }),
+        postBookMetadata: () => ({
+            method: 'POST',
+            url: `${BOOK_EDITOR_URL}api/edit/metadata`
         })
     }
     return mapper;
