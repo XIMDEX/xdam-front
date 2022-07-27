@@ -45,7 +45,7 @@ class AppService {
 
     isLoggedToKakuma()
     {
-      return this.getToken('JWT_Kakuma') == null
+      return this.getToken('JWT_Kakuma') !== null
     }
 
     async login (email: String, password: String) 
@@ -72,7 +72,7 @@ class AppService {
         method: api().loginToKakuma.method,
         headers: this.httpOptions.headers
       }
-      const res = await (await fetch(api().loginToKakuma.url, request)).json();
+      const res = await fetch(api().loginToKakuma.url, request);
       return res;
     }
 

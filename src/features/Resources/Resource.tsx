@@ -78,6 +78,10 @@ export function Resource( { data, listMode, resourceType } ) {
         setDialogOpen(true)
     }
 
+    function is_logged_to_kakuma() {
+        return MainService().isLoggedToKakuma();
+    }
+
     async function get_course_enrollments_endpoint(data) {
         if (data.type !== "course")
             return 0;
@@ -88,6 +92,16 @@ export function Resource( { data, listMode, resourceType } ) {
             return resData.data.length;
         }
         throw new Error('Error 1.1: On getting course enrollments')
+    }
+
+    async function login_kakuma() {
+        let res = await MainService().loginTokakuma();
+
+        if (res.ok) {
+            let resData = await res.json();
+            return resData.kakuma_token;
+        }
+        throw new Error('Error 1.1: On logging into Kakuma')
     }
 
     async function remove_endpoint(data) {
@@ -117,10 +131,9 @@ export function Resource( { data, listMode, resourceType } ) {
         e.stopPropagation();
         let yes = window.confirm('sure?');
         if (yes) {
-            if (!MainService().isLoggedToKakuma()) {
-                console.log('IS NOT LOGGED IN');
-                let kakumaLogin = await MainService().loginTokakuma();
-                MainService().setToken('JWT_Kakuma', kakumaLogin.data.kakuma_token);
+            if (!is_logged_to_kakuma()) {
+                let kakumaLogin = await login_kakuma();
+                MainService().setToken('JWT_Kakuma', kakumaLogin);
             }
 
             let enrollmentsRes = await get_course_enrollments_endpoint(data);

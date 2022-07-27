@@ -14,7 +14,7 @@ const api = () => {
         },
         loginToKakuma: {
             method: 'POST',
-            url: baseUrl + '/auth/login/kakuma'
+            url: baseUrl + '/auth/kakumaLogin'
         },
         logout: {    
             method: 'POST',   
