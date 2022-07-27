@@ -48,7 +48,6 @@ export function Login() {
       return;
     }
     MainService().setToken('JWT', user.data.access_token);
-    MainService().setToken('JWT_Kakuma', user.data.kakuma_token);
     setLoginStatus('Login success. Loading user data, please wait.');
     history.push('/home');
     dispatch(reloadApp());

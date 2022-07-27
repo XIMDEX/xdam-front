@@ -12,6 +12,10 @@ const api = () => {
             method: 'POST',   
             url: baseUrl + '/auth/login'
         },
+        loginToKakuma: {
+            method: 'POST',
+            url: baseUrl + '/auth/login/kakuma'
+        },
         logout: {    
             method: 'POST',   
             url: baseUrl + '/user/logout'

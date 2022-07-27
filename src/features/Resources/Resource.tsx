@@ -116,7 +116,13 @@ export function Resource( { data, listMode, resourceType } ) {
         setBlur(true)
         e.stopPropagation();
         let yes = window.confirm('sure?');
-        if(yes) {
+        if (yes) {
+            if (!MainService().isLoggedToKakuma()) {
+                console.log('IS NOT LOGGED IN');
+                let kakumaLogin = await MainService().loginTokakuma();
+                MainService().setToken('JWT_Kakuma', kakumaLogin.data.kakuma_token);
+            }
+
             let enrollmentsRes = await get_course_enrollments_endpoint(data);
             if (enrollmentsRes > 0) {
                 let enrollmentsYes = window.confirm(`There are ${enrollmentsRes} users enrolled in this course. Are you sure you want to remove it?`);
