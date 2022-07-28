@@ -1,8 +1,8 @@
 import api from './urlMapper'
 import { Cookies } from 'react-cookie';
 import * as ponyfill from 'web-streams-polyfill/ponyfill';
-import { PATH_TAXONS_DATA, XTAGS } from '../constants';
-import { RedoOutlined } from '@material-ui/icons';
+import { XTAGS } from '../constants';
+
 const streamSaver = require('streamsaver')
 
 class AppService {
