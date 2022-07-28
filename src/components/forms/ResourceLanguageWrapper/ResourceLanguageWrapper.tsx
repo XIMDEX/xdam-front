@@ -1,4 +1,5 @@
 import React from "react";
+import { bookLanguages } from "../../../constants";
 import { ResourceLanguage } from "../../../features/Resources/Modals/DynamicFormTemplates/ResourceLanguage";
 import styles from './ResourceLanguageWrapper.module.scss';
 
@@ -8,7 +9,7 @@ const ResourceLanguageWrapper = (
 
     const widgetOptions = {
         label,
-        opt: ["es", "ca", "en"]
+        opt: Object.keys(bookLanguages)
     }
 
     return(
