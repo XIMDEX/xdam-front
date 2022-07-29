@@ -17,7 +17,6 @@ import { Button as Btn, Icon as Icn } from 'semantic-ui-react';
 import BatchDialog from './Modals/MassiveUpload/BatchDialog';
 import store from '../../app/store';
 import { SelectableGroup, createSelectable } from 'react-selectable';
-import FacetChips from '../../components/facets/FacetChips';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -193,6 +192,16 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
       getSchemas();
     }
   }, [facetsQuery, collection, organization, reload, query])
+
+  const Chips = ({ data }): any => (
+    Object.keys(data).map(key => (
+      data[key].map((value, ix) => (
+        <Label >
+          {key === WORKPSACES ? (value) : (value === 'true' || value === 'false' ? key + ': ' + value : value)}
+        </Label>
+      ))
+    ))
+  )
 
   const LoadingResources = (): any => {
     return (
@@ -452,7 +461,7 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
           {
             localResources && localResources.length > 0 ? (
               <Grid container style={{ marginTop: 3 }}>
-                <Grid item sm={12} > <FacetChips facetsQuery={facetsQuery} />  </Grid>
+                <Grid item sm={12} > <Chips data={facetsQuery} />  </Grid>
               </Grid>) : null
           }
 

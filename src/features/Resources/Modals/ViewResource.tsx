@@ -10,10 +10,9 @@ import RelatedFiles from './RelatedFiles';
 import { Button, Label } from 'semantic-ui-react';
 import _ from 'lodash';
 import { useSelector } from 'react-redux';
-import { API_BASE_URL, WORKPSACES } from '../../../constants';
+import { API_BASE_URL } from '../../../constants';
 import { selectCollection } from '../../../slices/organizationSlice';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
-import { selectWorkspacesData } from '../../../appSlice';
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -40,16 +39,6 @@ const useStyles = makeStyles((theme: Theme) =>
     }
   }),
 );
-
-const ResourceWokspaces = ({ workspacesId }: { workspacesId: Array<string> }) => {
-  const workspaces = useSelector(selectWorkspacesData);
-
-  if (!workspaces) return null;
-
-  const resourceWorkspaces = workspacesId.map(id => workspaces[id].name);
-
-  return (<p><strong>workspaces:</strong> {resourceWorkspaces.join(', ')}</p>)
-}
 
 export default function ViewResource( { resData } ) {
     const classes = useStyles();
@@ -144,10 +133,6 @@ export default function ViewResource( { resData } ) {
               ))}
             </ul>
           </>)
-        }
-
-        if(label === WORKPSACES) {
-          field = <ResourceWokspaces workspacesId={d} />
         }
       }
           
