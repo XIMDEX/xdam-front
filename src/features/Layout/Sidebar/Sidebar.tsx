@@ -37,6 +37,9 @@ function Sidebar( { collection, organization } ) {
   const resources = useSelector(selectResources)
   const resourcesLoading = useSelector(selectResourcesLoading)
   
+  useEffect(() => {
+  }, [currentQuery, organization, collection, facets, fixedFacets, resources, user])
+
   return (
     <Grid container className={`${classes.sidebarComp}`} > 
       <Grid item sm={12}>
@@ -51,6 +54,7 @@ function Sidebar( { collection, organization } ) {
                   collection={selectedColl} 
                   organization={selectedOrg} 
                   facetsQuery={currentQuery}
+                  _user={user}
                 />
               )
             })
