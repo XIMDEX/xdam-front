@@ -1,6 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from './app/store';
 import IFacet from './interfaces/IFacet';
+import { Workspace } from './types/Workspace/Workspace';
+import { WorkspaceId } from './types/Workspace/WorkspaceId';
 
 interface AppState {
   user: null|Record<string,any>;
@@ -14,7 +16,8 @@ interface AppState {
   lomSchema: null|Record<string,any>;
   catalogueFlag: boolean,
   formData: any,
-  reloadApp: boolean
+  reloadApp: boolean,
+  workspacesData: Record<WorkspaceId, Workspace> | null,
 }
 
 const initialState: AppState = {
@@ -29,7 +32,8 @@ const initialState: AppState = {
   lomSchema: null,
   catalogueFlag: true,
   formData: null,
-  reloadApp: false
+  reloadApp: false,
+  workspacesData: null,
 };
 
 export const appSlice = createSlice({
@@ -77,12 +81,15 @@ export const appSlice = createSlice({
     reloadApp: (state) => {
       state.reloadApp = !state.reloadApp;
     },
+    setWorkspacesData: (state: AppState, {payload}: {payload: Record<WorkspaceId, Workspace>}) => {
+      state.workspacesData = payload
+    }
   },
 });
 
 export const { setUser, setLoading, setFixedFacets, setFacets, 
   setResources, setResourcesLoading, setSchemas, setLomesSchema, setLomSchema,
-  reloadCatalogue, setFormData, reloadApp} = appSlice.actions;
+  reloadCatalogue, setFormData, reloadApp, setWorkspacesData} = appSlice.actions;
 
 // The function below is called a thunk and allows us to perform async logic. It
 // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
@@ -109,5 +116,6 @@ export const selectLomSchema = (state: RootState) => state.app.lomSchema;
 export const selectCatalogueFlag = (state: RootState) => state.app.catalogueFlag;
 export const selectReloadApp = (state: RootState) => state.app.reloadApp;
 export const selectFormData = (state: RootState) => state.app.formData;
+export const selectWorkspacesData = (state: RootState) => state.app.workspacesData;
 
 export default appSlice.reducer;
