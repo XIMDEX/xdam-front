@@ -22,12 +22,6 @@ const workspacesProvider = async (workspacesId: Array<WorkspaceId>): Promise<Rec
     if(!workspacesId || !Array.isArray(workspacesId)) {
         return {};
     }
-    
-    for (var i = 0; i < workspacesId.length; i++) {
-        let current = workspacesId[i];
-        let obj = JSON.parse(current.toString());
-        workspacesId[i] = obj['id'];
-    }
 
     const { data } = await MainService().getWorkspaces(workspacesId);
 
