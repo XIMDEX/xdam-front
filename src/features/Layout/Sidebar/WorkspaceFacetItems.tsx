@@ -16,7 +16,6 @@ interface Props {
 }
 
 const WorkspaceFacetItems = ({ facet, filteredFacetValues, fixed, isChecked, changeFacet, supplementaryData }: Props ) => {
-    
     const [workspaces, setWorkspaces] = useState<Record<WorkspaceId, Workspace>>(null);
 
     useEffect(() => {
@@ -44,28 +43,30 @@ const WorkspaceFacetItems = ({ facet, filteredFacetValues, fixed, isChecked, cha
     return (<>
             {Object.keys(filteredFacetValues).map((workspaceId, index) =>
                 {
+                    const workspaceParsed = JSON.parse(workspaceId);
+                    const workspaceInfo = workspaces[workspaceParsed['id']];
                     const values = filteredFacetValues[workspaceId];
 
-                    if (!workspaces[workspaceId]) {
+                    if (!workspaceInfo) {
                         return null;
                     }
 
                     return (
                         <li key={index} style={{ listStyleType: "none" }}>
-                            <FacetActionsWrapper name={workspaces[workspaceId].name} rename={renameWorkspace(workspaces[workspaceId].id)}>
+                            <FacetActionsWrapper name={workspaceInfo.name} rename={renameWorkspace(workspaceInfo.id)}>
                                 <input
                                     type={values.radio ? 'radio' : 'checkbox'}
-                                    name={workspaceId}
-                                    value={workspaceId}
+                                    name={workspaceInfo.id.toString()}
+                                    value={workspaceInfo.name}
                                     onChange={changeFacet(values.radio)}
-                                    checked={isChecked(fixed ? values.id : workspaceId, facet.key)}
-                                    id={(facet.key + '-' + workspaceId + '-' + values.id).replace(/ /g, '--')}
+                                    checked={isChecked(fixed ? values.id : workspaceInfo.name, facet.key)}
+                                    id={(facet.key + '-' + workspaceInfo.id + '-' + values.id).replace(/ /g, '--')}
                                     />
                                 <label 
-                                    htmlFor={(facet.key + '-' + workspaceId + '-' + values.id).replace(/ /g, '--')}
-                                    title={workspaces[workspaceId].name}
+                                    htmlFor={(facet.key + '-' + workspaceInfo.id + '-' + values.id).replace(/ /g, '--')}
+                                    title={workspaceInfo.name}
                                     >
-                                    <span>{workspaces[workspaceId].name}</span><strong>{`(${values.count})`}</strong>
+                                    <span>{workspaceInfo.name}</span><strong>{`(${values.count})`}</strong>
                                 </label>
                             </FacetActionsWrapper>
                         </li>
