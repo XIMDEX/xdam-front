@@ -16,7 +16,6 @@ interface Props {
 }
 
 const WorkspaceFacetItems = ({ facet, filteredFacetValues, fixed, isChecked, changeFacet, supplementaryData }: Props ) => {
-    
     const [workspaces, setWorkspaces] = useState<Record<WorkspaceId, Workspace>>(null);
 
     useEffect(() => {
@@ -52,7 +51,8 @@ const WorkspaceFacetItems = ({ facet, filteredFacetValues, fixed, isChecked, cha
 
                     return (
                         <li key={index} style={{ listStyleType: "none" }}>
-                            <FacetActionsWrapper name={workspaces[workspaceId].name} rename={renameWorkspace(workspaces[workspaceId].id)}>
+                            <FacetActionsWrapper name={workspaces[workspaceId].name} rename={renameWorkspace(workspaces[workspaceId].id)}
+                                canBeEdit={values.canBeEdit}>
                                 <input
                                     type={values.radio ? 'radio' : 'checkbox'}
                                     name={workspaceId}
@@ -60,11 +60,11 @@ const WorkspaceFacetItems = ({ facet, filteredFacetValues, fixed, isChecked, cha
                                     onChange={changeFacet(values.radio)}
                                     checked={isChecked(fixed ? values.id : workspaceId, facet.key)}
                                     id={(facet.key + '-' + workspaceId + '-' + values.id).replace(/ /g, '--')}
-                                    />
+                                />
                                 <label 
                                     htmlFor={(facet.key + '-' + workspaceId + '-' + values.id).replace(/ /g, '--')}
                                     title={workspaces[workspaceId].name}
-                                    >
+                                >
                                     <span>{workspaces[workspaceId].name}</span><strong>{`(${values.count})`}</strong>
                                 </label>
                             </FacetActionsWrapper>
