@@ -16,7 +16,6 @@ interface Props {
 }
 
 const WorkspaceFacetItems = ({ facet, filteredFacetValues, fixed, isChecked, changeFacet, supplementaryData }: Props ) => {
-    
     const [workspaces, setWorkspaces] = useState<Record<WorkspaceId, Workspace>>(null);
 
     useEffect(() => {
@@ -45,6 +44,7 @@ const WorkspaceFacetItems = ({ facet, filteredFacetValues, fixed, isChecked, cha
             {Object.keys(filteredFacetValues).map((workspaceId, index) =>
                 {
                     const values = filteredFacetValues[workspaceId];
+                    const current = workspaces[workspaceId];
 
                     if (!workspaces[workspaceId]) {
                         return null;
@@ -52,20 +52,20 @@ const WorkspaceFacetItems = ({ facet, filteredFacetValues, fixed, isChecked, cha
 
                     return (
                         <li key={index} style={{ listStyleType: "none" }}>
-                            <FacetActionsWrapper name={workspaces[workspaceId].name} rename={renameWorkspace(workspaces[workspaceId].id)}>
+                            <FacetActionsWrapper name={current.name} rename={renameWorkspace(Number(workspaceId))}>
                                 <input
                                     type={values.radio ? 'radio' : 'checkbox'}
                                     name={workspaceId}
-                                    value={workspaceId}
+                                    value={workspaceId.toString()}
                                     onChange={changeFacet(values.radio)}
                                     checked={isChecked(fixed ? values.id : workspaceId, facet.key)}
                                     id={(facet.key + '-' + workspaceId + '-' + values.id).replace(/ /g, '--')}
                                     />
                                 <label 
                                     htmlFor={(facet.key + '-' + workspaceId + '-' + values.id).replace(/ /g, '--')}
-                                    title={workspaces[workspaceId].name}
+                                    title={current.name}
                                     >
-                                    <span>{workspaces[workspaceId].name}</span><strong>{`(${values.count})`}</strong>
+                                    <span>{current.name}</span><strong>{`(${values.count})`}</strong>
                                 </label>
                             </FacetActionsWrapper>
                         </li>
