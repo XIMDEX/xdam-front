@@ -6,7 +6,9 @@ export interface Facet {
             id: any | null,
             count: number,
             selected: boolean,
-            radio: boolean
+            radio: boolean,
+            name: string | null,
+            canBeEdit: boolean | null
         }
     }
 }
