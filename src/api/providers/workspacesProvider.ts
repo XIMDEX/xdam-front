@@ -22,7 +22,7 @@ const workspacesProvider = async (workspacesId: Array<WorkspaceId>): Promise<Rec
     if(!workspacesId || !Array.isArray(workspacesId)) {
         return {};
     }
-    
+
     const { data } = await MainService().getWorkspaces(workspacesId);
 
     const workspaces = data.map(parseWorkspace);

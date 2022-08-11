@@ -26,7 +26,6 @@ const WorkspacesChips = ({ facetValues }: { facetValues: FacetValues}) => {
 
     const chips = facetValues.map((workspaceId: string) => {
         const workspaceName = workspaces[workspaceId].name;
-
         return (<Chip key={workspaceId} value={workspaceName} />);
     });
 
