@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Grid, Button, IconButton, Typography, TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import _ from 'lodash'
-import { ORGANIZATION, COLLECTION } from '../../../constants';
+import { ORGANIZATION, COLLECTION, ACTIVE_FACET, LANGUAGE_FACET, bookLanguages, activeOptions } from '../../../constants';
 import { setFacetsQuery, setQuery, selectQuery } from '../../../slices/organizationSlice';
 import { setResourcesLoading } from '../../../appSlice';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -106,9 +106,16 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
     }
     async function filterCheck (evt)
     {
-        const checked = evt.target.checked; 
+        const checked = evt.target.checked;
         const facetKey = facet.key;
         const facetValue = evt.target.value;
+        var translatedFacetValue = facetValue;
+
+        if (facetKey == 'lang') {
+            for (const auxKey in bookLanguages)
+                if (bookLanguages[auxKey] == facetValue)
+                    translatedFacetValue = auxKey;
+        }
         
         if (currentFacets.hasOwnProperty(facetKey)) {
             if (checked) {
@@ -197,6 +204,44 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
         return facet.label
     }
 
+    function translateFacetItems(fValues, translations) {
+        var auxFacetValues = {}
+
+        for (const key in fValues) {
+            var temp = {'name_translation': key}
+            if (key in translations) temp['name_translation'] = translations[key];
+            for (const tempKey in fValues[key]) temp[tempKey] = fValues[key][tempKey];
+            auxFacetValues[key] = temp;
+        }
+
+        return auxFacetValues;
+    }
+
+    function returnFacetItems(fValues) {
+        return (
+            Object.keys(fValues).map((name, index) => (
+                //switch lines to hidden facets values in zero
+                // <li key={index} style={{listStyleType: "none"}} className={fValues[name].count < 1 ? classes.hidden : null}>
+                <li key={index} style={{listStyleType: "none"}}>
+                    <input 
+                        type={fValues[name].radio ? 'radio' : 'checkbox'} 
+                        name={facet.key}
+                        // disabled={fValues[name].count < 1}
+                        value={fixed ? fValues[name].id : name} 
+                        onChange={fValues[name].radio ? filterRadio : filterCheck}
+                        checked={getChecked(fixed ? fValues[name].id : name, facet.key)} 
+                        id={(facet.key +'-'+ name +'-'+fValues[name].id).replace(/ /g,'--')}
+                    /> 
+                    <label htmlFor={(facet.key +'-'+ name +'-'+fValues[name].id).replace(/ /g,'--')}>
+                        <span>{ 'name_translation' in fValues[name] ? fValues[name]['name_translation'] : name } <strong>({ fValues[name].count })</strong></span>
+                    </label>
+                    
+                </li>
+                )
+            )
+        )
+    }
+
     function FacetItems( { fixed } ): any {
         if (facet.key === COLLECTION || facet.key === ORGANIZATION ) {
             return (
@@ -221,34 +266,22 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
         if (facetValues) {
             switch (facet.key) {
                 // case 'cost':
-                    
                 //     var comp = <RangeFilter values={facetValues} fkey={facet.key}/>
                 //     return comp
                 //     break;
-            
+
+                case ACTIVE_FACET:
+                    var auxFacetValues = translateFacetItems(facetValues, activeOptions);              
+                    return returnFacetItems(auxFacetValues);
+                    break;
+
+                case LANGUAGE_FACET:
+                    var auxFacetValues = translateFacetItems(facetValues, bookLanguages);              
+                    return returnFacetItems(auxFacetValues);
+                    break;
+
                 default:
-                    return (
-                        Object.keys(facetValues).map((name, index) => (
-                            //switch lines to hidden facets values in zero
-                            // <li key={index} style={{listStyleType: "none"}} className={facetValues[name].count < 1 ? classes.hidden : null}>
-                            <li key={index} style={{listStyleType: "none"}}>
-                                <input 
-                                    type={facetValues[name].radio ? 'radio' : 'checkbox'} 
-                                    name={facet.key}
-                                    // disabled={facetValues[name].count < 1}
-                                    value={fixed ? facetValues[name].id : name} 
-                                    onChange={facetValues[name].radio ? filterRadio : filterCheck}
-                                    checked={getChecked(fixed ? facetValues[name].id : name, facet.key)} 
-                                    id={(facet.key +'-'+ name +'-'+facetValues[name].id).replace(/ /g,'--')}
-                                /> 
-                                <label htmlFor={(facet.key +'-'+ name +'-'+facetValues[name].id).replace(/ /g,'--')}>
-                                    <span>{ name } <strong>({ facetValues[name].count })</strong></span>
-                                </label>
-                                
-                            </li>
-                            )
-                        )
-                    )
+                    return returnFacetItems(facetValues);
                     break;
             }
         } else {
