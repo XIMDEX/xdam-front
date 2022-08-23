@@ -8,7 +8,7 @@ class AppService {
     /**
      * Dict containing options for using with the http client
      */
-    private httpOptions = { headers: {} as any, headersForm: {}, params: {} };
+    private httpOptions = { headers: {} as any, headersForm: {}, kakumaHeaders: {}, params: {} };
     private cookies: Cookies;
     /**
      * @ignore
@@ -25,11 +25,15 @@ class AppService {
           Authorization: this.getToken()
         };
 
+        this.httpOptions.kakumaHeaders = {
+          'Content-Type': 'application/json',
+          Authorization: this.getToken('JWT_Kakuma')
+        }
     }
 
-    getToken()
+    getToken(cookie_id = 'JWT')
     {
-      return this.cookies.get('JWT') ? 'Bearer ' + this.cookies.get('JWT') : null
+      return this.cookies.get(cookie_id) ? 'Bearer ' + this.cookies.get(cookie_id) : null
     }
 
     setToken(name, value)
@@ -37,6 +41,11 @@ class AppService {
       return this.cookies.set(name, value, {
         maxAge: 31536000
       });
+    }
+
+    isLoggedToKakuma()
+    {
+      return this.getToken('JWT_Kakuma') !== null
     }
 
     async login (email: String, password: String) 
@@ -57,6 +66,16 @@ class AppService {
       return resToJson;
     }
 
+    async loginTokakuma()
+    {
+      const request = {
+        method: api().loginToKakuma.method,
+        headers: this.httpOptions.headers
+      }
+      const res = await fetch(api().loginToKakuma.url, request);
+      return res;
+    }
+
     async logout()
     {
       const request = {
@@ -68,6 +87,7 @@ class AppService {
       const resToJson = await res.json();
       if (resToJson.code === 200) {
         this.cookies.remove('JWT');
+        this.cookies.remove('JWT_Kakuma');
         window.location.assign('/');
       } else {
         alert('error on logout');
@@ -330,12 +350,33 @@ class AppService {
       return res;
     }
 
+    async getCourseEnrollments (id) {
+      const _api = api().getCourseEnrollments(id)
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.kakumaHeaders,
+      }
+      const res = await fetch(_api.url, request);
+      return res;
+    }
+
     async removeResource (id) 
     {
       const _api = api().removeResource(id)
       const request = {
         method: _api.method,
         headers: this.httpOptions.headers,
+      }
+      const res = await fetch(_api.url, request)
+      return res;
+    }
+
+    async removeCourseEnrollments (id)
+    {
+      const _api = api().removeCourseEnrollments(id)
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.kakumaHeaders
       }
       const res = await fetch(_api.url, request)
       return res;

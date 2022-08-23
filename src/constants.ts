@@ -24,6 +24,10 @@ export const BOOK = 'book';
 export const ACTIVITY = 'activity';
 export const ASSESSMENT = 'assessment';
 
+//FACETS
+export const ACTIVE_FACET = 'active';
+export const LANGUAGE_FACET = 'lang';
+
 // LOM Standars
 export const LOM_NORMAS = {
   lom: {name: 'LOM', key: 'lom'},
@@ -47,7 +51,13 @@ export const MAX_BOOK_UNITS = 50;
 export const CURRENT_BOOK_VERSION = 2
 
 export enum bookLanguages {
-  en = "english",
-  es = "castellano",
-  cat = "catalan"
+  en = "English",
+  es = "Castellano",
+  cat = "Catalán",
+  false = "Sin idioma"
+}
+
+export enum activeOptions {
+  true = "Activo",
+  false = "No activo"
 }
