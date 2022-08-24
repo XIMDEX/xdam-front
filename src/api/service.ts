@@ -1,7 +1,8 @@
 import api from './urlMapper'
 import { Cookies } from 'react-cookie';
 import * as ponyfill from 'web-streams-polyfill/ponyfill';
-import { PATH_TAXONS_DATA, XTAGS } from '../constants';
+import { XTAGS } from '../constants';
+
 const streamSaver = require('streamsaver')
 
 class AppService {
@@ -416,6 +417,23 @@ class AppService {
       return res;
     }
 
+  async renameWorkspace(workspaceId: number, newName: string)
+    {
+      const _api = api().updateWorkspace;
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers,
+        body: JSON.stringify({
+          workspace_id: workspaceId,
+          name: newName
+        })
+      }
+
+      const res = await fetch(_api.url, request);
+
+      return res;
+    }
+
     render(url: string): string
     {
       const isDamResource = this.isDamResource(url);
@@ -456,6 +474,28 @@ class AppService {
       return true;
     }
 
+    async getWorkspaces(workspacesId: number[]): Promise<{data: any[]}> {
+
+      if (!workspacesId || !Array.isArray(workspacesId))
+        return;
+
+      const _api = api().getWorkspaces;
+
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers,
+      }
+
+      const urlParameters = workspacesId
+        .map(id => `workspacesId[]=${id}`)
+        .join('&');
+      const url = `${_api.url}?${urlParameters}`;
+
+      const response = await fetch(url, request);
+
+      return await response.json();
+    }
+    
     async getBookVersion(bookid)
     {
       const _api = api().getBookVersion(bookid);
