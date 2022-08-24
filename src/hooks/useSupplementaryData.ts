@@ -36,7 +36,7 @@ const useSupplementaryData = (facet: Facet) => {
         }
 
         fetchSupplementaryData(map[facet.key].dispacher);
-    }, []);
+    }, [facet]);
 
     return supplementaryData;
 }
