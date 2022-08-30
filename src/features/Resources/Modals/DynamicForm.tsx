@@ -10,7 +10,6 @@ import {
 import Chip from '@mui/material/Chip';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
-import {XDropdown} from '@ximdex/xui-react/material'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import MainService from '../../../api/service';
 import { CURRENT_BOOK_VERSION, MULTIMEDIA, VALIDS_LOM } from '../../../constants';
@@ -33,8 +32,7 @@ import LomForm from '../LOM/LomForm';
 import { ResourceLanguage } from './DynamicFormTemplates/ResourceLanguage';
 import { ExtraBookData } from './DynamicFormTemplates/CustomFields/ExtraBookData';
 import { selectWorkspacesData } from "../../../appSlice";
-import { Workspace } from '../../../types/Workspace/Workspace';
-import { stringify } from 'querystring';
+// import { Workspace } from '../../../types/Workspace/Workspace';
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -101,6 +99,12 @@ interface IBody {
   collection_id: string
 }
 
+
+interface IWkoptions {
+  label?: string
+  value?: number
+}
+
 export default function DynamicForm({ resourceType, action, schema, dataForUpdate = null, handleClose }) {
     // console.log("DATA FOR UPDATE",dataForUpdate)
   const classes = useStyles();
@@ -121,6 +125,10 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const formulario = React.useRef(null);
   const [workspaceSelect, setWorkspaceSelect] = useState<String>();
   const workspaces = useSelector(selectWorkspacesData);
+  const workspaceDefault = [{
+    label: 'Public Workspace',
+    value: 25
+  }]
   const [workspacesOptions, setWorkspacesOptions] = useState(()=> {
     let workspaceArray = []
     Object.keys(workspaces).map((number, workspace) => {
@@ -137,7 +145,8 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     return workspaceArray
   })
 
-console.log("RESOURCE WORKSPACES SELECTED",dataForUpdate.workspaces)
+console.log("RESOURCE SELECTED", dataForUpdate)
+
 console.log("WORKSPACES EXISTS",workspaces);
 
   useEffect(() => {
@@ -261,7 +270,7 @@ console.log("WORKSPACES EXISTS",workspaces);
     event.preventDefault();
     localStorage.setItem('reload_catalogue', '1');
     setMessage(messageDefaultState)
-
+    console.log("FORM -> ", form);
     const data = form.formData
     /*
     IMPORTANTE: DEFINE MEDIA TYPE ON MULTIMEDIA COLLECTION.
@@ -289,11 +298,14 @@ console.log("WORKSPACES EXISTS",workspaces);
     if (previewImage) {
       theFormData.append('Preview', previewImage);
     }
-
     let res;
     setProcessing(true)
+
+
+
     if (dataForUpdate) {
       res = await MainService().updateResource(dataForUpdate.id, theFormData);
+      console.log("FORM DATA BODy",theFormData)
     } else {
       res = await MainService().createResource(theFormData);
     }
@@ -437,7 +449,6 @@ console.log("WORKSPACES EXISTS",workspaces);
     for ( var key in data ) {
         form_data.append(key, data[key]);
     }
-
     const res = await MainService().upgradeVersionBook(data)
     const resData = res.ok ? await res.json() : {error: await res.text()}
 
@@ -529,15 +540,17 @@ console.log("WORKSPACES EXISTS",workspaces);
 
 
   const handleWorkspaceSelect = (e: React.ChangeEvent<EventTarget>, value: Array<Object>) => {
-    console.log("VALUES",value)
     let wks = []
-    value.forEach(wk => {
-        wks.push({
-            name: wk.label,
-            id: wk.value,
-        })
+    value.forEach((wk: IWkoptions) => {
+        wks.push(String(wk.value))
     })
-    console.log(wks);
+    if(value.length === 0){
+        setWorkspacesOptions([...workspaceDefault])
+    }
+    // setWorkspacesOptions([
+    //     ...workspaceDefault,
+    //     ...value.filter((option:IWkoptions) => workspacesOptions.indexOf(option) === -1),
+    //   ])
     // setResourceData({...resourceData, workspace:wks})
 
   };
@@ -601,15 +614,25 @@ console.log("WORKSPACES EXISTS",workspaces);
                     multiple
                     id="tags-standard"
                     options={workspacesOptions}
-                    onChange={(e, value) => handleWorkspaceSelect(e,value)}
-                    defaultValue={workspacesOptions.filter(workspace => dataForUpdate.workspaces.includes(String(workspace.value)))}
+                    onChange={handleWorkspaceSelect}
+                    defaultValue={workspacesOptions.filter(wkOption => dataForUpdate.workspaces.includes(String(wkOption.value)))}
                     size="small"
+                    clearIcon={false}
                     renderInput={(params) => (
                     <TextField
                         {...params}
                         label="Using Workspaces:"
                     />
                     )}
+                    renderTags={(tagValue, getTagProps) =>
+                        tagValue.map((option, index) => (
+                          <Chip
+                            label={option.label}
+                            {...getTagProps({ index })}
+                            disabled={workspaceDefault.findIndex(defaultWk => defaultWk.value === option.value) !== -1}
+                          />
+                        ))
+                      }
                 />
             </Grid>
           </ButtonGroup>
