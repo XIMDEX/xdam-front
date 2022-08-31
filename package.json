@@ -29,7 +29,6 @@
     "@types/react-jsonschema-form": "^1.7.4",
     "@types/react-redux": "^7.1.16",
     "@types/react-router-dom": "^5.1.7",
-    "@ximdex/xui-react": "^0.5.51",
     "axios": "^0.19.2",
     "fs-react": "0.0.4",
     "lodash": "^4.17.15",

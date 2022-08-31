@@ -7,7 +7,7 @@ import {
   Grid,
   Card
 } from '@material-ui/core';
-import Chip from '@mui/material/Chip';
+// import Chip from '@mui/material/Chip';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
@@ -106,6 +106,7 @@ interface IWkoptions {
 }
 
 export default function DynamicForm({ resourceType, action, schema, dataForUpdate = null, handleClose }) {
+    console.log(schema)
     // console.log("DATA FOR UPDATE",dataForUpdate)
   const classes = useStyles();
   let collection_id = useSelector(selectCollection);
@@ -123,12 +124,26 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const [tr, triggerReload] = useState(false);
   const [fillAlert, setFillAlert] = useState(false);
   const formulario = React.useRef(null);
-  const [workspaceSelect, setWorkspaceSelect] = useState<String>();
   const workspaces = useSelector(selectWorkspacesData);
-  const workspaceDefault = [{
-    label: 'Public Workspace',
-    value: 25
-  }]
+
+  const [workspaceSelect, setWorkspaceSelect] = useState(()=>{
+    let workspaceArray = []
+    Object.keys(workspaces).map((number, workspace) => {
+        let obj = {
+            value: workspaces[number].id,
+            label: workspaces[number].name,
+        }
+        workspaceArray.push(obj)
+    })
+
+    let workspace = workspaceArray.filter(option =>  option.value === Number(dataForUpdate.workspaces[0]))
+    return workspace[0].label;
+  });
+
+//   const workspaceDefault = [{
+//     label: 'Public Workspace',
+//     value: 25
+//   }]
   const [workspacesOptions, setWorkspacesOptions] = useState(()=> {
     let workspaceArray = []
     Object.keys(workspaces).map((number, workspace) => {
@@ -138,16 +153,14 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
         }
         workspaceArray.push(obj)
     })
-    workspaceArray.push({
-        label: 'prueba',
-        value: 111,
-    })
+    // workspaceArray.push({
+    //     label: 'prueba',
+    //     value: 111,
+    // })
     return workspaceArray
   })
 
-console.log("RESOURCE SELECTED", dataForUpdate)
 
-console.log("WORKSPACES EXISTS",workspaces);
 
   useEffect(() => {
 
@@ -305,7 +318,6 @@ console.log("WORKSPACES EXISTS",workspaces);
 
     if (dataForUpdate) {
       res = await MainService().updateResource(dataForUpdate.id, theFormData);
-      console.log("FORM DATA BODy",theFormData)
     } else {
       res = await MainService().createResource(theFormData);
     }
@@ -335,6 +347,7 @@ console.log("WORKSPACES EXISTS",workspaces);
 
     setForm(resData.data);
     setMessage({display: true, text: output_message, ok: ouput_ok })
+
   }
 
   const getStoreFormData = () => {
@@ -357,10 +370,11 @@ console.log("WORKSPACES EXISTS",workspaces);
     TextWidget: InputText,
   };
 
-  const fields = { bookExtraData: ExtraBookData };
+  const fields = {
+    bookExtraData: ExtraBookData,
+  };
 
   const uiSchema={
-
     "description": {
       "ui:order": ["active", "*"],
       "active": {
@@ -410,6 +424,7 @@ console.log("WORKSPACES EXISTS",workspaces);
       }
     }
   }
+
 
   const updateResourceFromLastCreated = async () => {
     let lastUpdated = await MainService().getLastResource(collection_id, 'lastCreated');
@@ -539,20 +554,26 @@ console.log("WORKSPACES EXISTS",workspaces);
   });
 
 
-  const handleWorkspaceSelect = (e: React.ChangeEvent<EventTarget>, value: Array<Object>) => {
-    let wks = []
-    value.forEach((wk: IWkoptions) => {
-        wks.push(String(wk.value))
-    })
-    if(value.length === 0){
-        setWorkspacesOptions([...workspaceDefault])
+  const handleWorkspaceSelect = async (e: React.ChangeEvent<EventTarget>, value: IWkoptions) => {
+    console.log(value)
+    setWorkspaceSelect(value.label)
+        // if(newWorkspace.value !==  25){
+    //     const res = await MainService().setWorkspaceResource(resourceData.id, newWorkspace.value, newWorkspace.label)
+    //     console.log(res);
+    // }
+    // console.log(value)
+    // let wks = []
+    // value.forEach((wk: IWkoptions) => {
+    //     wks.push(wk)
+    // })
+    // if(value.length === 0){
+    //     setWorkspacesOptions([...workspaceDefault])
+    // }
+    // var newWorkspace = wks.pop();
+    if(value.value !==  25){
+        const res = await MainService().setWorkspaceResource(resourceData.id, value.value, value.label)
+        console.log(res);
     }
-    // setWorkspacesOptions([
-    //     ...workspaceDefault,
-    //     ...value.filter((option:IWkoptions) => workspacesOptions.indexOf(option) === -1),
-    //   ])
-    // setResourceData({...resourceData, workspace:wks})
-
   };
 
   const FilesAndActions = () => {
@@ -611,28 +632,29 @@ console.log("WORKSPACES EXISTS",workspaces);
             <Grid item sm={12} className={classes.divider}>
                 <Autocomplete
                     className={classes.workspaceSelect}
-                    multiple
+                    // multiple
                     id="tags-standard"
                     options={workspacesOptions}
                     onChange={handleWorkspaceSelect}
-                    defaultValue={workspacesOptions.filter(wkOption => dataForUpdate.workspaces.includes(String(wkOption.value)))}
+                    defaultValue={workspaceSelect}
+                    // defaultValue={workspacesOptions.filter(wkOption => dataForUpdate.workspaces.includes(String(wkOption.value)))}
                     size="small"
                     clearIcon={false}
                     renderInput={(params) => (
                     <TextField
                         {...params}
-                        label="Using Workspaces:"
+                        label="Workspace:"
                     />
                     )}
-                    renderTags={(tagValue, getTagProps) =>
-                        tagValue.map((option, index) => (
-                          <Chip
-                            label={option.label}
-                            {...getTagProps({ index })}
-                            disabled={workspaceDefault.findIndex(defaultWk => defaultWk.value === option.value) !== -1}
-                          />
-                        ))
-                      }
+                    // renderTags={(tagValue, getTagProps) =>
+                    //     tagValue.map((option, index) => (
+                    //       <Chip
+                    //         label={option.label}
+                    //         {...getTagProps({ index })}
+                    //         disabled={workspaceDefault.findIndex(defaultWk => defaultWk.value === option.value) !== -1}
+                    //       />
+                    //     ))
+                    //   }
                 />
             </Grid>
           </ButtonGroup>
