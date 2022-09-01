@@ -7,9 +7,10 @@ import {
   Grid,
   Card
 } from '@material-ui/core';
-// import Chip from '@mui/material/Chip';
-import Autocomplete from '@mui/material/Autocomplete';
-import TextField from '@mui/material/TextField';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import MainService from '../../../api/service';
 import { CURRENT_BOOK_VERSION, MULTIMEDIA, VALIDS_LOM } from '../../../constants';
@@ -32,7 +33,7 @@ import LomForm from '../LOM/LomForm';
 import { ResourceLanguage } from './DynamicFormTemplates/ResourceLanguage';
 import { ExtraBookData } from './DynamicFormTemplates/CustomFields/ExtraBookData';
 import { selectWorkspacesData } from "../../../appSlice";
-// import { Workspace } from '../../../types/Workspace/Workspace';
+import WorkspaceSelect from '../../../components/forms/WorkspaceSelect/WorkspaceSelect';
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -79,16 +80,6 @@ const useStyles = makeStyles((theme: Theme) =>
     imgView: {
       width: '100%'
     },
-    workspaceSelect: {
-        width: '100%',
-        fontSize: '0.875rem',
-        fontWeight: 500,
-        textTransform: 'uppercase',
-        '& .Mui-focused':{
-            borderColor: 'red !important',
-        }
-    },
-
   }),
 );
 
@@ -99,14 +90,8 @@ interface IBody {
   collection_id: string
 }
 
-
-interface IWkoptions {
-  label?: string
-  value?: number
-}
-
 export default function DynamicForm({ resourceType, action, schema, dataForUpdate = null, handleClose }) {
-    console.log(schema)
+    // console.log(schema)
     // console.log("DATA FOR UPDATE",dataForUpdate)
   const classes = useStyles();
   let collection_id = useSelector(selectCollection);
@@ -125,41 +110,19 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const [fillAlert, setFillAlert] = useState(false);
   const formulario = React.useRef(null);
   const workspaces = useSelector(selectWorkspacesData);
+  const [workspaceSelect, setWorkspaceSelect] = useState(dataForUpdate.workspaces[dataForUpdate.workspaces.length -1]);
 
-  const [workspaceSelect, setWorkspaceSelect] = useState(()=>{
-    let workspaceArray = []
-    Object.keys(workspaces).map((number, workspace) => {
-        let obj = {
-            value: workspaces[number].id,
-            label: workspaces[number].name,
-        }
-        workspaceArray.push(obj)
-    })
-
-    let workspace = workspaceArray.filter(option =>  option.value === Number(dataForUpdate.workspaces[0]))
-    return workspace[0].label;
-  });
-
-//   const workspaceDefault = [{
-//     label: 'Public Workspace',
-//     value: 25
-//   }]
   const [workspacesOptions, setWorkspacesOptions] = useState(()=> {
     let workspaceArray = []
     Object.keys(workspaces).map((number, workspace) => {
         let obj = {
-            value: workspaces[number].id,
+            value: Number(workspaces[number].id),
             label: workspaces[number].name,
         }
         workspaceArray.push(obj)
     })
-    // workspaceArray.push({
-    //     label: 'prueba',
-    //     value: 111,
-    // })
     return workspaceArray
   })
-
 
 
   useEffect(() => {
@@ -283,7 +246,6 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     event.preventDefault();
     localStorage.setItem('reload_catalogue', '1');
     setMessage(messageDefaultState)
-    console.log("FORM -> ", form);
     const data = form.formData
     /*
     IMPORTANTE: DEFINE MEDIA TYPE ON MULTIMEDIA COLLECTION.
@@ -554,27 +516,13 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   });
 
 
-  const handleWorkspaceSelect = async (e: React.ChangeEvent<EventTarget>, value: IWkoptions) => {
-    console.log(value)
-    setWorkspaceSelect(value.label)
-        // if(newWorkspace.value !==  25){
-    //     const res = await MainService().setWorkspaceResource(resourceData.id, newWorkspace.value, newWorkspace.label)
-    //     console.log(res);
-    // }
-    // console.log(value)
-    // let wks = []
-    // value.forEach((wk: IWkoptions) => {
-    //     wks.push(wk)
-    // })
-    // if(value.length === 0){
-    //     setWorkspacesOptions([...workspaceDefault])
-    // }
-    // var newWorkspace = wks.pop();
-    if(value.value !==  25){
-        const res = await MainService().setWorkspaceResource(resourceData.id, value.value, value.label)
-        console.log(res);
+  const handleWorkspaceSelect = async (event: SelectChangeEvent) => {
+    // var newWorkspace = values.pop();
+    if(Number(event.target.value) !==  25){
+        await MainService().setWorkspaceResource(resourceData.id, Number(event.target.value))
     }
   };
+
 
   const FilesAndActions = () => {
     return (
@@ -630,32 +578,19 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
 
 
             <Grid item sm={12} className={classes.divider}>
-                <Autocomplete
-                    className={classes.workspaceSelect}
-                    // multiple
-                    id="tags-standard"
-                    options={workspacesOptions}
-                    onChange={handleWorkspaceSelect}
-                    defaultValue={workspaceSelect}
-                    // defaultValue={workspacesOptions.filter(wkOption => dataForUpdate.workspaces.includes(String(wkOption.value)))}
-                    size="small"
-                    clearIcon={false}
-                    renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        label="Workspace:"
-                    />
-                    )}
-                    // renderTags={(tagValue, getTagProps) =>
-                    //     tagValue.map((option, index) => (
-                    //       <Chip
-                    //         label={option.label}
-                    //         {...getTagProps({ index })}
-                    //         disabled={workspaceDefault.findIndex(defaultWk => defaultWk.value === option.value) !== -1}
-                    //       />
-                    //     ))
-                    //   }
-                />
+                {/* <WorkspaceSelect resourceData={resourceData} dataForUpdate={dataForUpdate}/> */}
+                <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">Wokspace</InputLabel>
+                    <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={workspaceSelect}
+                        label="Workspace"
+                        onChange={handleWorkspaceSelect}
+                    >
+                    {workspacesOptions.map(option => <MenuItem value={option.value}>{option.label}</MenuItem>)}
+                 </Select>
+                </FormControl>
             </Grid>
           </ButtonGroup>
           <div style={{ margin: '15px 42px 0px 0px' }}>

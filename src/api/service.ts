@@ -405,7 +405,7 @@ class AppService {
       return res;
     }
 
-    async setWorkspaceResource(resource_id: number, workspace_id: number, workspace_name: string)
+    async setWorkspaceResource(resource_id: number, workspace_id?: number,workspace_name?: string)
     {
         console.log(workspace_id);
         const _api = api().updateWorkspaceResource(resource_id);
@@ -413,9 +413,8 @@ class AppService {
             method: _api.method,
             headers: this.httpOptions.headers,
             body: JSON.stringify({
-                // resource_id: resource_id,
-                // workspace_id: workspace_id,
-                workspace_name: workspace_name
+                workspace_id: workspace_id,
+                // workspace_name: workspace_name
             }),
         }
         console.log(request);
