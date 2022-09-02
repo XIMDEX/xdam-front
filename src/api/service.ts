@@ -405,21 +405,15 @@ class AppService {
       return res;
     }
 
-    async setWorkspaceResource(resource_id: number, workspace_id?: number,workspace_name?: string)
+    async setWorkspaceResource(resource_id, workspaces)
     {
-        console.log(workspace_id);
         const _api = api().updateWorkspaceResource(resource_id);
         const request = {
             method: _api.method,
-            headers: this.httpOptions.headers,
-            body: JSON.stringify({
-                workspace_id: workspace_id,
-                // workspace_name: workspace_name
-            }),
+            headers: this.httpOptions.headersForm,
+            body: workspaces,
         }
-        console.log(request);
         const res = await (await fetch(_api.url, request)).json();
-        console.log(res);
         return res;
     }
 

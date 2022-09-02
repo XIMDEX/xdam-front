@@ -277,7 +277,6 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     setProcessing(true)
 
 
-
     if (dataForUpdate) {
       res = await MainService().updateResource(dataForUpdate.id, theFormData);
     } else {
@@ -516,12 +515,13 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   });
 
 
-  const handleWorkspaceSelect = async (event: SelectChangeEvent) => {
-    // var newWorkspace = values.pop();
-    if(Number(event.target.value) !==  25){
-        await MainService().setWorkspaceResource(resourceData.id, Number(event.target.value))
-    }
-  };
+//   const handleWorkspaceSelect = async (event: SelectChangeEvent) => {
+//     console.log(event.target.value)
+//     // var newWorkspace = values.pop();
+//     // if(Number(event.target.value) !==  25){
+//     await MainService().setWorkspaceResource(resourceData.id, Number(event.target.value))
+//     // }
+//   };
 
 
   const FilesAndActions = () => {
@@ -578,8 +578,8 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
 
 
             <Grid item sm={12} className={classes.divider}>
-                {/* <WorkspaceSelect resourceData={resourceData} dataForUpdate={dataForUpdate}/> */}
-                <FormControl fullWidth>
+                <WorkspaceSelect resourceData={resourceData} dataForUpdate={dataForUpdate}/>
+                {/* <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">Wokspace</InputLabel>
                     <Select
                         labelId="demo-simple-select-label"
@@ -590,7 +590,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                     >
                     {workspacesOptions.map(option => <MenuItem value={option.value}>{option.label}</MenuItem>)}
                  </Select>
-                </FormControl>
+                </FormControl> */}
             </Grid>
           </ButtonGroup>
           <div style={{ margin: '15px 42px 0px 0px' }}>

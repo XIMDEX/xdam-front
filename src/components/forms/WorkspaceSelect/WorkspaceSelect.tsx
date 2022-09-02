@@ -67,15 +67,36 @@ export default function WorkspaceSelect({resourceData, dataForUpdate}) {
 
 
     const handleWorkspaceSelect = async (e: React.ChangeEvent<EventTarget>, values: Array<IWkoptions>) => {
-        console.log(values);
-        var newWorkspace = values.pop();
-        if(newWorkspace.value !==  25){
-            await MainService().setWorkspaceResource(resourceData.id, newWorkspace.label, newWorkspace.value)
-        }
+        let newWorkspaces = []
+        values.forEach(option => {
+            let obj = {
+                name: option.label,
+                id: option.value,
+            }
+            newWorkspaces.push(obj)
+        });
+        let data = new FormData();
+        data.append('workspaces', JSON.stringify(newWorkspaces))
+        await MainService().setWorkspaceResource(resourceData.id, data)
     };
 
     const handleAddWorkspace = async () =>{
-    await MainService().setWorkspaceResource(resourceData.id,newWorkspaceValue)
+        let values = workspacesOptions.filter((wkOption: IWkoptions) => dataForUpdate.workspaces.includes(String(wkOption.value)))
+        let newWorkspaces = []
+        values.forEach(option => {
+            let obj = {
+                name: option.label,
+                id: option.value
+            }
+            newWorkspaces.push(obj)
+        });
+        newWorkspaces.push({
+            name: newWorkspaceValue,
+            id: -1
+        })
+        let data = new FormData();
+        data.append('workspaces', JSON.stringify(newWorkspaces))
+        await MainService().setWorkspaceResource(resourceData.id, data)
     }
 
     return ( <div style={{display: 'flex'}}>
