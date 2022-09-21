@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectOrganization, setOrganization, setFacetsQuery } from '../../../slices/organizationSlice';
+import { selectOrganization, setOrganization, setFacetsQuery, setCollection } from '../../../slices/organizationSlice';
 import MainService from '../../../api/service';
 import { setResourcesLoading } from '../../../appSlice';
 import { Dropdown } from 'semantic-ui-react'
@@ -12,11 +12,15 @@ export default function OrganizationSwitch( { organizations, user } ) {
   const dispatch = useDispatch();
   
   const switchOrg = async (evt, data) => {
+    console.log(evt)
+    console.log(data)
     const oid = data.value
+    console.log(oid);
     let org = user.data.organizations.find(x => x.id === oid);
+    console.log(org);
     let col = org.collections[0];
-    /*SET WORKSPACE. AND SWITCH ORG NOT USED YET
-    let wsp = org.workspaces.find(x => x.type === 'corporate');
+    //SET WORKSPACE. AND SWITCH ORG NOT USED YET
+    /*let wsp = org.workspaces.find(x => x.type === 'corporate');
     if (wsp === undefined) {
         wsp = org.workspaces.find(x => x.type === 'public');
         if (wsp === undefined) {
@@ -25,18 +29,19 @@ export default function OrganizationSwitch( { organizations, user } ) {
         }
     }
 
-    const res = await MainService().setWorkspace(wsp.id)
+    const res = await MainService().setWorkspace(wsp.id)*/
 
-    if (res.data['selected workspace']) {
+    //if (res.data['selected workspace']) {
+    if (true) {
         setSelected(org.name);
         dispatch(setOrganization({oid: oid, cid: col.id}))
+        dispatch(setCollection({cid: col.id}))
         dispatch(setFacetsQuery({}))
         dispatch(setResourcesLoading(true))
     } else {
         //setErrors(['Error changing organization'])
         throw new Error('Error changing organization')
     }
-    */
     return;
   };
 
