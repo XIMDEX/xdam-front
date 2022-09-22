@@ -66,6 +66,7 @@ export function Search( Props ) {
 
   
   const switchCollection = async (e, data) => {
+    console.log(data);
     dispatch(setResourcesLoading(true))
     const cid = data.value
     let newQuery = {
