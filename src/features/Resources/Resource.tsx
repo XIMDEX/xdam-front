@@ -65,7 +65,6 @@ export function Resource( { data, listMode, resourceType } ) {
     }
 
     function edit (e) {
-        console.log('edit');
         e.stopPropagation();
         setAction('edit')
         setRes(data)

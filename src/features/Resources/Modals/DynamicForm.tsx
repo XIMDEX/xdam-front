@@ -28,6 +28,7 @@ import { InputText, InputTextArea, CustomToggle, CustomInputText, CustomDropdown
 import LomForm from '../LOM/LomForm';
 import { ResourceLanguage } from './DynamicFormTemplates/ResourceLanguage';
 import { ExtraBookData } from './DynamicFormTemplates/CustomFields/ExtraBookData';
+import { CDNsAttachedToResource, CDNsAttachedToResourceV2 } from './ResourceCDNsAttached';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -404,69 +405,17 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     return {res, resData}
   }
 
-  const CDNsAttached = ({ resourceData = null, formData = null }) => {
-    if (formData == null || !formData.hasOwnProperty('cdns_attached') || resourceData == null) {
-      return (null);
-    } else if (formData.cdns_attached.length > 0) {
-      const selectorID = "cdn-selector-" + resourceData.id;
-      const selectorInputID = selectorID + "-input";
-      const selectorInputIDButton = selectorInputID + "-button";
-      const selectorIDEmptyValue = -1000;
 
-      const changeCDNSelector = (selVal) => {
-        if (selVal == selectorIDEmptyValue) {
-          (document.getElementById(selectorInputID) as HTMLInputElement).value = "";
-          (document.getElementById(selectorInputIDButton) as HTMLButtonElement).setAttribute("disabled", "");
-        } else {
-          formData.cdns_attached.forEach(function(element, index) {
-            if (selVal == element.id) {
-              (document.getElementById(selectorInputID) as HTMLInputElement).value = element.hash;
-              (document.getElementById(selectorInputIDButton) as HTMLButtonElement).removeAttribute("disabled");
-            }
-          });
-        }
-      }
-
-      const copyToClipboard = () => {
-        alert('vdfgjfdhgdfjgfdf');
-        const text = (document.getElementById(selectorInputID) as HTMLInputElement).value;
-        console.log(text);
-        navigator.clipboard.writeText(text);
-      }
-
-      return (
-        <div style={{marginBottom: "20px", marginRight: "5px", width: "100%"}} className={"ui form rjsf"}>
-          <div className={"grouped equal width fields"}>
-            <div className={"forms-textField"}>
-              <label>CDN Resource Sharing</label>
-              <div style={{display: "flex", width: "100%"}} className={"forms-textField"}>
-                <select id={selectorID} onChange={(val) => changeCDNSelector(val.target.value)}>
-                  <option value={selectorIDEmptyValue} selected>{"---"}</option>
-                  {formData.cdns_attached.map((item) => <option value={item.id}>{item.name}</option>)}
-                </select>
-                <input id={selectorInputID} style={{marginLeft: "3px", marginRight: "3px"}} disabled></input>
-                <button id={selectorInputIDButton} className={"ui teal button"} onClick={copyToClipboard} disabled>
-                  <i aria-hidden="true" className={"clone icon"}></i>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      );
-    } else {
-      return (null);
-    }
-  }
 
   const MetaDataForm = () => {
-    const appData = getStoreFormData();
+    // const appData = getStoreFormData();
 
     return (
       <Grid item sm={6}>
-        <CDNsAttached
+        {/* <CDNsAttachedToResource
           resourceData={resourceData}
           formData={appData}
-        />
+        /> */}
         <div className='forms-main-btns'>
             <Btn color='teal' icon='facebook' onClick={() =>  _refForm.current.click()} loading={processing}> 
               {dataForUpdate ? (
@@ -548,6 +497,8 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   });
 
   const FilesAndActions = () => {
+    const appData = getStoreFormData();
+
     return (
       <Grid item sm={6}>
           <ButtonGroup orientation='vertical'>
@@ -612,7 +563,10 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                 />
               ) : null
             }
-            
+            <CDNsAttachedToResourceV2
+              resourceData={resourceData}
+              formData={appData}
+            />
             {
               formFiles && formFiles.length > 0 ? (
                 <>
