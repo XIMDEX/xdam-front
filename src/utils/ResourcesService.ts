@@ -1,5 +1,5 @@
 import { Cookies } from 'react-cookie';
-import { COURSE, BOOK, MULTIMEDIA, IMAGE, VIDEO, AUDIO, ACTIVITY, ASSESSMENT, BOOK_EDITOR_URL, COURSE_EDITOR_URL } from '../constants';
+import { COURSE, BOOK, MULTIMEDIA, IMAGE, VIDEO, AUDIO, ACTIVITY, ASSESSMENT, DOCUMENT, BOOK_EDITOR_URL, COURSE_EDITOR_URL } from '../constants';
 
 class ResourcesService {
 
@@ -9,6 +9,13 @@ class ResourcesService {
     }
 
     getMultimediaActions()
+    {
+      return {
+        create: { href: '', label: '' } 
+      }
+    }
+
+    getDocumentActions()
     {
       return {
         create: { href: '', label: '' } 
@@ -62,21 +69,30 @@ class ResourcesService {
         case COURSE:
           ra = this.getCourseActions();
           break;
+
         case BOOK:
           ra = this.getBookActions(resource.id);
           break;
+
         case MULTIMEDIA:
         case IMAGE:
         case VIDEO:
         case AUDIO:
           ra = this.getMultimediaActions();
           break;
+
         case ACTIVITY:
           ra = this.getActivityActions();
           break;
+
         case ASSESSMENT:
           ra = this.getAssessmentActions();
           break;
+
+        case DOCUMENT:
+          ra = this.getDocumentActions();
+          break;
+          
         default:
           throw new Error('resource type invalid: ' + resource.type)
           break;
