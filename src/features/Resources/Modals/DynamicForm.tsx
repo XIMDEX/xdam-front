@@ -103,16 +103,14 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const formulario = React.useRef(null);
   
   useEffect(() => {
-    
-    if(action === 'create') {
-      if(getStoreFormData() !== {}) {
+    if (action === 'create') {
+      if (getStoreFormData() !== {}) {
         dispatch(setFormData({}));
         triggerReload(!tr)
       }
     }
     
     if (action === 'edit') {
-      
       const fetchLomesSchema = async () => { 
         let lomesSchema = await MainService().getLomesSchema();
         dispatch(setLomesSchema(lomesSchema));
@@ -124,19 +122,13 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
       }
       
       let lomesl = localStorage.getItem('lomes_loaded');
-      if(
-        (lomesl === null || lomesl === '0') 
-        && VALIDS_LOM.map(type => type.key).includes('lomes')
-      ) {
+      if ((lomesl === null || lomesl === '0') && VALIDS_LOM.map(type => type.key).includes('lomes')) {
         fetchLomesSchema()
         localStorage.setItem('lomes_loaded', '1');
       }
 
       let loml = localStorage.getItem('lom_loaded');
-      if (
-        (loml === null || loml === '0')
-        && VALIDS_LOM.map(type => type.key).includes('lom')
-      ) {
+      if ((loml === null || loml === '0') && VALIDS_LOM.map(type => type.key).includes('lom')) {
         fecthLomSchema()
         localStorage.setItem('lom_loaded', '1');
       }
@@ -151,7 +143,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
         setResourceData(res);
         setTheFiles(res.files);
       }
-      if(!loaded) {
+      if (!loaded) {
         getResourceData();
         dispatch(setFormData(dataForUpdate.data));
         setFillAlert(false);
@@ -198,17 +190,15 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
         setMediaType(e.target.files[0].type.split('/')[0])
       }
     }
-  
   }
 
   function setType() {
-    
-    if(resourceType !== MULTIMEDIA) {
+    if (resourceType !== MULTIMEDIA) {
       return resourceType;
     }
 
-    if(formFiles.length <= 0) {
-      if(resourceData?.files.length <= 0) {
+    if (formFiles.length <= 0) {
+      if (resourceData?.files.length <= 0) {
         return 'image';
       } else {
         return resourceData?.files[0].mime_type.split('/')[0] ?? 'image';
@@ -379,16 +369,14 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
 
     const {res, resData} = await saveMetaDataResource()
     
-    if(!res.ok) {
+    if (!res.ok) {
       setMessage({display: true, ok: res.ok, text: resData.error ?? 'Error 0' })
     } else {
       setMessage({display: true, text: 'Book updated at V2', ok: res.ok })
     }
-
   }
 
   const saveMetaDataResource = async () => {
-    
     const data = formulario?.current?.state?.formData?.description ?? resourceData?.data?.description
     data.id = resourceData.id
     
@@ -405,8 +393,6 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     return {res, resData}
   }
 
-
-
   const MetaDataForm = () => {
     // const appData = getStoreFormData();
 
@@ -417,7 +403,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
           formData={appData}
         /> */}
         <div className='forms-main-btns'>
-            <Btn color='teal' icon='facebook' onClick={() =>  _refForm.current.click()} loading={processing}> 
+            <Btn color='teal' icon='facebook' onClick={() => _refForm.current.click()} loading={processing}> 
               {dataForUpdate ? (
                 <>
                   <Icon name='save' /> Save
@@ -498,6 +484,28 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
 
   const FilesAndActions = () => {
     const appData = getStoreFormData();
+    var mediaToRemove = [];
+
+    const replaceMedia = async (input_id) => {
+      console.log(mediaToRemove);
+      document.getElementById(input_id).click();
+    }
+
+    const handleReplacedFiles = (e, dam, media_id) => {
+      console.log('handleReplacedFiles');
+      console.log(dam);
+      console.log(media_id);
+      console.log(e);
+      mediaToRemove.push(media_id);
+
+      /*if (typeof e.target.type === 'string' && e.target.type === 'file' && e.target.name === 'File') {
+        setFormFiles(e.target.files);
+
+        if (resourceType === MULTIMEDIA) {
+          setMediaType(e.target.files[0].type.split('/')[0]);
+        }
+      }*/
+    }
 
     return (
       <Grid item sm={6}>
@@ -522,13 +530,11 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                 />
               </Button>
             </Grid>
-
             <Grid item sm={12} className={classes.divider}>
               {dataForUpdate ? (
                 <ResourceActionButtons resource={dataForUpdate} />
               ) : null}
             </Grid>
-
             <Grid item sm={12}>
               <Button
                 variant="outlined"
@@ -560,6 +566,9 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                   onEditModal
                   setTheFiles={setTheFiles}
                   DynamicFormResourceData={setResourceData}
+                  replaceMedia={replaceMedia}
+                  handleReplacedFiles={handleReplacedFiles}
+                  fileType={resourceType}
                 />
               ) : null
             }
@@ -584,7 +593,6 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                 </>
               ) : null
             }
-
           </div>
         </Grid>
     )
