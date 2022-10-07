@@ -88,7 +88,7 @@ export default function RelatedFiles({ resData, files,  withPlayer = false, onEd
                 <List className='relatedFiles-ul'>
                     {
                         theFiles.map((f, ix) => (
-                            <Card key={ix} variant='outlined' className='associated-files-card'>
+                            <Card key={ix} variant='outlined' className={`associated-files-card ${f?.pendingRemoval ? "associated-files-card-pending-removal" : ""}`}>
                                 <List.Item>                                    
                                     <List.Content>
                                         <Icon name={iconHandler(f)}></Icon>
@@ -104,18 +104,27 @@ export default function RelatedFiles({ resData, files,  withPlayer = false, onEd
                                                 }
                                                 <a  onClick={() => download((f))}> Download </a> 
                                                 {onEditModal ? (<>
-                                                    <span>|</span>
-                                                    <a  onClick={() => replaceMedia("resource-" + resData.id + "-file-" + f.id + "-replace-input")} style={{color: '#c76e2a'}}> Replace </a>
-                                                    <span>|</span>
-                                                    <a  onClick={() => removeMedia(resData, f.id)} style={{color: 'red'}}> Remove </a>
-                                                    <input
-                                                        id={"resource-" + resData.id + "-file-" + f.id + "-replace-input"}
-                                                        type="file"
-                                                        accept={fileType === MULTIMEDIA ? "audio/*,video/*,image/*" : '*'}
-                                                        onChange={(e)=> handleReplacedFiles(e, resData, f.id)}
-                                                        name='File'
-                                                        hidden
-                                                    />
+                                                    {
+                                                        f?.pendingRemoval ?
+                                                        (null)
+                                                        :
+                                                        (
+                                                            <>
+                                                            <span>|</span>
+                                                            <a  onClick={() => replaceMedia("resource-" + resData.id + "-file-" + f.id + "-replace-input")} style={{color: '#c76e2a'}}> Replace </a>
+                                                            <span>|</span>
+                                                            <a  onClick={() => removeMedia(resData, f.id)} style={{color: 'red'}}> Remove </a>
+                                                            <input
+                                                                id={"resource-" + resData.id + "-file-" + f.id + "-replace-input"}
+                                                                type="file"
+                                                                accept={fileType === MULTIMEDIA ? "audio/*,video/*,image/*" : '*'}
+                                                                onChange={(e)=> handleReplacedFiles(e, resData, f.id)}
+                                                                name='File'
+                                                                hidden
+                                                            />
+                                                            </>
+                                                        )
+                                                    }
                                                 </>) : null}
                                                 <div id={f.dam_url + ix + '_media_view_'} style={{display: 'none'}}>
                                                     <MediaPlayer mime_type={f.mime_type} url={f.dam_url} />
