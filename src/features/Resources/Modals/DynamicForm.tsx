@@ -662,7 +662,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
               ) : null} */}
             </Grid>
           </ButtonGroup>
-          <div style={{ margin: '15px 42px 0px 0px' }}>
+          <div style={{ margin: '15px 0px 0px 0px' /* margin: '15px 42px 0px 0px' */ }}>
             {
               action === 'view' || action === 'edit' ? (
                 <RelatedFiles
