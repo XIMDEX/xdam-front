@@ -117,16 +117,6 @@ export default function RelatedFiles( { resData, files,  withPlayer = false, onE
                             </Card>
                         )) 
                     }
-                    { 
-                        maxNumberOfFiles != undefined && maxNumberOfFiles != null && maxNumberOfFiles != UNLIMITED_FILES ? 
-                            (
-                                <div style={{ backgroundColor: '#e8e8e8', borderRadius: '5px', padding: '3px' }}>
-                                    <p style={{ color: 'rgba(0,0,0,.6)', fontStyle: 'bold', textAlign: 'center' }}><b>Max # of files: { maxNumberOfFiles }</b></p>
-                                </div>
-                            )
-                            :
-                            (null) 
-                    }
                 </List>
             )
         } else {
@@ -140,7 +130,12 @@ export default function RelatedFiles( { resData, files,  withPlayer = false, onE
             <div >
                 {theFiles && theFiles.length > 0 ? (
                 <>
-                    <Label>{onEditModal ? 'Already attached:' : 'Associated files'}</Label> 
+                    <Label>
+                        { onEditModal ? 'Already attached' : 'Associated files' }
+                        { maxNumberOfFiles != undefined && maxNumberOfFiles != null && maxNumberOfFiles != UNLIMITED_FILES ?
+                        ' (max: ' + maxNumberOfFiles + ' files)' : '' }
+                        { onEditModal ? ':' : '' }
+                    </Label> 
                     <RenderFiles /> 
                 </>
                 ) : null
