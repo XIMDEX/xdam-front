@@ -115,39 +115,41 @@ export default function ViewResource( { resData } ) {
     function renderField (label, d) 
     {
       let field = <></>;
-      
-      if (typeof d === 'string' || typeof d === 'boolean' ) {
-        if (label !== 'id') {
-          field = <p><strong>{label}:</strong> {d.toString()}</p>
-        }
-      }
 
-      if (Array.isArray(d)) {
-        if(label !== 'organization') {
-          field = <p><strong>{label}:</strong> {d.join(', ')}</p>
+      if (label !== 'collections' && label !== 'core_resource_type') {
+        if (typeof d === 'string' || typeof d === 'boolean' ) {
+          if (label !== 'id') {
+            field = <p><strong>{label}:</strong> {d.toString()}</p>
+          }
         }
-
-        if(label === 'types') {
-          field = <p><strong>has file types:</strong> {d.join(', ')}</p>
-        }
-
-        if(label === 'files' || label === 'previews') {
-          field = (<>
-            <strong>{label}:</strong>
-            <ul>
-              {d.map((dam_url, key) => (
-                <li key={key} onClick={(evt) => copied(evt, dam_url)}>
-                  <CopyToClipboard text={API_BASE_URL + '/resource/render/' + dam_url}>
-                    <span>{dam_url}</span>
-                  </CopyToClipboard>
-                </li>
-              ))}
-            </ul>
-          </>)
-        }
-
-        if(label === WORKPSACES) {
-          field = <ResourceWokspaces workspacesId={d} />
+  
+        if (Array.isArray(d)) {
+          if(label !== 'organization') {
+            field = <p><strong>{label}:</strong> {d.join(', ')}</p>
+          }
+  
+          if(label === 'types') {
+            field = <p><strong>has file types:</strong> {d.join(', ')}</p>
+          }
+  
+          if(label === 'files' || label === 'previews') {
+            field = (<>
+              <strong>{label}:</strong>
+              <ul>
+                {d.map((dam_url, key) => (
+                  <li key={key} onClick={(evt) => copied(evt, dam_url)}>
+                    <CopyToClipboard text={API_BASE_URL + '/resource/render/' + dam_url}>
+                      <span>{dam_url}</span>
+                    </CopyToClipboard>
+                  </li>
+                ))}
+              </ul>
+            </>)
+          }
+  
+          if(label === WORKPSACES) {
+            field = <ResourceWokspaces workspacesId={d} />
+          }
         }
       }
           
