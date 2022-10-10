@@ -84,7 +84,7 @@ const CDNsAttachedToResourceV2 = ({ resourceData = null, formData = null }) => {
                 <List.Content style={{width: "100%"}}>
                     <div style={{width: "100%"}} className={"ui form rjsf"}>
                         <div style={{width: "100%"}} className={"grouped equal width fields"}>
-                            <div className={"forms-textField"} style={{marginBottom: "10px !important", marginRight: "20px !important", marginTop: "10px !important"}}>
+                            <div className={"forms-textField cdn-form-textfield"}>
                                 <label>{element.name}</label>
                                 <div style={{display: "flex", width: "100%"}}>
                                     <input id={selectorInputID} style={{marginRight: "5px"}} value={cdnURL + element.hash} disabled></input>

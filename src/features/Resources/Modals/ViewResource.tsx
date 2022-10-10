@@ -12,7 +12,7 @@ import _ from 'lodash';
 import { useSelector } from 'react-redux';
 import { API_BASE_URL, WORKPSACES } from '../../../constants';
 import { selectCollection } from '../../../slices/organizationSlice';
-import {CopyToClipboard} from 'react-copy-to-clipboard';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { selectWorkspacesData } from '../../../appSlice';
 
 

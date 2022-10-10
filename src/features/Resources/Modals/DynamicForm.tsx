@@ -9,12 +9,13 @@ import {
 } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import MainService from '../../../api/service';
-import { CURRENT_BOOK_VERSION, MULTIMEDIA, VALIDS_LOM } from '../../../constants';
+import { CURRENT_BOOK_VERSION, MULTIMEDIA, VALIDS_LOM, UNLIMITED_FILES } from '../../../constants';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectCollection } from '../../../slices/organizationSlice';
 import SemanticForm from "@rjsf/semantic-ui";
 import { JSONSchema7 } from 'json-schema';
 import { render } from '../../../utils/render';
+import { delay } from '../../../utils/utils';
 import { Tab, Label, Icon, Dropdown } from 'semantic-ui-react'
 import { Button as Btn } from 'semantic-ui-react';
 import { Message } from 'semantic-ui-react';
@@ -93,7 +94,9 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const [formFilesToRemove, setFormFilesToRemove] = useState([]);
   const [processing, setProcessing] = useState(null);
   const messageDefaultState = { display: false, text: '', ok: false }
+  const filesMessageDefaultState = { display: false, text: '' }
   const [msg, setMessage] = useState(messageDefaultState);
+  const [filesMsg, setFilesMessage] = useState(filesMessageDefaultState);
   const _refForm = React.useRef(null);
   const [mediaType, setMediaType] = useState(dataForUpdate?.type ?? null);
   const [resourceData, setResourceData] = useState(null);
@@ -101,6 +104,9 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const [loaded, setLoaded] = useState(false);
   const [tr, triggerReload] = useState(false);
   const [fillAlert, setFillAlert] = useState(false);
+  const [attachFilesDisabled, setAttachFilesDisabled] = useState(false);
+  const [currentTotalOfFiles, setCurrentTotalOfFiles] = useState(0);
+  const [maxFiles, setMaxFiles] = useState(0);
   const formulario = React.useRef(null);
   
   useEffect(() => {
@@ -178,7 +184,29 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   
   const showUpgradeButton = resourceType === 'book' && action === 'edit' && resourceData && +resourceData.version !== CURRENT_BOOK_VERSION
 
-  const handleFiles = (e) => {
+  const getCurrentNumberOfFiles = (resData) => {
+    let currentCountOfTotalFiles = 0;
+    currentCountOfTotalFiles += resData?.files.length;
+    currentCountOfTotalFiles += formFiles.length;
+    currentCountOfTotalFiles -= formFilesToRemove.length;
+    return currentCountOfTotalFiles;
+  }
+
+  const disableFurtherFilesAttached = (resData, maxNumberOfFiles) => {
+    if (maxNumberOfFiles !== null && maxNumberOfFiles !== undefined && maxNumberOfFiles !== UNLIMITED_FILES) {
+      let currentNumberOfFiles = getCurrentNumberOfFiles(resData);
+      // setAttachFilesDisabled(false);
+
+      if (currentNumberOfFiles > maxNumberOfFiles) {
+        // setAttachFilesDisabled(true);
+        setFilesMessage({ display: true, text: 'This resource only allows a maximum of ' + maxNumberOfFiles + ' files.' });
+      } else {
+        setFilesMessage({ display: false, text: '' });
+      }
+    }
+  }
+
+  const handleFiles = (e, resData, maxNumberOfFiles) => {
     if (typeof e.target.type === 'string' && e.target.type === 'file' && e.target.name === 'Preview') {
       setPreviewImage(e.target.files[0]);
       if(formFiles.length === 0 && dataForUpdate?.files.length === 0) {
@@ -201,6 +229,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
       }
     }
 
+    disableFurtherFilesAttached(resData, maxNumberOfFiles);
     triggerReload(!tr);
   }
 
@@ -272,11 +301,11 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
       setFormFiles([])
       setFormFilesToRemove([])
     }
+
     const resData = await res.json()
 
-
-    if(!res.ok) {
-      return setMessage({display: true, ok: res.ok, text: resData.error ?? 'Error 0' })
+    if (!res.ok) {
+      return setMessage({ display: true, ok: res.ok, text: resData.error ?? 'Error 0' })
     } 
     let output_message = ''
     let ouput_ok = res.ok
@@ -284,16 +313,15 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     if (!showUpgradeButton && resourceType === 'book' && action !== 'create') {
       const {res: resMetadata} = await saveMetaDataResource()
       if (!resMetadata.ok) {
-        return setMessage({display: true, ok: resMetadata.ok, text: 'Resource saved, but save metada is failed' })
+        return setMessage({ display: true, ok: resMetadata.ok, text: 'Resource saved, but save metada is failed' })
       }
       output_message = 'Resource and metadata saved'
     }
     
     setLoaded(false)
     setProcessing(false)
-
     setForm(resData.data);
-    setMessage({display: true, text: output_message, ok: ouput_ok })
+    setMessage({ display: true, text: output_message, ok: ouput_ok })
   }
 
   const getStoreFormData = () => {
@@ -319,7 +347,6 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const fields = { bookExtraData: ExtraBookData };
 
   const uiSchema={
-    
     "description": {
       "ui:order": ["active", "*"],
       "active": {
@@ -390,9 +417,9 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     const {res, resData} = await saveMetaDataResource()
     
     if (!res.ok) {
-      setMessage({display: true, ok: res.ok, text: resData.error ?? 'Error 0' })
+      setMessage({ display: true, ok: res.ok, text: resData.error ?? 'Error 0' })
     } else {
-      setMessage({display: true, text: 'Book updated at V2', ok: res.ok })
+      setMessage({ display: true, text: 'Book updated at V2', ok: res.ok })
     }
   }
 
@@ -492,7 +519,6 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                   </>
                 )
               }
-              
           </Message>
         </div>
         <SemanticForm
@@ -524,13 +550,13 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
 
   const FilesAndActions = () => {
     const appData = getStoreFormData();
-    const maxFiles = appData?.max_files;
+    setMaxFiles(appData?.max_files);
 
     const replaceMedia = async (input_id) => {
       document.getElementById(input_id).click();
     }
 
-    const handleReplacedFiles = (e, dam, media_id) => {
+    const handleReplacedFiles = (e, dam, media_id, maxNumberOfFiles) => {
       let filesPendingRemove = formFilesToRemove;
       filesPendingRemove.push(media_id);
       setFormFilesToRemove(filesPendingRemove);
@@ -556,20 +582,30 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
         }
       }
 
+      disableFurtherFilesAttached(dam, maxNumberOfFiles);
       triggerReload(!tr);
     }
 
-    const removeMediaFromUploadingQueue = (array_id) => {
-      let filesPendingAddition = formFiles;
-      let newFilesPendingAddition = [];
+    const removeMediaV2 = (dam, media_id, maxNumberOfFiles) => {
+      let filesPendingRemove = formFilesToRemove;
+      filesPendingRemove.push(media_id);
+      setFormFilesToRemove(filesPendingRemove);
 
-      for (let i = 0; i < filesPendingAddition.length; i++) {
-        if (i !== array_id) {
-          newFilesPendingAddition.push(filesPendingAddition[i]);
+      for (var i = 0; i < resourceData.files.length; i++) {
+        if (media_id == resourceData.files[i].id) {
+          resourceData.files[i].pendingRemoval = true;
         }
       }
 
-      setFormFiles(newFilesPendingAddition);
+      disableFurtherFilesAttached(dam, maxNumberOfFiles);
+      triggerReload(!tr);
+    }
+
+    const removeMediaFromUploadingQueue = (array_id, resData, maxNumberOfFiles) => {
+      let filesPendingAddition = formFiles;
+      filesPendingAddition.splice(array_id, 1);
+      setFormFiles(filesPendingAddition);
+      disableFurtherFilesAttached(resData, maxNumberOfFiles);
       triggerReload(!tr);
     }
 
@@ -579,7 +615,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
             <Grid item sm={12} style={{ minWidth: 400 }}>
               <span
                 className={`${classes.addPreview}`}
-              >Uplad preview image</span>
+              >Upload preview image</span>
               <Button
                 className={`${classes.btnPreview}`}
                 component="label"
@@ -590,7 +626,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                 <input
                   accept="image/*"
                   type="file"
-                  onChange={(e)=> handleFiles(e)}
+                  onChange={(e) => handleFiles(e, resourceData, maxFiles)}
                   name='Preview'
                   hidden
                 />
@@ -598,7 +634,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
             </Grid>
             <Grid item sm={12} className={classes.divider}>
               {dataForUpdate ? (
-                <ResourceActionButtons resource={dataForUpdate} />
+                <ResourceActionButtons resource={ dataForUpdate } />
               ) : null}
             </Grid>
             <Grid item sm={12}>
@@ -612,11 +648,15 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                   type="file"
                   multiple
                   accept={resourceType === MULTIMEDIA ? "audio/*,video/*,image/*" : '*'}
-                  onChange={(e)=> handleFiles(e)}
+                  onChange={(e) => handleFiles(e, resourceData, maxFiles)}
                   name='File'
                   hidden
                 />
               </Button>
+              <Message color={'orange'} className={filesMsg.display ? 'zoom-message' : 'hidden-message'} info>
+                <Message.Header>Warning!</Message.Header>
+                <p>{filesMsg.text}</p>                    
+              </Message>
               {/* {resourceType === MULTIMEDIA ? (
                   <Label> You will upload a {mediaType}</Label>
               ) : null} */}
@@ -635,14 +675,11 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                   maxNumberOfFiles={maxFiles}
                   replaceMedia={replaceMedia}
                   handleReplacedFiles={handleReplacedFiles}
+                  removeMediaV2={removeMediaV2}
                   fileType={resourceType}
                 />
               ) : null
             }
-            <CDNsAttachedToResourceV2
-              resourceData={resourceData}
-              formData={appData}
-            />
             {
               formFiles && formFiles.length > 0 ? (
                 <>
@@ -654,13 +691,17 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                         <p><strong>File name:</strong> {f.name}</p>
                         <p><strong>Mime type:</strong> {f.type}</p>
                         <p><strong>Size:</strong> {(f.size / 1000000).toFixed(2)} MB</p>
-                        <a className={'remove-media-from-uploading-queue-button'} onClick={() => removeMediaFromUploadingQueue(i)}>Remove</a>
+                        <a className={'remove-media-from-uploading-queue-button'} onClick={() => removeMediaFromUploadingQueue(i, resourceData, maxFiles)}>Remove</a>
                       </Card>
                     ))
                   }
                 </>
               ) : null
             }
+            <CDNsAttachedToResourceV2
+              resourceData={resourceData}
+              formData={appData}
+            />
           </div>
         </Grid>
     )
