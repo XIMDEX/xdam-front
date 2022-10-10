@@ -185,12 +185,23 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
         setMediaType(e.target.files[0].type.split('/')[0])
       }
     }
+    
     if (typeof e.target.type === 'string' && e.target.type === 'file' && e.target.name === 'File') {
-      setFormFiles(e.target.files)
-      if(resourceType === MULTIMEDIA) {
+      let filesPendingAddition = formFiles;
+      let tempFiles = e.target.files;
+      
+      for (var i = 0; i < tempFiles.length; i++) {
+        filesPendingAddition.push(tempFiles[i]);
+      }
+
+      setFormFiles(filesPendingAddition);
+
+      if (resourceType === MULTIMEDIA) {
         setMediaType(e.target.files[0].type.split('/')[0])
       }
     }
+
+    triggerReload(!tr);
   }
 
   function setType() {
@@ -527,6 +538,20 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
       triggerReload(!tr);
     }
 
+    const removeMediaFromUploadingQueue = (array_id) => {
+      let filesPendingAddition = formFiles;
+      let newFilesPendingAddition = [];
+
+      for (let i = 0; i < filesPendingAddition.length; i++) {
+        if (i !== array_id) {
+          newFilesPendingAddition.push(filesPendingAddition[i]);
+        }
+      }
+
+      setFormFiles(newFilesPendingAddition);
+      triggerReload(!tr);
+    }
+
     return (
       <Grid item sm={6}>
           <ButtonGroup orientation='vertical'>
@@ -607,6 +632,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                         <p><strong>File name:</strong> {f.name}</p>
                         <p><strong>Mime type:</strong> {f.type}</p>
                         <p><strong>Size:</strong> {(f.size / 1000000).toFixed(2)} MB</p>
+                        <a className={'remove-media-from-uploading-queue-button'} onClick={() => removeMediaFromUploadingQueue(i)}>Remove</a>
                       </Card>
                     ))
                   }
