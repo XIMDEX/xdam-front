@@ -90,6 +90,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const dispatch = useDispatch();
   const [previewImage, setPreviewImage] = useState(null);
   const [formFiles, setFormFiles] = useState([]);
+  const [formFilesToRemove, setFormFilesToRemove] = useState([]);
   const [processing, setProcessing] = useState(null);
   const messageDefaultState = { display: false, text: '', ok: false }
   const [msg, setMessage] = useState(messageDefaultState);
@@ -103,16 +104,14 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const formulario = React.useRef(null);
   
   useEffect(() => {
-    
-    if(action === 'create') {
-      if(getStoreFormData() !== {}) {
+    if (action === 'create') {
+      if (getStoreFormData() !== {}) {
         dispatch(setFormData({}));
         triggerReload(!tr)
       }
     }
     
     if (action === 'edit') {
-      
       const fetchLomesSchema = async () => { 
         let lomesSchema = await MainService().getLomesSchema();
         dispatch(setLomesSchema(lomesSchema));
@@ -124,19 +123,13 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
       }
       
       let lomesl = localStorage.getItem('lomes_loaded');
-      if(
-        (lomesl === null || lomesl === '0') 
-        && VALIDS_LOM.map(type => type.key).includes('lomes')
-      ) {
+      if ((lomesl === null || lomesl === '0') && VALIDS_LOM.map(type => type.key).includes('lomes')) {
         fetchLomesSchema()
         localStorage.setItem('lomes_loaded', '1');
       }
 
       let loml = localStorage.getItem('lom_loaded');
-      if (
-        (loml === null || loml === '0')
-        && VALIDS_LOM.map(type => type.key).includes('lom')
-      ) {
+      if ((loml === null || loml === '0') && VALIDS_LOM.map(type => type.key).includes('lom')) {
         fecthLomSchema()
         localStorage.setItem('lom_loaded', '1');
       }
@@ -151,7 +144,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
         setResourceData(res);
         setTheFiles(res.files);
       }
-      if(!loaded) {
+      if (!loaded) {
         getResourceData();
         dispatch(setFormData(dataForUpdate.data));
         setFillAlert(false);
@@ -192,23 +185,32 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
         setMediaType(e.target.files[0].type.split('/')[0])
       }
     }
+    
     if (typeof e.target.type === 'string' && e.target.type === 'file' && e.target.name === 'File') {
-      setFormFiles(e.target.files)
-      if(resourceType === MULTIMEDIA) {
+      let filesPendingAddition = formFiles;
+      let tempFiles = e.target.files;
+      
+      for (var i = 0; i < tempFiles.length; i++) {
+        filesPendingAddition.push(tempFiles[i]);
+      }
+
+      setFormFiles(filesPendingAddition);
+
+      if (resourceType === MULTIMEDIA) {
         setMediaType(e.target.files[0].type.split('/')[0])
       }
     }
-  
+
+    triggerReload(!tr);
   }
 
   function setType() {
-    
-    if(resourceType !== MULTIMEDIA) {
+    if (resourceType !== MULTIMEDIA) {
       return resourceType;
     }
 
-    if(formFiles.length <= 0) {
-      if(resourceData?.files.length <= 0) {
+    if (formFiles.length <= 0) {
+      if (resourceData?.files.length <= 0) {
         return 'image';
       } else {
         return resourceData?.files[0].mime_type.split('/')[0] ?? 'image';
@@ -224,6 +226,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     setMessage(messageDefaultState)
 
     const data = form.formData
+
     /*
     IMPORTANTE: DEFINE MEDIA TYPE ON MULTIMEDIA COLLECTION.
     En la version acutal, el tipo de multimedia se define con esta logica:
@@ -251,6 +254,12 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
       theFormData.append('Preview', previewImage);
     }
 
+    if (formFilesToRemove) {
+      for (var i = 0; i < formFilesToRemove.length; i++) {
+        theFormData.append('FilesToRemove[]', formFilesToRemove[i]);
+      }
+    }
+
     let res;
     setProcessing(true)
     if (dataForUpdate) {
@@ -261,6 +270,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     //* FormFiles are the files 'adding'
     if(action !== 'create') {
       setFormFiles([])
+      setFormFilesToRemove([])
     }
     const resData = await res.json()
 
@@ -379,16 +389,14 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
 
     const {res, resData} = await saveMetaDataResource()
     
-    if(!res.ok) {
+    if (!res.ok) {
       setMessage({display: true, ok: res.ok, text: resData.error ?? 'Error 0' })
     } else {
       setMessage({display: true, text: 'Book updated at V2', ok: res.ok })
     }
-
   }
 
   const saveMetaDataResource = async () => {
-    
     const data = formulario?.current?.state?.formData?.description ?? resourceData?.data?.description
     data.id = resourceData.id
     
@@ -435,7 +443,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
           formData={appData}
         /> */}
         <div className='forms-main-btns'>
-            <Btn color='teal' icon='facebook' onClick={() =>  _refForm.current.click()} loading={processing}> 
+            <Btn color='teal' icon='facebook' onClick={() => _refForm.current.click()} loading={processing}> 
               {dataForUpdate ? (
                 <>
                   <Icon name='save' /> Save
@@ -518,6 +526,53 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     const appData = getStoreFormData();
     const maxFiles = appData?.max_files;
 
+    const replaceMedia = async (input_id) => {
+      document.getElementById(input_id).click();
+    }
+
+    const handleReplacedFiles = (e, dam, media_id) => {
+      let filesPendingRemove = formFilesToRemove;
+      filesPendingRemove.push(media_id);
+      setFormFilesToRemove(filesPendingRemove);
+
+      for (var i = 0; i < resourceData.files.length; i++) {
+        if (media_id == resourceData.files[i].id) {
+          resourceData.files[i].pendingRemoval = true;
+        }
+      }
+
+      if (typeof e.target.type === 'string' && e.target.type === 'file' && e.target.name === 'File') {
+        let filesPendingAddition = formFiles;
+        let tempFiles = e.target.files;
+        
+        for (var i = 0; i < tempFiles.length; i++) {
+          filesPendingAddition.push(tempFiles[i]);
+        }
+
+        setFormFiles(filesPendingAddition);
+
+        if (resourceType === MULTIMEDIA) {
+          setMediaType(tempFiles[0].type.split('/')[0]);
+        }
+      }
+
+      triggerReload(!tr);
+    }
+
+    const removeMediaFromUploadingQueue = (array_id) => {
+      let filesPendingAddition = formFiles;
+      let newFilesPendingAddition = [];
+
+      for (let i = 0; i < filesPendingAddition.length; i++) {
+        if (i !== array_id) {
+          newFilesPendingAddition.push(filesPendingAddition[i]);
+        }
+      }
+
+      setFormFiles(newFilesPendingAddition);
+      triggerReload(!tr);
+    }
+
     return (
       <Grid item sm={6}>
           <ButtonGroup orientation='vertical'>
@@ -541,13 +596,11 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                 />
               </Button>
             </Grid>
-
             <Grid item sm={12} className={classes.divider}>
               {dataForUpdate ? (
                 <ResourceActionButtons resource={dataForUpdate} />
               ) : null}
             </Grid>
-
             <Grid item sm={12}>
               <Button
                 variant="outlined"
@@ -580,6 +633,9 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                   setTheFiles={setTheFiles}
                   DynamicFormResourceData={setResourceData}
                   maxNumberOfFiles={maxFiles}
+                  replaceMedia={replaceMedia}
+                  handleReplacedFiles={handleReplacedFiles}
+                  fileType={resourceType}
                 />
               ) : null
             }
@@ -593,18 +649,18 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                   <Label>Adding:</Label>
                   {
                     Array.from(formFiles).map((f, i) => (
-                      <Card variant='outlined' className='associated-files-card' key={i}>
+                      <Card variant='outlined' className='associated-files-card associated-files-card-pending-addition' key={i}>
                         <Icon name={iconHandler(f)}></Icon>
                         <p><strong>File name:</strong> {f.name}</p>
                         <p><strong>Mime type:</strong> {f.type}</p>
                         <p><strong>Size:</strong> {(f.size / 1000000).toFixed(2)} MB</p>
+                        <a className={'remove-media-from-uploading-queue-button'} onClick={() => removeMediaFromUploadingQueue(i)}>Remove</a>
                       </Card>
                     ))
                   }
                 </>
               ) : null
             }
-
           </div>
         </Grid>
     )
