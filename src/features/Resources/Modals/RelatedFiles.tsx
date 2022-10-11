@@ -31,7 +31,9 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export default function RelatedFiles( { resData, files,  withPlayer = false, onEditModal = false, setTheFiles = null, DynamicFormResourceData = null, maxNumberOfFiles = null } ) {
+export default function RelatedFiles({ resData, files,  withPlayer = false, onEditModal = false, setTheFiles = null,
+                                        DynamicFormResourceData = null, maxNumberOfFiles = null, replaceMedia = null,
+                                        handleReplacedFiles = null, fileType = null }) {
     const classes = useStyles();
     const [resourceData, setResourceData] = useState(resData)
     const [theFiles, setTF] = useState(files);
@@ -86,7 +88,7 @@ export default function RelatedFiles( { resData, files,  withPlayer = false, onE
                 <List className='relatedFiles-ul'>
                     {
                         theFiles.map((f, ix) => (
-                            <Card key={ix} variant='outlined' className='associated-files-card'>
+                            <Card key={ix} variant='outlined' className={`associated-files-card ${f?.pendingRemoval ? "associated-files-card-pending-removal" : ""}`}>
                                 <List.Item>                                    
                                     <List.Content>
                                         <Icon name={iconHandler(f)}></Icon>
@@ -100,11 +102,29 @@ export default function RelatedFiles( { resData, files,  withPlayer = false, onE
                                                         <><a  onClick={() => toggleMedia((f.dam_url + ix))}>View </a> <span>|</span></>
                                                     ) : null
                                                 }
-                                                <a  onClick={() => download((f))}> Download </a>
-                                                
+                                                <a  onClick={() => download((f))}> Download </a> 
                                                 {onEditModal ? (<>
-                                                    <span>|</span> 
-                                                    <a  onClick={() => removeMedia(resData, f.id)} style={{color: 'red'}}> Remove </a>
+                                                    {
+                                                        f?.pendingRemoval ?
+                                                        (null)
+                                                        :
+                                                        (
+                                                            <>
+                                                            <span>|</span>
+                                                            <a  onClick={() => replaceMedia("resource-" + resData.id + "-file-" + f.id + "-replace-input")} style={{color: '#c76e2a'}}> Replace </a>
+                                                            <span>|</span>
+                                                            <a  onClick={() => removeMedia(resData, f.id)} style={{color: 'red'}}> Remove </a>
+                                                            <input
+                                                                id={"resource-" + resData.id + "-file-" + f.id + "-replace-input"}
+                                                                type="file"
+                                                                accept={fileType === MULTIMEDIA ? "audio/*,video/*,image/*" : '*'}
+                                                                onChange={(e)=> handleReplacedFiles(e, resData, f.id)}
+                                                                name='File'
+                                                                hidden
+                                                            />
+                                                            </>
+                                                        )
+                                                    }
                                                 </>) : null}
                                                 <div id={f.dam_url + ix + '_media_view_'} style={{display: 'none'}}>
                                                     <MediaPlayer mime_type={f.mime_type} url={f.dam_url} />
