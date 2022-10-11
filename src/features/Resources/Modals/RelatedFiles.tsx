@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function RelatedFiles({ resData, files,  withPlayer = false, onEditModal = false, setTheFiles = null,
                                         DynamicFormResourceData = null, maxNumberOfFiles = null, replaceMedia = null,
-                                        handleReplacedFiles = null, fileType = null }) {
+                                        handleReplacedFiles = null, fileType = null, removeMediaV2 = null }) {
     const classes = useStyles();
     const [resourceData, setResourceData] = useState(resData)
     const [theFiles, setTF] = useState(files);
@@ -113,12 +113,13 @@ export default function RelatedFiles({ resData, files,  withPlayer = false, onEd
                                                             <span>|</span>
                                                             <a  onClick={() => replaceMedia("resource-" + resData.id + "-file-" + f.id + "-replace-input")} style={{color: '#c76e2a'}}> Replace </a>
                                                             <span>|</span>
-                                                            <a  onClick={() => removeMedia(resData, f.id)} style={{color: 'red'}}> Remove </a>
+                                                            { /*<a  onClick={() => removeMedia(resData, f.id)} style={{color: 'red'}}> Remove </a>*/ }
+                                                            <a  onClick={() => removeMediaV2(resData, f.id, maxNumberOfFiles)} style={{color: 'red'}}> Remove </a>
                                                             <input
                                                                 id={"resource-" + resData.id + "-file-" + f.id + "-replace-input"}
                                                                 type="file"
                                                                 accept={fileType === MULTIMEDIA ? "audio/*,video/*,image/*" : '*'}
-                                                                onChange={(e)=> handleReplacedFiles(e, resData, f.id)}
+                                                                onChange={(e) => handleReplacedFiles(e, resData, f.id, maxNumberOfFiles)}
                                                                 name='File'
                                                                 hidden
                                                             />
