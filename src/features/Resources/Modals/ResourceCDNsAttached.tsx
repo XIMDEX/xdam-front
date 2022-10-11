@@ -72,11 +72,17 @@ const CDNsAttachedToResourceV2 = ({ resourceData = null, formData = null }) => {
         const CDNItem = ({ resourceID, element }) => {
             const selectorInputID = "resource-" + resourceID + "-cdn-" + element.id + "-input";
             const selectorInputButtonID = selectorInputID + "-button";
+            const selectorInputOpenButtonID = selectorInputID + "-open-button";
             const cdnURL = process.env.REACT_APP_API_BASE_URL + '/cdn/' + element.id + '/resource/';
             
             const copyToClipboard = (elementID) => {
                 const text = (document.getElementById(elementID) as HTMLInputElement).value;
                 navigator.clipboard.writeText(text);
+            }
+
+            const openInBrowser = (elementID) => {
+                const text = (document.getElementById(elementID) as HTMLInputElement).value;
+                window.open(text, '_blank', 'noopener,noreferrer');
             }
             
             return (
@@ -88,9 +94,8 @@ const CDNsAttachedToResourceV2 = ({ resourceData = null, formData = null }) => {
                                 <label>{element.name}</label>
                                 <div style={{display: "flex", width: "100%"}}>
                                     <input id={selectorInputID} style={{marginRight: "5px"}} value={cdnURL + element.hash} disabled></input>
-                                    <Btn id={selectorInputButtonID} color='teal' icon='clone' onClick={() => copyToClipboard(selectorInputID)}> 
-                                        <Icon name='clone' />
-                                    </Btn>
+                                    <Btn id={selectorInputButtonID} color='teal' icon='clone' onClick={() => copyToClipboard(selectorInputID)}></Btn>
+                                    <Btn id={selectorInputOpenButtonID} color='blue' icon='external square alternate' onClick={() => openInBrowser(selectorInputID)}></Btn>
                                 </div>
                             </div>
                         </div>
