@@ -405,7 +405,25 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     return {res, resData}
   }
 
+  const getResourceFilesCount = async (resourceData) => {
+    let filesCount = null;
+    
+    try {
+      const resourceID = resourceData?.id;
+      const res = await MainService().getFilesCount(resourceID);
+      filesCount = res?.files_count;
+    } catch (e) {
+      // console.error(e);
+    }
+    
+    return filesCount;
+  }
 
+  const getResourceMaxFiles = async (resourceData) => {
+    const resourceID = resourceData?.id;
+    const res = await MainService().getMaxFiles(resourceID)
+    return res?.max_files;
+  }
 
   const MetaDataForm = () => {
     // const appData = getStoreFormData();
@@ -498,6 +516,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
 
   const FilesAndActions = () => {
     const appData = getStoreFormData();
+    const maxFiles = appData?.max_files;
 
     return (
       <Grid item sm={6}>
@@ -560,6 +579,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                   onEditModal
                   setTheFiles={setTheFiles}
                   DynamicFormResourceData={setResourceData}
+                  maxNumberOfFiles={maxFiles}
                 />
               ) : null
             }

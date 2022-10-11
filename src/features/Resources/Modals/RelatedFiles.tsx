@@ -8,7 +8,7 @@ import MainService from '../../../api/service';
 
 import { render, renderFromUrl } from '../../../utils/render';
 import { Button, List, Label, Icon } from 'semantic-ui-react';
-import { MULTIMEDIA } from '../../../constants';
+import { MULTIMEDIA, UNLIMITED_FILES } from '../../../constants';
 import { iconHandler } from '../../../utils/iconHandler';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -31,14 +31,12 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export default function RelatedFiles( { resData, files,  withPlayer = false, onEditModal = false, setTheFiles = null, DynamicFormResourceData = null } ) {
-
+export default function RelatedFiles( { resData, files,  withPlayer = false, onEditModal = false, setTheFiles = null, DynamicFormResourceData = null, maxNumberOfFiles = null } ) {
     const classes = useStyles();
     const [resourceData, setResourceData] = useState(resData)
-    const [theFiles, setTF] = useState(files)
+    const [theFiles, setTF] = useState(files);
     
     const RenderFiles = () => {
-
         const MediaPlayer = ({mime_type, url}) => {
             let player;
             let src;
@@ -90,7 +88,6 @@ export default function RelatedFiles( { resData, files,  withPlayer = false, onE
                         theFiles.map((f, ix) => (
                             <Card key={ix} variant='outlined' className='associated-files-card'>
                                 <List.Item>                                    
-                                    
                                     <List.Content>
                                         <Icon name={iconHandler(f)}></Icon>
                                         <p><strong>File name:</strong> {f.file_name}</p> 
@@ -133,7 +130,12 @@ export default function RelatedFiles( { resData, files,  withPlayer = false, onE
             <div >
                 {theFiles && theFiles.length > 0 ? (
                 <>
-                    <Label>{onEditModal ? 'Already attached:' : 'Associated files'}</Label> 
+                    <Label>
+                        { onEditModal ? 'Already attached' : 'Associated files' }
+                        { maxNumberOfFiles != undefined && maxNumberOfFiles != null && maxNumberOfFiles != UNLIMITED_FILES ?
+                        ' (max: ' + maxNumberOfFiles + ' files)' : '' }
+                        { onEditModal ? ':' : '' }
+                    </Label> 
                     <RenderFiles /> 
                 </>
                 ) : null
