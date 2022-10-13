@@ -19,7 +19,7 @@ const indexWorkspaces = (workspaces: Array<Workspace>): Record<WorkspaceId, Work
 
 const workspacesProvider = async (workspacesId: Array<WorkspaceId>): Promise<Record<WorkspaceId, Workspace>> => {
 
-    if(!workspacesId || !Array.isArray(workspacesId)) {
+    if (!workspacesId || !Array.isArray(workspacesId)) {
         return {};
     }
     
