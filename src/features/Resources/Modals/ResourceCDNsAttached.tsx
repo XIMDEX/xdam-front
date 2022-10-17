@@ -73,7 +73,8 @@ const CDNsAttachedToResourceV2 = ({ resourceData = null, formData = null }) => {
             const selectorInputID = "resource-" + resourceID + "-cdn-" + element.id + "-input";
             const selectorInputButtonID = selectorInputID + "-button";
             const selectorInputOpenButtonID = selectorInputID + "-open-button";
-            const cdnURL = process.env.REACT_APP_API_BASE_URL + '/cdn/' + element.id + '/resource/';
+            // const cdnURL = process.env.REACT_APP_API_BASE_URL + '/cdn/' + element.id + '/resource/';
+            const cdnURL = process.env.REACT_APP_API_BASE_URL + '/cdn/resource/';
             
             const copyToClipboard = (elementID) => {
                 const text = (document.getElementById(elementID) as HTMLInputElement).value;
