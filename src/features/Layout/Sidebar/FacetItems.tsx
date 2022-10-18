@@ -3,9 +3,19 @@ import { useDispatch, useSelector } from "react-redux";
 import { setResourcesLoading } from "../../../appSlice";
 import { setQuery, setFacetsQuery, selectQuery } from "../../../slices/organizationSlice";
 import WorkspaceFacetItems from "./WorkspaceFacetItems";
+import { LANGUAGE_FACET, WORKPSACES, bookLanguages } from '../../../constants';
 
 
 const FacetItem = ({name, facet, fixed, facetValues, supplementaryData, changeFacet, facetIsActive}) => {
+    let auxName = name;
+    console.log('FacetItem');
+    console.log(facet);
+    console.log(name);
+    console.log(supplementaryData);
+
+    if (facet.key === LANGUAGE_FACET && name in bookLanguages) {
+        auxName = bookLanguages[name];
+    }
 
     return (
         <>
@@ -17,7 +27,13 @@ const FacetItem = ({name, facet, fixed, facetValues, supplementaryData, changeFa
                 checked={facetIsActive(fixed ? facetValues.id : name, facet.key)}
                 id={(facet.key + '-' + name + '-' + facetValues[name].id).replace(/ /g, '--')} />
             <label htmlFor={(facet.key + '-' + name + '-' + facetValues[name].id).replace(/ /g, '--')}>
-                <span>{supplementaryData?.[name] ? supplementaryData[name].name : name} <strong>({facetValues[name].count})</strong></span>
+                {
+                    facet.key === LANGUAGE_FACET ? 
+                    (<span>{auxName} <strong>({facetValues[name].count})</strong></span>)
+                    :
+                    (<span>{supplementaryData?.[name] ? supplementaryData[name].name : name} <strong>({facetValues[name].count})</strong></span>)
+                }
+                
             </label>
         </>
     )
@@ -94,7 +110,6 @@ const FacetItems = ({ supplementaryData, fixed, facet, facetValues, currentFacet
     }
 
     const changeFacet = (isRadio: boolean): (event) => void => {
-
         const update = isRadio ? filterRadio : filterCheck;
 
         return (event) => {
@@ -107,7 +122,7 @@ const FacetItems = ({ supplementaryData, fixed, facet, facetValues, currentFacet
 
     if (!facetValues) return null;
 
-    if (facet.key === 'workspaces') {
+    if (facet.key === WORKPSACES) {
         return <WorkspaceFacetItems facet={facet} filteredFacetValues={facetValues} fixed={fixed} isChecked={facetIsActive} changeFacet={changeFacet} supplementaryData={supplementaryData}/>
     }
 
