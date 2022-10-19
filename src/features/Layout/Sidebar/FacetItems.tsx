@@ -8,10 +8,6 @@ import { LANGUAGE_FACET, WORKPSACES, bookLanguages } from '../../../constants';
 
 const FacetItem = ({name, facet, fixed, facetValues, supplementaryData, changeFacet, facetIsActive}) => {
     let auxName = name;
-    console.log('FacetItem');
-    console.log(facet);
-    console.log(name);
-    console.log(supplementaryData);
 
     if (facet.key === LANGUAGE_FACET && name in bookLanguages) {
         auxName = bookLanguages[name];
@@ -28,10 +24,15 @@ const FacetItem = ({name, facet, fixed, facetValues, supplementaryData, changeFa
                 id={(facet.key + '-' + name + '-' + facetValues[name].id).replace(/ /g, '--')} />
             <label htmlFor={(facet.key + '-' + name + '-' + facetValues[name].id).replace(/ /g, '--')}>
                 {
-                    facet.key === LANGUAGE_FACET ? 
-                    (<span>{auxName} <strong>({facetValues[name].count})</strong></span>)
-                    :
-                    (<span>{supplementaryData?.[name] ? supplementaryData[name].name : name} <strong>({facetValues[name].count})</strong></span>)
+                    facet.key === LANGUAGE_FACET
+                        ?   (<span>
+                                {auxName} <strong>({facetValues[name].count})</strong>
+                            </span>)
+                        :   (<span>
+                                {supplementaryData?.[name]
+                                    ? supplementaryData[name].name
+                                    : name} <strong>({facetValues[name].count})</strong>
+                            </span>)
                 }
                 
             </label>
