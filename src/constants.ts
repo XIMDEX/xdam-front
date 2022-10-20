@@ -53,8 +53,8 @@ export const CURRENT_BOOK_VERSION = 2
 export enum bookLanguages {
   en = "English",
   es = "Castellano",
-  cat = "Catalán",
-  false = "Sin idioma"
+  cat = "Català",
+  false = "Undefined"
 }
 
 export enum activeOptions {
