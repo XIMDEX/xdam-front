@@ -6,16 +6,19 @@ import { Workspace } from "../../../types/Workspace/Workspace";
 import { WorkspaceId } from "../../../types/Workspace/WorkspaceId";
 import FacetActionsWrapper from "./FacetActionsWrapper/FacetActionsWrapper";
 
-interface Props { 
+interface Props {
     facet: Facet,
     filteredFacetValues: Facet["values"],
     fixed: boolean,
     isChecked: (name: string, facetKey: string) => boolean,
     changeFacet: (isRadio: boolean) => (event) => void,
-    supplementaryData: Record<WorkspaceId, Workspace>
+    supplementaryData: Record<WorkspaceId, Workspace>,
+    limit_items: number
 }
 
-const WorkspaceFacetItems = ({ facet, filteredFacetValues, fixed, isChecked, changeFacet, supplementaryData }: Props ) => {
+const LIMIT_ITEMS = 10
+
+const WorkspaceFacetItems = ({ facet, filteredFacetValues, fixed, isChecked, changeFacet, supplementaryData, limit_items=0 }: Props ) => {
     const [workspaces, setWorkspaces] = useState<Record<WorkspaceId, Workspace>>(null);
 
     useEffect(() => {
@@ -40,8 +43,10 @@ const WorkspaceFacetItems = ({ facet, filteredFacetValues, fixed, isChecked, cha
     if (!workspaces) return null;
     if (Object.keys(workspaces).length === 0) return null;
 
+    const limit = limit_items === 0 ? Object.keys(filteredFacetValues).length : limit_items;
+
     return (<>
-            {Object.keys(filteredFacetValues).map((workspaceId, index) =>
+            {Object.keys(filteredFacetValues).slice(0, limit).map((workspaceId, index) =>
                 {
                     const values = filteredFacetValues[workspaceId];
                     const current = workspaces[workspaceId];
@@ -62,7 +67,7 @@ const WorkspaceFacetItems = ({ facet, filteredFacetValues, fixed, isChecked, cha
                                     checked={isChecked(fixed ? values.id : workspaceId, facet.key)}
                                     id={(facet.key + '-' + workspaceId + '-' + values.id).replace(/ /g, '--')}
                                 />
-                                <label 
+                                <label
                                     htmlFor={(facet.key + '-' + workspaceId + '-' + values.id).replace(/ /g, '--')}
                                     title={workspaces[workspaceId].name}
                                 >
