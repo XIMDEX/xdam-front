@@ -81,9 +81,19 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
         let values_non_selected = Object.keys(facet.values).filter(name => !facet.values[name].selected  && !selectedWS.includes(name))
         let new_values = [...values_selected, ...values_non_selected]
         let values_obj = {}
-        if (!showMore) {
-            new_values = new_values.slice(0, LIMIT_ITEMS)
+        if (!showMore ) {
+            let limit = LIMIT_ITEMS
+
+            if (values_selected.length > 0) {
+                if (values_selected.length < LIMIT_ITEMS) {
+                    limit -= values_selected.length
+                } else {
+                    limit = 0
+                }
+            }
+            new_values = values_non_selected.slice(0, limit)
         }
+        new_values = [...values_selected, ...new_values]
         new_values.forEach(value => values_obj[value] = facet.values[value])
         if (search === '') {
             setFacetValues(values_obj)
