@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Grid, Button, IconButton, Typography, TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import _ from 'lodash'
-import { ORGANIZATION, COLLECTION } from '../../../constants';
+import { ORGANIZATION, COLLECTION, LANGUAGE_FACET, WORKPSACES } from '../../../constants';
 import { setFacetsQuery, selectQuery } from '../../../slices/organizationSlice';
 import { setResourcesLoading } from '../../../appSlice';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -116,12 +116,17 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
         if (facet.key === ORGANIZATION && typeof selectedOrg === 'object') {
             return selectedOrg.name
         }
+
         if (facet.key === COLLECTION && typeof selectedColl === 'object') {
             return selectedColl.name
         }
 
         if (facet.key in EFacetNameMapping) {
             return EFacetNameMapping[facet.key];
+        }
+
+        if (facet.key === LANGUAGE_FACET) {
+            return 'Language';
         }
 
         return facet.label
