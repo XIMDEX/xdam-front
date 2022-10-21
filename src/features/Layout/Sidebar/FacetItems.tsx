@@ -22,8 +22,8 @@ const FacetItem = ({name, facet, fixed, facetValues, supplementaryData, changeFa
                 value={fixed ? facetValues[name].id : name}
                 onChange={changeFacet(facetValues[name].radio)}
                 checked={facetIsActive(fixed ? facetValues.id : name, facet.key)}
-                id={(facet.key + '-' + name + '-' + facetValues[name].id).replace(/ /g, '--')} />
-            <label htmlFor={(facet.key + '-' + name + '-' + facetValues[name].id).replace(/ /g, '--')}>
+                id={(facet.key + '-' + name + '-' + (facetValues[name]?.id ?? '')).replace(/ /g, '--')} />
+            <label htmlFor={(facet.key + '-' + name + '-' + (facetValues[name]?.id ?? '')).replace(/ /g, '--')}>
                 {
                     facet.key === LANGUAGE_FACET
                         ?   (<span>
