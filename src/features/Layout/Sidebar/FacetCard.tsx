@@ -98,7 +98,7 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
         if (search === '') {
             setFacetValues(values_obj)
         }
-    }, [collection, facetsQuery, organization, resources, showMore, selectedWS])
+    }, [collection, facetsQuery, organization, resources, showMore, selectedWS, search])
 
     function onFilterChange(e) {
         setSearch(e.target.value);
