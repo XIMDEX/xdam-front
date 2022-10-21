@@ -103,7 +103,7 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
     function onFilterChange(e) {
         setSearch(e.target.value);
         var result = _.pickBy(values, function(value, key) {
-            const k = supplementaryData[key]?.name || key;
+            const k = supplementaryData?.[key]?.name || key;
 
             return _.includes(k.toLowerCase(), e.target.value.toLowerCase());
         });
@@ -244,7 +244,7 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
                         )}
                     </ul>
                     </Grid>
-                    { Object.keys(values).length > LIMIT_ITEMS  && (
+                    { Object.keys(values).length > LIMIT_ITEMS  && search === '' && (
                         <Grid item sm={12} style={{marginBottom: 10, marginTop: -10, textAlign: 'right'}}>
                             <Button onClick={handleShowMore} style={{fontSize: 8}} size='small'>Show {showMore ? 'less' : 'more'}...</Button>
                         </Grid>
