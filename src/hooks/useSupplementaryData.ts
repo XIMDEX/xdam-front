@@ -13,14 +13,14 @@ const map = {
 }
 
 const useSupplementaryData = (facet: Facet) => {
-    
+
     const [supplementaryData, setSupplementaryData] = useState(null);
     const dispatch = useDispatch();
 
     useEffect(() => {
 
         const fetchSupplementaryData = async (dispatcher?) => {
-            const data = await provider(Object.keys(facet.values));
+            const data = await provider(facet.values);
 
             setSupplementaryData(data);
 

@@ -1,5 +1,5 @@
 import { Workspace } from "../../types/Workspace/Workspace";
-import { WorkspaceId } from "../../types/Workspace/WorkspaceId";
+import { Workspaces } from "../../types/Workspace/Workspaces";
 import MainService from "../service";
 
 export const parseWorkspace = (raw: any): Workspace => {
@@ -13,21 +13,23 @@ export const parseWorkspace = (raw: any): Workspace => {
     }
 }
 
-const indexWorkspaces = (workspaces: Array<Workspace>): Record<WorkspaceId, Workspace> => {
-    return workspaces.reduce((indexedWorkspaces: Record<WorkspaceId, Workspace>, currentWorkspace: Workspace) => ({ ...indexedWorkspaces, [currentWorkspace.id]: currentWorkspace }), {});
-}
+// const indexWorkspaces = (workspaces: Array<Workspace>): Record<Workspaces, Workspace> => {
+//     return workspaces.reduce((indexedWorkspaces: Record<Workspaces, Workspace>, currentWorkspace: Workspace) => ({ ...indexedWorkspaces, [currentWorkspace.id]: currentWorkspace }), {});
+// }
 
-const workspacesProvider = async (workspacesId: Array<WorkspaceId>): Promise<Record<WorkspaceId, Workspace>> => {
+const workspacesProvider = async (workspaces: Array<Workspaces>): Promise<object> => {
 
-    if(!workspacesId || !Array.isArray(workspacesId)) {
+    if(!workspaces && !Array.isArray(workspaces)) {
         return {};
     }
-    
-    const { data } = await MainService().getWorkspaces(workspacesId);
 
-    const workspaces = data.map(parseWorkspace);
+    // const { data } = await MainService().getWorkspaces(workspaces);
 
-    return indexWorkspaces(workspaces);
+    let workspaces_parsed = {}
+    Object.keys(workspaces).forEach(id => workspaces_parsed[id] = {...workspaces[id], id});
+
+    // return indexWorkspaces(workspaces_parsed);
+    return workspaces_parsed
 }
 
 export default workspacesProvider;

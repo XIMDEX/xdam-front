@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from './app/store';
 import IFacet from './interfaces/IFacet';
-import { Workspace } from './types/Workspace/Workspace';
-import { WorkspaceId } from './types/Workspace/WorkspaceId';
+// import { Workspace } from './types/Workspace/Workspace';
+// import { WorkspaceId } from './types/Workspace/Workspaces';
 
 interface AppState {
   user: null|Record<string,any>;
@@ -17,7 +17,7 @@ interface AppState {
   catalogueFlag: boolean,
   formData: any,
   reloadApp: boolean,
-  workspacesData: Record<WorkspaceId, Workspace> | null,
+  workspacesData: object | null,
 }
 
 const initialState: AppState = {
@@ -45,7 +45,7 @@ export const appSlice = createSlice({
       // doesn't actually mutate the state because it uses the Immer library,
       // which detects changes to a "draft state" and produces a brand new
       // immutable state based off those changes
-      
+
       state.user = payload;
     },
     setLoading: (state, {payload}) => {
@@ -81,13 +81,13 @@ export const appSlice = createSlice({
     reloadApp: (state) => {
       state.reloadApp = !state.reloadApp;
     },
-    setWorkspacesData: (state: AppState, {payload}: {payload: Record<WorkspaceId, Workspace>}) => {
+    setWorkspacesData: (state: AppState, {payload}: {payload: object}) => {
       state.workspacesData = payload
     }
   },
 });
 
-export const { setUser, setLoading, setFixedFacets, setFacets, 
+export const { setUser, setLoading, setFixedFacets, setFacets,
   setResources, setResourcesLoading, setSchemas, setLomesSchema, setLomSchema,
   reloadCatalogue, setFormData, reloadApp, setWorkspacesData} = appSlice.actions;
 
