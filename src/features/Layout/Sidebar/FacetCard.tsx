@@ -12,7 +12,7 @@ import EFacetNameMapping from './EFacetNameMapping';
 import FacetItems from './FacetItems';
 import useSupplementaryData from '../../../hooks/useSupplementaryData';
 
-const LIMIT_ITEMS = 100000000;
+const LIMIT_ITEMS = 10;
 
 const useStyles = makeStyles((theme) => ({
     sidebarRoot: {
@@ -244,7 +244,7 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
                         )}
                     </ul>
                     </Grid>
-                    { Object.keys(values).length >= LIMIT_ITEMS  && (
+                    { Object.keys(values).length > LIMIT_ITEMS  && (
                         <Grid item sm={12} style={{marginBottom: 10, marginTop: -10, textAlign: 'right'}}>
                             <Button onClick={handleShowMore} style={{fontSize: 8}} size='small'>Show {showMore ? 'less' : 'more'}...</Button>
                         </Grid>
