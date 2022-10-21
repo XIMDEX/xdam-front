@@ -12,7 +12,7 @@ import EFacetNameMapping from './EFacetNameMapping';
 import FacetItems from './FacetItems';
 import useSupplementaryData from '../../../hooks/useSupplementaryData';
 
-const LIMIT_ITEMS = 10;
+const LIMIT_ITEMS = 100000000;
 
 const useStyles = makeStyles((theme) => ({
     sidebarRoot: {
