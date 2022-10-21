@@ -12,6 +12,8 @@ import EFacetNameMapping from './EFacetNameMapping';
 import FacetItems from './FacetItems';
 import useSupplementaryData from '../../../hooks/useSupplementaryData';
 
+const LIMIT_ITEMS = 10;
+
 const useStyles = makeStyles((theme) => ({
     sidebarRoot: {
       "& ul": {
@@ -44,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
       marginBottom: 20
     },
     capitalize: {
-        textTransform: 'capitalize' 
+        textTransform: 'capitalize'
     },
     clearIcon: {
         position: 'relative',
@@ -56,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
   }
 ));
 
-export function FacetCard({ facet, fixed, resources, collection, organization, facetsQuery }) { 
+export function FacetCard({ facet, fixed, resources, collection, organization, facetsQuery }) {
     const classes = useStyles()
     const values = facet.values ?? {}
     const dispatch = useDispatch()
@@ -67,15 +69,37 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
     const selectedColl = collection
     const [search, setSearch] = useState('')
     const currentFacets = JSON.parse(JSON.stringify(facetsQuery));
-    const cQuery = useSelector(selectQuery);
     const supplementaryData = useSupplementaryData(facet);
-    
+    const [selectedWS, setSelectedWS] = useState([])
+
+    const [showMore, setShowMore] = useState<Boolean>(false)
+
     useEffect( () => {
-        if (search === '') {
-            setFacetValues(facet.values)
+        let values_selected = Object.keys(facet.values).filter(name => {
+            return facet.values[name].selected || selectedWS.includes(name)
+        })
+        let values_non_selected = Object.keys(facet.values).filter(name => !facet.values[name].selected  && !selectedWS.includes(name))
+        let new_values = [...values_selected, ...values_non_selected]
+        let values_obj = {}
+        if (!showMore ) {
+            let limit = LIMIT_ITEMS
+
+            if (values_selected.length > 0) {
+                if (values_selected.length < LIMIT_ITEMS) {
+                    limit -= values_selected.length
+                } else {
+                    limit = 0
+                }
+            }
+            new_values = values_non_selected.slice(0, limit)
         }
-    }, [collection, facetsQuery, organization, resources])
-    
+        new_values = [...values_selected, ...new_values]
+        new_values.forEach(value => values_obj[value] = facet.values[value])
+        if (search === '') {
+            setFacetValues(values_obj)
+        }
+    }, [collection, facetsQuery, organization, resources, showMore, selectedWS])
+
     function onFilterChange(e) {
         setSearch(e.target.value);
         var result = _.pickBy(values, function(value, key) {
@@ -94,7 +118,7 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
             ))
         )
     }
-    
+
     function clearFilter(evt)
     {
         const facetKey = facet.key;
@@ -131,9 +155,23 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
 
         return facet.label
     }
-    
+
+    const handleShowMore = () => setShowMore(!showMore)
+
+    const handleFilterSelected = (value, isChecked) => {
+        let newValues = {...facetValues}
+        newValues[value] = {...newValues[value], selected: isChecked}
+        setFacetValues(newValues)
+        if (isChecked && !selectedWS.includes(value)) {
+            setSelectedWS([...selectedWS,value ])
+        }
+        if (!isChecked && selectedWS.includes(value)) {
+            setSelectedWS(selectedWS.filter(ws => ws !== value))
+        }
+    }
+
     return (
-        
+
         <Grid container className={`${classes.sidebarRoot} ${cardOpen ? 'cardOpen' : null} facetCard facets-context`} >
                 {/* Errors */}
                 <Grid item sm={12}>
@@ -142,16 +180,16 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
                 {/* Facet title */}
                 <Grid container>
                     <Grid item sm={!fixed && currentFacets.hasOwnProperty(facet.key) ? 11 : 12}>
-                        <Button aria-label="facet-title" 
-                            onClick={toggleCard} 
-                            fullWidth 
+                        <Button aria-label="facet-title"
+                            onClick={toggleCard}
+                            fullWidth
                             endIcon={cardOpen ? (<Icon name='minus' size='small'/>) : (<Icon name='plus' size='small' />)}
                         >
                             <Grid container>
                                 <Grid item sm={12}>
                                     <Typography className={classes.capitalize} align='left' color='primary'>
                                         <strong className={!cardOpen ? 'darkLabel' : 'whiteLabel'}>{label()}</strong>
-                                    </Typography>    
+                                    </Typography>
                                 </Grid>
                             </Grid>
                         </Button>
@@ -171,36 +209,51 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
                         Object.keys(facetValues).length > 4 && search === '' ? (
                         // true ? (
                             <Grid item sm={12}>
-                                <TextField 
-                                    onChange={ onFilterChange } 
-                                    placeholder='search' 
+                                <TextField
+                                    onChange={ onFilterChange }
+                                    placeholder='search'
                                     size='small'
                                     fullWidth
                                 />
                             </Grid>
                         ) : (search !== '' ? (
                             <Grid item sm={12}>
-                                <TextField 
-                                    onChange={ onFilterChange } 
-                                    placeholder='search' 
+                                <TextField
+                                    onChange={ onFilterChange }
+                                    placeholder='search'
                                     size='small'
                                     fullWidth
                                 />
                             </Grid>
                         ) : null)
                     }
-                    
+
                     {/* Facet values */}
                     <Grid item sm={12}>
-                    <ul> 
-                        {
-                            organization && collection ? (<FacetItems supplementaryData={supplementaryData} fixed={fixed} facet={facet} facetValues={facetValues} currentFacets={currentFacets}/>) : ''
-                        }
+                    <ul>
+                        {organization && collection &&  (
+                                <FacetItems
+                                    supplementaryData={supplementaryData}
+                                    fixed={fixed}
+                                    facet={facet}
+                                    facetValues={facetValues}
+                                    currentFacets={currentFacets}
+                                    limit_items={LIMIT_ITEMS}
+                                    onFilterSelected={handleFilterSelected}
+                                />
+                        )}
                     </ul>
                     </Grid>
+                    { Object.keys(values).length >= LIMIT_ITEMS  && (
+                        <Grid item sm={12} style={{marginBottom: 10, marginTop: -10, textAlign: 'right'}}>
+                            <Button onClick={handleShowMore} style={{fontSize: 8}} size='small'>Show {showMore ? 'less' : 'more'}...</Button>
+                        </Grid>
+                    )
+
+                    }
                 </div>
             </Grid>
-        
+
     );
 }
 
