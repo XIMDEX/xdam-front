@@ -91,8 +91,6 @@ interface IBody {
 }
 
 export default function DynamicForm({ resourceType, action, schema, dataForUpdate = null, handleClose }) {
-    // console.log(schema)
-    // console.log("DATA FOR UPDATE",dataForUpdate)
   const classes = useStyles();
   let collection_id = useSelector(selectCollection);
   const dispatch = useDispatch();
@@ -110,7 +108,13 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const [fillAlert, setFillAlert] = useState(false);
   const formulario = React.useRef(null);
   const workspaces = useSelector(selectWorkspacesData);
-  const [workspaceSelect, setWorkspaceSelect] = useState(dataForUpdate.workspaces[dataForUpdate.workspaces.length -1]);
+  const [workspaceSelect, setWorkspaceSelect] = useState(
+    dataForUpdate !== null
+    ? 
+      dataForUpdate.workspaces[dataForUpdate.workspaces.length -1]
+    :
+      null
+  );
 
   const [workspacesOptions, setWorkspacesOptions] = useState(()=> {
     let workspaceArray = []

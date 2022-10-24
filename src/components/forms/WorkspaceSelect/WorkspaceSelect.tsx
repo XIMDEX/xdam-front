@@ -100,7 +100,8 @@ export default function WorkspaceSelect({resourceData, dataForUpdate}) {
     }
 
     return ( <div style={{display: 'flex'}}>
-    {addWorkspace ?
+    {addWorkspace
+    ?
         <input
             autoFocus={true}
             name='New Workspace'
@@ -112,31 +113,38 @@ export default function WorkspaceSelect({resourceData, dataForUpdate}) {
             }
             className={classes.addWorkspaceInput}
         />
-    : <Autocomplete
-        className={classes.workspaceSelect}
-        multiple
-        id="tags-standard"
-        options={workspacesOptions}
-        onChange={(e,values) => handleWorkspaceSelect (e, values)}
-        defaultValue={workspacesOptions.filter((wkOption: IWkoptions) => dataForUpdate.workspaces.includes(String(wkOption.value)))}
-        size="small"
-        clearIcon={false}
-        renderInput={(params) => (
-        <TextField
-            {...params}
-            label="Workspace:"
-        />
-        )}
-        renderTags={(tagValue, getTagProps) =>
-            tagValue.map((option, index) => (
-            <Chip
-                label={option.label}
-                {...getTagProps({ index })}
-                disabled={workspaceDefault.findIndex(defaultWk => defaultWk.value === option.value) !== -1}
+    :
+        (dataForUpdate !== null
+        ?
+            <Autocomplete
+            className={classes.workspaceSelect}
+            multiple
+            id="tags-standard"
+            options={workspacesOptions}
+            onChange={(e,values) => handleWorkspaceSelect (e, values)}
+            defaultValue={workspacesOptions.filter((wkOption: IWkoptions) => dataForUpdate.workspaces.includes(String(wkOption.value)))}
+            size="small"
+            clearIcon={false}
+            renderInput={(params) => (
+            <TextField
+                {...params}
+                label="Workspace:"
             />
-            ))
-        }
-    />}
+            )}
+            renderTags={(tagValue, getTagProps) =>
+                tagValue.map((option, index) => (
+                <Chip
+                    label={option.label}
+                    {...getTagProps({ index })}
+                    disabled={workspaceDefault.findIndex(defaultWk => defaultWk.value === option.value) !== -1}
+                />
+                ))
+            }
+            />
+        :
+            (null)
+        )
+   }
     <div className={classes.workspacesActions}>
     {addWorkspace ?
         <>
@@ -166,17 +174,22 @@ export default function WorkspaceSelect({resourceData, dataForUpdate}) {
             </button>
         </>
     :
-        <button
-            className={classes.buttonAddWorkspace}
-            onClick={() => setAddWorkspace(true)}
-        >
+        (dataForUpdate !== null
+        ?
+            <button
+                className={classes.buttonAddWorkspace}
+                onClick={() => setAddWorkspace(true)}
+            >
             <FontAwesomeIcon
                 style={{cursor: 'pointer'}}
                 size='2x'
                 icon={faPlusCircle}
                 title={'Add new workspace'}
             />
-        </button>
+            </button>
+        :
+            (null)
+        )
     }
     </div>
     </div>
