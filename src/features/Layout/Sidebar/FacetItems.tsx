@@ -5,6 +5,7 @@ import { setQuery, setFacetsQuery, selectQuery } from "../../../slices/organizat
 import WorkspaceFacetItems from "./WorkspaceFacetItems";
 import { LANGUAGE_FACET, WORKPSACES, bookLanguages } from '../../../constants';
 
+const LIMIT_ITEMS = 10;
 
 const FacetItem = ({name, facet, fixed, facetValues, supplementaryData, changeFacet, facetIsActive}) => {
     let auxName = name;
@@ -21,8 +22,8 @@ const FacetItem = ({name, facet, fixed, facetValues, supplementaryData, changeFa
                 value={fixed ? facetValues[name].id : name}
                 onChange={changeFacet(facetValues[name].radio)}
                 checked={facetIsActive(fixed ? facetValues.id : name, facet.key)}
-                id={(facet.key + '-' + name + '-' + facetValues[name].id).replace(/ /g, '--')} />
-            <label htmlFor={(facet.key + '-' + name + '-' + facetValues[name].id).replace(/ /g, '--')}>
+                id={(facet.key + '-' + name + '-' + (facetValues[name]?.id ?? '')).replace(/ /g, '--')} />
+            <label htmlFor={(facet.key + '-' + name + '-' + (facetValues[name]?.id ?? '')).replace(/ /g, '--')}>
                 {
                     facet.key === LANGUAGE_FACET
                         ?   (<span>
@@ -34,13 +35,13 @@ const FacetItem = ({name, facet, fixed, facetValues, supplementaryData, changeFa
                                     : name} <strong>({facetValues[name].count})</strong>
                             </span>)
                 }
-                
+
             </label>
         </>
     )
 }
 
-const FacetItems = ({ supplementaryData, fixed, facet, facetValues, currentFacets}) => {
+const FacetItems = ({ supplementaryData, fixed, facet, facetValues, currentFacets, limit_items, onFilterSelected}) => {
     const dispatch = useDispatch();
     const cQuery = useSelector(selectQuery);
 
@@ -111,12 +112,13 @@ const FacetItems = ({ supplementaryData, fixed, facet, facetValues, currentFacet
     }
 
     const changeFacet = (isRadio: boolean): (event) => void => {
+
         const update = isRadio ? filterRadio : filterCheck;
 
         return (event) => {
             const checked = event.target.checked;
             const value = event.target.value;
-
+            onFilterSelected?.(value, checked)
             update(value, checked);
         }
     }
@@ -124,7 +126,15 @@ const FacetItems = ({ supplementaryData, fixed, facet, facetValues, currentFacet
     if (!facetValues) return null;
 
     if (facet.key === WORKPSACES) {
-        return <WorkspaceFacetItems facet={facet} filteredFacetValues={facetValues} fixed={fixed} isChecked={facetIsActive} changeFacet={changeFacet} supplementaryData={supplementaryData}/>
+        return (
+            <WorkspaceFacetItems
+                facet={facet}
+                filteredFacetValues={facetValues}
+                fixed={fixed}
+                isChecked={facetIsActive}
+                changeFacet={changeFacet} supplementaryData={supplementaryData} limit_items={limit_items}
+            />
+        )
     }
 
     return (<>
