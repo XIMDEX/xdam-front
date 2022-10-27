@@ -1,0 +1,2 @@
+
+export type Workspaces = object;
