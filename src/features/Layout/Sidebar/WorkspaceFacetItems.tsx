@@ -42,13 +42,10 @@ const WorkspaceFacetItems = ({ facet, filteredFacetValues, fixed, isChecked, cha
     if (!workspaces) return null;
     if (Object.keys(workspaces).length === 0) return null;
 
-    // const limit = limit_items === 0 ? Object.keys(filteredFacetValues).length : limit_items;
-
     return (<>
             {Object.keys(filteredFacetValues).map((workspaceId, index) =>
                 {
                     const values = filteredFacetValues[workspaceId];
-                    const current = workspaces[workspaceId];
 
                     if (!workspaces[workspaceId]) {
                         return null;

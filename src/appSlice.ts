@@ -1,8 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from './app/store';
 import IFacet from './interfaces/IFacet';
-// import { Workspace } from './types/Workspace/Workspace';
-// import { WorkspaceId } from './types/Workspace/Workspaces';
 
 interface AppState {
   user: null|Record<string,any>;

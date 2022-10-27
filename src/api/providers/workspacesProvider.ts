@@ -1,6 +1,5 @@
 import { Workspace } from "../../types/Workspace/Workspace";
 import { Workspaces } from "../../types/Workspace/Workspaces";
-import MainService from "../service";
 
 export const parseWorkspace = (raw: any): Workspace => {
     return {
@@ -13,9 +12,6 @@ export const parseWorkspace = (raw: any): Workspace => {
     }
 }
 
-// const indexWorkspaces = (workspaces: Array<Workspace>): Record<Workspaces, Workspace> => {
-//     return workspaces.reduce((indexedWorkspaces: Record<Workspaces, Workspace>, currentWorkspace: Workspace) => ({ ...indexedWorkspaces, [currentWorkspace.id]: currentWorkspace }), {});
-// }
 
 const workspacesProvider = async (workspaces: Array<Workspaces>): Promise<object> => {
 
@@ -23,12 +19,9 @@ const workspacesProvider = async (workspaces: Array<Workspaces>): Promise<object
         return {};
     }
 
-    // const { data } = await MainService().getWorkspaces(workspaces);
-
     let workspaces_parsed = {}
     Object.keys(workspaces).forEach(id => workspaces_parsed[id] = {...workspaces[id], id});
 
-    // return indexWorkspaces(workspaces_parsed);
     return workspaces_parsed
 }
 
