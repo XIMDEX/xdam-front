@@ -206,7 +206,7 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
                 </Grid>
                 <div className={cardOpen ? classes.cardFacet : classes.hidden}>
                     {
-                        Object.keys(facetValues).length > 4 && search === '' ? (
+                        Object.keys(facetValues).length > LIMIT_ITEMS && search === '' ? (
                         // true ? (
                             <Grid item sm={12}>
                                 <TextField

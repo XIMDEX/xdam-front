@@ -5,8 +5,6 @@ import { setQuery, setFacetsQuery, selectQuery } from "../../../slices/organizat
 import WorkspaceFacetItems from "./WorkspaceFacetItems";
 import { LANGUAGE_FACET, WORKPSACES, bookLanguages } from '../../../constants';
 
-const LIMIT_ITEMS = 10;
-
 const FacetItem = ({name, facet, fixed, facetValues, supplementaryData, changeFacet, facetIsActive}) => {
     let auxName = name;
 
