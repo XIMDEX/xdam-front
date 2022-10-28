@@ -8,7 +8,7 @@ import MainService from '../../../api/service';
 
 import { render, renderFromUrl } from '../../../utils/render';
 import { Button, List, Label, Icon } from 'semantic-ui-react';
-import { MULTIMEDIA } from '../../../constants';
+import { MULTIMEDIA, UNLIMITED_FILES } from '../../../constants';
 import { iconHandler } from '../../../utils/iconHandler';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -31,14 +31,14 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export default function RelatedFiles( { resData, files,  withPlayer = false, onEditModal = false, setTheFiles = null, DynamicFormResourceData = null } ) {
-
+export default function RelatedFiles({ resData, files,  withPlayer = false, onEditModal = false, setTheFiles = null,
+                                        DynamicFormResourceData = null, maxNumberOfFiles = null, replaceMedia = null,
+                                        handleReplacedFiles = null, fileType = null, removeMediaV2 = null }) {
     const classes = useStyles();
     const [resourceData, setResourceData] = useState(resData)
-    const [theFiles, setTF] = useState(files)
+    const [theFiles, setTF] = useState(files);
     
     const RenderFiles = () => {
-
         const MediaPlayer = ({mime_type, url}) => {
             let player;
             let src;
@@ -88,9 +88,8 @@ export default function RelatedFiles( { resData, files,  withPlayer = false, onE
                 <List className='relatedFiles-ul'>
                     {
                         theFiles.map((f, ix) => (
-                            <Card key={ix} variant='outlined' className='associated-files-card'>
+                            <Card key={ix} variant='outlined' className={`associated-files-card ${f?.pendingRemoval ? "associated-files-card-pending-removal" : ""}`}>
                                 <List.Item>                                    
-                                    
                                     <List.Content>
                                         <Icon name={iconHandler(f)}></Icon>
                                         <p><strong>File name:</strong> {f.file_name}</p> 
@@ -103,11 +102,30 @@ export default function RelatedFiles( { resData, files,  withPlayer = false, onE
                                                         <><a  onClick={() => toggleMedia((f.dam_url + ix))}>View </a> <span>|</span></>
                                                     ) : null
                                                 }
-                                                <a  onClick={() => download((f))}> Download </a>
-                                                
+                                                <a  onClick={() => download((f))}> Download </a> 
                                                 {onEditModal ? (<>
-                                                    <span>|</span> 
-                                                    <a  onClick={() => removeMedia(resData, f.id)} style={{color: 'red'}}> Remove </a>
+                                                    {
+                                                        f?.pendingRemoval ?
+                                                        (null)
+                                                        :
+                                                        (
+                                                            <>
+                                                            <span>|</span>
+                                                            <a  onClick={() => replaceMedia("resource-" + resData.id + "-file-" + f.id + "-replace-input")} style={{color: '#c76e2a'}}> Replace </a>
+                                                            <span>|</span>
+                                                            { /*<a  onClick={() => removeMedia(resData, f.id)} style={{color: 'red'}}> Remove </a>*/ }
+                                                            <a  onClick={() => removeMediaV2(resData, f.id, maxNumberOfFiles)} style={{color: 'red'}}> Remove </a>
+                                                            <input
+                                                                id={"resource-" + resData.id + "-file-" + f.id + "-replace-input"}
+                                                                type="file"
+                                                                accept={fileType === MULTIMEDIA ? "audio/*,video/*,image/*" : '*'}
+                                                                onChange={(e) => handleReplacedFiles(e, resData, f.id, maxNumberOfFiles)}
+                                                                name='File'
+                                                                hidden
+                                                            />
+                                                            </>
+                                                        )
+                                                    }
                                                 </>) : null}
                                                 <div id={f.dam_url + ix + '_media_view_'} style={{display: 'none'}}>
                                                     <MediaPlayer mime_type={f.mime_type} url={f.dam_url} />
@@ -133,7 +151,12 @@ export default function RelatedFiles( { resData, files,  withPlayer = false, onE
             <div >
                 {theFiles && theFiles.length > 0 ? (
                 <>
-                    <Label>{onEditModal ? 'Already attached:' : 'Associated files'}</Label> 
+                    <Label>
+                        { onEditModal ? 'Already attached' : 'Associated files' }
+                        { maxNumberOfFiles != undefined && maxNumberOfFiles != null && maxNumberOfFiles != UNLIMITED_FILES ?
+                        ' (max: ' + maxNumberOfFiles + ' files)' : '' }
+                        { onEditModal ? ':' : '' }
+                    </Label> 
                     <RenderFiles /> 
                 </>
                 ) : null

@@ -399,7 +399,6 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
                 <LoadingResources />
               </div>)
           }
-
           <Grid item sm={6} >
             {
               localResources && localResources.length > 0 ? (
@@ -417,9 +416,7 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
                 </>
               ) : ''
             }
-
           </Grid>
-
           <Grid item sm={6} style={{ zIndex: 2 }} className={classes.actionBtns} >
             {
               localResources && localResources.length > 0 ? (
@@ -446,20 +443,16 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
                 trigger={<></>}
               />
             </Btn.Group>
-
           </Grid>
-
           {
             localResources && localResources.length > 0 ? (
               <Grid container style={{ marginTop: 3 }}>
                 <Grid item sm={12} > <FacetChips facetsQuery={facetsQuery} />  </Grid>
               </Grid>) : null
           }
-
           {
             localResources && localResources.length > 0 ? <ResCont /> : (resourcesLoading ? '' : <ResourcesNotFound />)
           }
-
           <Grid container>
             {
               localResources && localResources.length > 0 ? (
@@ -471,7 +464,6 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
                   style={{ margin: '15px auto' }} onChange={(event, val) => changePage(val)} />
               ) : ''
             }
-
           </Grid>
         </Grid>
       </Grid>

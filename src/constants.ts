@@ -23,7 +23,7 @@ export const AUDIO = "audio";
 export const BOOK = 'book';
 export const ACTIVITY = 'activity';
 export const ASSESSMENT = 'assessment';
-export const DOCUMENT = 'document'
+export const DOCUMENT = 'document';
 
 //FACETS
 export const ACTIVE_FACET = 'active';
@@ -49,7 +49,8 @@ export const NUM_SUGGESTIONS = 5;
 export const PATH_TAXONS_DATA = '9.formData.Taxon Path';
 
 export const MAX_BOOK_UNITS = 50;
-export const CURRENT_BOOK_VERSION = 2
+export const CURRENT_BOOK_VERSION = 2;
+export const UNLIMITED_FILES = 'unlimited';
 
 export enum bookLanguages {
   en = "English",

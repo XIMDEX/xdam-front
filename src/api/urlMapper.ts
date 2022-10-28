@@ -80,8 +80,16 @@ const api = () => {
             method: 'POST',
             url: baseUrl + '/resource/createBatch'
         },
-        postLomesData: (resource_id) => ({
-            method: 'POST',
+        getMaxFiles: (resource_id) => ({
+            method: 'GET',
+            url: baseUrl + '/resource/' + resource_id + '/getMaxFiles'
+        }),
+        getFilesCount: (resource_id) => ({
+            method: 'GET',
+            url: baseUrl + '/resource/' + resource_id + '/getFilesCount'
+        }),
+        postLomesData: (resource_id) => ({    
+            method: 'POST',   
             url: baseUrl + '/resource/' + resource_id + '/lomes'
         }),
         postLomData: (resource_id) => ({

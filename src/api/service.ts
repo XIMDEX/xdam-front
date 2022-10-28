@@ -106,7 +106,27 @@ class AppService {
       return res;
     }
 
-    async getSchemas ()
+    async getMaxFiles (resource_id) 
+    {
+      const request = {
+        method: api().getMaxFiles(resource_id).method,
+        headers: this.httpOptions.headers
+      }
+      const res = await (await fetch(api().getMaxFiles(resource_id).url, request)).json();
+      return res;
+    }
+
+    async getFilesCount (resource_id) 
+    {
+      const request = {
+        method: api().getFilesCount(resource_id).method,
+        headers: this.httpOptions.headers
+      }
+      const res = await (await fetch(api().getFilesCount(resource_id).url, request)).json();
+      return res;
+    }
+
+    async getSchemas () 
     {
       const request = {
         method: api().getSchemas.method,
