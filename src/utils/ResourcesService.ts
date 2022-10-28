@@ -88,6 +88,11 @@ class ResourcesService {
         case ASSESSMENT:
           ra = this.getAssessmentActions();
           break;
+
+        case DOCUMENT:
+          ra = this.getDocumentActions();
+          break;
+
         default:
           throw new Error('resource type invalid: ' + resource.type)
       }
