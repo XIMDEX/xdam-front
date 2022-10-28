@@ -4,7 +4,7 @@ import { getValidLoms } from "./utils/utils";
 export const {
   REACT_APP_API_BASE_URL: API_BASE_URL,
   REACT_APP_COURSE_EDITOR_URL: COURSE_EDITOR_URL,
-  REACT_APP_BOOK_EDITOR_URL: BOOK_EDITOR_URL, 
+  REACT_APP_BOOK_EDITOR_URL: BOOK_EDITOR_URL,
   REACT_APP_XTAGS_API_BASE_URL: XTAGS_API_BASE_URL
 } = process.env
 export const VALID_LOMS = process.env.REACT_APP_VALID_LOMS?.split(',') ?? []
@@ -19,10 +19,11 @@ export const COURSE = 'course';
 export const MULTIMEDIA = 'multimedia';
 export const IMAGE = "image";
 export const VIDEO = "video";
-export const AUDIO = "audio"; 
+export const AUDIO = "audio";
 export const BOOK = 'book';
 export const ACTIVITY = 'activity';
 export const ASSESSMENT = 'assessment';
+export const DOCUMENT = 'document'
 
 //FACETS
 export const ACTIVE_FACET = 'active';
@@ -37,7 +38,7 @@ export const LOM_NORMAS = {
 export const VALIDS_LOM = getValidLoms()
 
 export const XTAGS =  {
-  vocabularyId: 1, 
+  vocabularyId: 1,
   langId: 1,
   lang: 'en',
   typeId: 1

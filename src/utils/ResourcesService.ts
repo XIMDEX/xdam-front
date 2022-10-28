@@ -1,9 +1,9 @@
 import { Cookies } from 'react-cookie';
-import { COURSE, BOOK, MULTIMEDIA, IMAGE, VIDEO, AUDIO, ACTIVITY, ASSESSMENT, BOOK_EDITOR_URL, COURSE_EDITOR_URL } from '../constants';
+import { COURSE, BOOK, MULTIMEDIA, IMAGE, VIDEO, AUDIO, ACTIVITY, ASSESSMENT, BOOK_EDITOR_URL, COURSE_EDITOR_URL, DOCUMENT } from '../constants';
 
 class ResourcesService {
 
-    constructor() 
+    constructor()
     {
 
     }
@@ -11,7 +11,7 @@ class ResourcesService {
     getMultimediaActions()
     {
       return {
-        create: { href: '', label: '' } 
+        create: { href: '', label: '' }
       }
     }
 
@@ -22,26 +22,26 @@ class ResourcesService {
       let convert = 'convert/';
       let token = 'vd9NxuORVjd8xlkZfqAfEQjJw4rXuuPEVysaEV1T';
       let rid = resourceId + '/';
-      
+
       let ob = {
         edit: { label: 'Edit', href: baseUrl + edit + rid + token },
         convert: { label: 'Convert', href: baseUrl + convert + rid + token },
-      } 
-      
+      }
+
       return ob;
     }
 
     getActivityActions()
     {
       return {
-        create: { href: '', label: '' } 
+        create: { href: '', label: '' }
       }
     }
 
     getAssessmentActions()
     {
       return {
-        create: { href: '', label: '' } 
+        create: { href: '', label: '' }
       }
     }
 
@@ -52,6 +52,12 @@ class ResourcesService {
           window.open(COURSE_EDITOR_URL, '_blank').focus()
         },
         edit: { href: COURSE_EDITOR_URL, label: 'Editor' }
+      }
+    }
+
+    getDocumentActions() {
+       return {
+        create: { href: '', label: '' }
       }
     }
 
@@ -77,9 +83,11 @@ class ResourcesService {
         case ASSESSMENT:
           ra = this.getAssessmentActions();
           break;
+        case DOCUMENT:
+          ra = this.getDocumentActions();
+          break;
         default:
           throw new Error('resource type invalid: ' + resource.type)
-          break;
       }
 
       return ra;
