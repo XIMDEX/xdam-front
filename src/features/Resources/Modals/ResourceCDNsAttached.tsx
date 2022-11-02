@@ -96,7 +96,13 @@ const CDNsAttachedToResourceV2 = ({ resourceData = null, formData = null }) => {
                                 <div style={{display: "flex", width: "100%"}}>
                                     <input id={selectorInputID} style={{marginRight: "5px"}} value={cdnURL + element.hash} disabled></input>
                                     <Btn id={selectorInputButtonID} color='teal' icon='clone' onClick={() => copyToClipboard(selectorInputID)}></Btn>
-                                    <Btn id={selectorInputOpenButtonID} color='blue' icon='external square alternate' onClick={() => openInBrowser(selectorInputID)}></Btn>
+                                    { 
+                                        element.permission_type == 'default'
+                                    ?
+                                        <Btn id={selectorInputOpenButtonID} color='blue' icon='external square alternate' onClick={() => openInBrowser(selectorInputID)}></Btn>
+                                    :
+                                        (null)
+                                    }
                                 </div>
                             </div>
                         </div>
