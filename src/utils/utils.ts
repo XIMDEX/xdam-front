@@ -5,3 +5,7 @@ export const getValidLoms = (): Array<{name: String, key: String}> => {
     VALID_LOMS.forEach(tab => LOM_NORMAS[tab] && output.push(LOM_NORMAS[tab]))
     return output;
 }
+
+export const delay = async (milliseconds: number) => {
+    await new Promise(resolve => setTimeout(resolve, milliseconds));
+}

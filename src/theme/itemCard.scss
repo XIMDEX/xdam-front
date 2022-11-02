@@ -109,3 +109,22 @@
     padding: 10px; 
     margin: 10px 0;
 }
+
+.associated-files-card-pending-removal {
+    background-color: #ffc4c3 !important;
+}
+
+.associated-files-card-pending-addition {
+    background-color: #b3efac !important;
+}
+
+.remove-media-from-uploading-queue-button {
+    color: red;
+    cursor: pointer !important;
+}
+
+.cdn-form-textfield {
+    margin-bottom: 15px !important;
+    margin-right: 25px !important;
+    margin-top: 15px !important;
+}

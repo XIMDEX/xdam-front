@@ -15,6 +15,13 @@ class ResourcesService {
       }
     }
 
+    getDocumentActions()
+    {
+      return {
+        create: { href: '', label: '' } 
+      }
+    }
+
     getBookActions(resourceId)
     {
       let baseUrl = BOOK_EDITOR_URL;
@@ -55,12 +62,6 @@ class ResourcesService {
       }
     }
 
-    getDocumentActions() {
-       return {
-        create: { href: '', label: '' }
-      }
-    }
-
     getActions(resource) {
       let ra = {}
 
@@ -68,24 +69,30 @@ class ResourcesService {
         case COURSE:
           ra = this.getCourseActions();
           break;
+
         case BOOK:
           ra = this.getBookActions(resource.id);
           break;
+
         case MULTIMEDIA:
         case IMAGE:
         case VIDEO:
         case AUDIO:
           ra = this.getMultimediaActions();
           break;
+
         case ACTIVITY:
           ra = this.getActivityActions();
           break;
+
         case ASSESSMENT:
           ra = this.getAssessmentActions();
           break;
+
         case DOCUMENT:
           ra = this.getDocumentActions();
           break;
+
         default:
           throw new Error('resource type invalid: ' + resource.type)
       }

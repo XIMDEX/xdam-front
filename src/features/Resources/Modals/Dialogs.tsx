@@ -77,34 +77,38 @@ export default function Dialogs( { resourceType, action, dialogOpen = false, res
       case COURSE:
         form = (<DynamicForm handleClose={handleClose} resourceType={resourceType} action={action} schema={schemas.course_validator} dataForUpdate={resourceData}  />);
         break;
+
       case MULTIMEDIA:
       case IMAGE:
       case VIDEO:
       case AUDIO:
         form = (<DynamicForm handleClose={handleClose} resourceType={resourceType} action={action} schema={schemas.multimedia_validator} dataForUpdate={resourceData} />);
         break;
+
+      case DOCUMENT:
+        form = (<DynamicForm handleClose={handleClose} resourceType={resourceType} action={action} schema={schemas.document_validator} dataForUpdate={resourceData} />);
+        break;
+
       case BOOK:
-
         const overridedBookSchema = JSON.parse(JSON.stringify(schemas.book_validator));
-
         overridedBookSchema?.properties?.description?.required.push("unit");
-
         form = (<DynamicForm handleClose={handleClose} resourceType={resourceType} action={action} schema={overridedBookSchema} dataForUpdate={resourceData} />);
         break;
+
       case ACTIVITY:
           form = (<DynamicForm handleClose={handleClose} resourceType={resourceType} action={action} schema={schemas.activity_validator} dataForUpdate={resourceData} />);
         break;
+
       case ASSESSMENT:
           form = (<DynamicForm handleClose={handleClose} resourceType={resourceType} action={action} schema={schemas.assessment_validator} dataForUpdate={resourceData} />);
         break;
-      case DOCUMENT:
-          form = (<DynamicForm handleClose={handleClose} resourceType={resourceType} action={action} schema={schemas.document_validator} dataForUpdate={resourceData} />)
-        break;
+
       default:
         form = (<Typography>Corrupted resource: type of "{resourceType}" is not allowed</Typography>);
         console.error('The resource type "' + resourceType + '" is bad')
         break;
     }
+
     return (
       form
     )

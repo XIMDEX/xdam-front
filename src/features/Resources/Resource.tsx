@@ -9,7 +9,6 @@ import { useDispatch } from "react-redux";
 import { setUser, reloadCatalogue } from "../../appSlice";
 import Dialogs from "./Modals/Dialogs";
 import { render } from "../../utils/render";
-
 import { Icon } from 'semantic-ui-react'
 import { MULTIMEDIA } from "../../constants";
 
