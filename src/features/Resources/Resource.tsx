@@ -156,7 +156,7 @@ export function Resource( { data, listMode, resourceType } ) {
     const RCard = () => {
         return (
             <div className={`dam-item ${blured ? classes.blur : null}`}  onClick={itemView}>
-                <div className="dam-type">{resourceType === MULTIMEDIA ? 'multimedia' : resourceType}asdf</div>
+                <div className="dam-type">{resourceType === MULTIMEDIA ? 'multimedia' : resourceType}</div>
                 <div className="dam-preview">
                     <div className="dam-preview-img">
                         <LazyImage
