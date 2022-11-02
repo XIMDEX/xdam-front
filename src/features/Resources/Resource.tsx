@@ -131,8 +131,8 @@ export function Resource( { data, listMode, resourceType } ) {
         let yes = window.confirm('sure?');
         if (yes) {
             if (!is_logged_to_kakuma()) {
-                let kakumaLogin = await login_kakuma();
-                MainService().setToken('JWT_Kakuma', kakumaLogin);
+                //let kakumaLogin = await login_kakuma();
+                //MainService().setToken('JWT_Kakuma', kakumaLogin);
             }
 
             let enrollmentsRes = await get_course_enrollments_endpoint(data);
