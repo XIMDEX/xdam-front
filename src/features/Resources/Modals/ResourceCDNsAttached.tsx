@@ -101,7 +101,7 @@ const CDNsAttachedToResourceV2 = ({ resourceData = null, formData = null }) => {
                                     ?
                                         <Btn id={selectorInputOpenButtonID} color='blue' icon='external square alternate' onClick={() => openInBrowser(selectorInputID)}></Btn>
                                     :
-                                        (null)
+                                        <Btn id={selectorInputOpenButtonID} color='blue' icon='external square alternate' onClick={() => openInBrowser(selectorInputID)}></Btn>
                                     }
                                 </div>
                             </div>
