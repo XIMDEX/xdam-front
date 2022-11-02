@@ -39,16 +39,16 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export function Resource( { data, listMode, resourceType } ) { 
+export function Resource( { data, listMode, resourceType } ) {
     const classes = useStyles();
-    const dispatch = useDispatch(); 
+    const dispatch = useDispatch();
     const [res, setRes] = useState(null)
     const [action, setAction] = useState(null)
     const [dialogOpen, setDialogOpen] = useState(null)
     const [blured, setBlur] = useState(false)
     const [focusedDom, setFocusedDom] = useState(null)
 
-    const preview = render(data)
+    const preview = render(data, 'raw')
 
     function truncate(string, length = 150)
     {
@@ -61,7 +61,7 @@ export function Resource( { data, listMode, resourceType } ) {
         } else {
             console.warn('Name must be faceted')
             return 'NO NAME'
-        }   
+        }
     }
 
     function edit (e) {
@@ -157,44 +157,46 @@ export function Resource( { data, listMode, resourceType } ) {
     const RCard = () => {
         return (
             <div className={`dam-item ${blured ? classes.blur : null}`}  onClick={itemView}>
-                <div className="dam-type">{resourceType === MULTIMEDIA ? 'multimedia' : resourceType}</div>
+                <div className="dam-type">{resourceType === MULTIMEDIA ? 'multimedia' : resourceType}asdf</div>
                 <div className="dam-preview">
                     <div className="dam-preview-img">
                         <LazyImage
                             src={preview}
                             alt='lazy_img'
+                            type={resourceType}
                             grid
-                        /> 
+                        />
                     </div>
-                    <div className="dam-preview-title" title={data.name || data.data.description.course_title}> 
+                    <div className="dam-preview-title" title={data.name || data.data.description.course_title}>
                         <strong>{data.name || data.data.description.course_title || 'no name set'} </strong>
                     </div>
                 </div>
                 <div className="dam-item-actions ">
-                    
+
                     <button className="xdam-btn-primary bg-primary group" title="Edit" onClick={edit}>
                         <Icon name='edit' />
                     </button>
-                    
+
                     <button className="xdam-btn-primary bg-primary group" title="Delete"  onClick={remove}>
                         <Icon name='trash' />
                     </button>
                 </div>
             </div>
         )
-    } 
+    }
 
     const RList = () => {
         return (
-            <div className={`${classes.root} ${blured ? classes.blur : null}`} onClick={itemView} >    
-                <ListResource 
-                    style={{pointerEvents: 'none'}} 
-                    truncate={truncate} 
-                    data={data} 
-                    preview={preview} 
-                    edit={edit} 
-                    remove={remove} 
-                    itemView={itemView} 
+            <div className={`${classes.root} ${blured ? classes.blur : null}`} onClick={itemView} >
+                <ListResource
+                    style={{pointerEvents: 'none'}}
+                    truncate={truncate}
+                    data={data}
+                    preview={preview}
+                    edit={edit}
+                    remove={remove}
+                    itemView={itemView}
+                    type={resourceType}
                 />
             </div>
         )
@@ -207,15 +209,15 @@ export function Resource( { data, listMode, resourceType } ) {
             }
             {
                 action && res ? (
-                    <Dialogs 
-                        resourceType={resourceType} 
-                        action={action}                        
-                        dialogOpen={dialogOpen} 
-                        resourceData={res} 
+                    <Dialogs
+                        resourceType={resourceType}
+                        action={action}
+                        dialogOpen={dialogOpen}
+                        resourceData={res}
                         setDialogOpen={setDialogOpen}
                     />
                 ) : null
             }
         </>
-    );   
+    );
 }

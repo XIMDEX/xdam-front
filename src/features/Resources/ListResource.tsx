@@ -38,7 +38,8 @@ export default function ListResource( props ) {
                         <LazyImage
                             src={preview}
                             alt='lazy_img'
-                        />  
+                            type={props.type}
+                        />
                     </Avatar>
                 </ListItemAvatar>
                 <ListItemText style={{marginLeft: 10}}
@@ -48,29 +49,29 @@ export default function ListResource( props ) {
                     <IconButton edge="end" aria-label="delete" onClick={remove}>
                         <DeleteIcon />
                     </IconButton>
-                    
+
                     <IconButton edge="end" aria-label="delete" onClick={edit}>
                         <EditIcon />
                     </IconButton>
                     <div className={classes.columnData}>
-                        
+
                     </div>
-                    
+
                 </ListItemSecondaryAction> */}
-                
+
                 <div className="dam-item-actions in-list">
-                    
+
                     <button className="xdam-btn-primary btn-rou bg-primary group" title="Edit" onClick={edit}>
                         <Icon name='edit' />
                     </button>
-                    
+
                     <button className="xdam-btn-primary bg-primary group" title="Delete"  onClick={remove}>
                         <Icon name='trash' />
                     </button>
                 </div>
-            
+
             </ListItem>
-            
-                
+
+
     );
 }
