@@ -73,7 +73,6 @@ const CDNsAttachedToResourceV2 = ({ resourceData = null, formData = null }) => {
             const selectorInputID = "resource-" + resourceID + "-cdn-" + element.id + "-input";
             const selectorInputButtonID = selectorInputID + "-button";
             const selectorInputOpenButtonID = selectorInputID + "-open-button";
-            // const cdnURL = process.env.REACT_APP_API_BASE_URL + '/cdn/' + element.id + '/resource/';
             const cdnURL = process.env.REACT_APP_API_BASE_URL + '/cdn/resource/';
             
             const copyToClipboard = (elementID) => {
@@ -96,12 +95,15 @@ const CDNsAttachedToResourceV2 = ({ resourceData = null, formData = null }) => {
                                 <div style={{display: "flex", width: "100%"}}>
                                     <input id={selectorInputID} style={{marginRight: "5px"}} value={cdnURL + element.hash} disabled></input>
                                     <Btn id={selectorInputButtonID} color='teal' icon='clone' onClick={() => copyToClipboard(selectorInputID)}></Btn>
+                                    <a href={cdnURL + element.hash} target="_blank">
+                                        <Btn id={selectorInputOpenButtonID} color='blue' icon='external square alternate'></Btn>
+                                    </a>
                                     { 
-                                        element.permission_type == 'default'
+                                        /*element.permission_type == 'default'
                                     ?
                                         <Btn id={selectorInputOpenButtonID} color='blue' icon='external square alternate' onClick={() => openInBrowser(selectorInputID)}></Btn>
                                     :
-                                        <Btn id={selectorInputOpenButtonID} color='blue' icon='external square alternate' onClick={() => openInBrowser(selectorInputID)}></Btn>
+                                        <Btn id={selectorInputOpenButtonID} color='blue' icon='external square alternate' onClick={() => openInBrowser(selectorInputID)}></Btn>*/
                                     }
                                 </div>
                             </div>
