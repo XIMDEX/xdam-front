@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { setResourcesLoading } from "../../../appSlice";
 import { setQuery, setFacetsQuery, selectQuery } from "../../../slices/organizationSlice";
 import WorkspaceFacetItems from "./WorkspaceFacetItems";
-import { LANGUAGE_FACET, WORKPSACES, bookLanguages } from '../../../constants';
-
+import LOMFacetItems from "./LOMFacetItems";
+import { LANGUAGE_FACET, LOM_FACET, LOMES_FACET, WORKPSACES, bookLanguages } from '../../../constants';
 
 const FacetItem = ({name, facet, fixed, facetValues, supplementaryData, changeFacet, facetIsActive}) => {
     let auxName = name;
@@ -125,6 +125,10 @@ const FacetItems = ({ supplementaryData, fixed, facet, facetValues, currentFacet
 
     if (facet.key === WORKPSACES) {
         return <WorkspaceFacetItems facet={facet} filteredFacetValues={facetValues} fixed={fixed} isChecked={facetIsActive} changeFacet={changeFacet} supplementaryData={supplementaryData}/>
+    }
+
+    if (facet.key === LOM_FACET || facet.key === LOMES_FACET) {
+        return <LOMFacetItems facet={facet} filteredFacetValues={facetValues} fixed={fixed} isChecked={facetIsActive} changeFacet={changeFacet}/>
     }
 
     return (<>
