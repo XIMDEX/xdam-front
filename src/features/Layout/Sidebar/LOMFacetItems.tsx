@@ -39,6 +39,28 @@ const groupLOMFacetValues = (facetValues) => {
     return groupedFacetValues;
 }
 
+const LOMFacetItem = ({ facet, facetValues, facetItem, fixed, isChecked, changeFacet }) => {
+    let itemKey = facetItem.key;
+    let itemID = (facet.key + '-' + facetItem.key.o_key + '-' + facetItem.id).replace(/ /g, '--');
+
+    return (
+        <div>
+            <input
+                type={facetItem.radio ? 'radio' : 'checkbox'}
+                name={itemKey.value}
+                value={facetItem.id}
+                onChange={changeFacet(facetItem.radio)}
+                checked={isChecked(facetItem.key.o_key, facet.key)}
+                id={itemID} />
+            <label htmlFor={itemID}>
+                <span>
+                    {itemKey.value} <strong>({facetItem.count})</strong>
+                </span>
+            </label>
+        </div>
+    );
+}
+
 const LOMFacetItems = ({ facet, filteredFacetValues, fixed, isChecked, changeFacet }: Props ) => {
     let groupedFacetValues = groupLOMFacetValues(filteredFacetValues);
 
@@ -52,24 +74,22 @@ const LOMFacetItems = ({ facet, filteredFacetValues, fixed, isChecked, changeFac
                     let item = facetKey[subkey];
 
                     if (isNaN(parsed)) {
-                        // TODO
+                        return (<div>
+                            <span style={{ fontStyle: "italic" }}>{subkey}</span>
+                            {Object.keys(item).map((subitemKey) => {
+                                let subitem = item[subitemKey];
+                                return (
+                                    <LOMFacetItem
+                                        facet={facet} facetValues={groupedFacetValues} facetItem={subitem}
+                                        fixed={fixed} isChecked={isChecked} changeFacet={changeFacet}/>
+                                )
+                            })}
+                        </div>)
                     } else {
-                        let itemKey = item.key;
                         return (
-                            <div>
-                                <input
-                                    type={item.radio ? 'radio' : 'checkbox'}
-                                    name={itemKey.value}
-                                    value={item.id}
-                                    onChange={changeFacet(item.radio)}
-                                    checked={isChecked(item.id, facet.key)}
-                                    id={(facet.key + '-' + item.name + '-' + item.id).replace(/ /g, '--')} />
-                                <label htmlFor={(facet.key + '-' + item.name + '-' + item.id).replace(/ /g, '--')}>
-                                    <span>
-                                        {itemKey.value} <strong>({item.count})</strong>
-                                    </span>
-                                </label>
-                            </div>
+                            <LOMFacetItem
+                                facet={facet} facetValues={groupedFacetValues} facetItem={item}
+                                fixed={fixed} isChecked={isChecked} changeFacet={changeFacet}/>
                         )
                     }
                 })}
@@ -78,4 +98,4 @@ const LOMFacetItems = ({ facet, filteredFacetValues, fixed, isChecked, changeFac
     </>);
 }
 
-export default LOMFacetItems;
+export {LOMFacetItems};
