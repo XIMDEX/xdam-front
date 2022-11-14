@@ -139,10 +139,6 @@ const FacetItems = ({ supplementaryData, fixed, facet, facetValues, currentFacet
         return <WorkspaceFacetItems facet={facet} filteredFacetValues={facetValues} fixed={fixed} isChecked={facetIsActive} changeFacet={changeFacet} supplementaryData={supplementaryData}/>
     }
 
-    if (facet.key === LOM_FACET || facet.key === LOMES_FACET) {
-        //return <LOMFacetItems_v2 facet={facet} filteredFacetValues={facetValues} fixed={fixed} isChecked={facetIsActive} changeFacet={changeFacet}/>
-    }
-
     return (<>
         {Object.keys(facetValues).map((name, index) => (
             <li key={index} style={{ listStyleType: "none" }}>
