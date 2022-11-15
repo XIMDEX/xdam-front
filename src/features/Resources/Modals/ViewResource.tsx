@@ -123,15 +123,15 @@ export default function ViewResource( { resData } ) {
       }
 
       if (Array.isArray(d)) {
-        if(label !== 'organization') {
+        if (label !== 'organization') {
           field = <p><strong>{label}:</strong> {d.join(', ')}</p>
         }
 
-        if(label === 'types') {
+        if (label === 'types') {
           field = <p><strong>has file types:</strong> {d.join(', ')}</p>
         }
 
-        if(label === 'files' || label === 'previews') {
+        if (label === 'files' || label === 'previews') {
           field = (<>
             <strong>{label}:</strong>
             <ul>
@@ -144,6 +144,10 @@ export default function ViewResource( { resData } ) {
               ))}
             </ul>
           </>)
+        }
+
+        if (label === 'lom' || label === 'lomes') {
+          field = <></>;
         }
 
         if(label === WORKPSACES) {

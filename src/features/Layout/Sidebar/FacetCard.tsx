@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Grid, Button, IconButton, Typography, TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import _ from 'lodash'
-import { ORGANIZATION, COLLECTION, LANGUAGE_FACET, WORKPSACES } from '../../../constants';
+import { ORGANIZATION, COLLECTION, LANGUAGE_FACET, LOM_FACET, LOMES_FACET, WORKPSACES } from '../../../constants';
 import { setFacetsQuery, selectQuery } from '../../../slices/organizationSlice';
 import { setResourcesLoading } from '../../../appSlice';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -153,6 +153,14 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
             return 'Language';
         }
 
+        if (facet.key === LOM_FACET) {
+            return 'LOM';
+        }
+
+        if (facet.key === LOMES_FACET) {
+            return 'LOMES';
+        }
+
         return facet.label
     }
 
@@ -230,19 +238,19 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
 
                     {/* Facet values */}
                     <Grid item sm={12}>
-                    <ul>
-                        {organization && collection &&  (
-                                <FacetItems
-                                    supplementaryData={supplementaryData}
-                                    fixed={fixed}
-                                    facet={facet}
-                                    facetValues={facetValues}
-                                    currentFacets={currentFacets}
-                                    limit_items={LIMIT_ITEMS}
-                                    onFilterSelected={handleFilterSelected}
-                                />
-                        )}
-                    </ul>
+                        <ul>
+                            {organization && collection &&  (
+                                    <FacetItems
+                                        supplementaryData={supplementaryData}
+                                        fixed={fixed}
+                                        facet={facet}
+                                        facetValues={facetValues}
+                                        currentFacets={currentFacets}
+                                        limit_items={LIMIT_ITEMS}
+                                        onFilterSelected={handleFilterSelected}
+                                    />
+                            )}
+                        </ul>
                     </Grid>
                     { Object.keys(values).length >= LIMIT_ITEMS  && (
                         <Grid item sm={12} style={{marginBottom: 10, marginTop: -10, textAlign: 'right'}}>
