@@ -28,6 +28,8 @@ export const DOCUMENT = 'document';
 //FACETS
 export const ACTIVE_FACET = 'active';
 export const LANGUAGE_FACET = 'lang';
+export const LOM_FACET = 'lom';
+export const LOMES_FACET = 'lomes';
 
 // LOM Standars
 export const LOM_NORMAS = {

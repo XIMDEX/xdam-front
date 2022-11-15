@@ -3,13 +3,26 @@ import { useDispatch, useSelector } from "react-redux";
 import { setResourcesLoading } from "../../../appSlice";
 import { setQuery, setFacetsQuery, selectQuery } from "../../../slices/organizationSlice";
 import WorkspaceFacetItems from "./WorkspaceFacetItems";
-import { LANGUAGE_FACET, WORKPSACES, bookLanguages } from '../../../constants';
+import { LANGUAGE_FACET, LOM_FACET, LOMES_FACET, WORKPSACES, bookLanguages } from '../../../constants';
+import { LOMFacetItems } from "./LOMFacetItems";
 
 const FacetItem = ({name, facet, fixed, facetValues, supplementaryData, changeFacet, facetIsActive}) => {
     let auxName = name;
 
     if (facet.key === LANGUAGE_FACET && name in bookLanguages) {
         auxName = bookLanguages[name];
+    }
+
+    if (facet.key === LOM_FACET || facet.key === LOMES_FACET) {
+        console.log(facet);
+        auxName = facetValues[name].key.key_title;
+
+        if (facetValues[name].key.subkey !== null) {
+            auxName += (' [' + facetValues[name].key.subkey + ']');
+        }
+
+        auxName += (': ' + facetValues[name].key.value);
+        //auxName = facet[name].key.key_title;
     }
 
     return (
@@ -23,7 +36,7 @@ const FacetItem = ({name, facet, fixed, facetValues, supplementaryData, changeFa
                 id={(facet.key + '-' + name + '-' + (facetValues[name]?.id ?? '')).replace(/ /g, '--')} />
             <label htmlFor={(facet.key + '-' + name + '-' + (facetValues[name]?.id ?? '')).replace(/ /g, '--')}>
                 {
-                    facet.key === LANGUAGE_FACET
+                    facet.key === LANGUAGE_FACET || facet.key === LOM_FACET || facet.key === LOMES_FACET
                         ?   (<span>
                                 {auxName} <strong>({facetValues[name].count})</strong>
                             </span>)
