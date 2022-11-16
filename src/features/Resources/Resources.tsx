@@ -4,12 +4,12 @@ import { Dropdown, Label } from 'semantic-ui-react'
 import { makeStyles } from '@material-ui/core/styles';
 import MainService from '../../api/service';
 import { useSelector, useDispatch } from 'react-redux';
-import { setFacets, setResources, setFixedFacets, selectResourcesLoading, setResourcesLoading, setLoading, setSchemas, selectCatalogueFlag } from '../../appSlice';
+import { setFacets, setResources, setFixedFacets, selectResourcesLoading, setResourcesLoading, setLoading, setSchemas, selectCatalogueFlag, reloadCatalogue } from '../../appSlice';
 import IFacet from '../../interfaces/IFacet';
 import { selectQuery, selectFacetsQuery, setQuery } from '../../slices/organizationSlice';
 import param from '../../utils/querybuilder';
 import { Resource } from './Resource';
-import { ORGANIZATION, COLLECTION, WORKPSACES, COURSE, ACTIVE_FACET, LANGUAGE_FACET, bookLanguages, activeOptions } from '../../constants';
+import { ORGANIZATION, COLLECTION, DOCUMENT, WORKPSACES, COURSE, ACTIVE_FACET, LANGUAGE_FACET, bookLanguages, activeOptions } from '../../constants';
 import { getOrgData, getCollData } from '../../utils/dataFind';
 import Dialogs from './Modals/Dialogs';
 import Pagination from '@material-ui/lab/Pagination';
@@ -18,7 +18,7 @@ import BatchDialog from './Modals/MassiveUpload/BatchDialog';
 import store from '../../app/store';
 import { SelectableGroup, createSelectable } from 'react-selectable';
 import FacetChips from '../../components/facets/FacetChips';
-
+import { BigIntStats } from 'fs';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -93,7 +93,8 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
   const [openCreate, setOpenCreate] = React.useState(false);
   const [selectedKeys, setSelectedKeys] = React.useState([]);
   const isSelectable = false;
-  const [mainContextAction, setMainContextAction] = useState(null)
+  const [mainContextAction, setMainContextAction] = useState(null);
+  const [createResourceloading, setCreateResourceLoading] = useState(false);
 
   function toggleListMode(evt) {
     var val = evt.target.getAttribute('data-value') === '1' ? true : false;
@@ -385,6 +386,14 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
     setOpenCreate(true);
   }
 
+  const createResourceInes = async (enhanced = false) => {
+    setCreateResourceLoading(true)
+    
+    await MainService().createResourceInes(enhanced);
+    setCreateResourceLoading(false)
+    dispatch(reloadCatalogue());
+  }
+
   return (
     <Grid container justify='flex-start' className={sidebarOpen ? classes.root : classes.rootWithoutSidebar} >
       <Grid item sm={12}>
@@ -449,6 +458,35 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
               <Grid container style={{ marginTop: 3 }}>
                 <Grid item sm={12} > <FacetChips facetsQuery={facetsQuery} />  </Grid>
               </Grid>) : null
+          }
+          {
+            selectedColl?.resource_type == DOCUMENT && (
+              <Grid container  style={{ marginTop: 3 }}>
+                <Grid item sm={12} className={classes.actionBtns}>
+                  <Btn
+                    color='teal'
+                    style={{marginRight: 27}}
+                    variant='contained'
+                    disabled={createResourceloading}
+                    onClick={() => createResourceInes(true)} 
+                  >
+                    GET Enhanced
+                  </Btn>
+                  {false && (
+                    <Btn
+                      color='teal' 
+                      style={{marginRight: 27}} 
+                      variant='contained'
+                      disabled={createResourceloading}
+                      onClick={() => createResourceInes(false)} 
+                      // className={classes.clearAllFilters}
+                    >
+                      GET
+                    </Btn>
+                  )}
+                </Grid>
+              </Grid>
+            )
           }
           {
             localResources && localResources.length > 0 ? <ResCont /> : (resourcesLoading ? '' : <ResourcesNotFound />)
