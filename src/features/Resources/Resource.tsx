@@ -10,7 +10,7 @@ import { setUser, reloadCatalogue } from "../../appSlice";
 import Dialogs from "./Modals/Dialogs";
 import { render } from "../../utils/render";
 import { Icon } from 'semantic-ui-react'
-import { MULTIMEDIA } from "../../constants";
+import { MULTIMEDIA, COURSE } from "../../constants";
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -45,7 +45,8 @@ export function Resource( { data, listMode, resourceType } ) {
     const [action, setAction] = useState(null)
     const [dialogOpen, setDialogOpen] = useState(null)
     const [blured, setBlur] = useState(false)
-    const [focusedDom, setFocusedDom] = useState(null)
+    const [focusedDom, setFocusedDom] = useState(null);
+    console.log(res);
 
     const preview = render(data, 'raw')
 
@@ -130,8 +131,7 @@ export function Resource( { data, listMode, resourceType } ) {
         e.stopPropagation();
         let yes = window.confirm('sure?');
         if (yes) {
-            var kakumaLoginNeeded = process.env.REACT_APP_KAKUMA_LOGIN_ENABLED ?? false;
-            if (!is_logged_to_kakuma() && kakumaLoginNeeded !== false) {
+            if (!is_logged_to_kakuma() && res.type === COURSE) {
                 let kakumaLogin = await login_kakuma();
                 MainService().setToken('JWT_Kakuma', kakumaLogin);
             }

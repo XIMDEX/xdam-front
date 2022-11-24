@@ -45,10 +45,11 @@ export function Search( Props ) {
   const collection = useSelector(selectCollection);
 
   const onEnter = (e) => {
-    if(e.key === 'Enter') {
+    if (e.key === 'Enter') {
       goSearch()
     }
   }
+
   const goSearch = () => {  
       dispatch(setResourcesLoading(true))
       let newQuery = {
@@ -64,9 +65,7 @@ export function Search( Props ) {
     setSearch(evt.target.value)
   }
 
-  
   const switchCollection = async (e, data) => {
-    console.log(data);
     dispatch(setResourcesLoading(true))
     const cid = data.value
     let newQuery = {
@@ -86,7 +85,6 @@ export function Search( Props ) {
     text: index,
     value: coll.id,
   }))
-
 
   return (
     <div className={classes.root}>
