@@ -131,7 +131,8 @@ export function Resource( { data, listMode, resourceType } ) {
         e.stopPropagation();
         let yes = window.confirm('sure?');
         if (yes) {
-            if (!is_logged_to_kakuma() && res.type === COURSE) {
+            let typeOK = (res?.type ?? '');
+            if (!is_logged_to_kakuma() && typeOK === COURSE) {
                 let kakumaLogin = await login_kakuma();
                 MainService().setToken('JWT_Kakuma', kakumaLogin);
             }
