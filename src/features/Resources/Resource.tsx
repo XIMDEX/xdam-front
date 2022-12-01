@@ -131,8 +131,7 @@ export function Resource( { data, listMode, resourceType } ) {
         e.stopPropagation();
         let yes = window.confirm('sure?');
         if (yes) {
-            var kakumaLoginNeeded = process.env.REACT_APP_KAKUMA_LOGIN_ENABLED ?? false;
-            if (!is_logged_to_kakuma() && kakumaLoginNeeded !== false) {
+            if (!is_logged_to_kakuma()) {
                 let kakumaLogin = await login_kakuma();
                 MainService().setToken('JWT_Kakuma', kakumaLogin);
             }
