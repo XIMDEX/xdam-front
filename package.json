@@ -25,6 +25,7 @@
     "@types/react-redux": "^7.1.16",
     "@types/react-router-dom": "^5.1.7",
     "axios": "^0.19.2",
+    "chromedriver": "^107.0.3",
     "fs-react": "0.0.4",
     "lodash": "^4.17.15",
     "node-sass": "^5.0.0",
@@ -76,5 +77,20 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.2",
+    "@babel/plugin-transform-modules-commonjs": "^7.19.6",
+    "@babel/register": "^7.18.9",
+    "babel-plugin-inline-react-svg": "^2.0.1",
+    "babel-preset-react-app-babel-7": "^4.0.2-0",
+    "chai": "^4.3.7",
+    "chai-enzyme": "^1.0.0-beta.1",
+    "cheerio": "^1.0.0-rc.12",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.7",
+    "ignore-styles": "^5.0.1",
+    "mocha": "^10.1.0",
+    "selenium-webdriver": "^4.6.1"
   }
 }
