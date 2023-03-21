@@ -3,8 +3,9 @@ import 'semantic-ui-css/semantic.min.css'
 import './theme/main.scss';
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { setUser, selectUser, setLoading, selectLoading, setResourcesLoading, selectReloadApp } from './appSlice';
-import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
+import { setUser, selectUser, setLoading, selectLoading, setResourcesLoading, selectReloadApp, setLomSchema} from './appSlice';
+import { BrowserRouter as Router, Switch, Route, Redirect, useLocation } from "react-router-dom";
+import { LomForm } from './features/Resources/LOM/LomForm';
 import { Login } from './features/Login/Login';
 import { Header } from './features/Layout/Header/Header';
 import { Loading } from './features/Loading/Loading';
@@ -37,6 +38,8 @@ const useStyles = makeStyles((theme) => {
 });
 
 function App() {
+  const location = useLocation();
+  const searchParams =  new URLSearchParams(location?.search);
   const classes = useStyles();
   const user = useSelector(selectUser);
   const reloadApp = useSelector(selectReloadApp);
@@ -50,6 +53,7 @@ function App() {
   const [initialOrganization, setInitialOrganization] = useState(null);
   const [initialCollection, setInitialCollection] = useState(null);
   const [localUser, setLocalUser] = useState(null);
+  const [limitedLomUseData, setLimitedLomUseData] = useState(undefined);
   const [loading, setLoading] = useState(true);
 
   function clearAllFilters()
@@ -74,7 +78,10 @@ function App() {
 
   useEffect( () => {
     const initUser = async () => {
-      if (mainService.getToken()) {
+      if (location.pathname === '/lom' && searchParams.get('courseId')) {
+        setLimitedLomUseData({});
+        fetchLimitedLomData();
+      } else if (mainService.getToken()) {
         if(!localUser) {
           let fetchedUser = await MainService().getUser();
           console.log(fetchedUser);
@@ -105,7 +112,41 @@ function App() {
     
   }, [reloadApp, localUser, collection_id, organization_id, facetsQuery, initialOrganization, initialCollection]);
 
-  if (localUser) {
+  const fetchLimitedLomData = async () => {
+    let lomSchema = await MainService().getLomSchema();
+
+    if (lomSchema && !lomSchema.error) {
+      dispatch(setLomSchema(lomSchema)); 
+      fetchCourseData(searchParams.get('courseId'));
+    } else {
+      setLimitedLomUseData(undefined);
+    };
+  };
+
+  const fetchCourseData = (courseId: string) => {
+    setTimeout(async () => {
+      let courseData = await MainService().getResource(courseId);
+      setLimitedLomUseData(courseData?.data?.description || undefined);
+    }, 1500);
+  };
+
+  if (limitedLomUseData) {
+    return (
+      <Container maxWidth='md' disableGutters>
+        {Object.keys(limitedLomUseData)?.length === 0 ? (
+          <Loading text="Loading course data..."/>
+        ) : (
+          <>
+            <h1 style={{padding: '0.5em', marginTop: '0.5em', textAlign: 'center', backgroundColor: '#fff', width: 'calc(100% - 2rem)'}}>
+              Limited use (LOM only)
+            </h1>
+            <LomForm data={limitedLomUseData} standard='lom' />
+            <div style={{minHeight: '2.5em'}}/>
+          </>
+        )} 
+      </Container>
+    )
+  } else if (localUser) {
     return (
       <Container maxWidth='xl' disableGutters>
         {/* {

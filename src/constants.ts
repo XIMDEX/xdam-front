@@ -43,6 +43,13 @@ export const XTAGS =  {
   typeId: 1
 }
 
+export const COOKIE_NAME = 
+  process.env?.REACT_APP_KAKUMA_URL?.includes('kakumav1.pre-cloud') 
+    ? 'USERDATA_SEK_PRE' 
+    : process.env?.REACT_APP_KAKUMA_URL?.includes('kakumav1.cloud') 
+    ? 'USERDATA_SEK'
+    : null;
+
 export const NUM_SUGGESTIONS = 5;
 
 export const PATH_TAXONS_DATA = '9.formData.Taxon Path';

@@ -1,7 +1,7 @@
 import api from './urlMapper'
 import { Cookies } from 'react-cookie';
 import * as ponyfill from 'web-streams-polyfill/ponyfill';
-import { XTAGS } from '../constants';
+import { XTAGS, COOKIE_NAME } from '../constants';
 
 const streamSaver = require('streamsaver')
 
@@ -34,7 +34,11 @@ class AppService {
 
     getToken(cookie_id = 'JWT')
     {
-      return this.cookies.get(cookie_id) ? 'Bearer ' + this.cookies.get(cookie_id) : null
+      return this.cookies.get(cookie_id) 
+        ? 'Bearer ' + this.cookies.get(cookie_id) 
+        : (COOKIE_NAME && this.cookies.get(COOKIE_NAME))
+        ? 'Bearer ' + this.cookies.get(COOKIE_NAME).access_token
+        : null
     }
 
     setToken(name, value)
