@@ -44,9 +44,9 @@ export const XTAGS =  {
 }
 
 export const COOKIE_NAME = 
-  process.env?.REACT_APP_KAKUMA?.includes('kakumav1.pre-cloud') 
+  process.env?.REACT_APP_KAKUMA_URL?.includes('kakumav1.pre-cloud') 
     ? 'USERDATA_SEK_PRE' 
-    : process.env?.REACT_APP_KAKUMA?.includes('kakumav1.cloud') 
+    : process.env?.REACT_APP_KAKUMA_URL?.includes('kakumav1.cloud') 
     ? 'USERDATA_SEK'
     : null;
 
