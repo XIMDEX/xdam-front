@@ -80,8 +80,7 @@ function App() {
     const initUser = async () => {
       if (location.pathname === '/lom' && searchParams.get('courseId')) {
         setLimitedLomUseData({});
-        fetchLomSchema();
-        fetchCourseData(searchParams.get('courseId'));
+        fetchLimitedLomData();
       } else if (mainService.getToken()) {
         if(!localUser) {
           let fetchedUser = await MainService().getUser();
@@ -113,17 +112,23 @@ function App() {
     
   }, [reloadApp, localUser, collection_id, organization_id, facetsQuery, initialOrganization, initialCollection]);
 
-  const fetchLomSchema = async () => {
+  const fetchLimitedLomData = async () => {
     let lomSchema = await MainService().getLomSchema();
-    dispatch(setLomSchema(lomSchema));    
+
+    if (lomSchema && !lomSchema.error) {
+      dispatch(setLomSchema(lomSchema)); 
+      fetchCourseData(searchParams.get('courseId'));
+    } else {
+      setLimitedLomUseData(undefined);
+    };
   };
 
   const fetchCourseData = (courseId: string) => {
     setTimeout(async () => {
       let courseData = await MainService().getResource(courseId);
       setLimitedLomUseData(courseData?.data?.description || undefined);
-    }, 1000);
-  }
+    }, 1500);
+  };
 
   if (limitedLomUseData) {
     return (
