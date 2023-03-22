@@ -20,6 +20,7 @@ import { Resources } from './features/Resources/Resources';
 import { selectCollection, selectOrganization, selectFacetsQuery, setFacetsQuery, setOrganization, setQuery, selectQuery } from './slices/organizationSlice';
 import _ from 'lodash';
 import { Icon } from 'semantic-ui-react';
+import { useCookies } from 'react-cookie';
 
 
 const useStyles = makeStyles((theme) => {
@@ -38,6 +39,7 @@ const useStyles = makeStyles((theme) => {
 });
 
 function App() {
+  const [cookies, setCookie] = useCookies(['JWT']);
   const location = useLocation();
   const searchParams =  new URLSearchParams(location?.search);
   const classes = useStyles();
@@ -75,6 +77,17 @@ function App() {
       var toggle = !sidebarOpen;
       setSidebarOpen(toggle)
   }
+
+  useEffect(() => {
+    const handleMessageParent = (message) => {
+      if (location.pathname === '/lom' && message?.data && message?.data?.auth) {
+        setCookie("JWT", message.data.auth);
+      };      
+    };
+    window.addEventListener('message', handleMessageParent);
+
+    return () => window.removeEventListener('message', handleMessageParent);
+  },[]);
 
   useEffect( () => {
     const initUser = async () => {
@@ -126,23 +139,17 @@ function App() {
   const fetchCourseData = (courseId: string) => {
     setTimeout(async () => {
       let courseData = await MainService().getResource(courseId);
-      setLimitedLomUseData(courseData?.data?.description || undefined);
+      setLimitedLomUseData(courseData?.data?.description ? courseData : undefined);
     }, 1500);
   };
 
-  if (limitedLomUseData) {
+  if (location.pathname === '/lom' && limitedLomUseData) {
     return (
       <Container maxWidth='md' disableGutters>
         {Object.keys(limitedLomUseData)?.length === 0 ? (
           <Loading text="Loading course data..."/>
         ) : (
-          <>
-            <h1 style={{padding: '0.5em', marginTop: '0.5em', textAlign: 'center', backgroundColor: '#fff', width: 'calc(100% - 2rem)'}}>
-              Limited use (LOM only)
-            </h1>
-            <LomForm data={limitedLomUseData} standard='lom' />
-            <div style={{minHeight: '2.5em'}}/>
-          </>
+          <LomForm data={limitedLomUseData} standard='lom' limitedUse={true} />
         )} 
       </Container>
     )
