@@ -81,7 +81,7 @@ function App() {
   useEffect(() => {
     const handleMessageParent = (message) => {
       if (location.pathname === '/lom' && message?.data && message?.data?.auth) {
-        setCookie("JWT", message.data.auth);
+        setCookie("JWT", message.data.auth, {maxAge: 86400});
       };      
     };
     window.addEventListener('message', handleMessageParent);
