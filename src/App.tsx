@@ -81,7 +81,9 @@ function App() {
   useEffect(() => {
     const handleMessageParent = (message) => {
       if (location.pathname === '/lom' && message?.data && message?.data?.auth) {
-        setCookie("JWT", message.data.auth);
+        setCookie("JWT", message.data.auth, {maxAge: 86400});
+        setLimitedLomUseData({});
+        fetchLimitedLomData();
       };      
     };
     window.addEventListener('message', handleMessageParent);
@@ -92,8 +94,7 @@ function App() {
   useEffect( () => {
     const initUser = async () => {
       if (location.pathname === '/lom' && searchParams.get('courseId')) {
-        setLimitedLomUseData({});
-        fetchLimitedLomData();
+        return
       } else if (mainService.getToken()) {
         if(!localUser) {
           let fetchedUser = await MainService().getUser();
@@ -133,6 +134,7 @@ function App() {
       fetchCourseData(searchParams.get('courseId'));
     } else {
       setLimitedLomUseData(undefined);
+      setLoading(false);
     };
   };
 
@@ -140,6 +142,7 @@ function App() {
     setTimeout(async () => {
       let courseData = await MainService().getResource(courseId);
       setLimitedLomUseData(courseData?.data?.description ? courseData : undefined);
+      setLoading(false)
     }, 1500);
   };
 
