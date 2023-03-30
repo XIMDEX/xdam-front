@@ -7,13 +7,16 @@ const styles = {
         textTransform: "capitalize"
     },
     item: {
-        textTransform: "capitalize"
+        // textTransform: "capitalize"
     },
 }
 
 export const ResourceLanguage = (props) => {
 
-    const handleClick = (value) => props.onChange(value);
+    const handleClick = (value) => {
+        props.onChange(value)
+    };
+    const enumLanguages = props.options.enum
 
     return (
         <div className='forms-textField'>
@@ -22,21 +25,21 @@ export const ResourceLanguage = (props) => {
                     {props.options.label} {props.required ? '*' : ''}
                 </label>
                 <Dropdown
-                    placeholder={props.value && bookLanguages[props.value] ? bookLanguages[props.value] : "Language"}
+                    placeholder={props.value && enumLanguages[props.value] ? enumLanguages[props.value] : "Language"}
                     fluid
                     selection
                     selectOnBlur={false}
-                    value={bookLanguages[props.value]}
+                    value={enumLanguages[props.value]}
                     style={styles.dropdown}
                 >
                     <Dropdown.Menu>
                         {props.options.opt.map((option: string) => (
-                            <Dropdown.Item 
+                            <Dropdown.Item
                                 key={option}
                                 value={option}
                                 style={styles.item}
                                 onClick={(_, data) => handleClick(data.value)}>
-                                {bookLanguages[option]}
+                                {enumLanguages[option]}
                             </Dropdown.Item>
                         ))}
                     </Dropdown.Menu>

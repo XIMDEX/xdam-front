@@ -15,7 +15,7 @@ export const InputText = (props) => {
 
 const clickForOutline = (e) => {
     const target = e.target as HTMLTextAreaElement;
-    target.click(); 
+    target.click();
     e.stopPropagation();
 }
 
@@ -24,10 +24,10 @@ export const InputTextArea = (props) => {
         <div className={`forms-textField`}>
             <section>
                 <label htmlFor={props.id}>{props.label} {props.required ? '*' : ''}</label>
-                <textarea 
-                    id={props.id} 
-                    defaultValue={props.value} 
-                    onClick={clickForOutline} 
+                <textarea
+                    id={props.id}
+                    defaultValue={props.value}
+                    onClick={clickForOutline}
                     onChange={(event) => props.onChange(event.target.value)}
                     rows={4}
                 />
@@ -39,7 +39,7 @@ export const InputTextArea = (props) => {
 export const CustomToggle = (props) => {
     return (
         <div className={`forms-textField`}>
-            <section>
+            <section style={{...(props.style?.container ?? {})}}>
                 <label style={{display: 'block', marginBottom: 9}} htmlFor={props.id}>{props.label} {props.required ? '*' : ''}</label>
                 <Radio toggle defaultChecked={props.value} onClick={(event, data) => {props.onChange(data.checked)}}/>
             </section>
@@ -63,7 +63,7 @@ export const CustomDropdown = (props) => {
         <div className={`forms-textField `}>
             <section>
                 <label htmlFor={props.id}>{props.label} {props.required ? '*' : ''}</label>
-                <Dropdown 
+                <Dropdown
                     placeholder={props.value}
                     fluid
                     selection
@@ -98,14 +98,14 @@ export const CustomBookNumberOfUnitSelector = (props) => {
         if (!props.unavaliableValues) {
             return false;
         }
-        
+
         return props.unavaliableValues.includes(parseInt(value)) && props.value !== value;
     }
 
     return (
         <div className={`forms-textField `}>
             <label htmlFor={props.id}>{props.label} {props.required ? '*' : ''}</label>
-            <Dropdown 
+            <Dropdown
                 fluid
                 selection
                 selectOnBlur={false}

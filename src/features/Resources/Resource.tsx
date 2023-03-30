@@ -39,9 +39,9 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export function Resource( { data, listMode, resourceType } ) { 
+export function Resource( { data, listMode, resourceType } ) {
     const classes = useStyles();
-    const dispatch = useDispatch(); 
+    const dispatch = useDispatch();
     const [res, setRes] = useState(null)
     const [action, setAction] = useState(null)
     const [dialogOpen, setDialogOpen] = useState(null)
@@ -61,7 +61,7 @@ export function Resource( { data, listMode, resourceType } ) {
         } else {
             console.warn('Name must be faceted')
             return 'NO NAME'
-        }   
+        }
     }
 
     function edit (e) {
@@ -129,29 +129,29 @@ export function Resource( { data, listMode, resourceType } ) {
     async function remove (e) {
         setBlur(true)
         e.stopPropagation();
-        let yes = window.confirm('sure?');
+        let yes = window.confirm('This resource will be permanently deleted, are you sure?');
         if (yes) {
-            if (!is_logged_to_kakuma()) {
-                let kakumaLogin = await login_kakuma();
-                MainService().setToken('JWT_Kakuma', kakumaLogin);
-            }
-
-            let enrollmentsRes = await get_course_enrollments_endpoint(data);
-            if (enrollmentsRes > 0) {
-                let enrollmentsYes = window.confirm(`There are ${enrollmentsRes} users enrolled in this course. Are you sure you want to remove it?`);
-                if (enrollmentsYes) {
-                    let removeEnrollmentsRes = await remove_course_enrollments_endpoint(data);
-                    if (removeEnrollmentsRes) {
-                        let res = await remove_endpoint(data);
+            if (resourceType === 'course') {
+                if (!is_logged_to_kakuma()) {
+                    let kakumaLogin = await login_kakuma();
+                    MainService().setToken('JWT_Kakuma', kakumaLogin);
+                }
+                let enrollmentsRes = await get_course_enrollments_endpoint(data);
+                if (enrollmentsRes > 0) {
+                    let enrollmentsYes = window.confirm(`There are ${enrollmentsRes} users enrolled in this course. Are you sure you want to remove it?`);
+                    if (enrollmentsYes) {
+                        let removeEnrollmentsRes = await remove_course_enrollments_endpoint(data);
+                        if (!removeEnrollmentsRes) {
+                            alert("Error unenrolling users")
+                            setBlur(false);
+                            return
+                        }
                     }
                 }
-            } else {
-                let res = await remove_endpoint(data);
             }
-            setBlur(false)
-        } else {
-            setBlur(false)
+            await remove_endpoint(data);
         }
+        setBlur(false)
     }
 
     const RCard = () => {
@@ -164,37 +164,37 @@ export function Resource( { data, listMode, resourceType } ) {
                             src={preview}
                             alt='lazy_img'
                             grid
-                        /> 
+                        />
                     </div>
-                    <div className="dam-preview-title" title={data.name || data.data.description.course_title}> 
+                    <div className="dam-preview-title" title={data.name || data.data.description.course_title}>
                         <strong>{data.name || data.data.description.course_title || 'no name set'} </strong>
                     </div>
                 </div>
                 <div className="dam-item-actions ">
-                    
+
                     <button className="xdam-btn-primary bg-primary group" title="Edit" onClick={edit}>
                         <Icon name='edit' />
                     </button>
-                    
+
                     <button className="xdam-btn-primary bg-primary group" title="Delete"  onClick={remove}>
                         <Icon name='trash' />
                     </button>
                 </div>
             </div>
         )
-    } 
+    }
 
     const RList = () => {
         return (
-            <div className={`${classes.root} ${blured ? classes.blur : null}`} onClick={itemView} >    
-                <ListResource 
-                    style={{pointerEvents: 'none'}} 
-                    truncate={truncate} 
-                    data={data} 
-                    preview={preview} 
-                    edit={edit} 
-                    remove={remove} 
-                    itemView={itemView} 
+            <div className={`${classes.root} ${blured ? classes.blur : null}`} onClick={itemView} >
+                <ListResource
+                    style={{pointerEvents: 'none'}}
+                    truncate={truncate}
+                    data={data}
+                    preview={preview}
+                    edit={edit}
+                    remove={remove}
+                    itemView={itemView}
                 />
             </div>
         )
@@ -207,15 +207,15 @@ export function Resource( { data, listMode, resourceType } ) {
             }
             {
                 action && res ? (
-                    <Dialogs 
-                        resourceType={resourceType} 
-                        action={action}                        
-                        dialogOpen={dialogOpen} 
-                        resourceData={res} 
+                    <Dialogs
+                        resourceType={resourceType}
+                        action={action}
+                        dialogOpen={dialogOpen}
+                        resourceData={res}
                         setDialogOpen={setDialogOpen}
                     />
                 ) : null
             }
         </>
-    );   
+    );
 }

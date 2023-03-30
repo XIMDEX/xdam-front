@@ -9,7 +9,7 @@ import IFacet from '../../interfaces/IFacet';
 import { selectQuery, selectFacetsQuery, setQuery } from '../../slices/organizationSlice';
 import param from '../../utils/querybuilder';
 import { Resource } from './Resource';
-import { ORGANIZATION, COLLECTION, WORKPSACES, COURSE, ACTIVE_FACET, LANGUAGE_FACET, bookLanguages, activeOptions } from '../../constants';
+import { ORGANIZATION, COLLECTION, WORKSPACES, COURSE, ACTIVE_FACET, LANGUAGE_FACET, bookLanguages, activeOptions } from '../../constants';
 import { getOrgData, getCollData } from '../../utils/dataFind';
 import Dialogs from './Modals/Dialogs';
 import Pagination from '@material-ui/lab/Pagination';
@@ -151,13 +151,6 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
           id: cid.id
         }
       })
-
-      // org.workspaces.forEach((wsp) => {
-      //   wspFacet[wsp.name] = {
-      //     count: wsp.wsp_resource_count,
-      //     id: wsp.id
-      //   }
-      // })
     }
 
     let OFF: IFacet = {
@@ -172,11 +165,6 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
       values: collectionsFacets
     }
 
-    // let WFF : IFacet =  {
-    //   key: WORKPSACES,
-    //   label: 'Workspaces',
-    //   values: wspFacet
-    // }
     dispatch(setFixedFacets([OFF, CFF]))
   }
 
@@ -317,7 +305,7 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
 
 
     //const R = createSelectable(Resource);
-    
+
     // const ContainerGridSelectable = localResources.map((item: any, key) => {
     //   let selected = selectedKeys.indexOf(item.id) > -1;
     //   return (
@@ -327,13 +315,13 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
     //       >
     //         {/* <Resource data={item} resourceType={selectedColl.resource_type} listMode={listMode} /> */}
     //       </R>
-          
+
     //     </Grid>
     //   )
     // })
 
 
-    const ContainerGrid = Array.isArray(localResources) 
+    const ContainerGrid = Array.isArray(localResources)
       ? localResources.map((item: any, key) => {
           return (
             <Grid key={key} item sm={12} md={3} lg={2} xl={1} >

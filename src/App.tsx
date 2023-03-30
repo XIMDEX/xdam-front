@@ -3,15 +3,13 @@ import 'semantic-ui-css/semantic.min.css'
 import './theme/main.scss';
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { setUser, selectUser, setLoading, selectLoading, setResourcesLoading, selectReloadApp, setLomSchema} from './appSlice';
+import { setUser, selectUser, setResourcesLoading, selectReloadApp, setLomSchema} from './appSlice';
 import { BrowserRouter as Router, Switch, Route, Redirect, useLocation } from "react-router-dom";
 import { LomForm } from './features/Resources/LOM/LomForm';
 import { Login } from './features/Login/Login';
 import { Header } from './features/Layout/Header/Header';
 import { Loading } from './features/Loading/Loading';
 import Container from '@material-ui/core/Container';
-import { ThemeProvider } from '@material-ui/core/styles';
-import theme from './theme'
 import MainService from './api/service'
 import { Grid, Button, LinearProgress } from '@material-ui/core';
 import Sidebar from './features/Layout/Sidebar/Sidebar';
@@ -21,11 +19,12 @@ import { selectCollection, selectOrganization, selectFacetsQuery, setFacetsQuery
 import _ from 'lodash';
 import { Icon } from 'semantic-ui-react';
 import { useCookies } from 'react-cookie';
+import XthemeProvider from './providers/XthemeProvider';
 
 
 const useStyles = makeStyles((theme) => {
   let docHeight = document.body.scrollHeight
-  
+
   return {
     '#root': {
       height: docHeight,
@@ -33,7 +32,9 @@ const useStyles = makeStyles((theme) => {
     clearAllFilters: {
       position: 'absolute',
       top: 12,
-      left: 180
+      left: 160,
+      color: 'teal',
+      borderColor: 'teal'
     }
   }
 });
@@ -69,9 +70,9 @@ function App() {
     dispatch(setQuery(newQuery));
 
     dispatch(setResourcesLoading(true))
-    dispatch(setFacetsQuery({}))  
+    dispatch(setFacetsQuery({}))
   }
-  
+
   function toggleSidebar()
   {
       var toggle = !sidebarOpen;
@@ -84,7 +85,7 @@ function App() {
         setCookie("JWT", message.data.auth, {maxAge: 86400});
         setLimitedLomUseData({});
         fetchLimitedLomData();
-      };      
+      };
     };
     window.addEventListener('message', handleMessageParent);
 
@@ -113,7 +114,7 @@ function App() {
 
     const prepareData = () => {
       if(localUser && !organization_id && !collection_id) {
-        setInitialOrganization(localUser.data.selected_org_data.id) 
+        setInitialOrganization(localUser.data.selected_org_data.id)
         setInitialCollection(localUser.data.selected_org_data.collections[0].id)
         dispatch(setOrganization({oid: initialOrganization, cid: initialCollection}))
         localStorage.setItem('lomes_loaded', '0');
@@ -123,14 +124,14 @@ function App() {
 
     initUser();
     prepareData();
-    
+
   }, [reloadApp, localUser, collection_id, organization_id, facetsQuery, initialOrganization, initialCollection]);
 
   const fetchLimitedLomData = async () => {
     let lomSchema = await MainService().getLomSchema();
 
     if (lomSchema && !lomSchema.error) {
-      dispatch(setLomSchema(lomSchema)); 
+      dispatch(setLomSchema(lomSchema));
       fetchCourseData(searchParams.get('courseId'));
     } else {
       setLimitedLomUseData(undefined);
@@ -152,8 +153,14 @@ function App() {
         {Object.keys(limitedLomUseData)?.length === 0 ? (
           <Loading text="Loading course data..."/>
         ) : (
-          <LomForm data={limitedLomUseData} standard='lom' limitedUse={true} />
-        )} 
+          <>
+            <h1 style={{padding: '0.5em', marginTop: '0.5em', textAlign: 'center', backgroundColor: '#fff', width: 'calc(100% - 2rem)'}}>
+              Limited use (LOM only)
+            </h1>
+            <LomForm data={limitedLomUseData} standard='lom' />
+            <div style={{minHeight: '2.5em'}}/>
+          </>
+        )}
       </Container>
     )
   } else if (localUser) {
@@ -167,19 +174,19 @@ function App() {
         {
           !sidebarOpen ? (
             <div>
-              
+
                 <button onClick={toggleSidebar} className='xdam-btn-secondary bg-secondary btn-round-right btn-half-square toggleFacetsOpen' >
                   <Icon name='angle right'/>
                 </button>
-              
+
             </div>
           ) : null
         }
-        <ThemeProvider theme={theme}>
-        <Router>
+        <XthemeProvider>
+            <Router>
           <Redirect to={{pathname: "/home"}}/>
             {loading ? (<Loading />) : null}
-            <Grid container>            
+            <Grid container>
               <Grid item sm={12} className='main-header'>
                 {
                   (organization_id && collection_id) ? (
@@ -204,12 +211,12 @@ function App() {
                       Clear all filters
                     </Button>
                   ) : null
-                } 
+                }
                 {
                   (organization_id && collection_id) ? (
-                    <Sidebar 
-                      collection={collection_id} 
-                      organization={organization_id} 
+                    <Sidebar
+                      collection={collection_id}
+                      organization={organization_id}
                     />
                   ) : ''
                 }
@@ -217,13 +224,13 @@ function App() {
               <div style={{marginTop: 4}} className={!sidebarOpen ? 'RCFullWidth' : 'RCWithSidear'} id='main-r-c'>
                 <Switch>
                   <Route path="/home">
-                    
+
                     <LinearProgress id='circular-progress' className={'dnone'}></LinearProgress>
                     {
                       (organization_id && collection_id) ? (
-                        <Resources 
-                          sidebarOpen={sidebarOpen} 
-                          collection={collection_id} 
+                        <Resources
+                          sidebarOpen={sidebarOpen}
+                          collection={collection_id}
                           organization={organization_id}
                           _user={user}
                         />
@@ -234,20 +241,19 @@ function App() {
                 </Switch>
               </div>
             </div>
-          </Router>
-        </ThemeProvider>
+            </Router>
+        </XthemeProvider>
       </Container>
-  );  
+  );
   } else {
     return (
-      <ThemeProvider theme={theme}>
+      <XthemeProvider>
           <Router>
-            {loading ? (<Loading text="Loading user data..."/>) : (<Login />)}            
+            {loading ? (<Loading text="Loading user data..."/>) : (<Login />)}
           </Router>
-      </ThemeProvider>        
+      </XthemeProvider>
     )
-  }  
+  }
 }
 
 export default App;
-

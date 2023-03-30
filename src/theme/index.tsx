@@ -28,7 +28,11 @@ const theme = createMuiTheme({
     },
     warning: {
       main: '#FEF972'
-    }
+    },
+    background: {
+      default: '#eee',
+      paper: "#ffffff",
+    },
   },
   typography: {
     fontFamily: 'Roboto, Raleway, Arial',

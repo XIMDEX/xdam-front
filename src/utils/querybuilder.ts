@@ -21,11 +21,11 @@ var param = function (a) {
                     buildParams(prefix + '[' + key + ']', obj[key]);
                 }
             } else {
-                add(prefix, obj);
+                add(prefix, encodeURIComponent(obj));
             }
         } else if (Array.isArray(obj)) {
             for (i = 0, len = obj.length; i < len; i++) {
-                add(obj[i].name, obj[i].value);
+                add(obj[i].name, encodeURIComponent(obj[i].value));
             }
         } else {
             for (key in obj) {

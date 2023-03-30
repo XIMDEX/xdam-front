@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch  } from 'react-redux';
 import { Grid, Button, IconButton, Typography, TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import _ from 'lodash'
-import { ORGANIZATION, COLLECTION, LANGUAGE_FACET, WORKPSACES } from '../../../constants';
-import { setFacetsQuery, selectQuery } from '../../../slices/organizationSlice';
+import { ORGANIZATION, COLLECTION  } from '../../../constants';
+import { setFacetsQuery  } from '../../../slices/organizationSlice';
 import { setResourcesLoading } from '../../../appSlice';
 import ClearIcon from '@material-ui/icons/Clear';
 import { Icon } from 'semantic-ui-react';
 import EFacetNameMapping from './EFacetNameMapping';
 import FacetItems from './FacetItems';
 import useSupplementaryData from '../../../hooks/useSupplementaryData';
+import AddItemFacet from './AddOrEditFacetItem';
+import MainService from '../../../api/service';
+import PostAddRounded from '@material-ui/icons/PostAddRounded';
 
 const LIMIT_ITEMS = 10;
 
@@ -149,10 +152,6 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
             return EFacetNameMapping[facet.key];
         }
 
-        if (facet.key === LANGUAGE_FACET) {
-            return 'Language';
-        }
-
         return facet.label
     }
 
@@ -172,7 +171,7 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
 
     return (
 
-        <Grid container className={`${classes.sidebarRoot} ${cardOpen ? 'cardOpen' : null} facetCard facets-context`} >
+        <Grid container className={`${classes.sidebarRoot} ${cardOpen ? 'cardOpen' : ''} facetCard facets-context`} >
                 {/* Errors */}
                 <Grid item sm={12}>
                     <Errors />
@@ -183,7 +182,7 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
                         <Button aria-label="facet-title"
                             onClick={toggleCard}
                             fullWidth
-                            endIcon={cardOpen ? (<Icon name='minus' size='small'/>) : (<Icon name='plus' size='small' />)}
+                            endIcon={cardOpen ? (<Icon name='chevron up' size='large'/>) : (<Icon name='chevron down' size='large' />)}
                         >
                             <Grid container>
                                 <Grid item sm={12}>
@@ -192,21 +191,26 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
                                     </Typography>
                                 </Grid>
                             </Grid>
+                            { facet.canAdd && facet.route && (
+                                <AddItemFacet
+                                    facet={facet}
+                                    cardOpen={cardOpen}
+                                    triggerIcon={(<PostAddRounded htmlColor={cardOpen ? 'white' : 'gray'}/>)}
+                                    requestOpts={{method: 'POST', headers: MainService().getHttpOptions().headers}}
+                                />
+                            )}
                         </Button>
                     </Grid>
-                    {
-                        !fixed && currentFacets.hasOwnProperty(facet.key) ? (
-                            <Grid item sm={1}>
-                                <IconButton color='primary' size='small' onClick={clearFilter} className={classes.clearIcon}>
-                                    <ClearIcon color='secondary'/>
-                                </IconButton>
-                            </Grid>
-                        ) : null
-                    }
+                    {!fixed && currentFacets.hasOwnProperty(facet.key) && (
+                        <Grid item sm={1}>
+                            <IconButton color='primary' size='small' onClick={clearFilter} className={classes.clearIcon}>
+                                <ClearIcon color='secondary'/>
+                            </IconButton>
+                        </Grid>
+                    )}
                 </Grid>
                 <div className={cardOpen ? classes.cardFacet : classes.hidden}>
-                    {
-                        Object.keys(facetValues).length > LIMIT_ITEMS && search === '' ? (
+                    {Object.keys(facetValues).length > LIMIT_ITEMS && search === '' ? (
                         // true ? (
                             <Grid item sm={12}>
                                 <TextField
@@ -256,5 +260,3 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
 
     );
 }
-
-
