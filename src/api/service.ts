@@ -48,6 +48,11 @@ class AppService {
       });
     }
 
+    getHttpOptions()
+    {
+        return this.httpOptions
+    }
+
     isLoggedToKakuma()
     {
       return this.getToken('JWT_Kakuma') !== null

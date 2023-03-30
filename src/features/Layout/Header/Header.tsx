@@ -9,13 +9,17 @@ import { setLoading, selectFixedFacets } from '../../../appSlice';
 import { selectQuery } from '../../../slices/organizationSlice';
 import { Search } from '../../Resources/Search';
 import OrganizationSwitch from './OrganizationSwitch';
+import XTagsSearch from '@ximdex/xui-react/material/XTags/XTagsSearch'
+import {SHOW_DAM_ORGANIZATIONS, XTAGS_API_BASE_URL} from '../../../constants'
+import { XNav } from '@ximdex/xui-react/material'
 
 const useStyles = makeStyles((theme) => ({
     root: {
       borderBottom: '1px solid #9eadba',
       marginTop: 20,
       padding: '0 10px',
-      paddingBottom: 23
+      paddingBottom: 23,
+      display: 'fixed'
     },
     headerContent: {
       maxHeight: 40
@@ -26,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
       color: '#02947d'
     },
     logout: {
-      float: 'right', 
+      float: 'right',
       marginTop: 5,
     },
     divSearch: {
@@ -40,76 +44,42 @@ const useStyles = makeStyles((theme) => ({
   }
 ));
 
-export function Header( {_user} ) { 
+export function Header( {_user} ) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const query = useSelector(selectQuery);
-  
+
   const fixedFacets = useSelector(selectFixedFacets);
 
   const logout = () => {
     dispatch(setLoading(true))
     MainService().logout()
   }
-  
+
   return (
     <Grid container className={classes.root}>
         <Grid item sm={3} >
           <Link to="/home" style={{textDecoration: 'none'}}>
-              {/* <Typography align='left' variant='h4' className={classes.title}>XDAM</Typography>  */}
-              {/* <Image src='logo_ximdex2.png' className='headerLogo'></Image> */}
-              {/* <Image src='logotipo_ximdex-DAM-white-small.png' className='headerLogo'></Image> */}
-              <Image src='logotipo_ximdex-DAM-small-header.png' className='headerLogo'></Image>
-              
+              <Image src='logotipo_ximdex-DAM-small-header.png' className='headerLogo'/>
           </Link>
         </Grid>
         <Grid item sm={6} >
-          {
-              fixedFacets.length > 0 ? (
+            {fixedFacets.length > 0 && (
                 <div className={classes.divSearch}>
                   <Search currentQuery={query} collections={fixedFacets[1].values}/>
                 </div>
-              ) : ''
-          }
+            )}
         </Grid>
-        <Grid item sm={3} className={classes.rightHeader}> 
-            {/* <Link to="/about">About</Link> */}
-            {
-              fixedFacets.length > 0 ? (   
-                <OrganizationSwitch organizations={fixedFacets[0].values} user={_user} />
-              ) : ''
-            }
-            <Dropdown
-              text='Profile'
-              // icon='cog'
-              // labeled
-              floating
-              button
-              // className='icon'
-            >
+        <Grid item sm={3} className={classes.rightHeader}>
+            {SHOW_DAM_ORGANIZATIONS && fixedFacets.length > 0 && ( <OrganizationSwitch organizations={fixedFacets[0].values} user={_user} />)}
+            <Dropdown text='Profile' floating button >
               <Dropdown.Menu>
-                {/* <Dropdown.Header icon='users' content='Filter by tag' /> */}
-                <Dropdown.Item onClick={logout} >Logout</Dropdown.Item>      
+                <Dropdown.Item onClick={logout}>Logout</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
-            
+
         </Grid>
     </Grid>
   );
-}
 
-/* 
-fixedFacets.map((item: any, key)=>{
-  return (
-    <FacetCard key={key} 
-      facet={item} 
-      fixed={true} 
-      resources={resources} 
-      collection={selectedColl} 
-      organization={selectedOrg} 
-      facetsQuery={currentQuery} 
-      _user={_user}
-    />
-  )
-})
-*/
+}

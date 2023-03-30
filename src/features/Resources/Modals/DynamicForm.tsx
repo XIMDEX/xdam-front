@@ -9,7 +9,7 @@ import {
 } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import MainService from '../../../api/service';
-import { CURRENT_BOOK_VERSION, MULTIMEDIA, VALIDS_LOM } from '../../../constants';
+import { bookLanguages, courseLanguages, CURRENT_BOOK_VERSION, MULTIMEDIA, VALIDS_LOM } from '../../../constants';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectCollection } from '../../../slices/organizationSlice';
 import SemanticForm from "@rjsf/semantic-ui";
@@ -100,19 +100,19 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const [tr, triggerReload] = useState(false);
   const [fillAlert, setFillAlert] = useState(false);
   const formulario = React.useRef(null);
-  
+
   useEffect(() => {
-    
+
     if(action === 'create') {
-      if(getStoreFormData() !== {}) {
+      if(typeof getStoreFormData() !== 'object') {
         dispatch(setFormData({}));
         triggerReload(!tr)
       }
     }
-    
+
     if (action === 'edit') {
-      
-      const fetchLomesSchema = async () => { 
+
+      const fetchLomesSchema = async () => {
         let lomesSchema = await MainService().getLomesSchema();
         dispatch(setLomesSchema(lomesSchema));
       }
@@ -121,10 +121,10 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
         const lomSchema = await MainService().getLomSchema();
         dispatch(setLomSchema(lomSchema));
       }
-      
+
       let lomesl = localStorage.getItem('lomes_loaded');
       if(
-        (lomesl === null || lomesl === '0') 
+        (lomesl === null || lomesl === '0')
         && VALIDS_LOM.map(type => type.key).includes('lomes')
       ) {
         fetchLomesSchema()
@@ -139,7 +139,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
         fecthLomSchema()
         localStorage.setItem('lom_loaded', '1');
       }
-      
+
       const getResourceData = async () => {
         //* get the resource from db. Data for update is faceted data
         let res = await MainService().getResource(dataForUpdate.id);
@@ -156,11 +156,11 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
         setFillAlert(false);
         setLoaded(true);
       }
-    } 
-    
-    if (action === 'view') { 
+    }
+
+    if (action === 'view') {
       // TODO
-    } 
+    }
 
     return function cleanup() {};
   }, [theFiles, resourceData, loaded ])
@@ -174,14 +174,14 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
       addVersionBook()
     }
   }, [resourceData, setResourceData, resourceType])
-  
+
   const styleBtnPreview = {
     backgroundImage: 'url(' + (previewImage ? URL.createObjectURL(previewImage) : (dataForUpdate ? render(dataForUpdate) : 'noimg.png')) + ')',
     backgroundPosition: 'center',
     backgroundSize: 'cover',
     backgroundRepeat: 'no-repeat',
   }
-  
+
   const showUpgradeButton = resourceType === 'book' && action === 'edit' && resourceData && +resourceData.version !== CURRENT_BOOK_VERSION
 
   const handleFiles = (e) => {
@@ -197,11 +197,11 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
         setMediaType(e.target.files[0].type.split('/')[0])
       }
     }
-  
+
   }
 
   function setType() {
-    
+
     if(resourceType !== MULTIMEDIA) {
       return resourceType;
     }
@@ -266,7 +266,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
 
     if(!res.ok) {
       return setMessage({display: true, ok: res.ok, text: resData.error ?? 'Error 0' })
-    } 
+    }
     let output_message = ''
     let ouput_ok = res.ok
 
@@ -277,7 +277,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
       }
       output_message = 'Resource and metadata saved'
     }
-    
+
     setLoaded(false)
     setProcessing(false)
 
@@ -300,7 +300,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const setForm = (data) => {
     dispatch(setFormData(data))
   }
-  
+
   const customWidgets = {
     TextWidget: InputText,
   };
@@ -308,10 +308,12 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const fields = { bookExtraData: ExtraBookData };
 
   const uiSchema={
-    
     "description": {
-      "ui:order": ["active", "*"],
+      "ui:order": ["active", "isFree", "*"],
       "active": {
+        "ui:widget": CustomToggle,
+      },
+      "isFree": {
         "ui:widget": CustomToggle,
       },
       "course_source": {
@@ -338,7 +340,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
         }
       },
       "name": {
-        "ui:widget": CustomInputText,        
+        "ui:widget": CustomInputText,
       },
       "external_url": {
         "ui:widget": CustomInputText,
@@ -350,7 +352,16 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
         "ui:widget": ResourceLanguage,
         "ui:options": {
           opt: ["es", "cat", "en"],
-          label: 'Language'
+          label: 'Language',
+          enum: bookLanguages
+        }
+      },
+      "language": {
+        "ui:widget": ResourceLanguage,
+        "ui:options": {
+          opt: Object.keys(courseLanguages),
+          label: 'Language',
+          enum: courseLanguages
         }
       },
       "extra": {
@@ -358,6 +369,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
       }
     }
   }
+
 
   const updateResourceFromLastCreated = async () => {
     let lastUpdated = await MainService().getLastResource(collection_id, 'lastCreated');
@@ -377,7 +389,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     setMessage(messageDefaultState)
 
     const {res, resData} = await saveMetaDataResource()
-    
+
     if(!res.ok) {
       setMessage({display: true, ok: res.ok, text: resData.error ?? 'Error 0' })
     } else {
@@ -387,17 +399,17 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   }
 
   const saveMetaDataResource = async () => {
-    
+
     const data = formulario?.current?.state?.formData?.description ?? resourceData?.data?.description
     data.id = resourceData.id
-    
+
     if (resourceData.version === 1) data.upgrading = true
-    
+
     var form_data = new FormData();
     for ( var key in data ) {
         form_data.append(key, data[key]);
     }
-    
+
     const res = await MainService().upgradeVersionBook(data)
     const resData = res.ok ? await res.json() : {error: await res.text()}
 
@@ -408,16 +420,12 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     return (
       <Grid item sm={6}>
         <div className='forms-main-btns'>
-            <Btn color='teal' icon='facebook' onClick={() =>  _refForm.current.click()} loading={processing}> 
+            <Btn color='teal' icon='facebook' onClick={() =>  _refForm.current.click()} loading={processing}>
               {dataForUpdate ? (
-                <>
-                  <Icon name='save' /> Save
-                </>
-              ) : 
-                <>
-                  <Icon name='save' /> Submit
-                </>
-              }
+                <><Icon name='save' /> Save</>
+              ) : (
+                <><Icon name='save' /> Submit</>
+              )}
             </Btn>
             <Dropdown
                 text='Import data'
@@ -442,7 +450,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
               </Btn>
             )}
         </div>
-        <div className='form-messages'>    
+        <div className='form-messages'>
           <Message color={msg.ok ? 'teal' : 'red'} className={msg.display ? 'zoom-message' : 'hidden-message'} info onDismiss={() => setMessage(messageDefaultState)}>
               {
                 msg.ok ? (
@@ -457,7 +465,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                   </>
                 )
               }
-              
+
           </Message>
         </div>
         <SemanticForm
@@ -466,14 +474,14 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
           uiSchema={uiSchema}
           schema={schema as JSONSchema7}
           onSubmit={postData}
-          formData={getStoreFormData()} 
+          formData={getStoreFormData()}
           onChange={(fd)=> setForm(fd.formData)}
           ArrayFieldTemplate={ArrayFieldTemplate}
           widgets={customWidgets}
           fields={fields}
         >
           <button ref={_refForm} type="submit" style={{ display: "none" }} />
-        </SemanticForm> 
+        </SemanticForm>
       </Grid>
     )
   };
@@ -552,7 +560,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                 />
               ) : null
             }
-            
+
             {
               formFiles && formFiles.length > 0 ? (
                 <>
@@ -577,7 +585,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   }
 
   return (
-    <DialogContent className='edit-create-dialog-content'>
+    <DialogContent className='edit-create-dialog-content' style={{paddingBottom: 233}}>
       <DialogContentText>
         {/* Describe here how to {action} a {resourceType} */}
         <Btn color='teal' circular icon='close' onClick={() => handleClose()} className='read-card-close-button'/>

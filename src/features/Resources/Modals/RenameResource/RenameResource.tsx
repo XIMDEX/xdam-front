@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Button, Icon, Input, Modal } from "semantic-ui-react";
 import { useDispatch } from "react-redux";
-import styles from './RenameResource.module.scss';
 import { reloadCatalogue } from "../../../../appSlice";
+import styles from './RenameResource.module.scss';
 
 const MINIMUM_NAME_LENGTH = 3;
 

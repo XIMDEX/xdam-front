@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import workspacesProvider from "../api/providers/workspacesProvider";
 import { setWorkspacesData } from "../appSlice";
-import { WORKPSACES } from "../constants";
+import { WORKSPACES } from "../constants";
 import { Facet } from "../types/Facet";
 
 const map = {
-    [WORKPSACES]: {
+    [WORKSPACES]: {
         provider: workspacesProvider,
         dispacher: setWorkspacesData
     }
