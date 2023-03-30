@@ -18,6 +18,7 @@ import { Resources } from './features/Resources/Resources';
 import { selectCollection, selectOrganization, selectFacetsQuery, setFacetsQuery, setOrganization, setQuery, selectQuery } from './slices/organizationSlice';
 import _ from 'lodash';
 import { Icon } from 'semantic-ui-react';
+import { useCookies } from 'react-cookie';
 import XthemeProvider from './providers/XthemeProvider';
 
 
@@ -39,6 +40,7 @@ const useStyles = makeStyles((theme) => {
 });
 
 function App() {
+  const [cookies, setCookie] = useCookies(['JWT']);
   const location = useLocation();
   const searchParams =  new URLSearchParams(location?.search);
   const classes = useStyles();
@@ -77,11 +79,23 @@ function App() {
       setSidebarOpen(toggle)
   }
 
+  useEffect(() => {
+    const handleMessageParent = (message) => {
+      if (location.pathname === '/lom' && message?.data && message?.data?.auth) {
+        setCookie("JWT", message.data.auth, {maxAge: 86400});
+        setLimitedLomUseData({});
+        fetchLimitedLomData();
+      };
+    };
+    window.addEventListener('message', handleMessageParent);
+
+    return () => window.removeEventListener('message', handleMessageParent);
+  },[]);
+
   useEffect( () => {
     const initUser = async () => {
       if (location.pathname === '/lom' && searchParams.get('courseId')) {
-        setLimitedLomUseData({});
-        fetchLimitedLomData();
+        return
       } else if (mainService.getToken()) {
         if(!localUser) {
           let fetchedUser = await MainService().getUser();
@@ -121,17 +135,19 @@ function App() {
       fetchCourseData(searchParams.get('courseId'));
     } else {
       setLimitedLomUseData(undefined);
+      setLoading(false);
     };
   };
 
   const fetchCourseData = (courseId: string) => {
     setTimeout(async () => {
       let courseData = await MainService().getResource(courseId);
-      setLimitedLomUseData(courseData?.data?.description || undefined);
+      setLimitedLomUseData(courseData?.data?.description ? courseData : undefined);
+      setLoading(false)
     }, 1500);
   };
 
-  if (limitedLomUseData) {
+  if (location.pathname === '/lom' && limitedLomUseData) {
     return (
       <Container maxWidth='md' disableGutters>
         {Object.keys(limitedLomUseData)?.length === 0 ? (
