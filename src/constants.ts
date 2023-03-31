@@ -79,4 +79,4 @@ export enum courseLanguages {
 globalThis.aaa = courseLanguages;
 
 
-export const SHOW_DAM_ORGANIZATIONS = process.env.REACT_APP_SHOW_DAM_ORGANIZATIONS ?? true
+export const SHOW_DAM_ORGANIZATIONS = process.env.REACT_APP_SHOW_DAM_ORGANIZATIONS === 'false' ? false : true
