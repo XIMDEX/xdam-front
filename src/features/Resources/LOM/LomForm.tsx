@@ -4,8 +4,8 @@ import Lom from './Lom'
 
 export function LomForm({data, standard, limitedUse=false }) {
   return (
-    <Grid container>
-      {limitedUse && 
+    <Grid style={{backgroundColor: '#fff'}}>
+      {limitedUse &&
         <h1 style={{padding: '0.5em', marginTop: '1em', textAlign: 'center', backgroundColor: '#fff', width: 'calc(100% - 2rem)'}}>
               Limited use (LOM only)
         </h1>

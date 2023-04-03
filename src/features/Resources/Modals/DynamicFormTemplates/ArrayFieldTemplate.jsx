@@ -13,13 +13,13 @@ export default function ArrayFieldTemplate(props) {
             <label className='forms-arrayLabel'>{props.title}</label>
             {props.canAdd && (
                 <Button
-                circular
-                icon='plus'
-                size='mini'
-                color='teal'
-                className='forms-btn-addArrayItem'
-                onClick={props.onAddClick}
-                disabled={props.formData.length > 0 && (props.formData.length >= 1 && props.formData[props.formData.length - 1] === undefined)}
+                    circular
+                    icon='plus'
+                    size='mini'
+                    color='teal'
+                    className='forms-btn-addArrayItem'
+                    onClick={props.onAddClick}
+                    disabled={props.formData.length > 0 && (props.formData.length >= 1 && props.formData[props.formData.length - 1] === undefined)}
                 />
                 )}
             <div className='forms-arrayContainer'>
@@ -99,7 +99,12 @@ function ArrayDropdown({array, options, formData, ...props}) {
                         selectOnBlur={false}
                     >
                         <Dropdown.Menu scrolling={true}>
-                            {options.map(({name, id}) => (<Dropdown.Item key={id} onClick={() => onChange({name, id})}  >{name}</Dropdown.Item>) )}
+                            {options.map(({name, id}) => (
+                                <Dropdown.Item
+                                    key={id} onClick={() => onChange({name, id})}
+                                    disabled={array.some(item => item.toLowerCase().trim() === name.toLowerCase().trim())}
+                                >{name}</Dropdown.Item>
+                            ))}
                         </Dropdown.Menu>
                     </Dropdown>
                     <Button icon='close' size='mini' className={'forms-btn-removeArrayItem'} onClick={handleDelete} style={{height: 38}}/>
@@ -218,7 +223,7 @@ function ListItemsXTags({items, handleAction, ...props}) {
                         key={tag.id}
                         tag={tag}
                         onDelete={popIndex(indexToPop)}
-                        canEdit
+                        // canEdit
                         canDelete
                         customizable={{
                             organization: {

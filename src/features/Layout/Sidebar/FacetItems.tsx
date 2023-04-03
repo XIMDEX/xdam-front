@@ -52,7 +52,7 @@ const FacetItem = ({name, facet, fixed, facetValues, supplementaryData, changeFa
             alert(message)
         }
 
-        console.log({name, facet, fixed, facetValues, supplementaryData, changeFacet, facetIsActive})
+        // console.log({name, facet, fixed, facetValues, supplementaryData, changeFacet, facetIsActive})
     }
 
     const handleHover = (inside) => {
@@ -260,10 +260,12 @@ const FacetItems = ({ supplementaryData, fixed, facet, facetValues, currentFacet
         )
     }
 
+
+
     return (<>
-        {Object.keys(facetValues).map((name, index) => (
+        {Object.keys(facetValues).map((label, index) => (
             <li key={index} style={{ listStyleType: "none" }}>
-                <FacetItem name={name} facet={facet} fixed={fixed} facetValues={facetValues} supplementaryData={supplementaryData} changeFacet={changeFacet} facetIsActive={facetIsActive} />
+                <FacetItem name={label} facet={facet} fixed={fixed} facetValues={facetValues} supplementaryData={supplementaryData} changeFacet={changeFacet} facetIsActive={facetIsActive} />
             </li>
         )
         )}
