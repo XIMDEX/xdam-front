@@ -18,7 +18,7 @@ const XthemeProvider = ({ children }) => {
                     contrastText: '#ffffff',
                 },
                 secondary: {
-                    main: '#214f61',
+                    main: '#068873',
                     contrastText: '#ffffff',
                 },
                 background: {

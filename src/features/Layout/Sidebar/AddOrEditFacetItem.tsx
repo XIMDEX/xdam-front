@@ -39,6 +39,8 @@ const AddOrEditItemFacet = ({facet, requestOpts, values = {}, ...props}) => {
     }
 
     const handleSuccess = (evt) => {
+        // evt.stopPropagation()
+        evt.preventDefault()
         setDisableCancel(true)
         setDisableSuccess(true)
         postNewItem(form)
@@ -82,8 +84,8 @@ const AddOrEditItemFacet = ({facet, requestOpts, values = {}, ...props}) => {
             open={open}
             title={`${props.title ?? facet.label}`}
             content={(
-                <form ref={formRef} >
-                    <Grid key='form-add'  container spacing={3} component="form" noValidate autoComplete="off">
+                <form ref={formRef} onSubmit={handleSuccess}>
+                    <Grid key='form-add'  container spacing={3}>
                             {facet.fields.map((field, index) => {
                                 if (field.key === 'type' && form?.[field.key] !== 'course') {
                                     handleChange(field.key, 'course')
