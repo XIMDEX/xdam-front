@@ -25,7 +25,7 @@ const StyledTextField = styled(TextField)({
 })
 
 
-const AddOrEditItemFacet = ({facet, requestOpts, values = {}, ...props}) => {
+const AddOrEditItemFacet = ({facet, requestOpts, collectionType, values = {}, ...props}) => {
     const [disableSuccess, setDisableSuccess] = useState(true)
     const [disableCancel, setDisableCancel] = useState(false)
     const [open, setOpen] = useState(false)
@@ -87,8 +87,8 @@ const AddOrEditItemFacet = ({facet, requestOpts, values = {}, ...props}) => {
                 <form ref={formRef} onSubmit={handleSuccess}>
                     <Grid key='form-add'  container spacing={3}>
                             {facet.fields.map((field, index) => {
-                                if (field.key === 'type' && form?.[field.key] !== 'course') {
-                                    handleChange(field.key, 'course')
+                                if (field.key === 'type' && form?.[field.key] !== collectionType) {
+                                    handleChange(field.key, collectionType)
                                 }
                                 if (field.key === 'type') return null
                                 if (field.type === 'boolean') {
