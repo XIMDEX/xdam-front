@@ -194,9 +194,11 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
                             { facet.canAdd && facet.route && (
                                 <AddItemFacet
                                     facet={facet}
+                                    collectionType={collection.resource_type}
                                     cardOpen={cardOpen}
                                     triggerIcon={(<PostAddRounded htmlColor={cardOpen ? 'white' : 'gray'}/>)}
                                     requestOpts={{method: 'POST', headers: MainService().getHttpOptions().headers}}
+                                    
                                 />
                             )}
                         </Button>

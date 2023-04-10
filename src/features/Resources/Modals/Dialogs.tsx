@@ -7,7 +7,7 @@ import {
   Grid 
 } from '@material-ui/core';
 import DynamicForm from './DynamicForm';
-import { COURSE, MULTIMEDIA, IMAGE, VIDEO, AUDIO, BOOK, ACTIVITY, ASSESSMENT } from '../../../constants';
+import { COURSE, MULTIMEDIA, IMAGE, VIDEO, AUDIO, BOOK, ACTIVITY, ASSESSMENT, DOCUMENT } from '../../../constants';
 import { Typography } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { useSelector, useDispatch } from 'react-redux';
@@ -96,6 +96,9 @@ export default function Dialogs( { resourceType, action, dialogOpen = false, res
         break;
       case ASSESSMENT:
           form = (<DynamicForm handleClose={handleClose} resourceType={resourceType} action={action} schema={schemas.assessment_validator} dataForUpdate={resourceData} />);
+        break;
+      case DOCUMENT:
+        form = (<DynamicForm handleClose={handleClose} resourceType={resourceType} action={action} schema={schemas.document_validator} dataForUpdate={resourceData} />);
         break;
       default:
         form = (<Typography>Corrupted resource: type of "{resourceType}" is not allowed</Typography>);
