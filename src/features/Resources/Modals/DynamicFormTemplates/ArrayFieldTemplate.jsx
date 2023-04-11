@@ -118,6 +118,13 @@ function ArrayDropdown({array, options, formData, ...props}) {
 
 const ListItems = ({items, handleAction, ...props}) => {
 
+    const handleKeyDown = (event, data) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          data.props.onChange(event.target.value);
+        }
+    };
+
     return items.map(element => {
         const {children: data, onDropIndexClick: popIndex, index: indexToPop} = element
 
@@ -135,7 +142,8 @@ const ListItems = ({items, handleAction, ...props}) => {
                             id={data.props.idSchema.$id}
                             type='text'
                             defaultValue={data.props.formData}
-                            onChange={(event) => data.props.onChange(event.target.value)}
+                            //onChange={(event) => data.props.onChange(event.target.value)}
+                            onKeyDown={(event) => handleKeyDown(event, data)}
                         />
                     )}
                 </div>
