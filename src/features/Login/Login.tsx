@@ -21,6 +21,12 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 'bolder',
     marginBottom: 50,
   },
+  btn: {
+    backgroundColor: '#43a1a2',
+    '&:hover, &:focus': {
+      backgroundColor: '#43a1a2',
+    },
+  }
 }));
 
 export function Login() {
@@ -96,6 +102,8 @@ export function Login() {
       <Button
         fullWidth
         color="primary"
+        className={classes.btn}
+        // style={{backgroundColor: '#43a1a2'}}
         variant="contained"
         onClick={log}
         disabled={loading}
