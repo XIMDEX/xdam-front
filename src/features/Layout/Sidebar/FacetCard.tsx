@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, createContext } from 'react'
 import { useDispatch  } from 'react-redux';
 import { Grid, Button, IconButton, Typography, TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -13,6 +13,7 @@ import FacetItems from './FacetItems';
 import useSupplementaryData from '../../../hooks/useSupplementaryData';
 import AddItemFacet from './AddOrEditFacetItem';
 import MainService from '../../../api/service';
+import CollectionContext from '../../../utils/contexts/CollectionContext';
 import PostAddRounded from '@material-ui/icons/PostAddRounded';
 
 const LIMIT_ITEMS = 10;
@@ -192,14 +193,15 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
                                 </Grid>
                             </Grid>
                             { facet.canAdd && facet.route && (
-                                <AddItemFacet
-                                    facet={facet}
-                                    collectionType={collection.resource_type}
-                                    cardOpen={cardOpen}
-                                    triggerIcon={(<PostAddRounded htmlColor={cardOpen ? 'white' : 'gray'}/>)}
-                                    requestOpts={{method: 'POST', headers: MainService().getHttpOptions().headers}}
-                                    
-                                />
+                                <CollectionContext.Provider value={collection.resource_type}>
+                                    <AddItemFacet
+                                        facet={facet}
+                                        cardOpen={cardOpen}
+                                        triggerIcon={(<PostAddRounded htmlColor={cardOpen ? 'white' : 'gray'}/>)}
+                                        requestOpts={{method: 'POST', headers: MainService().getHttpOptions().headers}}
+                                        
+                                    />
+                                </CollectionContext.Provider>
                             )}
                         </Button>
                     </Grid>
@@ -238,15 +240,17 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
                     <Grid item sm={12}>
                     <ul>
                         {organization && collection &&  (
-                                <FacetItems
-                                    supplementaryData={supplementaryData}
-                                    fixed={fixed}
-                                    facet={facet}
-                                    facetValues={facetValues}
-                                    currentFacets={currentFacets}
-                                    limit_items={LIMIT_ITEMS}
-                                    onFilterSelected={handleFilterSelected}
-                                />
+                                <CollectionContext.Provider value={collection.resource_type}>
+                                    <FacetItems
+                                        supplementaryData={supplementaryData}
+                                        fixed={fixed}
+                                        facet={facet}
+                                        facetValues={facetValues}
+                                        currentFacets={currentFacets}
+                                        limit_items={LIMIT_ITEMS}
+                                        onFilterSelected={handleFilterSelected}
+                                    />
+                                </CollectionContext.Provider>
                         )}
                     </ul>
                     </Grid>

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useContext } from 'react'
 import {  Grid, IconButton, styled, TextField } from '@material-ui/core';
 import { useDispatch  } from 'react-redux';
 import { reloadCatalogue, setSchemas } from '../../../appSlice';
@@ -6,6 +6,7 @@ import PostAddRounded from '@material-ui/icons/PostAddRounded';
 import Modal from '../../Resources/Modals/Modal/Modal';
 import { CustomToggle } from '../../Resources/Modals/DynamicFormTemplates/CustomFields';
 import MainService from '../../../api/service';
+import CollectionContext from '../../../utils/contexts/CollectionContext'; 
 
 const StyledTextField = styled(TextField)({
     '& label.Mui-focused': {
@@ -25,9 +26,10 @@ const StyledTextField = styled(TextField)({
 })
 
 
-const AddOrEditItemFacet = ({facet, requestOpts, collectionType, values = {}, ...props}) => {
+const AddOrEditItemFacet = ({facet, requestOpts, values = {}, ...props}) => {
     const [disableSuccess, setDisableSuccess] = useState(true)
     const [disableCancel, setDisableCancel] = useState(false)
+    const collectionType = useContext(CollectionContext);
     const [open, setOpen] = useState(false)
     const [form, setForm] = useState({});
     const formRef = useRef(null);
@@ -48,7 +50,7 @@ const AddOrEditItemFacet = ({facet, requestOpts, collectionType, values = {}, ..
 
     const postNewItem = async (data) => {
         if (props?.editForm && facet.count > 0) {
-            alert('For delete this item, must be not assigned')
+            alert('For delete or edit this item, it must be not assigned')
             return;
         }
         try{
@@ -61,7 +63,7 @@ const AddOrEditItemFacet = ({facet, requestOpts, collectionType, values = {}, ..
             setForm({})
             setOpen(false)
         } catch(error) {
-            alert('Network error, please contact with your proveedor')
+            alert('Network error, please contact with your provider')
             console.error(error)
         } finally {
             setDisableCancel(false)

@@ -36,7 +36,7 @@ const FacetItem = ({name, facet, fixed, facetValues, supplementaryData, changeFa
     const handleDelete = async () => {
         const _facet = facetValues[name]
         if (_facet.count >0) {
-            alert('For delete this item ("'+name+'"), must be not assigned')
+            alert('For delete or edit this item ("'+name+'"), it must be not assigned')
             return;
         }
         if (globalThis.confirm('You will be delete "'+ name +'". Are you sure?')) {
@@ -265,7 +265,15 @@ const FacetItems = ({ supplementaryData, fixed, facet, facetValues, currentFacet
     return (<>
         {Object.keys(facetValues).map((label, index) => (
             <li key={index} style={{ listStyleType: "none" }}>
-                <FacetItem name={label} facet={facet} fixed={fixed} facetValues={facetValues} supplementaryData={supplementaryData} changeFacet={changeFacet} facetIsActive={facetIsActive} />
+                <FacetItem 
+                    name={label}
+                    facet={facet} 
+                    fixed={fixed} 
+                    facetValues={facetValues} 
+                    supplementaryData={supplementaryData} 
+                    changeFacet={changeFacet} 
+                    facetIsActive={facetIsActive} 
+                />
             </li>
         )
         )}
