@@ -45,6 +45,8 @@ export const XTAGS =  {
   typeId: 1
 }
 
+export const DEPRECATED_FACETS = process.env?.REACT_APP_DEPRECATED_FACETS?.split(',') ?? [];
+
 export const COOKIE_NAME =
   process.env?.REACT_APP_KAKUMA_URL?.includes('kakumav1.pre-cloud')
     ? 'USERDATA_SEK_PRE'

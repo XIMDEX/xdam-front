@@ -3,7 +3,7 @@ import { useDispatch  } from 'react-redux';
 import { Grid, Button, IconButton, Typography, TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import _ from 'lodash'
-import { ORGANIZATION, COLLECTION  } from '../../../constants';
+import { ORGANIZATION, COLLECTION, DEPRECATED_FACETS  } from '../../../constants';
 import { setFacetsQuery  } from '../../../slices/organizationSlice';
 import { setResourcesLoading } from '../../../appSlice';
 import ClearIcon from '@material-ui/icons/Clear';
@@ -15,6 +15,7 @@ import AddItemFacet from './AddOrEditFacetItem';
 import MainService from '../../../api/service';
 import CollectionContext from '../../../utils/contexts/CollectionContext';
 import PostAddRounded from '@material-ui/icons/PostAddRounded';
+import WarningIcon from '@mui/icons-material/Warning';
 
 const LIMIT_ITEMS = 10;
 
@@ -51,6 +52,11 @@ const useStyles = makeStyles((theme) => ({
     },
     capitalize: {
         textTransform: 'capitalize'
+    },
+    align: {
+        display: 'flex',
+        justifyContent: 'left',
+        alignItems: 'center'
     },
     clearIcon: {
         position: 'relative',
@@ -187,7 +193,10 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
                         >
                             <Grid container>
                                 <Grid item sm={12}>
-                                    <Typography className={classes.capitalize} align='left' color='primary'>
+                                    <Typography className={`${classes.capitalize} ${classes.align}`} align='left' color='primary'>
+                                        {   DEPRECATED_FACETS.includes(facet.key) && (
+                                                <WarningIcon htmlColor={cardOpen ? 'white' : 'gray'} /> 
+                                        )}
                                         <strong className={!cardOpen ? 'darkLabel' : 'whiteLabel'}>{label()}</strong>
                                     </Typography>
                                 </Grid>
