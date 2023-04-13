@@ -450,7 +450,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                 <Icon name='angle double up' /> Upgrade v2
               </Btn>
             )}
-            { action === "edit" && dataForUpdate?.files?.length > 0 && (
+            { false && action === "edit" && dataForUpdate?.files?.length > 0 && (
               <Dropdown
                 text="Share"
                 icon='share'
