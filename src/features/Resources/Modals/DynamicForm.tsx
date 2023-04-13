@@ -450,7 +450,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                 <Icon name='angle double up' /> Upgrade v2
               </Btn>
             )}
-            { action === "edit" && (
+            { action === "edit" && dataForUpdate?.files?.length > 0 && (
               <Dropdown
                 text="Share"
                 icon='share'
@@ -462,7 +462,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                 <Dropdown.Menu>
                   <Dropdown.Item>
                     { resourceType === "multimedia" 
-                      ? <TwitterButton text="Share on Twitter" url={API_BASE_URL + '/resource/render/' + dataForUpdate.files[0]} />
+                      ? <TwitterButton text="Share on Twitter" url={API_BASE_URL + '/resource/render/' + dataForUpdate.files[0] } />
                       : "Share on web"
                     }
                   </Dropdown.Item>
