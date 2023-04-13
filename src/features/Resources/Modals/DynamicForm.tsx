@@ -9,7 +9,7 @@ import {
 } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import MainService from '../../../api/service';
-import { bookLanguages, courseLanguages, CURRENT_BOOK_VERSION, MULTIMEDIA, VALIDS_LOM } from '../../../constants';
+import { bookLanguages, courseLanguages, CURRENT_BOOK_VERSION, MULTIMEDIA, VALIDS_LOM, API_BASE_URL } from '../../../constants';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectCollection } from '../../../slices/organizationSlice';
 import SemanticForm from "@rjsf/semantic-ui";
@@ -28,6 +28,7 @@ import { InputText, InputTextArea, CustomToggle, CustomInputText, CustomDropdown
 import LomForm from '../LOM/LomForm';
 import { ResourceLanguage } from './DynamicFormTemplates/ResourceLanguage';
 import { ExtraBookData } from './DynamicFormTemplates/CustomFields/ExtraBookData';
+import TwitterButton from '../../Sharing/Twitter/TwitterButton';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -448,6 +449,26 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
               <Btn color='teal' onClick={handleUpdateMetadataResource} >
                 <Icon name='angle double up' /> Upgrade v2
               </Btn>
+            )}
+            { action === "edit" && (
+              <Dropdown
+                text="Share"
+                icon='share'
+                color='teal'
+                labeled
+                button
+                className='icon teal'
+              >
+                <Dropdown.Menu>
+                  <Dropdown.Item>
+                    { resourceType === "multimedia" 
+                      ? <TwitterButton text="Share on Twitter" url={API_BASE_URL + '/resource/render/' + dataForUpdate.files[0]} />
+                      : "Share on web"
+                    }
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+
+              </Dropdown>
             )}
         </div>
         <div className='form-messages'>
