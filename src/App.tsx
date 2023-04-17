@@ -20,7 +20,7 @@ import _ from 'lodash';
 import { Icon } from 'semantic-ui-react';
 import { useCookies } from 'react-cookie';
 import XthemeProvider from './providers/XthemeProvider';
-
+import ImageView from './features/Sharing/ImageView/ImageView';
 
 const useStyles = makeStyles((theme) => {
   let docHeight = document.body.scrollHeight
@@ -162,6 +162,10 @@ function App() {
           </>
         )}
       </Container>
+    )
+  } else if (location.pathname === '/image') {
+    return (
+      <ImageView url={searchParams.get('image_url') ?? '' } />
     )
   } else if (localUser) {
     return (

@@ -419,91 +419,91 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
 
   const MetaDataForm = () => {
     return (
-      <Grid item sm={6}>
-        <div className='forms-main-btns'>
-            <Btn color='teal' icon='facebook' onClick={() =>  _refForm.current.click()} loading={processing}>
-              {dataForUpdate ? (
-                <><Icon name='save' /> Save</>
-              ) : (
-                <><Icon name='save' /> Submit</>
-              )}
-            </Btn>
-            <Dropdown
-                text='Import data'
-                icon='clone'
-                color='teal'
-                labeled
-                button
-                className='icon teal'
-            >
-              <Dropdown.Menu>
-                <Dropdown.Item onClick={updateResourceFromLastCreated}>
-                  last resource created
-                </Dropdown.Item>
-                <Dropdown.Item onClick={updateResourceFromLastUpdated}>
-                  last resource updated
-                </Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
-            { showUpgradeButton && (
-              <Btn color='teal' onClick={handleUpdateMetadataResource} >
-                <Icon name='angle double up' /> Upgrade v2
+        <Grid item sm={6}>
+          <div className='forms-main-btns'>
+              <Btn color='teal' icon='facebook' onClick={() =>  _refForm.current.click()} loading={processing}>
+                {dataForUpdate ? (
+                  <><Icon name='save' /> Save</>
+                ) : (
+                  <><Icon name='save' /> Submit</>
+                )}
               </Btn>
-            )}
-            { false && action === "edit" && dataForUpdate?.files?.length > 0 && (
               <Dropdown
-                text="Share"
-                icon='share'
-                color='teal'
-                labeled
-                button
-                className='icon teal'
+                  text='Import data'
+                  icon='clone'
+                  color='teal'
+                  labeled
+                  button
+                  className='icon teal'
               >
                 <Dropdown.Menu>
-                  <Dropdown.Item>
-                    { resourceType === "multimedia" 
-                      ? <TwitterButton text="Share on Twitter" url={API_BASE_URL + '/resource/render/' + dataForUpdate.files[0] } />
-                      : "Share on web"
-                    }
+                  <Dropdown.Item onClick={updateResourceFromLastCreated}>
+                    last resource created
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={updateResourceFromLastUpdated}>
+                    last resource updated
                   </Dropdown.Item>
                 </Dropdown.Menu>
-
               </Dropdown>
-            )}
-        </div>
-        <div className='form-messages'>
-          <Message color={msg.ok ? 'teal' : 'red'} className={msg.display ? 'zoom-message' : 'hidden-message'} info onDismiss={() => setMessage(messageDefaultState)}>
-              {
-                msg.ok ? (
-                  <>
-                    <Message.Header>Done</Message.Header>
-                    <p>{msg.text !== '' ? msg.text : `Resource ${dataForUpdate ? 'updated' : 'created'}`}</p>
-                  </>
-                ) : (
-                  <>
-                    <Message.Header>An error ocurred</Message.Header>
-                    <p>{msg.text}</p>
-                  </>
-                )
-              }
+              { showUpgradeButton && (
+                <Btn color='teal' onClick={handleUpdateMetadataResource} >
+                  <Icon name='angle double up' /> Upgrade v2
+                </Btn>
+              )}
+              { action === "edit" && dataForUpdate?.files?.length > 0 && (
+                <Dropdown
+                  text="Share"
+                  icon='share'
+                  color='teal'
+                  labeled
+                  button
+                  className='icon teal'
+                >
+                  <Dropdown.Menu>
+                    <Dropdown.Item>
+                      { resourceType === "multimedia" 
+                        ? <TwitterButton text="Share on Twitter" url={ dataForUpdate.files[0] } />
+                        : "Share on web"
+                      }
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
 
-          </Message>
-        </div>
-        <SemanticForm
-          id='sfu'
-          className={fillAlert ? 'fill-alert' : ''}
-          uiSchema={uiSchema}
-          schema={schema as JSONSchema7}
-          onSubmit={postData}
-          formData={getStoreFormData()}
-          onChange={(fd)=> setForm(fd.formData)}
-          ArrayFieldTemplate={ArrayFieldTemplate}
-          widgets={customWidgets}
-          fields={fields}
-        >
-          <button ref={_refForm} type="submit" style={{ display: "none" }} />
-        </SemanticForm>
-      </Grid>
+                </Dropdown>
+              )}
+          </div>
+          <div className='form-messages'>
+            <Message color={msg.ok ? 'teal' : 'red'} className={msg.display ? 'zoom-message' : 'hidden-message'} info onDismiss={() => setMessage(messageDefaultState)}>
+                {
+                  msg.ok ? (
+                    <>
+                      <Message.Header>Done</Message.Header>
+                      <p>{msg.text !== '' ? msg.text : `Resource ${dataForUpdate ? 'updated' : 'created'}`}</p>
+                    </>
+                  ) : (
+                    <>
+                      <Message.Header>An error ocurred</Message.Header>
+                      <p>{msg.text}</p>
+                    </>
+                  )
+                }
+
+            </Message>
+          </div>
+          <SemanticForm
+            id='sfu'
+            className={fillAlert ? 'fill-alert' : ''}
+            uiSchema={uiSchema}
+            schema={schema as JSONSchema7}
+            onSubmit={postData}
+            formData={getStoreFormData()}
+            onChange={(fd)=> setForm(fd.formData)}
+            ArrayFieldTemplate={ArrayFieldTemplate}
+            widgets={customWidgets}
+            fields={fields}
+          >
+            <button ref={_refForm} type="submit" style={{ display: "none" }} />
+          </SemanticForm>
+        </Grid>
     )
   };
 
