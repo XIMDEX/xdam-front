@@ -9,7 +9,7 @@ import {
 } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import MainService from '../../../api/service';
-import { bookLanguages, courseLanguages, CURRENT_BOOK_VERSION, MULTIMEDIA, VALIDS_LOM, API_BASE_URL } from '../../../constants';
+import { bookLanguages, courseLanguages, CURRENT_BOOK_VERSION, MULTIMEDIA, VALIDS_LOM,  } from '../../../constants';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectCollection } from '../../../slices/organizationSlice';
 import SemanticForm from "@rjsf/semantic-ui";

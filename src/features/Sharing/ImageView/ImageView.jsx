@@ -9,7 +9,6 @@ const ImageView = ({ url }) => {
     const imageUrl = API_BASE_URL + '/resource/render/' + url;
 
     return (
-
         <div className='image-container'>
             <Helmet>
                 <meta property="og:type" content="website" />
