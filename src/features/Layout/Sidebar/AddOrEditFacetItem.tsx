@@ -74,7 +74,7 @@ const AddOrEditItemFacet = ({facet, requestOpts, values = {}, ...props}) => {
         if (value === '') {
             delete newForm[key]
         }
-        setDisableSuccess(Object.keys(newForm).length !== facet.fields.length)
+        setDisableSuccess(Object.keys(newForm).length !== facet.fields.filter(obj => obj.type === "string").length)
         setForm(newForm)
     }
 
@@ -93,15 +93,16 @@ const AddOrEditItemFacet = ({facet, requestOpts, values = {}, ...props}) => {
                                 if (field.key === 'type') return null
                                 if (field.type === 'boolean') {
                                     return (
-                                        <Grid item style={{marginRight: 10}}>
-                                            <CustomToggle
-                                                key={`${field.key}-${index}`}
-                                                onChange={() => {}}
-                                                label={field.label}
-                                                required
-                                                style={{container:{display: 'flex', flexDirection: 'row', gap: 10}}}
-                                            />
-                                        </Grid>
+                                        null
+                                        // <Grid item style={{marginRight: 10}}>
+                                        //     <CustomToggle
+                                        //         key={`${field.key}-${index}`}
+                                        //         onChange={() => {}}
+                                        //         label={field.label}
+                                        //         required
+                                        //         style={{container:{display: 'flex', flexDirection: 'row', gap: 10}}}
+                                        //     />
+                                        // </Grid>
                                     )
                                 }
                                 return (
