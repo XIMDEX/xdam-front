@@ -34,6 +34,7 @@ const AddOrEditItemFacet = ({facet, requestOpts, values = {}, ...props}) => {
     const dispatch = useDispatch()
 
     const handleCloseModal = ()  => {
+        setForm({})
         props.onClose?.()
         setOpen(false)
     }
