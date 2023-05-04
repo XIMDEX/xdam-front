@@ -34,6 +34,7 @@ const AddOrEditItemFacet = ({facet, requestOpts, values = {}, ...props}) => {
     const dispatch = useDispatch()
 
     const handleCloseModal = ()  => {
+        setForm({})
         props.onClose?.()
         setOpen(false)
     }
@@ -74,7 +75,7 @@ const AddOrEditItemFacet = ({facet, requestOpts, values = {}, ...props}) => {
         if (value === '') {
             delete newForm[key]
         }
-        setDisableSuccess(Object.keys(newForm).length !== facet.fields.length)
+        setDisableSuccess(Object.keys(newForm).length !== facet.fields.filter(obj => obj.type === "string").length)
         setForm(newForm)
     }
 
@@ -91,12 +92,14 @@ const AddOrEditItemFacet = ({facet, requestOpts, values = {}, ...props}) => {
                                     handleChange(field.key, 'course')
                                 }
                                 if (field.key === 'type') return null
-                                if (field.type === 'boolean') {
+                                if (field.type === 'boolean' && field.key !== 'is_default') {
                                     return (
                                         <Grid item style={{marginRight: 10}}>
                                             <CustomToggle
                                                 key={`${field.key}-${index}`}
-                                                onChange={() => {}}
+                                                onChange={value => {
+                                                    handleChange(field.key, value)
+                                                }}
                                                 label={field.label}
                                                 required
                                                 style={{container:{display: 'flex', flexDirection: 'row', gap: 10}}}

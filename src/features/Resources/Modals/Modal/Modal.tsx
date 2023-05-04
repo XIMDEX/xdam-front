@@ -52,7 +52,8 @@ const Modal = ({  title, content, open, triggerIcon, groupButtons, onSuccess, di
                     setOpen(true)
                 }}
                 open={isOpen}
-                trigger={(<div style={{cursor: 'ponter'}}>{triggerIcon}</div>)}
+                trigger={triggerIcon}
+                // trigger={(<div style={{cursor: 'ponter'}}>{triggerIcon}</div>)}
                 openOnTriggerClick
             >
                 {title && (
