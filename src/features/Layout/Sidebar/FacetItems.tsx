@@ -58,6 +58,7 @@ const FacetItem = ({name, facet, fixed, facetValues, supplementaryData, changeFa
     const handleHover = (inside) => {
         setHover(inside)
     }
+    console.log(facetValues[name]?.values)
 
     return (
         <div
@@ -126,6 +127,7 @@ const FacetItem = ({name, facet, fixed, facetValues, supplementaryData, changeFa
                                     cursor: 'pointer',
                                     marginRight: -10,
                                 }}
+                                disabled={facetValues[name]?.values.is_default === 1}
                             ><Icon name='pencil alternate' size="small" /></button>
                         )}
                         requestOpts={{method: 'POST', headers: MainService().getHttpOptions().headers}}
@@ -137,13 +139,14 @@ const FacetItem = ({name, facet, fixed, facetValues, supplementaryData, changeFa
                             border: 'none',
                             background: 'none',
                             cursor: 'pointer',
-                            color: 'red',
+                            color: facetValues[name]?.values.is_default === 1 ? 'lightgray' : 'red',
                             marginRight: -10,
                         }}
                         onClick={() => {
                             console.log('click')
                             handleDelete()
                         }}
+                        disabled={facetValues[name]?.values.is_default === 1}
                     ><Icon name='trash alternate' size="small" /></button>
                 )}
             </div>

@@ -92,18 +92,19 @@ const AddOrEditItemFacet = ({facet, requestOpts, values = {}, ...props}) => {
                                     handleChange(field.key, 'course')
                                 }
                                 if (field.key === 'type') return null
-                                if (field.type === 'boolean') {
+                                if (field.type === 'boolean' && field.key !== 'is_default') {
                                     return (
-                                        null
-                                        // <Grid item style={{marginRight: 10}}>
-                                        //     <CustomToggle
-                                        //         key={`${field.key}-${index}`}
-                                        //         onChange={() => {}}
-                                        //         label={field.label}
-                                        //         required
-                                        //         style={{container:{display: 'flex', flexDirection: 'row', gap: 10}}}
-                                        //     />
-                                        // </Grid>
+                                        <Grid item style={{marginRight: 10}}>
+                                            <CustomToggle
+                                                key={`${field.key}-${index}`}
+                                                onChange={value => {
+                                                    handleChange(field.key, value)
+                                                }}
+                                                label={field.label}
+                                                required
+                                                style={{container:{display: 'flex', flexDirection: 'row', gap: 10}}}
+                                            />
+                                        </Grid>
                                     )
                                 }
                                 return (
