@@ -92,6 +92,7 @@ const AddOrEditItemFacet = ({facet, requestOpts, values = {}, ...props}) => {
                                     handleChange(field.key, 'course')
                                 }
                                 if (field.key === 'type') return null
+                                if (field.type === 'boolean' && field.key === 'is_default') return null
                                 if (field.type === 'boolean' && field.key !== 'is_default') {
                                     return (
                                         <Grid item style={{marginRight: 10}}>
