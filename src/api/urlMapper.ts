@@ -171,7 +171,7 @@ const api = () => {
         }),
         getISMCC: (course_id) => ({
             method: 'GET',
-            url: `${process.env.REACT_APP_KAKUMA_URL}course/${course_id}/IMSCC`
+            url: `${process.env.REACT_APP_KAKUMA_URL}/course/${course_id}/IMSCC`
         }),
     }
     return mapper;
