@@ -14,7 +14,7 @@ class AppService {
     /**
      * @ignore
      */
-    constructor() 
+    constructor()
     {
         this.cookies = new Cookies()
         this.httpOptions.headers = {
@@ -34,11 +34,11 @@ class AppService {
 
     getToken(cookie_id = 'JWT')
     {
-      return this.cookies.get(cookie_id) 
-        ? 'Bearer ' + this.cookies.get(cookie_id) 
+      return this.cookies.get(cookie_id)
+        ? 'Bearer ' + this.cookies.get(cookie_id)
         : (COOKIE_NAME && this.cookies.get(COOKIE_NAME))
-        ? 'Bearer ' + this.cookies.get(COOKIE_NAME).access_token
-        : null
+            ? 'Bearer ' + this.cookies.get(COOKIE_NAME).access_token
+            : null
     }
 
     setToken(name, value)
@@ -58,7 +58,7 @@ class AppService {
       return this.getToken('JWT_Kakuma') !== null
     }
 
-    async login (email: String, password: String) 
+    async login (email: String, password: String)
     {
       const request = {
         method: api().login.method,
@@ -72,7 +72,7 @@ class AppService {
       }
       const res = await fetch(api().login.url, request);
       const resToJson = await res.json();
-    
+
       return resToJson;
     }
 
@@ -104,8 +104,8 @@ class AppService {
         throw new Error(JSON.stringify(resToJson));
       }
     }
-    
-    async getUser () 
+
+    async getUser ()
     {
       const request = {
         method: api().getUser.method,
@@ -115,7 +115,7 @@ class AppService {
       return res;
     }
 
-    async getSchemas () 
+    async getSchemas ()
     {
       const request = {
         method: api().getSchemas.method,
@@ -125,7 +125,7 @@ class AppService {
       return res;
     }
 
-    async _getLomesSchema () 
+    async _getLomesSchema ()
     {
       const request = {
         method: api().getSchemas.method,
@@ -168,7 +168,7 @@ class AppService {
         body: JSON.stringify(body),
       }
       const res = await (await fetch(_api.url, request)).json();
-      
+
       if (body.hasOwnProperty('Taxon Path')) {
         await this.postTaxonsData(resource_id, body['Taxon Path']);
       }
@@ -202,7 +202,7 @@ class AppService {
       await (await fetch(_apiXTags.url, requestTags)).json();
     }
 
-    async _getLomesData (resource_id) 
+    async _getLomesData (resource_id)
     {
       const _api = api().getLomesData(resource_id)
       const request = {
@@ -214,7 +214,7 @@ class AppService {
     }
     getLomesData = this._getLomesData.bind(this)
 
-    async _getLomData (resource_id) 
+    async _getLomData (resource_id)
     {
       const _api = api().getLomData(resource_id)
       const request = {
@@ -242,7 +242,7 @@ class AppService {
           }
         }
       }
-        
+
       return res;
     }
     getLomData = this._getLomData.bind(this)
@@ -255,7 +255,7 @@ class AppService {
         headers: this.httpOptions.headers,
       }
       const {tags} = await (await fetch(_api.url, request)).json();
-      
+
       return tags.map(tag => ({
         ['Entry']: tag.label,
         ['Id']: tag.definition_id,
@@ -276,7 +276,7 @@ class AppService {
     }
     getTaxonDetails = this._getTaxonDetails.bind(this)
 
-    async getResource (resource_id) 
+    async getResource (resource_id)
     {
       const _api = api().getResource(resource_id)
       const request = {
@@ -287,7 +287,7 @@ class AppService {
       return res;
     }
 
-    async createResource (body) 
+    async createResource (body)
     {
       const request = {
         method: api().createResource.method,
@@ -298,7 +298,7 @@ class AppService {
       return res;
     }
 
-    createBatchOfResources (formData) 
+    createBatchOfResources (formData)
     {
       const _api = api().createBatchOfResources;
       const request = {
@@ -340,7 +340,7 @@ class AppService {
       return res;
     }
 
-    async getLastResource(collection_id, time) 
+    async getLastResource(collection_id, time)
     {
       enum AVAILABLES {
         lastCreated = 'lastCreated',
@@ -370,7 +370,7 @@ class AppService {
       return res;
     }
 
-    async removeResource (id) 
+    async removeResource (id)
     {
       const _api = api().removeResource(id)
       const request = {
@@ -392,7 +392,7 @@ class AppService {
       return res;
     }
 
-    async removeMedia (dam_id, media_id) 
+    async removeMedia (dam_id, media_id)
     {
       const _api = api().removeMedia(dam_id, media_id)
       const request = {
@@ -402,8 +402,8 @@ class AppService {
       const res = await(await fetch(_api.url, request)).json()
       return res;
     }
-    
-    async getCatalogue(id: number, query: string) 
+
+    async getCatalogue(id: number, query: string)
     {
       const _api = api().getCatalog(id);
       const request = {
@@ -414,7 +414,7 @@ class AppService {
       return res;
     }
 
-    async setWorkspace(id: number) 
+    async setWorkspace(id: number)
     {
       const _api = api().setWorkspace;
       const request = {
@@ -456,14 +456,14 @@ class AppService {
       return url.includes('@@@dam:@');
     }
 
-    async downloadFile(file) 
+    async downloadFile(file)
     {
       const _api = api().downloadFile(file.dam_url);
       const request = {
         method: _api.method,
         headers: this.httpOptions.headers
       }
-      const res = await fetch(_api.url, request); 
+      const res = await fetch(_api.url, request);
       streamSaver.WritableStream = ponyfill.WritableStream
 
       const blob = await res.blob();
@@ -504,7 +504,7 @@ class AppService {
 
       return await response.json();
     }
-    
+
     async getBookVersion(bookid)
     {
       const _api = api().getBookVersion(bookid);
@@ -519,7 +519,7 @@ class AppService {
       catch (e) {
         console.error(e.message)
         return 0;
-      } 
+      }
     }
 
     async upgradeVersionBook(resource)
@@ -529,12 +529,54 @@ class AppService {
         method: _api.method,
         headers: this.httpOptions.headers,
         body: JSON.stringify({
-          ...resource, 
+          ...resource,
           token: 'vd9NxuORVjd8xlkZfqAfEQjJw4rXuuPEVysaEV1T'
         })
       }
       const res = await fetch(_api.url, request);
       return res;
+    }
+
+    async getIMSCC (id)
+    {
+        if(!this.cookies.get('JWT_Kakuma')) {
+            let res = await this.loginTokakuma();
+
+            if (res.ok) {
+                let resData = await res.json();
+                this.cookies.set('JWT_Kakuma', resData.kakuma_token);
+            } else {
+                throw new Error('Error 1.1: On logging into Kakuma')
+            }
+        }
+      const _api = api().getISMCC(id)
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.kakumaHeaders
+      }
+      const res = await fetch(_api.url, request)
+      if (!res.ok) {
+        // resource not found on Kakuma
+        alert('Error 5.1: On download package IMS Common Cartdrige')
+        return false
+      }
+      streamSaver.WritableStream = ponyfill.WritableStream
+
+      const blob = await res.blob();
+      const newBlob = new Blob([blob]);
+
+      const blobUrl = window.URL.createObjectURL(newBlob);
+
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.setAttribute('download', `${id}.imscc`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+
+      window.URL.revokeObjectURL(blob as unknown as string);
+
+      return true;
     }
 }
 
