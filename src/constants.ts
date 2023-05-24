@@ -6,7 +6,8 @@ export const {
   REACT_APP_COURSE_EDITOR_URL: COURSE_EDITOR_URL,
   REACT_APP_BOOK_EDITOR_URL: BOOK_EDITOR_URL,
   REACT_APP_XTAGS_API_BASE_URL: XTAGS_API_BASE_URL,
-  REACT_APP_CLIENT: CLIENT
+  REACT_APP_CLIENT: CLIENT,
+  REACT_APP_KAKUMA_URL: KAKUMA_URL_API
 } = process.env
 export const VALID_LOMS = process.env.REACT_APP_VALID_LOMS?.split(',') ?? []
 
@@ -45,9 +46,9 @@ export const XTAGS =  {
 }
 
 export const COOKIE_NAME =
-  process.env?.REACT_APP_KAKUMA_URL?.includes('kakumav1.pre-cloud')
+    KAKUMA_URL_API?.includes('kakumav1.pre-cloud')
     ? 'USERDATA_SEK_PRE'
-    : process.env?.REACT_APP_KAKUMA_URL?.includes('kakumav1.cloud')
+    : KAKUMA_URL_API?.includes('kakumav1.cloud')
     ? 'USERDATA_SEK'
     : null;
 

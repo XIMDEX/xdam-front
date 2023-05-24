@@ -6,7 +6,7 @@ import { Alert } from "@material-ui/lab";
 
 const ValidationError = ({ message }: { message: string }) => {
   return (
-    <Alert variant="outlined" severity="error" className="mb-2">{message}</Alert> 
+    <Alert variant="outlined" severity="error" className="mb-2">{message}</Alert>
   );
 }
 
@@ -20,7 +20,13 @@ const ResourceActionButton = (
       variant='outlined'
       onClick={() => {
         validate(resource.data.description)
-          .then(() => window.open(action.href, "_blank"))
+          .then(() => {
+                if (typeof action.href === 'function') {
+                    action.href(resource.id)
+                } else {
+                    window.open(action.href, "_blank")
+                }
+          })
           .catch((message) => handleError(message))
       }
     }
@@ -35,7 +41,7 @@ function ResourceActionButtons( { resource } ) {
   const [actions, setAction] = useState({});
   const [errorMessage, setErrorMessage] = useState("");
 
-  useEffect(() => {  
+  useEffect(() => {
     setAction(ResourcesActions().getActions(resource));
   }, []);
 
