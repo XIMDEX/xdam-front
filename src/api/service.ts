@@ -279,6 +279,17 @@ class AppService {
       return res;
     }
 
+    async createResourceSemantic (body) 
+    {
+      const request = {
+        method: api().createResourceSemantic.method,
+        headers: this.httpOptions.headersForm,
+        body: body
+      }
+      const res = await fetch(api().createResourceSemantic.url, request);
+      return res;
+    }
+
     createBatchOfResources (formData) 
     {
       const _api = api().createBatchOfResources;

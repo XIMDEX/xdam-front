@@ -236,7 +236,7 @@ export default function DynamicDocForm({ resourceType, action, schema, dataForUp
     if (dataForUpdate) {
       res = await MainService().updateResource(dataForUpdate.id, theFormData);
     } else {
-      res = await MainService().createResource(theFormData);
+      res = await MainService().createResourceSemantic(theFormData);
     }
     //FormFiles are the files 'adding'
     if(action !== 'create') {
@@ -365,7 +365,7 @@ export default function DynamicDocForm({ resourceType, action, schema, dataForUp
                 </>
               }
             </Btn>
-            
+              
               {canImportData && (
                 <Dropdown
                     text='Import data'
@@ -385,6 +385,7 @@ export default function DynamicDocForm({ resourceType, action, schema, dataForUp
                   </Dropdown.Menu>
                 </Dropdown>
               )}
+              
         </div>
         <div className='form-messages'>    
           <Message color={msg.ok ? 'teal' : 'red'} className={msg.display ? 'zoom-message' : 'hidden-message'} info onDismiss={() => setMessage(messageDefaultState)}>
@@ -403,6 +404,26 @@ export default function DynamicDocForm({ resourceType, action, schema, dataForUp
               }
               
           </Message>
+          <Grid item sm={12}>
+              <Button
+                variant="outlined"
+                component="label"
+                fullWidth
+              >
+                Attach files
+                <input
+                  type="file"
+                  multiple
+                  accept={resourceType === MULTIMEDIA ? "audio/*,video/*,image/*" : '*'}
+                  onChange={(e)=> handleFiles(e)}
+                  name='File'
+                  hidden
+                />
+              </Button>
+              {/* {resourceType === MULTIMEDIA ? (
+                  <Label> You will upload a {mediaType}</Label>
+              ) : null} */}
+        </Grid>
         </div>
         <SemanticForm
           id='sfu'
@@ -508,11 +529,16 @@ export default function DynamicDocForm({ resourceType, action, schema, dataForUp
         <Btn color='teal' circular icon='close' onClick={() => handleClose()} className='read-card-close-button'/>
       </DialogContentText>
       <Grid container spacing={2}>
+        
         <Grid item sm={12} id='form-content'>
+          
           {
             dataForUpdate && action === 'edit' ? (<Tab panes={panes} />) : (<Tab panes={pane} />)
           }
+          
         </Grid>
+        
+
       </Grid>
     </DialogContent>
   );
