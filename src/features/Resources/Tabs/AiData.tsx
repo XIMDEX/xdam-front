@@ -1,11 +1,16 @@
 import React, { useEffect } from 'react'
 import MainService from '../../../api/service';
+import { useSelector } from 'react-redux';
+import { selectCollection } from '../../../slices/organizationSlice';
+import { selectFormData } from '../../../appSlice';
 const AiData = (props) => {
+    let storeFormData = useSelector(selectFormData);
+    console.log("Entro")
+    console.log(storeFormData)
     const getResourceData = async () => {
         //get the resource from db. Data for update is faceted data
         let res = await MainService().getResourceJson(props.id);
-        console.log("Entro")
-        console.log(res)
+
       }
     useEffect(() => {
         getResourceData();
