@@ -27,6 +27,7 @@ import { iconHandler } from '../../../utils/iconHandler';
 import { InputText, InputTextArea, CustomToggle, CustomInputText, CustomDropdown } from './DynamicFormTemplates/CustomFields';
 import LomForm from '../LOM/LomForm';
 import TagsFieldTemplate from '../FieldEntities/components/Field/TagsFieldTemplate';
+import AiData from '../Tabs/AiData';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -263,9 +264,10 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
 
   const metaData = { menuItem: 'Main Data', render: () => <Tab.Pane > <MainData /></Tab.Pane> };
   const lomsData = !showLom ? [] : VALIDS_LOM.map(typeLom => ({menuItem: typeLom.name, render: () => (<Tab.Pane><LomForm data={dataForUpdate} standard={typeLom.key}/></Tab.Pane>)}))
+  const AICaptions = { menuItem: 'AI DATA', render: () => <Tab.Pane > <AiData id={dataForUpdate.id} /></Tab.Pane> };
 
   const pane = [metaData];
-  const panes = [metaData, ...lomsData];
+  const panes = [metaData, ...lomsData,AICaptions];
 
   const setForm = (data) => {
     dispatch(setFormData(data))

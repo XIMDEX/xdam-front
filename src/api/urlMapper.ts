@@ -43,6 +43,10 @@ const api = () => {
             method: 'GET',   
             url: baseUrl + '/resource/' + resource_id
         }),
+        getResourceJson: (resource_id) => ({    
+            method: 'GET',   
+            url: baseUrl + '/resource/json/' + resource_id + "?XDEBUG_SESSION_START"
+        }),
         getCatalog: (id) => ({    
             method: 'GET',   
             url: baseUrl + '/catalogue/' + id 
@@ -61,11 +65,11 @@ const api = () => {
         },
         createResource: {    
             method: 'POST',   
-            url: baseUrl + '/resource'
+            url: baseUrl + '/resource?XDEBUG_SESSION_START=VSCODE'
         },
         createResourceSemantic: {    
             method: 'POST',   
-            url: baseUrl + '/semantic/enhance'
+            url: baseUrl + '/semantic/enhance?XDEBUG_SESSION_START=VSCODE'
         },
         createResourceInes: (enhanced) => ({    
             method: 'GET',   

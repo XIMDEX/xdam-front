@@ -257,6 +257,17 @@ class AppService {
       return res;
     }
 
+    async getResourceJson (resource_id) 
+    {
+      const _api = api().getResourceJson(resource_id)
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers,
+      }
+      const res = await (await fetch(_api.url, request)).json();
+      return res;
+    }
+
     async createResourceInes(enhanced = false)
     {
       const _api = api().createResourceInes(enhanced)
