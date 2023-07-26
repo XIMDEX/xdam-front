@@ -82,7 +82,7 @@ export const appSlice = createSlice({
 
 export const { setUser, setLoading, setFixedFacets, setFacets, 
   setResources, setResourcesLoading, setSchemas, setLomesSchema, setLomSchema,
-  reloadCatalogue,setAiData, setFormData, reloadApp} = appSlice.actions;
+  reloadCatalogue, setFormData, reloadApp} = appSlice.actions;
 
 // The function below is called a thunk and allows us to perform async logic. It
 // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
