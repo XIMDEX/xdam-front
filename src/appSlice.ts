@@ -79,6 +79,7 @@ export const appSlice = createSlice({
         return obj.id === payload.uuid;
       });
       state.resources[result] = {...state.resources[result],...payload.data}
+      state.formData = {...state.formData,...payload.data}
     },
     reloadApp: (state) => {
       state.reloadApp = !state.reloadApp;
