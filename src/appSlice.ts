@@ -74,6 +74,12 @@ export const appSlice = createSlice({
     setFormData: (state, { payload }) => {
       state.formData = payload
     },
+    setAiData: (state,{payload})=> {
+      const result = state.resources.findIndex(obj => {
+        return obj.id === payload.uuid;
+      });
+      state.resources[result] = {...state.resources[result],...payload.data}
+    },
     reloadApp: (state) => {
       state.reloadApp = !state.reloadApp;
     },
@@ -82,7 +88,7 @@ export const appSlice = createSlice({
 
 export const { setUser, setLoading, setFixedFacets, setFacets, 
   setResources, setResourcesLoading, setSchemas, setLomesSchema, setLomSchema,
-  reloadCatalogue, setFormData, reloadApp} = appSlice.actions;
+  reloadCatalogue,setAiData, setFormData, reloadApp} = appSlice.actions;
 
 // The function below is called a thunk and allows us to perform async logic. It
 // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
