@@ -24,6 +24,7 @@ export const VIDEO = "video";
 export const AUDIO = "audio";
 export const BOOK = 'book';
 export const ACTIVITY = 'activity';
+export const DOCUMENT = 'document';
 export const ASSESSMENT = 'assessment';
 
 //FACETS

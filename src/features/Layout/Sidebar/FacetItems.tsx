@@ -18,7 +18,6 @@ const FacetItem = ({name, facet, fixed, facetValues, supplementaryData, changeFa
     let auxName = name;
     const dispatch = useDispatch()
 
-
     if (facet.key === LANGUAGE_FACET && name in bookLanguages) {
         auxName = bookLanguages[name];
     }
@@ -52,13 +51,11 @@ const FacetItem = ({name, facet, fixed, facetValues, supplementaryData, changeFa
             alert(message)
         }
 
-        // console.log({name, facet, fixed, facetValues, supplementaryData, changeFacet, facetIsActive})
     }
 
     const handleHover = (inside) => {
         setHover(inside)
     }
-    console.log(facetValues[name]?.values)
 
     return (
         <div
@@ -105,7 +102,7 @@ const FacetItem = ({name, facet, fixed, facetValues, supplementaryData, changeFa
                                     }}
                                 >{supplementaryData?.[name]
                                     ? supplementaryData[name].name
-                                    : name
+                                    : facetValues[name].label ?? name
                                 }</span>&nbsp;<strong>({facetValues[name].count})</strong>
                             </>
                         )
@@ -262,8 +259,6 @@ const FacetItems = ({ supplementaryData, fixed, facet, facetValues, currentFacet
             />
         )
     }
-
-
 
     return (<>
         {Object.keys(facetValues).map((label, index) => (
