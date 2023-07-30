@@ -20,6 +20,7 @@ import _ from 'lodash';
 import { Icon } from 'semantic-ui-react';
 import { useCookies } from 'react-cookie';
 import XthemeProvider from './providers/XthemeProvider';
+import Search from './features/Search/Search';
 
 
 const useStyles = makeStyles((theme) => {
@@ -164,6 +165,20 @@ function App() {
           </>
         )}
       </Container>
+    )
+  } else if (location.pathname === '/search' && localUser) {
+    return (
+      <XthemeProvider>
+        <Grid container>
+          <Grid item sm={12} className='main-header'>
+            <Header _user={user}/>
+          </Grid>
+        </Grid>
+        <Container maxWidth='md' disableGutters>
+          <Search />
+        </Container>
+      </XthemeProvider>
+      
     )
   } else if (localUser) {
     return (
