@@ -1,0 +1,56 @@
+{
+    "responseHeader": {
+        "status":0,
+        "QTime":3,
+        "params": {
+            "q":"{!join fromIndex=lom from=dam_resource_id to=id}lom_key:general_1_title OR lom_value:es-Ew"
+        }
+    },
+    "response": {
+        "numFound":2,
+        "start":0,
+        "numFoundExact":true,
+        "docs":[
+            {
+                "id":"99889723-4e99-4ba3-8d18-258235c05bed",
+                "name":"Introducción",
+                "data":"{\"description\":{\"partials\":{},\"links\":{},\"extra\":{},\"active\":true,\"name\":\"Introducci\\u00f3n\",\"isbn\":\"DEMO123456789\",\"unit\":0,\"lang\":\"es\"},\"lom\":[{\"key\":\"general_1_title\",\"subkey\":\"Text\",\"value\":\"Esto es un titulo prueba\"},{\"key\":\"general_1_title\",\"subkey\":\"Languge\",\"value\":\"es-ES\"},{\"key\":\"classification_9_purpose\",\"subkey\":null,\"value\":\"Educational\"}],\"lomes\":null,\"max_files\":\"unlimited\",\"cdns_attached\":[]}",
+                "active":true,
+                "type":"book",
+                "files":["@@@dam:@application@99889723-4e99-4ba3-8d18-258235c05bed@8f6edd1d-b0a3-4beb-8a8e-b9a723c301c4@@@"],
+                "previews":["@@@dam:@image@99889723-4e99-4ba3-8d18-258235c05bed@2525cf51-01a1-4743-bb4b-28e172023cff@@@"],
+                "collection":[5],
+                "workspaces":["25"],
+                "organization":["1"],
+                "units":[0],
+                "isbn":["DEMO123456789"],
+                "lang":"es",
+                "collections":[5],
+                "core_resource_type":["book"],
+                "created_at":["2023-06-30T10:01:42Z"],
+                "updated_at":["2023-06-30T10:02:37Z"],
+                "_version_":1772379411037814784
+            },
+            {
+                "id":"99889723-4e99-4ba3-8d18-258235c05",
+                "name":"Introducción 2",
+                "data":"{\"description\":{\"partials\":{},\"links\":{},\"extra\":{},\"active\":true,\"name\":\"Introducci\\u00f3n\",\"isbn\":\"DEMO123456789\",\"unit\":0,\"lang\":\"es\"},\"lom\":[{\"key\":\"general_1_title\",\"subkey\":\"Text\",\"value\":\"Esto es un titulo prueba\"},{\"key\":\"general_1_title\",\"subkey\":\"Languge\",\"value\":\"es-ES\"},{\"key\":\"classification_9_purpose\",\"subkey\":null,\"value\":\"Educational\"}],\"lomes\":null,\"max_files\":\"unlimited\",\"cdns_attached\":[]}",
+                "active":true,
+                "type":"book",
+                "files":["@@@dam:@application@99889723-4e99-4ba3-8d18-258235c05bed@8f6edd1d-b0a3-4beb-8a8e-b9a723c301c4@@@"],
+                "previews":["@@@dam:@image@99889723-4e99-4ba3-8d18-258235c05bed@2525cf51-01a1-4743-bb4b-28e172023cff@@@"],
+                "collection":[5],
+                "workspaces":["25"],
+                "organization":["1"],
+                "units":[0],
+                "isbn":["DEMO123456789"],
+                "lang":"es",
+                "collections":[5],
+                "core_resource_type":["book"],
+                "created_at":["2023-06-30T10:01:42Z"],
+                "updated_at":["2023-06-30T10:02:37Z"],
+                "_version_":1772379411037814784
+            }
+        ]
+    }
+}
