@@ -220,7 +220,7 @@ console.log('filterQuery--->', filterQuery);
                     <li key={doc?.id ?? index} className={`resource-container ${viewMode} ${index % 2 === 0 ? 'odd' : 'even'}`}>
                         <div className='resource-preview-image-container'>
                             <img 
-                                src={doc?.previews?.[0]}
+                                src={`${process.env.REACT_APP_API_BASE_URL}/resource/render/${doc?.previews?.[0]}/small`}
                                 alt='preview image' 
                                 loading='lazy'
                                 onError={(e) => { e.target.onError = null; e.target.src = "/noimg.png" }}
