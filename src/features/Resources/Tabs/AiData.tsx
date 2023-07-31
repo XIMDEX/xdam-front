@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import MainService from "../../../api/service";
 import { useDispatch, useSelector } from "react-redux";
-import { selectFormData, setAiData, setFormData } from "../../../appSlice";
+import { selectFormData, setFormData } from "../../../appSlice";
 
 const AiData = (props) => {
   const dispatch = useDispatch();
@@ -17,8 +17,8 @@ const AiData = (props) => {
       getResourceData();
     }
   });
-  const flexLine = {"display":"flex","padding":"0.5rem","flexDirection":"row","flexWrap":"wrap","gap":"1rem"};
-  
+  //const flexLine = {"display":"flex","padding":"0.5rem","gap":"1rem"};
+    const flexLine = {"display":"flex","padding":"0.5rem","flexDirection":"row","flexWrap":"wrap","gap":"1rem"};
   return (
     <div>
       {storeFormData.aiData && (
@@ -26,15 +26,15 @@ const AiData = (props) => {
           {storeFormData.aiData.xtags && (
             <div>
               <h3 style={{ color:"#43a1a2" }}>XTags(Unlinked)</h3>
-              <div  style={flexLine}>{storeFormData.aiData.xtags.map(xtag => <p>{xtag.name}</p>)}</div>
+              <div  style={flexLine as React.CSSProperties}>{storeFormData.aiData.xtags.map(xtag => <p>{xtag.name}</p>)}</div>
               <h3 style={{ color:"#43a1a2" }}>XTags</h3>
-              <div  style={flexLine}>{storeFormData.aiData.xtags_interlinked.map(xtag => <p>{xtag.name}</p>)}</div>
+              <div  style={flexLine as React.CSSProperties}>{storeFormData.aiData.xtags_interlinked.map(xtag => <p>{xtag.name}</p>)}</div>
             </div>
           )}
           {storeFormData.aiData.imageCaptionAi && (
             <div>
               <h3 style={{ color:"#43a1a2" }}>Image</h3>
-              <div  style={flexLine}>{storeFormData.aiData.imageCaptionAi}</div>
+              <div  style={flexLine as React.CSSProperties}>{storeFormData.aiData.imageCaptionAi}</div>
             </div>
           )}
         </div>
