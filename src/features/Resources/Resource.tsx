@@ -118,12 +118,14 @@ export function Resource( { data, listMode, resourceType } ) {
                             grid
                         /> 
                     </div>
-                    <div className="dam-preview-title" title={data.name || data.data.description.course_title}> 
+                    <div className="dam-preview-title" title={data.name || data.data.description.course_title || 
+                             data.data.description.title}> 
                         <strong>{
                             data.name || 
                             data.data.description.course_title || 
-                            (data.type == 'document' && data.title) ||
+                            data.data.description.title ||
                             'no name set'} </strong>
+                            {console.log(data.data.description.title)}
                     </div>
                 </div>
                 <div className="dam-item-actions ">
