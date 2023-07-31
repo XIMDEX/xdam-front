@@ -48,13 +48,9 @@ const api = () => {
             method: 'GET',
             url: baseUrl + '/resource/' + resource_id
         }),
-        getResourceJson: (resource_id) => ({    
-            method: 'GET',   
-            url: baseUrl + '/resource/json/' + resource_id 
-        }),
-        getCatalog: (id) => ({    
-            method: 'GET',   
-            url: baseUrl + '/catalogue/' + id 
+        getCatalog: (id) => ({
+            method: 'GET',
+            url: baseUrl + '/catalogue/' + id
         }),
         downloadFile: (dam_url) => ({
             method: 'GET',
@@ -68,20 +64,6 @@ const api = () => {
             method: 'POST',
             url: baseUrl + '/user/workspaces/select'
         },
-        createResource: {    
-            method: 'POST',   
-            url: baseUrl + '/resource'
-        },
-        createResourceSemantic: {    
-            method: 'POST',   
-            url: baseUrl + '/semantic/enhance'
-        },
-        createResourceInes: (enhanced) => ({    
-            method: 'GET',   
-            url: baseUrl + '/semantic/enhance/automatic' + (!enhanced ?  '?only-text=1' :'')
-        }),
-        createBatchOfResources: {    
-            method: 'POST',   
         getWorkspaces: {
             method: 'GET',
             url: `${baseUrl}/workspace/getMultiple`
@@ -94,6 +76,18 @@ const api = () => {
             method: 'POST',
             url: baseUrl + '/resource'
         },
+        getResourceJson: (resource_id) => ({    
+            method: 'GET',   
+            url: baseUrl + '/resource/json/' + resource_id 
+        }),
+        createResourceSemantic: {    
+            method: 'POST',   
+            url: baseUrl + '/semantic/enhance'
+        },
+        createResourceInes: (enhanced) => ({    
+            method: 'GET',   
+            url: baseUrl + '/semantic/enhance/automatic' + (!enhanced ?  '?only-text=1' :'')
+        }),
         createBatchOfResources: {
             method: 'POST',
             url: baseUrl + '/resource/createBatch'
@@ -191,7 +185,6 @@ const api = () => {
             method: 'GET',
             url: `${process.env.REACT_APP_KAKUMA_URL}/course/${course_id}/IMSCC`
         }),
-        }
     }
     return mapper;
 }
