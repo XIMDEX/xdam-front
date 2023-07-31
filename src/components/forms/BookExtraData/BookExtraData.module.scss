@@ -1,0 +1,25 @@
+
+.bookExtraData {
+    
+    border: 1px solid #a9d5de;
+    margin-top: 18px;
+    border-radius: .28571429rem;
+
+    &__header {
+        display: flex;
+        align-items: center;
+        font-size: large;
+        padding: 10px;
+        background-color: #f8ffff;
+        border-radius: .28571429rem;
+        color: #276f86;
+    }
+
+    &__body {
+        display: grid;
+        grid-template-columns: auto auto auto;
+        grid-gap: 1rem;
+        padding: 15px 15px;
+    }
+
+}

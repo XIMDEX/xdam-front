@@ -1,22 +1,22 @@
 import React, { useEffect, useState, useRef } from 'react';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { FileDrop } from 'react-file-drop';
-import { Dropdown, Segment, Grid, Form, Button as Btn, Divider, Input, Message, Label, Icon, Progress } from 'semantic-ui-react';
+import { Button as Btn, Input, Message, Label, Icon } from 'semantic-ui-react';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectUser, reloadCatalogue } from '../../../../appSlice';
+import { reloadCatalogue } from '../../../../appSlice';
 import api from '../../../../api/urlMapper';
 import MainService from '../../../../api/service';
 import { selectCollection } from '../../../../slices/organizationSlice';
 import axios from 'axios';
+import MultipleValueTextInput from '../../../../components/forms/MultipleValueTextInput/MultipleValueTextInput';
+import { MULTIMEDIA, BOOK } from '../../../../constants';
+import ResourceLanguageWrapper from '../../../../components/forms/ResourceLanguageWrapper/ResourceLanguageWrapper';
+import DropContent from './DropContent';
 
-
-export default function BatchDialog( {open, setOpenBatch, action} ) {
+export default function BatchDialog( {open, setOpenBatch, action, resourceType} ) {
     const [files, setFiles] = useState(null);
     const [workspace, setWorkspace] = useState(null);
     const [newWorkspace, setNewWorkspace] = useState('');
@@ -27,11 +27,12 @@ export default function BatchDialog( {open, setOpenBatch, action} ) {
     const [highlighted, highlightArea] = useState(false);
     const [uploaded, filesUploaded] = useState(false);
     const [errorOnUpload, setErrorOnUpload] = useState(null);
-
+    const fileInputRef = useRef(null);
     const collection = useSelector(selectCollection);
     const dispatch = useDispatch();
-    const fileInputRef = useRef(null);
     //const workspaces = useSelector(selectUser).data.selected_org_data.workspaces;
+    const [genericData, setGenericData] = useState({});
+    const [filesInfo, setFilesInfo] = useState<Record<string, any>>({});
 
     useEffect(() => {
         
@@ -54,17 +55,10 @@ export default function BatchDialog( {open, setOpenBatch, action} ) {
         
     }, [uploaded])
 
-    const handleClose = () => {
-        setFiles(null);
-        setFocus(null);
-        filesUploaded(false);
-        setProgress(null);
-        setErrorOnUpload(null);
-        setOpenBatch(false);
-    };
-
-    const handleOnEntered = () => {
-        setNewWorkspace(now());
+    const updateGenericDataFor = (key: string): (data: any) => void => {
+        return (data: any) => {
+            setGenericData({...genericData, [key]: data})
+        }
     }
 
     const onFileInputChange = (event) => {
@@ -72,20 +66,24 @@ export default function BatchDialog( {open, setOpenBatch, action} ) {
         setFiles(Array.from(files));
     }
 
-    const onTargetClick = () => {
-        fileInputRef.current.click()
+
+    const handleClose = () => {
+        setFiles(null);
+        setFocus(null);
+        filesUploaded(false);
+        setProgress(null);
+        setErrorOnUpload(null);
+        setOpenBatch(false);
+        setGenericData({});
+        setFilesInfo({});
+    };
+
+    const handleOnEntered = () => {
+        setNewWorkspace(now());
     }
 
-    const handleFiles = (i) => {
-        let updated = [...files];
-        updated.splice(i, 1);
-        if(updated.length < 1) {
-            setFiles(null);
-            setProgress(null);
-            filesUploaded(false);
-            return;
-        }
-        setFiles(updated);
+    const onTargetClick = () => {
+        fileInputRef.current.click()
     }
 
     const handleUpload = async () => {
@@ -109,6 +107,23 @@ export default function BatchDialog( {open, setOpenBatch, action} ) {
 
         fd.append('workspace', newWorkspace);
         fd.append('create_wsp', '1');
+
+        if (Object.keys(genericData).length > 0) {
+            fd.append('generic', JSON.stringify(genericData));
+        }
+
+        if (Object.keys(filesInfo).length > 0) {
+            for(const fileName of Object.keys(filesInfo)) {
+                const info = filesInfo[fileName];
+
+                if(info['preview']) {
+                    fd.append(`${fileName}_preview`, info['preview']);
+                    delete filesInfo[fileName]['preview'];
+                }
+            }
+
+            fd.append('filesInfo', JSON.stringify(filesInfo));
+        }
 
         for (var i = 0; i < files.length; i++) {
             fd.append('files[]', files[i]);
@@ -139,6 +154,16 @@ export default function BatchDialog( {open, setOpenBatch, action} ) {
         
     }
 
+    const changeWorkspace = (event, data) => {
+        event.preventDefault();
+
+        setNewWorkspace(data.value);
+
+        if(resourceType === BOOK) {
+            updateGenericDataFor('isbn')(data.value);
+        }
+    }
+
     function now () {
         var today = new Date();
         var date = today.getDate()+'-'+(today.getMonth()+1)+'-'+today.getFullYear();
@@ -150,64 +175,23 @@ export default function BatchDialog( {open, setOpenBatch, action} ) {
         // return today.toDateString(); // "Sun Jun 14 2020"
     }
 
-    const DropContent = () => {
-        return (
-            files ? 
-            (
-                <> 
-                    {
-                        progress ? (
-                            <>
-                                
-                                <Progress success={uploaded} error={errorOnUpload} percent={progress} />
-                                {
-                                    errorOnUpload ? 
-                                        <Message error> {errorOnUpload}</Message>
-                                        : 
-                                        <Message info hidden={!uploaded}> Upload done</Message>
-                                }
-                                
-                                
-                            </>
-                        ) : null
-                    }
-                    
-                    {
-                        files.map((file: File, i) => (
-                            <div className='file-item'>
-                                <Message success={uploaded && !errorOnUpload} error={errorOnUpload} size='small'>
-                                    {file.name}
-                                    <Btn style={uploaded || progress ? {display: 'none'} : {}} size='tiny' circular icon='close' onClick={() => handleFiles(i)} />    
-                                </Message> 
-                            </div>
-                        ))
-                    }
-                </>
-            ) : ( 
-                <>
-                    <div className='label-drop'> 
-                        <p>
-                            <Label>Click or Drop here </Label>
-                        </p>
-                    </div> 
-                    <input
-                        onChange={onFileInputChange}
-                        ref={fileInputRef}
-                        type="file"
-                        multiple
-                        hidden
-                    />
-                </>
-            )
-        )
-    }
-
     const newBatch = () => {
         setFiles(null);
         setErrorOnUpload(null);
         setProgress(null);
         filesUploaded(false);
         setNewWorkspace(now());
+    }
+
+    const filesModified = (updatedFiles) => {
+        setFiles(updatedFiles);
+
+        if (updatedFiles.length < 1) {
+            setFiles(null);
+            setProgress(null);
+            filesUploaded(false);
+            return;
+        }
     }
 
     return (
@@ -290,24 +274,45 @@ export default function BatchDialog( {open, setOpenBatch, action} ) {
                             </Grid>
                             <Divider vertical>Or</Divider>
                         </Segment> */}
-                        <Message info > 
-                            It will create a new Workspace named:
-                            <Input 
-                                size='small'
-                                style={(focus === 'exist' ? {minWidth: 200, opacity: 0.5, marginLeft: 10} : {minWidth: 200, opacity: 1, marginLeft: 10})}
-                                placeholder='Create a new one' 
-                                onFocus={() => {
-                                    setFocus('new')
-                                    setWorkspace(null)
-                                }}
-                                onChange={(e, d) => {
-                                    setNewWorkspace(d.value)
-                                }}
-                                value={newWorkspace}
-                            />
+                        <Message info >
+                            <span style={{marginRight: '10px'}}>
+                                { resourceType === BOOK
+                                    ? 'It will asociate the resource to the ISBN:'
+                                    : 'It will create a new Workspace named:'
+                                }
+                                <Input 
+                                    size='small'
+                                    style={(focus === 'exist' ? {minWidth: 200, opacity: 0.5, marginLeft: 10} : {minWidth: 200, opacity: 1, marginLeft: 10})}
+                                    placeholder='Create a new one' 
+                                    onFocus={() => {
+                                        setFocus('new')
+                                        setWorkspace(null)
+                                    }}
+                                    onChange={changeWorkspace}
+                                    value={newWorkspace}
+                                />
+                            </span>
+                            { resourceType === BOOK &&
+                                <div style={{ display: 'inline-block' }}>
+                                    <span>And with the language</span>
+                                    <ResourceLanguageWrapper
+                                        value={genericData['lang']}
+                                        onChange={updateGenericDataFor('lang')}
+                                    />
+                                </div>
+                            }
                         </Message>
                         <Message warning> LIMIT: A total of {server?.pms}{server?.pms.includes('M') || server?.pms.includes('m') ? 'B' : 'MB'} in no more than {server?.mfu} files per batch</Message>
+                        
+                        {resourceType === MULTIMEDIA
+                            &&
+                            (<div style={{ display: 'grid', gridTemplateColumns: '50% 50%', columnGap: '1rem' }}>
+                                <MultipleValueTextInput name='Tags' setData={updateGenericDataFor('tags')} />
+                                <MultipleValueTextInput name='Categories' setData={updateGenericDataFor('categories')} />
+                            </div>)
+                        }
                     </div>
+
                     
                     
                     <div
@@ -335,9 +340,33 @@ export default function BatchDialog( {open, setOpenBatch, action} ) {
                             }}
                             onTargetClick={files ? null : onTargetClick}
                         >
-                        {
-                            <DropContent />
-                        }  
+                            {files ?
+                                <DropContent
+                                    files={files}
+                                    updateFiles={filesModified}
+                                    progress={progress}
+                                    uploaded={uploaded}
+                                    errorOnUpload={errorOnUpload}
+                                    resourceType={resourceType}
+                                    filesInfo={filesInfo}
+                                    setFilesInfo={setFilesInfo}
+                                />
+                                :
+                                <>
+                                    <div className='label-drop'>
+                                        <p>
+                                            <Label>Click or Drop here </Label>
+                                        </p>
+                                    </div>
+                                    <input
+                                        onChange={onFileInputChange}
+                                        ref={fileInputRef}
+                                        type="file"
+                                        multiple
+                                        hidden
+                                    />
+                                </>
+                            }  
                         </FileDrop>
                     </div>
                 </DialogContent>

@@ -1,19 +1,20 @@
 import api from './urlMapper'
 import { Cookies } from 'react-cookie';
 import * as ponyfill from 'web-streams-polyfill/ponyfill';
-import { PATH_TAXONS_DATA, XTAGS } from '../constants';
+import { XTAGS, COOKIE_NAME } from '../constants';
+
 const streamSaver = require('streamsaver')
 
 class AppService {
     /**
      * Dict containing options for using with the http client
      */
-    private httpOptions = { headers: {} as any, headersForm: {}, params: {} };
+    private httpOptions = { headers: {} as any, headersForm: {}, kakumaHeaders: {}, params: {} };
     private cookies: Cookies;
     /**
      * @ignore
      */
-    constructor() 
+    constructor()
     {
         this.cookies = new Cookies()
         this.httpOptions.headers = {
@@ -25,11 +26,19 @@ class AppService {
           Authorization: this.getToken()
         };
 
+        this.httpOptions.kakumaHeaders = {
+          'Content-Type': 'application/json',
+          Authorization: this.getToken('JWT_Kakuma')
+        }
     }
 
-    getToken()
+    getToken(cookie_id = 'JWT')
     {
-      return this.cookies.get('JWT') ? 'Bearer ' + this.cookies.get('JWT') : null
+      return this.cookies.get(cookie_id)
+        ? 'Bearer ' + this.cookies.get(cookie_id)
+        : (COOKIE_NAME && this.cookies.get(COOKIE_NAME))
+            ? 'Bearer ' + this.cookies.get(COOKIE_NAME).access_token
+            : null
     }
 
     setToken(name, value)
@@ -39,7 +48,17 @@ class AppService {
       });
     }
 
-    async login (email: String, password: String) 
+    getHttpOptions()
+    {
+        return this.httpOptions
+    }
+
+    isLoggedToKakuma()
+    {
+      return this.getToken('JWT_Kakuma') !== null
+    }
+
+    async login (email: String, password: String)
     {
       const request = {
         method: api().login.method,
@@ -53,8 +72,18 @@ class AppService {
       }
       const res = await fetch(api().login.url, request);
       const resToJson = await res.json();
-    
+
       return resToJson;
+    }
+
+    async loginTokakuma()
+    {
+      const request = {
+        method: api().loginToKakuma.method,
+        headers: this.httpOptions.headers
+      }
+      const res = await fetch(api().loginToKakuma.url, request);
+      return res;
     }
 
     async logout()
@@ -68,14 +97,15 @@ class AppService {
       const resToJson = await res.json();
       if (resToJson.code === 200) {
         this.cookies.remove('JWT');
+        this.cookies.remove('JWT_Kakuma');
         window.location.assign('/');
       } else {
         alert('error on logout');
         throw new Error(JSON.stringify(resToJson));
       }
     }
-    
-    async getUser () 
+
+    async getUser ()
     {
       const request = {
         method: api().getUser.method,
@@ -85,7 +115,7 @@ class AppService {
       return res;
     }
 
-    async getSchemas () 
+    async getSchemas ()
     {
       const request = {
         method: api().getSchemas.method,
@@ -95,7 +125,7 @@ class AppService {
       return res;
     }
 
-    async _getLomesSchema () 
+    async _getLomesSchema ()
     {
       const request = {
         method: api().getSchemas.method,
@@ -138,7 +168,7 @@ class AppService {
         body: JSON.stringify(body),
       }
       const res = await (await fetch(_api.url, request)).json();
-      
+
       if (body.hasOwnProperty('Taxon Path')) {
         await this.postTaxonsData(resource_id, body['Taxon Path']);
       }
@@ -172,7 +202,7 @@ class AppService {
       await (await fetch(_apiXTags.url, requestTags)).json();
     }
 
-    async _getLomesData (resource_id) 
+    async _getLomesData (resource_id)
     {
       const _api = api().getLomesData(resource_id)
       const request = {
@@ -184,7 +214,7 @@ class AppService {
     }
     getLomesData = this._getLomesData.bind(this)
 
-    async _getLomData (resource_id) 
+    async _getLomData (resource_id)
     {
       const _api = api().getLomData(resource_id)
       const request = {
@@ -194,7 +224,7 @@ class AppService {
       const res = await (await fetch(_api.url, request)).json();
 
       const taxones = await this.getTaxons(resource_id)
-      let isAdded = res.data.some((tab, i) => {
+      let isAdded = res?.data?.some((tab, i) => {
         if (tab.title === "Classification") {
           res.data[i].formData['Taxon Path'] = taxones
           return true;
@@ -212,7 +242,7 @@ class AppService {
           }
         }
       }
-        
+
       return res;
     }
     getLomData = this._getLomData.bind(this)
@@ -225,7 +255,7 @@ class AppService {
         headers: this.httpOptions.headers,
       }
       const {tags} = await (await fetch(_api.url, request)).json();
-      
+
       return tags.map(tag => ({
         ['Entry']: tag.label,
         ['Id']: tag.definition_id,
@@ -246,7 +276,7 @@ class AppService {
     }
     getTaxonDetails = this._getTaxonDetails.bind(this)
 
-    async getResource (resource_id) 
+    async getResource (resource_id)
     {
       const _api = api().getResource(resource_id)
       const request = {
@@ -343,7 +373,7 @@ class AppService {
       return res;
     }
 
-    async getLastResource(collection_id, time) 
+    async getLastResource(collection_id, time)
     {
       enum AVAILABLES {
         lastCreated = 'lastCreated',
@@ -363,7 +393,17 @@ class AppService {
       return res;
     }
 
-    async removeResource (id) 
+    async getCourseEnrollments (id) {
+      const _api = api().getCourseEnrollments(id)
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.kakumaHeaders,
+      }
+      const res = await fetch(_api.url, request);
+      return res;
+    }
+
+    async removeResource (id)
     {
       const _api = api().removeResource(id)
       const request = {
@@ -374,7 +414,18 @@ class AppService {
       return res;
     }
 
-    async removeMedia (dam_id, media_id) 
+    async removeCourseEnrollments (id)
+    {
+      const _api = api().removeCourseEnrollments(id)
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.kakumaHeaders
+      }
+      const res = await fetch(_api.url, request)
+      return res;
+    }
+
+    async removeMedia (dam_id, media_id)
     {
       const _api = api().removeMedia(dam_id, media_id)
       const request = {
@@ -384,8 +435,8 @@ class AppService {
       const res = await(await fetch(_api.url, request)).json()
       return res;
     }
-    
-    async getCatalogue(id: number, query: string) 
+
+    async getCatalogue(id: number, query: string)
     {
       const _api = api().getCatalog(id);
       const request = {
@@ -396,7 +447,7 @@ class AppService {
       return res;
     }
 
-    async setWorkspace(id: number) 
+    async setWorkspace(id: number)
     {
       const _api = api().setWorkspace;
       const request = {
@@ -408,22 +459,44 @@ class AppService {
       return res;
     }
 
-    render(damUrl: string): string
+  async renameWorkspace(workspaceId: number, newName: string)
     {
-      const _api = api().render(damUrl);
+      const _api = api().updateWorkspace;
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers,
+        body: JSON.stringify({
+          workspace_id: workspaceId,
+          name: newName
+        })
+      }
+
+      const res = await fetch(_api.url, request);
+
+      return res;
+    }
+
+    render(url: string): string
+    {
+      const isDamResource = this.isDamResource(url);
+      const _api = api().render(url, isDamResource);
       const res = _api.url
       return res;
     }
 
-    async downloadFile(file) 
+    isDamResource(url)
+    {
+      return url.includes('@@@dam:@');
+    }
+
+    async downloadFile(file)
     {
       const _api = api().downloadFile(file.dam_url);
       const request = {
         method: _api.method,
         headers: this.httpOptions.headers
       }
-      const res = await fetch(_api.url, request); 
-      console.log(res);
+      const res = await fetch(_api.url, request);
       streamSaver.WritableStream = ponyfill.WritableStream
 
       const blob = await res.blob();
@@ -440,25 +513,101 @@ class AppService {
 
       window.URL.revokeObjectURL(blob as unknown as string);
 
-      // const fileStream = streamSaver.createWriteStream(file.file_name);
-        
-      // const writer = fileStream.getWriter();
+      return true;
+    }
 
-      // const reader = res.body.getReader();
-      // console.log(reader);
-      // const pump = () => reader.read()
-      //   .then(({ value, done }) => {
-      //     if (done) writer.close();
-      //     else {
-      //       writer.write(value);
-      //       return writer.ready.then(pump);
-      //     }
-      //   });
+    async getWorkspaces(workspacesId: number[]): Promise<{data: any[]}> {
 
-      // await pump()
-      //   .then(() => console.log('Closed the stream, Done writing'))
-      //   .catch(err => console.log(err));
-     
+      if (!workspacesId || !Array.isArray(workspacesId))
+        return;
+
+      const _api = api().getWorkspaces;
+
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers,
+      }
+
+      const urlParameters = workspacesId
+        .map(id => `workspacesId[]=${id}`)
+        .join('&');
+      const url = `${_api.url}?${urlParameters}`;
+
+      const response = await fetch(url, request);
+
+      return await response.json();
+    }
+
+    async getBookVersion(bookid)
+    {
+      const _api = api().getBookVersion(bookid);
+      const request = {
+        method: _api.method
+      }
+      try {
+        const res = await (await fetch(_api.url, request)).json();
+        if (res.error) throw Error(res.error)
+        return +res.version
+      }
+      catch (e) {
+        console.error(e.message)
+        return 0;
+      }
+    }
+
+    async upgradeVersionBook(resource)
+    {
+      const _api = api().postBookMetadata()
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers,
+        body: JSON.stringify({
+          ...resource,
+          token: 'vd9NxuORVjd8xlkZfqAfEQjJw4rXuuPEVysaEV1T'
+        })
+      }
+      const res = await fetch(_api.url, request);
+      return res;
+    }
+
+    async getIMSCC (id)
+    {
+        if(!this.cookies.get('JWT_Kakuma')) {
+            let res = await this.loginTokakuma();
+
+            if (res.ok) {
+                let resData = await res.json();
+                this.cookies.set('JWT_Kakuma', resData.kakuma_token);
+            } else {
+                throw new Error('Error 1.1: On logging into Kakuma')
+            }
+        }
+      const _api = api().getISMCC(id)
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.kakumaHeaders
+      }
+      const res = await fetch(_api.url, request)
+      if (!res.ok) {
+        // resource not found on Kakuma
+        alert('Error 5.1: On download package IMS Common Cartdrige')
+        return false
+      }
+      streamSaver.WritableStream = ponyfill.WritableStream
+
+      const blob = await res.blob();
+      const newBlob = new Blob([blob]);
+
+      const blobUrl = window.URL.createObjectURL(newBlob);
+
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.setAttribute('download', `${id}.imscc`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+
+      window.URL.revokeObjectURL(blob as unknown as string);
 
       return true;
     }

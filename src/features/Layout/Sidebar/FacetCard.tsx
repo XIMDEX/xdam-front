@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch  } from 'react-redux';
 import { Grid, Button, IconButton, Typography, TextField } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import _ from 'lodash'
-import { ORGANIZATION, COLLECTION } from '../../../constants';
-import { setFacetsQuery, setQuery, selectQuery } from '../../../slices/organizationSlice';
+import { ORGANIZATION, COLLECTION  } from '../../../constants';
+import { setFacetsQuery  } from '../../../slices/organizationSlice';
 import { setResourcesLoading } from '../../../appSlice';
 import ClearIcon from '@material-ui/icons/Clear';
 import { Icon } from 'semantic-ui-react';
 import EFacetNameMapping from './EFacetNameMapping';
-import { mapping, EFilterTypes } from './EMapFacetKeysToFilterType';
-import RangeFilter from './RangeFilter/RangeFilter';
+import FacetItems from './FacetItems';
+import useSupplementaryData from '../../../hooks/useSupplementaryData';
+import AddItemFacet from './AddOrEditFacetItem';
+import MainService from '../../../api/service';
+import PostAddRounded from '@material-ui/icons/PostAddRounded';
+
+const LIMIT_ITEMS = 10;
 
 const useStyles = makeStyles((theme) => ({
     sidebarRoot: {
@@ -44,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
       marginBottom: 20
     },
     capitalize: {
-        textTransform: 'capitalize' 
+        textTransform: 'capitalize'
     },
     clearIcon: {
         position: 'relative',
@@ -56,7 +61,7 @@ const useStyles = makeStyles((theme) => ({
   }
 ));
 
-export function FacetCard({ facet, fixed, resources, collection, organization, facetsQuery, _user }) { 
+export function FacetCard({ facet, fixed, resources, collection, organization, facetsQuery }) {
     const classes = useStyles()
     const values = facet.values ?? {}
     const dispatch = useDispatch()
@@ -67,78 +72,45 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
     const selectedColl = collection
     const [search, setSearch] = useState('')
     const currentFacets = JSON.parse(JSON.stringify(facetsQuery));
-    const cQuery = useSelector(selectQuery);
-    
+    const supplementaryData = useSupplementaryData(facet);
+    const [selectedWS, setSelectedWS] = useState([])
+
+    const [showMore, setShowMore] = useState<Boolean>(false)
+
     useEffect( () => {
-        if (search === '') {
-            setFacetValues(facet.values)
+        let values_selected = Object.keys(facet.values).filter(name => {
+            return facet.values[name].selected || selectedWS.includes(name)
+        })
+        let values_non_selected = Object.keys(facet.values).filter(name => !facet.values[name].selected  && !selectedWS.includes(name))
+        let new_values = [...values_selected, ...values_non_selected]
+        let values_obj = {}
+        if (!showMore ) {
+            let limit = LIMIT_ITEMS
+
+            if (values_selected.length > 0) {
+                if (values_selected.length < LIMIT_ITEMS) {
+                    limit -= values_selected.length
+                } else {
+                    limit = 0
+                }
+            }
+            new_values = values_non_selected.slice(0, limit)
         }
-    }, [collection, facetsQuery, organization, resources])
-    
+        new_values = [...values_selected, ...new_values]
+        new_values.forEach(value => values_obj[value] = facet.values[value])
+        if (search === '') {
+            setFacetValues(values_obj)
+        }
+    }, [collection, facetsQuery, organization, resources, showMore, selectedWS, search])
+
     function onFilterChange(e) {
         setSearch(e.target.value);
         var result = _.pickBy(values, function(value, key) {
-            
-            return _.includes(key.toLowerCase(), e.target.value.toLowerCase());
+            const k = supplementaryData?.[key]?.name || key;
+
+            return _.includes(k.toLowerCase(), e.target.value.toLowerCase());
         });
         setFacetValues(result)
-    }
-    async function filterRadio (evt)
-    {
-        evt.target.checked = true;
-        const facetKey = facet.key;
-        const facetValue = evt.target.value;
-
-        if (currentFacets.hasOwnProperty(facetKey)) {
-            currentFacets[facetKey].splice(facetKey, 1, facetValue)
-        } else {
-            currentFacets[facetKey] = []
-            currentFacets[facetKey].push(facetValue)
-        }
-        let nQ = {
-            ...cQuery
-        };
-        nQ.page = 1
-        dispatch(setResourcesLoading(true))
-        dispatch(setQuery(nQ));
-        dispatch(setFacetsQuery(currentFacets));
-
-    }
-    async function filterCheck (evt)
-    {
-        const checked = evt.target.checked; 
-        const facetKey = facet.key;
-        const facetValue = evt.target.value;
-        
-        if (currentFacets.hasOwnProperty(facetKey)) {
-            if (checked) {
-                if (!currentFacets[facetKey].includes(facetValue)) {
-                    currentFacets[facetKey].push(facetValue)
-                }
-            } else {
-                if (currentFacets[facetKey].includes(facetValue)) {
-                    currentFacets[facetKey].forEach((item, i) => {
-                        if (item === facetValue) {
-                            currentFacets[facetKey].splice(i, 1)
-                            if (currentFacets[facetKey].length < 1) {
-                                delete currentFacets[facetKey]
-                            }
-                            return;
-                        }    
-                    })
-                }
-            }
-        } else {
-            currentFacets[facetKey] = []
-            currentFacets[facetKey].push(facetValue)
-        }
-        let nQ = {
-            ...cQuery
-        };
-        nQ.page = 1
-        dispatch(setResourcesLoading(true))
-        dispatch(setQuery(nQ));
-        dispatch(setFacetsQuery(currentFacets))
     }
 
     function Errors(): any
@@ -150,21 +122,6 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
         )
     }
 
-    function getChecked(toCheck, key): boolean
-    {
-        let check = Object.keys(currentFacets)
-        let isChecked = false;
-        check.forEach(item => {
-            if (key === item) {
-                if (currentFacets[item].includes(toCheck.toString())) {
-                    isChecked = true;
-                    return;
-                }
-            }
-        })
-        return isChecked;
-    }
-    
     function clearFilter(evt)
     {
         const facetKey = facet.key;
@@ -186,6 +143,7 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
         if (facet.key === ORGANIZATION && typeof selectedOrg === 'object') {
             return selectedOrg.name
         }
+
         if (facet.key === COLLECTION && typeof selectedColl === 'object') {
             return selectedColl.name
         }
@@ -197,110 +155,23 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
         return facet.label
     }
 
-    function FacetItems( { fixed } ): any {
-        const parsedFacetValues = deleteNumbers(true)
-        if (facet.key === COLLECTION || facet.key === ORGANIZATION ) {
-            return (
-                Object.keys(facetValues).map((name, index) => (
-                    <li key={index} style={{listStyleType: "none"}}>
-                        <input type="radio"
-                            name={facet.key} 
-                            value={facetValues[name].id} 
-                            onChange={filterRadio} 
-                            defaultChecked={facet.key === COLLECTION ? (collection.id === facetValues[name].id) : (organization.id === facetValues[name].id)}
-                            id={(facet.key +'-'+ name +'-'+facetValues[name].id).replace(/ /g,'--')}
-                        /> 
-                        <label htmlFor={(facet.key +'-'+ name +'-'+facetValues[name].id).replace(/ /g,'--')}>
-                            <span>{ name.replace('collection', '') } <strong>({facetValues[name].count})</strong> </span>
-                        </label>
-                    </li>
-                    )
-                )
-            )
+    const handleShowMore = () => setShowMore(!showMore)
+
+    const handleFilterSelected = (value, isChecked) => {
+        let newValues = {...facetValues}
+        newValues[value] = {...newValues[value], selected: isChecked}
+        setFacetValues(newValues)
+        if (isChecked && !selectedWS.includes(value)) {
+            setSelectedWS([...selectedWS,value ])
         }
-        
-        if (parsedFacetValues) {
-            switch (facet.key) {
-                // case 'cost':
-                    
-                //     var comp = <RangeFilter values={facetValues} fkey={facet.key}/>
-                //     return comp
-                //     break;
-            
-                default:
-                    console.log(parsedFacetValues)
-                    return (
-                        Object.keys(parsedFacetValues).map((name, index) => (
-                            //switch lines to hidden facets values in zero
-                            // <li key={index} style={{listStyleType: "none"}} className={facetValues[name].count < 1 ? classes.hidden : null}>
-                            <li key={index} style={{listStyleType: "none"}}>
-                                <input 
-                                    type={parsedFacetValues[name].radio ? 'radio' : 'checkbox'} 
-                                    name={facet.key}
-                                    // disabled={facetValues[name].count < 1}
-                                    value={fixed ? parsedFacetValues[name].id : name} 
-                                    onChange={parsedFacetValues[name].radio ? filterRadio : filterCheck}
-                                    checked={getChecked(fixed ? parsedFacetValues[name].id : name, facet.key)} 
-                                    id={(facet.key +'-'+ name +'-'+parsedFacetValues[name].id).replace(/ /g,'--')}
-                                /> 
-                                <label htmlFor={(facet.key +'-'+ name +'-'+parsedFacetValues[name].id).replace(/ /g,'--')}>
-                                    <span>{ name } <strong>({ parsedFacetValues[name].count })</strong></span>
-                                </label>
-                                
-                            </li>
-                            )
-                        )
-                    )
-                    break;
-            }
-        } else {
-            return (
-                <></>
-            )
+        if (!isChecked && selectedWS.includes(value)) {
+            setSelectedWS(selectedWS.filter(ws => ws !== value))
         }
-        
     }
-            
-
-    function deleteNumbers(others) {
-
-        const label_name = label();
-        const values = {}
-        Object.keys(facetValues).forEach(value => {
-            if (label_name === 'entities_linked' || label_name === 'entities_non_linked' ) {
-                if (value == '104%'){
-                    console.log(0)
-                }
-                let checkvalue = value.replaceAll('.', '').replaceAll(',','').replaceAll('%', '')
-                if (others) {
-                    checkvalue = checkvalue
-                        .replaceAll('millones', '')
-                        .replaceAll('de', '')
-                        .replaceAll('euros', '')
-                        .replaceAll('años', '')
-                        .replaceAll('kilómetros', '')
-                        .replaceAll('decámetros', '')
-                        .replaceAll('metros', '')
-                        .replaceAll('cuadrados', '')
-                        .replaceAll('días', '')
-                    }
-
-
-                if (isNaN(+checkvalue)) {
-                    values[value] = facetValues[value]
-                }
-            } else {
-                values[value] = facetValues[value] 
-            }
-            
-        })
-        return values;
-    }
-
 
     return (
-        
-        <Grid container className={`${classes.sidebarRoot} ${cardOpen ? 'cardOpen' : null} facetCard facets-context`} >
+
+        <Grid container className={`${classes.sidebarRoot} ${cardOpen ? 'cardOpen' : ''} facetCard facets-context`} >
                 {/* Errors */}
                 <Grid item sm={12}>
                     <Errors />
@@ -308,64 +179,84 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
                 {/* Facet title */}
                 <Grid container>
                     <Grid item sm={!fixed && currentFacets.hasOwnProperty(facet.key) ? 11 : 12}>
-                        <Button aria-label="facet-title" 
-                            onClick={toggleCard} 
-                            fullWidth 
-                            endIcon={cardOpen ? (<Icon name='minus' size='small'/>) : (<Icon name='plus' size='small' />)}
+                        <Button aria-label="facet-title"
+                            onClick={toggleCard}
+                            fullWidth
+                            endIcon={cardOpen ? (<Icon name='chevron up' size='large'/>) : (<Icon name='chevron down' size='large' />)}
                         >
                             <Grid container>
                                 <Grid item sm={12}>
                                     <Typography className={classes.capitalize} align='left' color='primary'>
                                         <strong className={!cardOpen ? 'darkLabel' : 'whiteLabel'}>{label()}</strong>
-                                    </Typography>    
+                                    </Typography>
                                 </Grid>
                             </Grid>
+                            { facet.canAdd && facet.route && (
+                                <AddItemFacet
+                                    facet={facet}
+                                    cardOpen={cardOpen}
+                                    triggerIcon={(<PostAddRounded htmlColor={cardOpen ? 'white' : 'gray'}/>)}
+                                    requestOpts={{method: 'POST', headers: MainService().getHttpOptions().headers}}
+                                />
+                            )}
                         </Button>
                     </Grid>
-                    {
-                        !fixed && currentFacets.hasOwnProperty(facet.key) ? (
-                            <Grid item sm={1}>
-                                <IconButton color='primary' size='small' onClick={clearFilter} className={classes.clearIcon}>
-                                    <ClearIcon color='secondary'/>
-                                </IconButton>
-                            </Grid>
-                        ) : null
-                    }
+                    {!fixed && currentFacets.hasOwnProperty(facet.key) && (
+                        <Grid item sm={1}>
+                            <IconButton color='primary' size='small' onClick={clearFilter} className={classes.clearIcon}>
+                                <ClearIcon color='secondary'/>
+                            </IconButton>
+                        </Grid>
+                    )}
                 </Grid>
                 <div className={cardOpen ? classes.cardFacet : classes.hidden}>
-                    {
-                        Object.keys(facetValues).length > 4 && search === '' ? (
+                    {Object.keys(facetValues).length > LIMIT_ITEMS && search === '' ? (
                         // true ? (
                             <Grid item sm={12}>
-                                <TextField 
-                                    onChange={ onFilterChange } 
-                                    placeholder='search' 
+                                <TextField
+                                    onChange={ onFilterChange }
+                                    placeholder='search'
                                     size='small'
                                     fullWidth
                                 />
                             </Grid>
                         ) : (search !== '' ? (
                             <Grid item sm={12}>
-                                <TextField 
-                                    onChange={ onFilterChange } 
-                                    placeholder='search' 
+                                <TextField
+                                    onChange={ onFilterChange }
+                                    placeholder='search'
                                     size='small'
                                     fullWidth
                                 />
                             </Grid>
                         ) : null)
                     }
-                    
+
                     {/* Facet values */}
                     <Grid item sm={12}>
-                    <ul> 
-                        {
-                            organization && collection ? (<FacetItems fixed={fixed}/>) : ''
-                        }
+                    <ul>
+                        {organization && collection &&  (
+                                <FacetItems
+                                    supplementaryData={supplementaryData}
+                                    fixed={fixed}
+                                    facet={facet}
+                                    facetValues={facetValues}
+                                    currentFacets={currentFacets}
+                                    limit_items={LIMIT_ITEMS}
+                                    onFilterSelected={handleFilterSelected}
+                                />
+                        )}
                     </ul>
                     </Grid>
+                    { Object.keys(values).length > LIMIT_ITEMS  && search === '' && (
+                        <Grid item sm={12} style={{marginBottom: 10, marginTop: -10, textAlign: 'right'}}>
+                            <Button onClick={handleShowMore} style={{fontSize: 8}} size='small'>Show {showMore ? 'less' : 'more'}...</Button>
+                        </Grid>
+                    )
+
+                    }
                 </div>
             </Grid>
-        
+
     );
 }

@@ -1,9 +1,10 @@
 import { Cookies } from 'react-cookie';
-import { COURSE, BOOK, MULTIMEDIA, IMAGE, VIDEO, AUDIO, ACTIVITY, ASSESSMENT, DOCUMENT } from '../constants';
+import { COURSE, BOOK, MULTIMEDIA, IMAGE, VIDEO, AUDIO, ACTIVITY, ASSESSMENT, BOOK_EDITOR_URL, COURSE_EDITOR_URL, KAKUMA_URL_API,DOCUMENT } from '../constants';
+import MainService from '../api/service';
 
 class ResourcesService {
 
-    constructor() 
+    constructor()
     {
 
     }
@@ -11,37 +12,37 @@ class ResourcesService {
     getMultimediaActions()
     {
       return {
-        create: { href: '', label: '' } 
+        create: { href: '', label: '' }
       }
     }
 
     getBookActions(resourceId)
     {
-      let baseUrl = process.env.REACT_APP_BOOK_EDITOR_URL;
+      let baseUrl = BOOK_EDITOR_URL;
       let edit = 'edit/';
       let convert = 'convert/';
       let token = 'vd9NxuORVjd8xlkZfqAfEQjJw4rXuuPEVysaEV1T';
       let rid = resourceId + '/';
-      
+
       let ob = {
         edit: { label: 'Edit', href: baseUrl + edit + rid + token },
         convert: { label: 'Convert', href: baseUrl + convert + rid + token },
-      } 
-      
+      }
+
       return ob;
     }
 
     getActivityActions()
     {
       return {
-        create: { href: '', label: '' } 
+        create: { href: '', label: '' }
       }
     }
 
     getAssessmentActions()
     {
       return {
-        create: { href: '', label: '' } 
+        create: { href: '', label: '' }
       }
     }
 
@@ -49,9 +50,15 @@ class ResourcesService {
     {
       return {
         create: () => {
-          window.open(process.env.REACT_APP_COURSE_EDITOR_URL, '_blank').focus()
+          window.open(COURSE_EDITOR_URL, '_blank').focus()
         },
-        edit: { href: process.env.REACT_APP_COURSE_EDITOR_URL, label: 'Editor' }
+        edit: { href: COURSE_EDITOR_URL, label: 'Editor' },
+        getIMSC: {
+            href: async (id) => {
+                return await MainService().getIMSCC(id)
+            },
+            label: 'Get IMSCC'
+        }
       }
     }
 

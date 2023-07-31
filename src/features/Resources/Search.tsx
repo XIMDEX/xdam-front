@@ -6,6 +6,7 @@ import { Input, Dropdown } from 'semantic-ui-react'
 
 import { setResourcesLoading } from '../../appSlice';
 import _ from 'lodash'
+import { SHOW_DAM_ORGANIZATIONS } from '../../constants';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -38,7 +39,7 @@ export interface Props {
 
 export function Search( Props ) {
   const { currentQuery, collections } = Props;
-  
+
   const classes = useStyles();
   const [search, setSearch] = useState('')
   const dispatch = useDispatch()
@@ -49,13 +50,13 @@ export function Search( Props ) {
       goSearch()
     }
   }
-  const goSearch = () => {  
+  const goSearch = () => {
       dispatch(setResourcesLoading(true))
       let newQuery = {
           ...currentQuery
       };
       newQuery.page = 1;
-      let cleanSearch = search.replace(/[`~!@#$%^&*()+\;:'"<>\{\}\[\]\\\/]/gi, '');
+      let cleanSearch = search.replace(/[`~!@#$%^&*()+\;:<>\{\}\[\]\\\/]/gi, '');
       newQuery.search = cleanSearch;
       dispatch(setQuery(newQuery))
   }
@@ -64,7 +65,7 @@ export function Search( Props ) {
     setSearch(evt.target.value)
   }
 
-  
+
   const switchCollection = async (e, data) => {
     dispatch(setResourcesLoading(true))
     const cid = data.value
@@ -73,29 +74,26 @@ export function Search( Props ) {
     }
     newQuery.page = 1;
     newQuery.search = '';
-    
+
     dispatch(setQuery(newQuery))
     dispatch(setCollection(cid))
     dispatch(setFacetsQuery({}))
     return;
   };
 
-  const stateOptions = _.map(collections, (coll, index) => ({
-    key: index,
-    text: index,
-    value: coll.id,
-  }))
+  const stateOptions = _.map(collections, (coll, index) => {
+        return ({
+            key: index,
+            text:  SHOW_DAM_ORGANIZATIONS ? index : index.split(' Organization ').reverse()[0],
+            value: coll.id,
+        }
+    )})
 
 
   return (
     <div className={classes.root}>
           <Input
             fluid
-            // action={{
-            //   color: 'teal',
-            //   icon: 'search',
-            //   onClick: goSearch
-            // }}
             onKeyDown={onEnter}
             onChange={_setSearch}
             placeholder='Search...'

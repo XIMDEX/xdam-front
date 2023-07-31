@@ -86,7 +86,12 @@ export default function Dialogs( { resourceType, action, dialogOpen = false, res
         form = (<DynamicForm handleClose={handleClose} resourceType={resourceType} action={action} schema={schemas.multimedia_validator} dataForUpdate={resourceData} />);
         break;
       case BOOK:
-        form = (<DynamicForm handleClose={handleClose} resourceType={resourceType} action={action} schema={schemas.book_validator} dataForUpdate={resourceData} />);
+
+        const overridedBookSchema = JSON.parse(JSON.stringify(schemas.book_validator));
+
+        overridedBookSchema?.properties?.description?.required.push("unit");
+
+        form = (<DynamicForm handleClose={handleClose} resourceType={resourceType} action={action} schema={overridedBookSchema} dataForUpdate={resourceData} />);
         break;
       case ACTIVITY:
           form = (<DynamicForm handleClose={handleClose} resourceType={resourceType} action={action} schema={schemas.activity_validator} dataForUpdate={resourceData} />);
