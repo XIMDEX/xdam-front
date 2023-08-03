@@ -316,7 +316,7 @@ class AppService {
         headers: this.httpOptions.headersForm,
         body: body
       }
-      const res = await fetch(api().createResource.url, request);
+      const res = await fetch(api().createResource.url+"?XDEBUG_SESSION_START=VSCODE", request);
       return res;
     }
 
@@ -344,6 +344,17 @@ class AppService {
 
     async updateResource (id, body) {
       const _api = api().updateResource(id)
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headersForm,
+        body: body
+      }
+      const res = await fetch(_api.url, request);
+      return res;
+    }
+
+    async updateResourceInes (id, body) {
+      const _api = api().updateResourceInes(id)
       const request = {
         method: _api.method,
         headers: this.httpOptions.headersForm,

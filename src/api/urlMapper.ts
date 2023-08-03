@@ -82,7 +82,7 @@ const api = () => {
         }),
         createResourceSemantic: {    
             method: 'POST',   
-            url: baseUrl + '/semantic/enhance'
+            url: baseUrl + '/semantic/enhance?XDEBUG_SESSION_START=VSCODE'
         },
         createResourceInes: (enhanced) => ({    
             method: 'GET',   
@@ -103,6 +103,10 @@ const api = () => {
         updateResource: (id) => ({
             method: 'POST',
             url: baseUrl + '/resource/' + id + '/update'
+        }),
+        updateResourceInes: (id) => ({
+            method: 'POST',
+            url: baseUrl + '/semantic/documents/' + id + "?XDEBUG_SESSION_START=VSCODE"
         }),
         updateResourceFromOther: (resource_to_update, last_created, last_updated, other_resource) => {
             let req = {
