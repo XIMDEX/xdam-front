@@ -286,14 +286,11 @@ export default function DynamicDocForm({ resourceType, action, schema, dataForUp
   const uiSchema={
     
     "description": {
-      "ui:order": ["active", 'enhanced', 'enhanced_interactive', "*"],
+      "ui:order": ["active", 'enhanced', "*"],
       "active": {
         "ui:widget": CustomToggle,
       },
       "enhanced": {
-        "ui:widget": CustomToggle,
-      },
-      "enhanced_interactive": {
         "ui:widget": CustomToggle,
       },
       "course_source": {

@@ -455,38 +455,6 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
               </Grid>) : null
           }
 
-          {
-            selectedColl?.resource_type == 'document' && (
-
-              <Grid container  style={{ marginTop: 3 }}>
-                <Grid item sm={12} className={classes.actionBtns}>
-
-                  <Button 
-                    color="primary" 
-                    style={{marginRight: 27}} 
-                    variant='contained'
-                    disabled={createResourceloading}
-                    onClick={() => createResourceInes(true)} 
-                    // className={classes.clearAllFilters}
-                  >
-                    GET Enhanced
-                  </Button>
-                  {false && (
-                    <Button 
-                      color="primary" 
-                      style={{marginRight: 27}} 
-                      variant='contained'
-                      disabled={createResourceloading}
-                      onClick={() => createResourceInes(false)} 
-                      // className={classes.clearAllFilters}
-                    >
-                      GET
-                    </Button>
-                  )}
-                </Grid>
-              </Grid>
-            )
-          }
 
           {
             localResources && localResources.length > 0 ? <ResCont /> : (resourcesLoading ? '' : <ResourcesNotFound />)
