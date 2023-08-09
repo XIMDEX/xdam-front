@@ -5,6 +5,8 @@ import { selectFormData, setFormData } from "../../../appSlice";
 import { Tab } from '@material-ui/core';
 import { Tabs } from '@material-ui/core';
 import useStyles from "../LOM/hooks/useStyles";
+import LabbelButton from "./LabbelButton"; 
+
 const AiData = (props) => {
   const [value, setValue] = useState(0);
   const classes = useStyles();
@@ -24,7 +26,9 @@ const AiData = (props) => {
       getResourceData();
     }
   });
-    const flexLine = {"display":"flex","padding":"0.5rem","flexDirection":"row","flexWrap":"wrap","gap":"1rem"};
+    const flexLine = {"display":"flex","padding":"0.5rem","gap":"1rem"};
+    const labbel   = {"padding":"1rem","width":"100%"}
+
   return (
     <div>
       {storeFormData.aiData && (
@@ -33,19 +37,29 @@ const AiData = (props) => {
           {storeFormData.aiData.xtags && (
         
             <div>
-              <Tabs
-                orientation='vertical'
-                variant="scrollable"
-                value={value}
-                onChange={handleChange}
-                aria-label="Vertical tabs example"
-                className={classes.tabs}
-              >
+              <div style={flexLine as React.CSSProperties}>
+                <div>
+                <Tabs
+                  orientation='vertical'
+                  variant="scrollable"
+                  value={value}
+                  onChange={handleChange}
+                  aria-label="Vertical tabs example"
+                  className={classes.tabs}
+                  
+                >
+                
+                  <Tab key="1" label="test"  />,
+                  <Tab key="2" label="test2"  />
               
-                 <Tab key="1" label="test"  />,
-                 <Tab key="2" label="test2"  />
-             
-             </Tabs>
+              </Tabs>
+                </div>
+              <div style={labbel}>
+               {storeFormData.aiData.xtags_interlinked.map(xtag => <LabbelButton text="text" />)}
+              </div>
+           
+              </div>
+            
               <h3 style={{ color:"#43a1a2" }}>XTags(Unlinked)</h3>
               <div  style={flexLine as React.CSSProperties}>{storeFormData.aiData.xtags.map(xtag => <p>{xtag.name}</p>)}</div>
               <h3 style={{ color:"#43a1a2" }}>XTags</h3>
