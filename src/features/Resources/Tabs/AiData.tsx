@@ -1,9 +1,13 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import MainService from "../../../api/service";
 import { useDispatch, useSelector } from "react-redux";
 import { selectFormData, setFormData } from "../../../appSlice";
-
+import { Tab } from '@material-ui/core';
+import { Tabs } from '@material-ui/core';
+import useStyles from "../LOM/hooks/useStyles";
 const AiData = (props) => {
+  const [value, setValue] = useState(0);
+  const classes = useStyles();
   const dispatch = useDispatch();
   let storeFormData = useSelector(selectFormData);
   const getResourceData = async () => {
@@ -12,19 +16,36 @@ const AiData = (props) => {
     const result = await { ...storeFormData, aiData: { ...res } };
     await dispatch(setFormData(result));
   };
+  const handleChange = async (event: React.ChangeEvent<{}>, newValue: number) => {
+    setValue(newValue);
+  }
   useEffect(() => {
     if (!storeFormData.aiData) {
       getResourceData();
     }
   });
-  //const flexLine = {"display":"flex","padding":"0.5rem","gap":"1rem"};
     const flexLine = {"display":"flex","padding":"0.5rem","flexDirection":"row","flexWrap":"wrap","gap":"1rem"};
   return (
     <div>
       {storeFormData.aiData && (
+        
         <div>
           {storeFormData.aiData.xtags && (
+        
             <div>
+              <Tabs
+                orientation='vertical'
+                variant="scrollable"
+                value={value}
+                onChange={handleChange}
+                aria-label="Vertical tabs example"
+                className={classes.tabs}
+              >
+              
+                 <Tab key="1" label="test"  />,
+                 <Tab key="2" label="test2"  />
+             
+             </Tabs>
               <h3 style={{ color:"#43a1a2" }}>XTags(Unlinked)</h3>
               <div  style={flexLine as React.CSSProperties}>{storeFormData.aiData.xtags.map(xtag => <p>{xtag.name}</p>)}</div>
               <h3 style={{ color:"#43a1a2" }}>XTags</h3>
