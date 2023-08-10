@@ -71,10 +71,7 @@ const LabbelButton = (props) => {
         "border-top-right-radius": "0.75rem",
         "border-bottom-right-radius": "0.75rem",
         "font-size": "1.5rem",
-        "line-height": "1.75rem",
-        "display":"flex",
-        "alignItems":"center",
-        "justifyContent":"center"
+        "line-height": "1.35rem",
         
       
     };
