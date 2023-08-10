@@ -27,7 +27,8 @@ const AiData = (props) => {
     }
   });
     const flexLine = {"display":"flex","padding":"0.5rem","gap":"1rem"};
-    const labbel   = {"padding":"1rem","width":"100%"}
+    const labbel   = {"width":"100%","border-width": "4px","display":"flex","alignItems":"center","flexDirection":"column","gap":"1rem","height":"600px","overflow":"auto"
+    }
 
   return (
     <div>
