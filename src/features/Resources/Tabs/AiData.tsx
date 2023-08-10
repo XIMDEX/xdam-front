@@ -56,7 +56,7 @@ const AiData = (props) => {
               </Tabs>
                 </div>
               <div style={labbel}>
-               {storeFormData.aiData.xtags_interlinked.map(xtag => <LabbelButton text="text" />)}
+               {storeFormData.aiData.xtags_interlinked.map(xtag => <LabbelButton xtag={xtag} />)}
               </div>
            
               </div>
