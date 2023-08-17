@@ -12,19 +12,18 @@ const AiData = (props) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   let storeFormData = useSelector(selectFormData);
-  const getResourceData = async () => {
+  /*const getResourceData = async () => {
     const uuid = props.id;
     let res = await MainService().getResourceJson(uuid);
     const result = await { ...storeFormData, aiData: { ...res } };
     await dispatch(setFormData(result));
-  };
+  };*/
   const handleChange = async (event: React.ChangeEvent<{}>, newValue: number) => {
+    console.log(newValue)
     setValue(newValue);
   }
   useEffect(() => {
-    if (!storeFormData.aiData) {
-      getResourceData();
-    }
+    console.log(storeFormData)
   });
     const flexLine = {"display":"flex","padding":"0.5rem","gap":"1rem"};
     const labbel   = {"width":"100%","border-width": "4px","display":"flex","alignItems":"center","flexDirection":"column","gap":"1rem","height":"600px","overflow":"auto"
@@ -32,10 +31,10 @@ const AiData = (props) => {
 
   return (
     <div>
-      {storeFormData.aiData && (
+      {storeFormData.description && (
         
         <div>
-          {storeFormData.aiData.xtags && (
+          {storeFormData.description && (
         
             <div>
               <div style={flexLine as React.CSSProperties}>
@@ -49,30 +48,28 @@ const AiData = (props) => {
                   className={classes.tabs}
                   
                 >
-                
-                  <Tab key="1" label="test"  />,
-                  <Tab key="2" label="test2"  />
-              
+                  <Tab key="1" label="xtags"  />,
+                  <Tab key="2" label="xtags(unlinked)"  />
               </Tabs>
                 </div>
               <div style={labbel}>
-               {storeFormData.aiData.xtags_interlinked.map(xtag => <LabbelButton xtag={xtag} />)}
+               {storeFormData.description.entities_linked.map(xtag => <LabbelButton xtag={xtag} />)}
               </div>
            
               </div>
             
               <h3 style={{ color:"#43a1a2" }}>XTags(Unlinked)</h3>
-              <div  style={flexLine as React.CSSProperties}>{storeFormData.aiData.xtags.map(xtag => <p>{xtag.name}</p>)}</div>
+              <div  style={flexLine as React.CSSProperties}>{/*storeFormData.aiData.xtags.map(xtag => <p>{xtag.name}</p>)*/}</div>
               <h3 style={{ color:"#43a1a2" }}>XTags</h3>
-              <div  style={flexLine as React.CSSProperties}>{storeFormData.aiData.xtags_interlinked.map(xtag => <p>{xtag.name}</p>)}</div>
+              <div  style={flexLine as React.CSSProperties}>{/*storeFormData.aiData.xtags_interlinked.map(xtag => <p>{xtag.name}</p>)*/}</div>
             </div>
           )}
-          {storeFormData.aiData.imageCaptionAi && (
+          {/*storeFormData.aiData.imageCaptionAi && (
             <div>
               <h3 style={{ color:"#43a1a2" }}>Image</h3>
-              <div  style={flexLine as React.CSSProperties}>{storeFormData.aiData.imageCaptionAi}</div>
+              <div  style={flexLine as React.CSSProperties}>{/*storeFormData.aiData.imageCaptionAi}</div>
             </div>
-          )}
+          )*/}
         </div>
       )}
     </div>
