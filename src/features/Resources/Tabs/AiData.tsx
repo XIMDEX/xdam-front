@@ -12,19 +12,11 @@ const AiData = (props) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   let storeFormData = useSelector(selectFormData);
-  /*const getResourceData = async () => {
-    const uuid = props.id;
-    let res = await MainService().getResourceJson(uuid);
-    const result = await { ...storeFormData, aiData: { ...res } };
-    await dispatch(setFormData(result));
-  };*/
+
   const handleChange = async (event: React.ChangeEvent<{}>, newValue: number) => {
-    console.log(newValue)
     setValue(newValue);
   }
-  useEffect(() => {
-    console.log(storeFormData)
-  });
+
     const flexLine = {"display":"flex","padding":"0.5rem","gap":"1rem"};
     const labbel   = {"width":"100%","border-width": "4px","display":"flex","alignItems":"center","flexDirection":"column","gap":"1rem","height":"600px","overflow":"auto"
     }
@@ -48,20 +40,16 @@ const AiData = (props) => {
                   className={classes.tabs}
                   
                 >
-                  <Tab key="1" label="xtags"  />,
-                  <Tab key="2" label="xtags(unlinked)"  />
+                  <Tab key="1" label="Xtags"  />,
+                  <Tab key="2" label="Xtags(unlinked)"  />
+                  <Tab key="3" label="Image"  />
               </Tabs>
                 </div>
               <div style={labbel}>
-               {storeFormData.description.entities_linked.map(xtag => <LabbelButton xtag={xtag} />)}
+               {value==0 &&storeFormData.description.entities_linked.map(xtag => <LabbelButton xtag={xtag} />)}
+               {value==1 &&storeFormData.description.entities_non_linked.map(xtag => <LabbelButton xtag={xtag} />)}
               </div>
-           
               </div>
-            
-              <h3 style={{ color:"#43a1a2" }}>XTags(Unlinked)</h3>
-              <div  style={flexLine as React.CSSProperties}>{/*storeFormData.aiData.xtags.map(xtag => <p>{xtag.name}</p>)*/}</div>
-              <h3 style={{ color:"#43a1a2" }}>XTags</h3>
-              <div  style={flexLine as React.CSSProperties}>{/*storeFormData.aiData.xtags_interlinked.map(xtag => <p>{xtag.name}</p>)*/}</div>
             </div>
           )}
           {/*storeFormData.aiData.imageCaptionAi && (

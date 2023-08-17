@@ -52,15 +52,6 @@ export default function Tag(props) {
                         className={`edit-tag ${!isEdit && 'hidden'}` }
                         onClick={isEdit ? handleDelete : null} 
                     />
-                    <Button id='edit'
-                        icon={`${isEdit ? 'edit' : null}`} 
-                        disabled={isEdit}
-                        color='grey'
-                        size='small'
-                        className={`edit-tag ${!isEdit && 'hidden'}` }
-                        onClick={isEdit ? handleEdit : null} 
-                    />
-
                 </div>
             </div>
             {!isEdit && <div style={{width: 0}}></div>}
