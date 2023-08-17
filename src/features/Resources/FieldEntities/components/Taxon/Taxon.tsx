@@ -1,41 +1,49 @@
-import React from 'react'
-import Tag from '../Tag/Tag'
-import Dropdown from '../Dropdown/Dropdown';
+import React from "react";
+import Tag from "../Tag/Tag";
+import Dropdown from "../Dropdown/Dropdown";
+import { XTag } from "@ximdex/xui-react/material";
 
-function Taxon({data,handleData, checkIfExists, addSuggestions, items}) {
+function Taxon({ data, handleData, checkIfExists, addSuggestions, items }) {
     return (
-        <> 
-            <div style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap'}}>
-                {items.map(element => {
-                    return ( 
-                        <TaxonOrEdit 
-                            key={'taxon_' + element.index}
-                            data={element.children} 
-                            popIndex={element.onDropIndexClick} 
-                            indexToPop={element.index} 
+        <>
+            <div
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    flexWrap: "wrap",
+                }}
+            >
+                {items.map((element) => {
+                    return (
+                        <TaxonOrEdit
+                            key={"taxon_" + element.index}
+                            data={element.children}
+                            popIndex={element.onDropIndexClick}
+                            indexToPop={element.index}
                             array={data}
                             element={element}
                             addSuggestions={addSuggestions}
                             handleData={handleData}
                             checkIfExists={checkIfExists}
                         />
-                    )
+                    );
                 })}
             </div>
-         </>
-    )
+        </>
+    );
 }
 
-export default Taxon
-
+export default Taxon;
 
 const TaxonOrEdit = (props) => {
-    const {data, array, element} = props
+    const { data, array, element } = props;
+    
     return (
         <>
-            {array.some( item => item['Id'] === data.props.formData['Id'] || item.new)
-                ? (
-                    <Tag 
+            {array.some(
+                (item) => item["Id"] === data.props.formData["Id"] || item.new
+            ) ? (
+                /* <Tag 
                         key={element.key} 
                         label={element.children.props.formData?.['name']} 
                         uri={element.children.props.formData?.['uri']}
@@ -47,19 +55,24 @@ const TaxonOrEdit = (props) => {
                         indexToPop={element.index} 
                         array={data}
                         addSuggestions={props.addSuggestions}
-                    /> 
-                ) : (
-                    <Dropdown
-                        {...props}
-                        element={element}
-                        handleData={props.handleData}
-                        handleIfExists={props.checkIfExists}
-                        popIndex={element.onDropIndexClick} 
-                        indexToPop={element.index} 
-                    />
-                )
-            }
+                    /> */
+                <XTag
+                    key={element.key} 
+                    name={element.children.props.formData?.['name']}
+                    status="correct"
+                    isRemovable
+                    onClickRemove={() => console.log(element)}
+                />
+            ) : (
+                <Dropdown
+                    {...props}
+                    element={element}
+                    handleData={props.handleData}
+                    handleIfExists={props.checkIfExists}
+                    popIndex={element.onDropIndexClick}
+                    indexToPop={element.index}
+                />
+            )}
         </>
-    )
-}
-             
+    );
+};

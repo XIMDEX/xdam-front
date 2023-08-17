@@ -9,15 +9,6 @@ const LabbelButton = (props) => {
         width : "55%",
         border: "2px solid black"
     };
-    const labbelStyle = {
-        display: "flex",
-        padding: "2rem",
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#5d9dd9",
-        borderRadius: "0.5rem",
-        width: "20%",
-    };
     const labbelStylePerson = {
         display: "flex",
         padding: "2rem",
@@ -70,13 +61,14 @@ const LabbelButton = (props) => {
         width: "20%",
         "border-top-right-radius": "0.75rem",
         "border-bottom-right-radius": "0.75rem",
+        "border-top-left-radius": "0.00rem",
+        "border-bottom-left-radius": "0.00rem",
         "font-size": "1.5rem",
         "line-height": "1.35rem",
         
       
     };
     const stylesTag = {"Person":labbelStylePerson,"Place":labbelStylePlace,"Other":labbelStyleOthers,"Organization":labbelStyleOrganization}
-    const iconTag1 = {"Person":labbelStylePerson,"Place":labbelStylePlace,"Other":labbelStyleOthers,"Organization":labbelStyleOrganization}
     const iconTag = {
         Person: 'user circle',
         Place: 'map marker alternate',
