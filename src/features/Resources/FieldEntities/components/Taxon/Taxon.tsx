@@ -13,21 +13,7 @@ function Taxon({ data, handleData, checkIfExists, addSuggestions, items }) {
                     flexWrap: "wrap",
                 }}
             >
-                {items.map((element) => {
-                    return (
-                        <TaxonOrEdit
-                            key={"taxon_" + element.index}
-                            data={element.children}
-                            popIndex={element.onDropIndexClick}
-                            indexToPop={element.index}
-                            array={data}
-                            element={element}
-                            addSuggestions={addSuggestions}
-                            handleData={handleData}
-                            checkIfExists={checkIfExists}
-                        />
-                    );
-                })}
+                <TaxonOrEdit array={data} />
             </div>
         </>
     );
@@ -41,12 +27,12 @@ const TaxonOrEdit = (props) => {
     const deleteXtag = (e, key) => {
         e.preventDefault();
 
-       /* setXtags(
+        setXtags(
             array.filter(function (obj) {
                 console.log(obj.name !== key);
                 return obj.name !== key;
             })
-        );*/
+        );
         console.log(xtags);
     };
     return (
@@ -66,11 +52,11 @@ const TaxonOrEdit = (props) => {
                     /> */}
             {xtags.map((tag) => (
                 <XTag
-                    key={element.key}
-                    name={element.children.props.formData?.["name"]}
+                    key={tag.key}
+                    name={tag.name}
                     status="correct"
                     isRemovable
-                    onClickRemove={(e) => deleteXtag(e)}
+                    onClickRemove={(e) => deleteXtag(e, tag.name)}
                 />
             ))}
         </>
