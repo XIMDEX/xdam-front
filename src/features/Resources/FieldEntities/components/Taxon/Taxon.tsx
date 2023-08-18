@@ -1,21 +1,43 @@
-import React, { useState } from "react";
-import Tag from "../Tag/Tag";
-import Dropdown from "../Dropdown/Dropdown";
+import React, { useEffect, useState } from "react";
 import { XTag } from "@ximdex/xui-react/material";
 
 function Taxon({ data, handleData, checkIfExists, addSuggestions, items }) {
-    const [xtags, setXtags] = useState(data);
+    const [xtags, setXtags] = useState();
     const deleteXtag = (e, key) => {
         e.preventDefault();
 
         setXtags(
             xtags.filter(function (obj) {
-                console.log(obj.name !== key);
                 return obj.name !== key;
             })
         );
         console.log(xtags);
     };
+    useEffect(() => {
+      let xtagsFormat = [];
+      /*data.forEach(tag => {
+        let newTag = {
+            id: tag.id,
+            label: tag.name,
+            type: tag.type,
+            link: tag.uri
+        }
+        xtagsFormat.push(newTag);
+      });*/
+      data.map((tag,index)=>{
+        let newTag = {
+            id: index,
+            vocabulary: "Test",
+            label: tag.name,
+            type: tag.type,
+            link: tag.uri
+        }
+        xtagsFormat.push(newTag);
+      })
+      setXtags(xtagsFormat)
+      console.log(xtagsFormat)
+    }, [])
+    
     return (
         <>
             <div
@@ -23,15 +45,18 @@ function Taxon({ data, handleData, checkIfExists, addSuggestions, items }) {
                     display: "flex",
                     flexDirection: "row",
                     flexWrap: "wrap",
+                    gap: 4
                 }}
             >
-                {xtags.map((tag) => (
+                {xtags && xtags.map((tag) => (
+                    
                     <XTag
-                        key={tag.key}
-                        name={tag.name}
+                        key={'v2_' + tag.id }
+                        tag={tag}
                         status="correct"
-                        isRemovable
-                        onClickRemove={(e) => deleteXtag(e, tag.name)}
+                        canDelete
+                        onDelete={(e) => deleteXtag(e, tag.name)}
+                        lite
                     />
                 ))}
             </div>
@@ -40,45 +65,3 @@ function Taxon({ data, handleData, checkIfExists, addSuggestions, items }) {
 }
 
 export default Taxon;
-
-const TaxonOrEdit = (props) => {
-    const { data, array, element } = props;
-    const [xtags, setXtags] = useState(array);
-    const deleteXtag = (e, key) => {
-        e.preventDefault();
-
-        setXtags(
-            xtags.filter(function (obj) {
-                console.log(obj.name !== key);
-                return obj.name !== key;
-            })
-        );
-        console.log(xtags);
-    };
-    return (
-        <>
-            {/* <Tag 
-                        key={element.key} 
-                        label={element.children.props.formData?.['name']} 
-                        uri={element.children.props.formData?.['uri']}
-                        type={element.children.props.formData.type}
-                        pos={`${element.children.props.formData.start}-${element.children.props.formData.end}`}
-                        index={element.index}
-                        data={element.children} 
-                        popIndex={element.onDropIndexClick} 
-                        indexToPop={element.index} 
-                        array={data}
-                        addSuggestions={props.addSuggestions}
-                    /> */}
-            {xtags.map((tag) => (
-                <XTag
-                    key={tag.key}
-                    name={tag.name}
-                    status="correct"
-                    isRemovable
-                    onClickRemove={(e) => deleteXtag(e, tag.name)}
-                />
-            ))}
-        </>
-    );
-};
