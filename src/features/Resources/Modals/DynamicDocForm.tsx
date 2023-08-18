@@ -212,9 +212,7 @@ export default function DynamicDocForm({ resourceType, action, schema, dataForUp
       si el user sube SOLO el preview, o SOLO crea el recurso sin preview, ni files: el recurso sera tratado como 'image'
       si el user sube 1 File (o mas), el recurso sera tratado como el mime_type del 1er file cargado en la lista de Files
     */
- /*  if(data.description.entities_linked !== undefined)delete data.description.entities_linked;
-   if(data.description.entities_non_linked !== undefined) delete data.description.entities_non_linked;
-   if(data.aiData!== undefined) delete data.aiData*/
+    
     let body: IBody = {
       type: setType(),
       data: JSON.stringify(data),
@@ -235,15 +233,17 @@ export default function DynamicDocForm({ resourceType, action, schema, dataForUp
     if (previewImage) {
       theFormData.append('Preview', previewImage);
     }
-    console.log(data)
+
     let res;
     setProcessing(true)
+  
     if (dataForUpdate) {
       res = await MainService().updateResource(dataForUpdate.id, theFormData);
     } else {
       console.log(theFormData);
       res = await MainService().createResource(theFormData);
     }
+   
     //FormFiles are the files 'adding'
     if(action !== 'create') {
       setFormFiles([])
@@ -258,7 +258,6 @@ export default function DynamicDocForm({ resourceType, action, schema, dataForUp
       setForm(resData.data);
       setMessage({display: true, text: '', ok: res.ok })
     }
-    
     event.preventDefault();
     return false; // prevent reload 
   }
