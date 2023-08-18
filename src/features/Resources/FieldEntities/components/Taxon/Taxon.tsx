@@ -4,6 +4,18 @@ import Dropdown from "../Dropdown/Dropdown";
 import { XTag } from "@ximdex/xui-react/material";
 
 function Taxon({ data, handleData, checkIfExists, addSuggestions, items }) {
+    const [xtags, setXtags] = useState(data);
+    const deleteXtag = (e, key) => {
+        e.preventDefault();
+
+        setXtags(
+            xtags.filter(function (obj) {
+                console.log(obj.name !== key);
+                return obj.name !== key;
+            })
+        );
+        console.log(xtags);
+    };
     return (
         <>
             <div
@@ -13,7 +25,15 @@ function Taxon({ data, handleData, checkIfExists, addSuggestions, items }) {
                     flexWrap: "wrap",
                 }}
             >
-                <TaxonOrEdit array={data} />
+                {xtags.map((tag) => (
+                    <XTag
+                        key={tag.key}
+                        name={tag.name}
+                        status="correct"
+                        isRemovable
+                        onClickRemove={(e) => deleteXtag(e, tag.name)}
+                    />
+                ))}
             </div>
         </>
     );
@@ -28,7 +48,7 @@ const TaxonOrEdit = (props) => {
         e.preventDefault();
 
         setXtags(
-            array.filter(function (obj) {
+            xtags.filter(function (obj) {
                 console.log(obj.name !== key);
                 return obj.name !== key;
             })
