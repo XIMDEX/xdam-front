@@ -212,10 +212,9 @@ export default function DynamicDocForm({ resourceType, action, schema, dataForUp
       si el user sube SOLO el preview, o SOLO crea el recurso sin preview, ni files: el recurso sera tratado como 'image'
       si el user sube 1 File (o mas), el recurso sera tratado como el mime_type del 1er file cargado en la lista de Files
     */
-   if(data.description.entities_linked !== undefined)delete data.description.entities_linked;
+ /*  if(data.description.entities_linked !== undefined)delete data.description.entities_linked;
    if(data.description.entities_non_linked !== undefined) delete data.description.entities_non_linked;
-   if(data.aiData!== undefined) delete data.aiData
-   console.log(data);
+   if(data.aiData!== undefined) delete data.aiData*/
     let body: IBody = {
       type: setType(),
       data: JSON.stringify(data),
@@ -261,7 +260,7 @@ export default function DynamicDocForm({ resourceType, action, schema, dataForUp
     }
     
     event.preventDefault();
-    return false; // prevent reload
+    return false; // prevent reload 
   }
 
   const getStoreFormData = () => {
