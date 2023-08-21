@@ -16,7 +16,7 @@ class ResourcesService {
       }
     }
 
-    getBookActions(resourceId)
+    getBookActions(resourceId, theme)
     {
       let baseUrl = BOOK_EDITOR_URL;
       let edit = 'edit/';
@@ -26,7 +26,7 @@ class ResourcesService {
 
       let ob = {
         edit: { label: 'Edit', href: baseUrl + edit + rid + token },
-        convert: { label: 'Convert', href: baseUrl + convert + rid + token },
+        convert: { label: 'Convert', href: baseUrl + convert + rid + token + `?theme=${encodeURIComponent(theme)}`},
       }
 
       return ob;
@@ -70,7 +70,7 @@ class ResourcesService {
           ra = this.getCourseActions();
           break;
         case BOOK:
-          ra = this.getBookActions(resource.id);
+          ra = this.getBookActions(resource.id, resource.theme ?? 'base');
           break;
         case MULTIMEDIA:
         case IMAGE:

@@ -36,34 +36,34 @@ const ResourceActionButton = (
   );
 }
 
-function ResourceActionButtons( { resource } ) {
+function ResourceActionButtons( { resource, theme } ) {
 
   const [actions, setAction] = useState({});
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    setAction(ResourcesActions().getActions(resource));
-  }, []);
+    setAction(ResourcesActions().getActions({...resource, theme}));
+  }, [resource, theme]);
 
   return (
     <>
-    { errorMessage.length > 0  && <ValidationError message={errorMessage} />
-    }
-    <ButtonGroup orientation='horizontal' fullWidth id='forms-btn-actions' >
-      {
-        Object.keys(actions)
-          .filter(action => action !== 'create')
-          .map((action, index) => (
-            <ResourceActionButton
-              index={index}
-              resource={resource}
-              action={actions[action]}
-              validate={ResourceValidationService.create(action, resource.type)}
-              handleError={setErrorMessage}
-            />)
-          )
-      }
-    </ButtonGroup>
+        { errorMessage.length > 0  && (
+            <ValidationError message={errorMessage} />
+        )}
+        <ButtonGroup orientation='horizontal' fullWidth id='forms-btn-actions' >
+            {Object.keys(actions)
+                .filter(action => action !== 'create')
+                .map((action, index) => (
+                    <ResourceActionButton
+                        index={index}
+                        resource={resource}
+                        action={actions[action]}
+                        validate={ResourceValidationService.create(action, resource.type)}
+                        handleError={setErrorMessage}
+                    />)
+                )
+            }
+        </ButtonGroup>
     </>
   );
 }
