@@ -165,6 +165,14 @@ const api = () => {
             method: 'GET',
             url: `${BOOK_EDITOR_URL}api/book/${bookId}/version`
         }),
+        getBookTheme: (bookId) => ({
+            method: 'GET',
+            url: `${BOOK_EDITOR_URL}api/book/${bookId}/theme`
+        }),
+        getBookThemes: () => ({
+            method: 'GET',
+            url: `${BOOK_EDITOR_URL}api/book/themes`
+        }),
         postBookMetadata: () => ({
             method: 'POST',
             url: `${BOOK_EDITOR_URL}api/edit/metadata`
