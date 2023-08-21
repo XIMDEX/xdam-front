@@ -73,7 +73,7 @@ function Lom({resourceData, standard}) {
   }
 
   const uiSchema_default = { "ui:widget": "DropdownCustom" }
-  
+
   return (
     <div className={classes.root}>
       <Tabs
@@ -85,9 +85,12 @@ function Lom({resourceData, standard}) {
         className={classes.tabs}
       >
         {
-          schema.tabs.map((tab, ix) => (
-            <Tab key={ix} label={tab.title} {...a11yProps(tab.key)} />
-          ))
+            schema.tabs.map((tab, ix) => {
+                // if (tab.hide) return null;
+                return (
+                    <Tab key={ix} label={tab.title}  {...a11yProps(tab.key)} style={tab.hide ? {display: 'none'} : {}}/>
+                )
+            })
         }
       </Tabs>
       {
@@ -106,7 +109,7 @@ function Lom({resourceData, standard}) {
                     formData={tabFormData(tab)}
                     noValidate
                     ArrayFieldTemplate={Field}
-                  > 
+                  >
                     <div>
                       <Button type="submit">Submit</Button>
                     </div>
