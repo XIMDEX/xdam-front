@@ -12,7 +12,12 @@ const AiData = (props) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   let storeFormData = useSelector(selectFormData);
-
+  const [Xtags, setXtags] = useState()
+  useEffect(() => {
+   setXtags(storeFormData?.description?.entities_linked.filter(obj => obj.uuid === props.uuid));
+    console.log(Xtags)
+  }, [props.uuid])
+  
   const handleChange = async (event: React.ChangeEvent<{}>, newValue: number) => {
     setValue(newValue);
   }
@@ -26,7 +31,7 @@ const AiData = (props) => {
       {storeFormData.description && (
         
         <div>
-          {storeFormData.description && (
+          {(storeFormData.description && Xtags) && (
         
             <div>
               <div style={flexLine as React.CSSProperties}>
@@ -46,7 +51,7 @@ const AiData = (props) => {
               </Tabs>
                 </div>
               <div style={labbel}>
-               {value==0 &&storeFormData.description.entities_linked.map(xtag => <LabbelButton xtag={xtag} />)}
+               {value==0 && Xtags.map(xtag => <LabbelButton xtag={xtag} />)}
                {value==1 &&storeFormData.description.entities_non_linked.map(xtag => <LabbelButton xtag={xtag} />)}
               </div>
               </div>
