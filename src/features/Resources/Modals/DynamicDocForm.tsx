@@ -270,12 +270,29 @@ export default function DynamicDocForm({ resourceType, action, schema, dataForUp
   const metaData = { menuItem: 'Main Data', render: () => <Tab.Pane > <MainData /></Tab.Pane> };
   const lomsData = !showLom ? [] : VALIDS_LOM.map(typeLom => ({menuItem: typeLom.name, render: () => (<Tab.Pane><LomForm data={dataForUpdate} standard={typeLom.key}/></Tab.Pane>)}))
   const AICaptions = { menuItem: 'AI DATA', render: () => <Tab.Pane > <AiData id={dataForUpdate.id} /></Tab.Pane> };
-
   const pane = [metaData];
-  const panes = [metaData, ...lomsData,AICaptions];
+  //const panes = [metaData, ...lomsData,AICaptions];
+  const [panes, setPanes] = useState([metaData, ...lomsData])
+  useEffect(() => {
+    const entities = store.getState().app.formData.description.entities_linked;
+    const uuids = [];
+    const uuidsTabs = [];
+    entities.forEach(element => {
+      if (uuids.indexOf(element.uuid) === -1) {
+        uuids.push(element.uuid);
+      }
+    });
+   uuids.forEach(element => {
+    uuidsTabs.push({ menuItem: element, render: () => <Tab.Pane > <AiData id={dataForUpdate.id} /></Tab.Pane> });
+   });
 
+  //  console.log(store.getState().app.formData.description.entities_linked);
+  console.log(uuids);
+    setPanes([...panes,AICaptions,...uuidsTabs])
+  }, [])
+  
   const setForm = (data) => {
-    dispatch(setFormData(data))
+    //dispatch(setFormData(data))
   }
   
   const customWidgets = {
@@ -436,7 +453,7 @@ export default function DynamicDocForm({ resourceType, action, schema, dataForUp
           onSubmit={postData}
           formData={getStoreFormData()} 
           onChange={(fd)=> setForm(fd.formData)}
-          ArrayFieldTemplate={resourceType === 'document' ? TagsFieldTemplate : ArrayFieldTemplate}
+          ArrayFieldTemplate={ArrayFieldTemplate}
           widgets={customWidgets}
         >
           <button ref={_refForm} type="submit" style={{ display: "none" }} />
