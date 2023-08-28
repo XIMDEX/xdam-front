@@ -12,9 +12,11 @@ const AiData = (props) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   let storeFormData = useSelector(selectFormData);
-  const [Xtags, setXtags] = useState()
+  const [Xtags, setXtags] = useState();
+  const [XtagUnliked,setXtagUnliked] = useState();
   useEffect(() => {
    setXtags(storeFormData?.description?.entities_linked.filter(obj => obj.uuid === props.uuid));
+   setXtagUnliked(storeFormData?.description?.entities_non_linked.filter(obj => obj.uuid === props.uuid));
     console.log(Xtags)
   }, [props.uuid])
   
@@ -31,7 +33,7 @@ const AiData = (props) => {
       {storeFormData.description && (
         
         <div>
-          {(storeFormData.description && Xtags) && (
+          {(storeFormData.description && Xtags && XtagUnliked) && (
         
             <div>
               <div style={flexLine as React.CSSProperties}>
@@ -52,7 +54,7 @@ const AiData = (props) => {
                 </div>
               <div style={labbel}>
                {value==0 && Xtags.map(xtag => <LabbelButton xtag={xtag} />)}
-               {value==1 &&storeFormData.description.entities_non_linked.map(xtag => <LabbelButton xtag={xtag} />)}
+               {value==1 &&XtagUnliked.map(xtag => <LabbelButton xtag={xtag} />)}
               </div>
               </div>
             </div>

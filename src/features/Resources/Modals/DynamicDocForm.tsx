@@ -7,7 +7,6 @@ import {
   Grid,
   Card
 } from '@material-ui/core';
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import MainService from '../../../api/service';
 import { MULTIMEDIA, VALIDS_LOM } from '../../../constants';
 import { useSelector, useDispatch } from 'react-redux';
@@ -28,54 +27,10 @@ import { InputText, InputTextArea, CustomToggle, CustomInputText, CustomDropdown
 import LomForm from '../LOM/LomForm';
 import TagsFieldTemplate from '../FieldEntities/components/Field/TagsFieldTemplate';
 import AiData from '../Tabs/AiData';
+import useStyles from './DynamicFormTemplates/DynamicFormStyles';
+import DynamicFormTabs from './DynamicFormTemplates/DynamicFormTabs';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    formControl: {
-      margin: theme.spacing(1),
-      minWidth: 120,
-      width: '100%'
-    },
-    selectEmpty: {
-      marginTop: theme.spacing(2),
-    },
-    btnPreview: {
-      height: 300,
-    },
-    blur: {
-      filter: "blur(2px)",
-    },
-    addPreview: {
-      display: 'none',
-      position: 'absolute',
-      zIndex: 1,
-      left: '7%',
-      top: 190,
-      userSelect: 'none',
-      pointerEvents: 'none'
-    },
-    dblock: {
-      display: 'block'
-    },
-    formTag: {
-      minHeight: 300
-    },
-    btnGroup: {
-      width: '80%',
-    },
-    divider: {
-      padding: '10px 0'
-    },
-    dismiss: {
-      opacity: 1,
-      transition: 'opacity 2s ease-'
-    },
-    imgView: {
-      width: '100%'
-    }
-    
-  }),
-);
+
 
 interface IBody {
   [key: string]: any;
@@ -102,7 +57,11 @@ export default function DynamicDocForm({ resourceType, action, schema, dataForUp
   const [tr, triggerReload] = useState(false);
   const [fillAlert, setFillAlert] = useState(false);
   
-  
+  const metaData = { menuItem: 'Main Data', render: () => <Tab.Pane > <MainData /></Tab.Pane> };
+  const lomsData = !showLom ? [] : VALIDS_LOM.map(typeLom => ({menuItem: typeLom.name, render: () => (<Tab.Pane><LomForm data={dataForUpdate} standard={typeLom.key}/></Tab.Pane>)}))
+  const pane = [metaData];
+  //const panes = [metaData, ...lomsData];
+  const [panes, setPanes] = useState([metaData, ...lomsData])
   useEffect(() => {
     
     if(action === 'create') {
@@ -267,28 +226,27 @@ export default function DynamicDocForm({ resourceType, action, schema, dataForUp
     return fd;
   }
 
-  const metaData = { menuItem: 'Main Data', render: () => <Tab.Pane > <MainData /></Tab.Pane> };
-  const lomsData = !showLom ? [] : VALIDS_LOM.map(typeLom => ({menuItem: typeLom.name, render: () => (<Tab.Pane><LomForm data={dataForUpdate} standard={typeLom.key}/></Tab.Pane>)}))
-  const AICaptions = { menuItem: 'AI DATA', render: () => <Tab.Pane > <AiData id={dataForUpdate.id} /></Tab.Pane> };
-  const pane = [metaData];
-  //const panes = [metaData, ...lomsData,AICaptions];
-  const [panes, setPanes] = useState([metaData, ...lomsData])
-  useEffect(() => {
-    const entities = store.getState().app.formData.description.entities_linked;
-    const uuids = [];
-    const uuidsTabs = [];
-    entities.forEach(element => {
-      if (uuids.indexOf(element.uuid) === -1) {
-        uuids.push(element.uuid);
-      }
-    });
-   uuids.forEach(element => {
-    uuidsTabs.push({ menuItem: element, render: () => <Tab.Pane > <AiData id={dataForUpdate.id} /></Tab.Pane> });
-   });
 
-  //  console.log(store.getState().app.formData.description.entities_linked);
-  console.log(uuids);
-    setPanes([...panes,AICaptions,...uuidsTabs])
+  useEffect(() => {
+    const storeTags = getStoreFormData();
+    if (typeof storeTags.description !== 'undefined'){
+      const entities = storeTags.description.entities_linked ?? "";
+      const uuids = [];
+      const uuidsTabs = [];
+      entities.forEach(element => {
+        if (uuids.indexOf(element.uuid) === -1) {
+          uuids.push(element.uuid);
+        }
+      });
+     uuids.forEach(element => {
+      uuidsTabs.push({ menuItem: element, render: () => <Tab.Pane > <AiData  uuid={element} /></Tab.Pane> });
+     });
+  
+    //  console.log(store.getState().app.formData.description.entities_linked);
+    console.log(uuids);
+     // setPanes([...panes,...uuidsTabs])
+    }
+  
   }, [])
   
   const setForm = (data) => {
@@ -374,7 +332,7 @@ export default function DynamicDocForm({ resourceType, action, schema, dataForUp
         <div className='forms-main-btns'>
             {/* <Btn onClick={dispatchForm} loading={processing}>Update</Btn> */}
             
-            <Btn color='teal' icon='facebook' onClick={() =>  _refForm.current.click()} loading={processing}> 
+            <Btn color='teal' icon='facebook' onClick={() =>  _refForm.current.click(console.log("TEst"))} loading={processing}> 
               {dataForUpdate ? (
                 <>
                   <Icon name='save' /> Save
@@ -456,7 +414,8 @@ export default function DynamicDocForm({ resourceType, action, schema, dataForUp
           ArrayFieldTemplate={ArrayFieldTemplate}
           widgets={customWidgets}
         >
-          <button ref={_refForm} type="submit" style={{ display: "none" }} />
+          <button ref={_refForm} type="submit"  />
+          
         </SemanticForm> 
       </Grid>
     )
@@ -551,11 +510,7 @@ export default function DynamicDocForm({ resourceType, action, schema, dataForUp
       <Grid container spacing={2}>
         
         <Grid item sm={12} id='form-content'>
-          
-          {
-            dataForUpdate && action === 'edit' ? (<Tab panes={panes} />) : (<Tab panes={pane} />)
-          }
-          
+          <DynamicFormTabs mainData={MainData} dataForUpdate={dataForUpdate} action={action} showLom={showLom} />
         </Grid>
         
 
