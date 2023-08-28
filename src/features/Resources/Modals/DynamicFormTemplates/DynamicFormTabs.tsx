@@ -28,7 +28,10 @@ const DynamicFormTabs = (props) => {
     const pane = [metaData];
     const storeTags = store.getState().app.formData;
     const panes = () => {
-        if (storeTags.description !== null && typeof storeTags.description !== "undefined") {
+        if (
+            storeTags.description !== null &&
+            typeof storeTags.description !== "undefined"
+        ) {
             const entities = storeTags.description.entities_linked ?? "";
             const uuids = [];
             const uuidsTabs = [];
@@ -37,28 +40,35 @@ const DynamicFormTabs = (props) => {
                     uuids.push(element.uuid);
                 }
             });
-            uuids.forEach((element) => {
+            uuids.forEach((element,index) => {
                 uuidsTabs.push({
-                    menuItem: element,
+                    menuItem: `File${index+1}`,
                     render: () => (
-                        <Tab.Pane>
-                            {" "}
-                            <AiData uuid={element} />{" "}
-                        </Tab.Pane>
+                       
+                            <Tab.Pane>
+                                <AiData uuid={element} />
+                            </Tab.Pane>
+                       
                     ),
                 });
             });
-            return [metaData, ...uuidsTabs];
+            return [
+                metaData,
+                ...uuidsTabs,
+            ];
         }
     };
 
     return (
-        <Grid item sm={12} id="form-content">
+        // style={{width:"8rem",scrollBehavior:"auto",overflow:"hidden"}}
+        <Grid item sm={12} id="form-content ">
             {storeTags &&
             props.dataForUpdate &&
             props.action === "edit" &&
             panes ? (
-                <Tab panes={panes()} />
+                <div>
+                    <Tab panes={panes()} />
+                </div>
             ) : (
                 <Tab panes={pane} />
             )}
