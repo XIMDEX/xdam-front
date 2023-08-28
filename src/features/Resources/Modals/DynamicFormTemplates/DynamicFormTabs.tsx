@@ -6,6 +6,7 @@ import LomForm from "../../LOM/LomForm";
 import { Grid } from "@material-ui/core";
 import AiData from "../../Tabs/AiData";
 import store from "../../../../app/store";
+import "./tab.css";
 
 const DynamicFormTabs = (props) => {
     const metaData = {
