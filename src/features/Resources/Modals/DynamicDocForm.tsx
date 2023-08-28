@@ -29,6 +29,9 @@ import TagsFieldTemplate from '../FieldEntities/components/Field/TagsFieldTempla
 import AiData from '../Tabs/AiData';
 import useStyles from './DynamicFormTemplates/DynamicFormStyles';
 import DynamicFormTabs from './DynamicFormTemplates/DynamicFormTabs';
+import DynamicFormUi from './DynamicFormTemplates/DynamicFormUi';
+import FilesAndActions from './DynamicFormTemplates/FileAndActions';
+import { act } from 'react-dom/test-utils';
 
 
 
@@ -38,7 +41,7 @@ interface IBody {
   data: string,
   collection_id: string
 }
-
+const uiSchema = DynamicFormUi;
 export default function DynamicDocForm({ resourceType, action, schema, dataForUpdate = null, handleClose, showLom = true, canImportData = true }) {
   const classes = useStyles();
   let collection_id = useSelector(selectCollection);
@@ -57,13 +60,7 @@ export default function DynamicDocForm({ resourceType, action, schema, dataForUp
   const [tr, triggerReload] = useState(false);
   const [fillAlert, setFillAlert] = useState(false);
   
-  const metaData = { menuItem: 'Main Data', render: () => <Tab.Pane > <MainData /></Tab.Pane> };
-  const lomsData = !showLom ? [] : VALIDS_LOM.map(typeLom => ({menuItem: typeLom.name, render: () => (<Tab.Pane><LomForm data={dataForUpdate} standard={typeLom.key}/></Tab.Pane>)}))
-  const pane = [metaData];
-  //const panes = [metaData, ...lomsData];
-  const [panes, setPanes] = useState([metaData, ...lomsData])
   useEffect(() => {
-    
     if(action === 'create') {
       if(getStoreFormData() !== {}) {
         dispatch(setFormData({}));
@@ -227,27 +224,7 @@ export default function DynamicDocForm({ resourceType, action, schema, dataForUp
   }
 
 
-  useEffect(() => {
-    const storeTags = getStoreFormData();
-    if (typeof storeTags.description !== 'undefined'){
-      const entities = storeTags.description.entities_linked ?? "";
-      const uuids = [];
-      const uuidsTabs = [];
-      entities.forEach(element => {
-        if (uuids.indexOf(element.uuid) === -1) {
-          uuids.push(element.uuid);
-        }
-      });
-     uuids.forEach(element => {
-      uuidsTabs.push({ menuItem: element, render: () => <Tab.Pane > <AiData  uuid={element} /></Tab.Pane> });
-     });
-  
-    //  console.log(store.getState().app.formData.description.entities_linked);
-    console.log(uuids);
-     // setPanes([...panes,...uuidsTabs])
-    }
-  
-  }, [])
+
   
   const setForm = (data) => {
     //dispatch(setFormData(data))
@@ -256,56 +233,7 @@ export default function DynamicDocForm({ resourceType, action, schema, dataForUp
   const customWidgets = {
     TextWidget: InputText,
   };
-  const uiSchema={
-    
-    "description": {
-      "ui:order": ["active", 'enhanced', "*"],
-      "active": {
-        "ui:widget": CustomToggle,
-      },
-      "enhanced": {
-        "ui:widget": CustomToggle,
-      },
-      "course_source": {
-        "ui:widget": CustomDropdown,
-        "ui:options":{
-          label: 'Course source'
-        }
-      },
-      "id": {
-          "ui:options": {
-            "ui:disable": true
-          },
-          "ui:disabled": true
-      },
-      "partials": {
-        "pages": {
-          "ui:widget": "hidden",
-        }
-      },
-      "description": {
-        "ui:widget": InputTextArea,
-        "ui:options": {
-          "rows": 5
-        }
-      },
-      "body": {
-        "ui:widget": InputTextArea,
-        "ui:options": {
-          "rows": 5
-        }
-      },
-      "name": {
-        "ui:widget": CustomInputText,        
-      },
-      "external_url": {
-        "ui:widget": CustomInputText,
-        "ui:options":{
-          "title": 'External url'
-        }
-      },
-    }
-  }
+
 
   const updateResourceFromLastCreated = async () => {
     let lastUpdated = await MainService().getLastResource(collection_id, 'lastCreated');
@@ -424,82 +352,13 @@ export default function DynamicDocForm({ resourceType, action, schema, dataForUp
   const MainData = memo(() => {
     return (
       <Grid container style={{ height: '75vh' }}>
-        <FilesAndActions />
+        <FilesAndActions dataForUpdate={dataForUpdate} styleBtnPreview={styleBtnPreview} handleFiles={handleFiles} action={action} formFiles={formFiles} iconHandler = {iconHandler} />
         <MetaDataForm />
       </Grid>
     )
   });
 
-  const FilesAndActions = () => {
-    return (
-      <Grid item sm={6}>
-          {dataForUpdate?.data?.description?.image == '' && (<ButtonGroup orientation='vertical'>
-            <Grid item sm={12} style={{ minWidth: 400 }}>
-              <span
-                className={`${classes.addPreview}`}
-              >Uplad preview image</span>
-              <Button
-                className={`${classes.btnPreview}`}
-                component="label"
-                style={styleBtnPreview}
-                fullWidth
-                variant='outlined'
-              >
-                <input
-                  accept="image/*"
-                  type="file"
-                  onChange={(e)=> handleFiles(e)}
-                  name='Preview'
-                  hidden
-                />
-              </Button>
-            </Grid>
 
-            <Grid item sm={12} className={classes.divider}>
-              {dataForUpdate ? (
-                <ButtonGroup orientation='horizontal' fullWidth id='forms-btn-actions'>    
-                    <ResourceActionButtons resource={dataForUpdate} />
-                </ButtonGroup>
-              ) : null}
-            </Grid>
-
-          </ButtonGroup>)}
-          <div style={{ margin: '15px 42px 0px 0px' }}>
-            {
-              (action === 'view' || action === 'edit' )  && dataForUpdate?.data?.description?.image == '' ? (
-                <RelatedFiles
-                  resData={resourceData}
-                  files={theFiles}
-                  withPlayer
-                  onEditModal
-                  setTheFiles={setTheFiles}
-                  DynamicFormResourceData={setResourceData}
-                />
-              ) : <img src={dataForUpdate?.data?.description?.image} className={classes.imgView} />
-            }
-            
-            {
-              formFiles && formFiles.length > 0 ? (
-                <>
-                  <Label>Adding:</Label>
-                  {
-                    Array.from(formFiles).map((f, i) => (
-                      <Card variant='outlined' className='associated-files-card' key={i}>
-                        <Icon name={iconHandler(f)}></Icon>
-                        <p><strong>File name:</strong> {f.name}</p>
-                        <p><strong>Mime type:</strong> {f.type}</p>
-                        <p><strong>Size:</strong> {(f.size / 1000000).toFixed(2)} MB</p>
-                      </Card>
-                    ))
-                  }
-                </>
-              ) : null
-            }
-
-          </div>
-        </Grid>
-    )
-  }
 
   return (
     <DialogContent className='edit-create-dialog-content'>
@@ -512,8 +371,6 @@ export default function DynamicDocForm({ resourceType, action, schema, dataForUp
         <Grid item sm={12} id='form-content'>
           <DynamicFormTabs mainData={MainData} dataForUpdate={dataForUpdate} action={action} showLom={showLom} />
         </Grid>
-        
-
       </Grid>
     </DialogContent>
   );
