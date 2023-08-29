@@ -254,105 +254,13 @@ export default function DynamicDocForm({ resourceType, action, schema, dataForUp
     // setForm(res.data);
     // setResourceData(res);
   }
-/*
-  const MetaDataForm = () => {
-    return (
-      <Grid item sm={6}>
-        <div className='forms-main-btns'>
-            
-            <Btn color='teal' icon='facebook' onClick={() =>  _refForm.current.click(console.log("TEst"))} loading={processing}> 
-              {dataForUpdate ? (
-                <>
-                  <Icon name='save' /> Save
-                </>
-              ) : 
-                <>
-                  <Icon name='save' /> Submit
-                </>
-              }
-            </Btn>
-              
-              {canImportData && (
-                <Dropdown
-                    text='Import data'
-                    icon='clone'
-                    color='teal'
-                    labeled
-                    button
-                    className='icon teal'
-                >
-                  <Dropdown.Menu>
-                    <Dropdown.Item onClick={updateResourceFromLastCreated}>
-                      last resource created
-                    </Dropdown.Item>
-                    <Dropdown.Item onClick={updateResourceFromLastUpdated}>
-                      last resource updated
-                    </Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
-              )}
-              
-        </div>
-        <div className='form-messages'>    
-          <Message color={msg.ok ? 'teal' : 'red'} className={msg.display ? 'zoom-message' : 'hidden-message'} info onDismiss={() => setMessage(messageDefaultState)}>
-              {
-                msg.ok ? (
-                  <>
-                    <Message.Header>Done</Message.Header>
-                    <p>Resource {dataForUpdate ? 'updated' : 'created'}</p>
-                  </>
-                ) : (
-                  <>
-                    <Message.Header>An error ocurred</Message.Header>
-                    <p>{msg.text}</p>
-                  </>
-                )
-              }
-              
-          </Message>
-          <Grid item sm={12}>
-              <Button
-                variant="outlined"
-                component="label"
-                fullWidth
-              >
-                Attach files
-                <input
-                  type="file"
-                  multiple
-                  accept={resourceType === MULTIMEDIA ? "audio/*,video/*,image/*" : '*'}
-                  onChange={(e)=> handleFiles(e)}
-                  name='File'
-                  hidden
-                />
-              </Button>
-         
-        </Grid>
-        </div>
-        <SemanticForm
-          id='sfu'
-          className={fillAlert ? 'fill-alert' : ''}
-          uiSchema={uiSchema}
-          schema={schema as JSONSchema7}
-          onSubmit={postData}
-          formData={getStoreFormData()} 
-          onChange={(fd)=> setForm(fd.formData)}
-          ArrayFieldTemplate={ArrayFieldTemplate}
-          widgets={customWidgets}
-        >
-          <button ref={_refForm} type="submit"  />
-          
-        </SemanticForm> 
-      </Grid>
-    )
-  };*/
 
   const MainData = memo(() => {
     return (
       <Grid container style={{ height: '75vh' }}>
         <FilesAndActions dataForUpdate={dataForUpdate} styleBtnPreview={styleBtnPreview} handleFiles={handleFiles} action={action} formFiles={formFiles} iconHandler = {iconHandler} />
         <MetaDataForm dataForUpdate={dataForUpdate} _refForm={_refForm} processing={processing} canImportData={canImportData} updateResourceFromLastCreated={updateResourceFromLastCreated} 
-          updateResourceFromLastUpdated={updateResourceFromLastUpdated} msg={msg} messageDefaultState={messageDefaultState} handleFiles={handleFiles} getStoreFormData={getStoreFormData} schema={schema} setForm={setForm} /> 
+          updateResourceFromLastUpdated={updateResourceFromLastUpdated} msg={msg} messageDefaultState={messageDefaultState} handleFiles={handleFiles} getStoreFormData={getStoreFormData} schema={schema} setForm={setForm} postData={postData} /> 
       </Grid>
     )
   });

@@ -15,8 +15,8 @@ const MetaDataForm = (props) => {
         TextWidget: InputText,
     };
 
-    const postData = () => {
-        console.log("postdarararara")
+    const postData = (form, event) => {
+        props.postData(form,event);
     }
 
     return (
@@ -25,7 +25,7 @@ const MetaDataForm = (props) => {
                 <Btn
                     color="teal"
                     icon="facebook"
-                    onClick={() => console.log('test')}
+                    onClick={() => props._refForm.current.click(console.log("TEst"))}
                     loading={props.processing}
                 >
                     {props.dataForUpdate ? (
@@ -110,7 +110,7 @@ const MetaDataForm = (props) => {
                 className={props.fillAlert ? "fill-alert" : ""}
                 uiSchema={uiSchema}
                 schema={props.schema as JSONSchema7}
-                onSubmit={postData}
+                onSubmit={props.postData}
                 formData={props.getStoreFormData()}
                 onChange={(fd) => props.setForm(fd.formData)}
                 ArrayFieldTemplate={ArrayFieldTemplate}
