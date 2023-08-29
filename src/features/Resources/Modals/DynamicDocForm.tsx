@@ -32,6 +32,7 @@ import DynamicFormTabs from './DynamicFormTemplates/DynamicFormTabs';
 import DynamicFormUi from './DynamicFormTemplates/DynamicFormUi';
 import FilesAndActions from './DynamicFormTemplates/FileAndActions';
 import { act } from 'react-dom/test-utils';
+import MetaDataForm from './DynamicFormTemplates/DynamicFormMetaDataForm';
 
 
 
@@ -43,7 +44,6 @@ interface IBody {
 }
 const uiSchema = DynamicFormUi;
 export default function DynamicDocForm({ resourceType, action, schema, dataForUpdate = null, handleClose, showLom = true, canImportData = true }) {
-  const classes = useStyles();
   let collection_id = useSelector(selectCollection);
   //let storeFormData = useSelector(selectFormData);
   const dispatch = useDispatch();
@@ -158,6 +158,7 @@ export default function DynamicDocForm({ resourceType, action, schema, dataForUp
   }
 
   const postData = async (form, event) => {
+    console.log('entro')
     localStorage.setItem('reload_catalogue', '1');
     setMessage(messageDefaultState)
 
@@ -253,12 +254,11 @@ export default function DynamicDocForm({ resourceType, action, schema, dataForUp
     // setForm(res.data);
     // setResourceData(res);
   }
-
+/*
   const MetaDataForm = () => {
     return (
       <Grid item sm={6}>
         <div className='forms-main-btns'>
-            {/* <Btn onClick={dispatchForm} loading={processing}>Update</Btn> */}
             
             <Btn color='teal' icon='facebook' onClick={() =>  _refForm.current.click(console.log("TEst"))} loading={processing}> 
               {dataForUpdate ? (
@@ -326,9 +326,7 @@ export default function DynamicDocForm({ resourceType, action, schema, dataForUp
                   hidden
                 />
               </Button>
-              {/* {resourceType === MULTIMEDIA ? (
-                  <Label> You will upload a {mediaType}</Label>
-              ) : null} */}
+         
         </Grid>
         </div>
         <SemanticForm
@@ -347,13 +345,14 @@ export default function DynamicDocForm({ resourceType, action, schema, dataForUp
         </SemanticForm> 
       </Grid>
     )
-  };
+  };*/
 
   const MainData = memo(() => {
     return (
       <Grid container style={{ height: '75vh' }}>
         <FilesAndActions dataForUpdate={dataForUpdate} styleBtnPreview={styleBtnPreview} handleFiles={handleFiles} action={action} formFiles={formFiles} iconHandler = {iconHandler} />
-        <MetaDataForm />
+        <MetaDataForm dataForUpdate={dataForUpdate} _refForm={_refForm} processing={processing} canImportData={canImportData} updateResourceFromLastCreated={updateResourceFromLastCreated} 
+          updateResourceFromLastUpdated={updateResourceFromLastUpdated} msg={msg} messageDefaultState={messageDefaultState} handleFiles={handleFiles} getStoreFormData={getStoreFormData} schema={schema} setForm={setForm} /> 
       </Grid>
     )
   });
