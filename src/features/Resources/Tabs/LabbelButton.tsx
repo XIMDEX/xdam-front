@@ -1,90 +1,20 @@
 import { Button } from "@material-ui/core";
+import { useDispatch, useSelector } from "react-redux";
 import { Icon } from "semantic-ui-react";
+import { selectFormData, setFormData } from "../../../appSlice";
+import { buttonStyle, iconTag, stylesTag, tagStyle, textStyle } from "./LabbelButtonStyle";
 
 const LabbelButton = (props) => {
-    const tagStyle = {
-        display: "flex",
-        backgroundColor: "#43a1a2",
-        borderRadius: "0.75rem",
-        width : "55%",
-        border: "2px solid black"
-    };
-    const labbelStylePerson = {
-        display: "flex",
-        padding: "2rem",
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#e42e3f",
-        "border-top-left-radius": "0.75rem",
-        "border-bottom-left-radius": "0.75rem",
-        width: "20%",
-    };
-    const labbelStylePlace = {
-        display: "flex",
-        padding: "2rem",
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#43c35b",
-        "border-top-left-radius": "0.75rem",
-        "border-bottom-left-radius": "0.75rem",
-        width: "20%",
-    };
-    const labbelStyleOthers = {
-        display: "flex",
-        padding: "2rem",
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#5c9eda",
-        "border-top-left-radius": "0.75rem",
-        "border-bottom-left-radius": "0.75rem",
-        width: "20%",
-    };
-    const labbelStyleOrganization = {
-        display: "flex",
-        padding: "2rem",
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#dabe60",
-        "border-top-left-radius": "0.75rem",
-        "border-bottom-left-radius": "0.75rem",
-        width: "20%",
-    };
-    const textStyle = {
-        textAlign: "center",
-        backgroundColor: "#E5E7EB",
-        padding: "2rem",
-        justifyContent: "center",
-        width: "60%",
-    };
-    const buttonStyle = {
-        backgroundColor: "#c5c5c5",
-        width: "20%",
-        "border-top-right-radius": "0.75rem",
-        "border-bottom-right-radius": "0.75rem",
-        "border-top-left-radius": "0.00rem",
-        "border-bottom-left-radius": "0.00rem",
-        "font-size": "1.5rem",
-        "line-height": "1.35rem",
-        
-      
-    };
-    const stylesTag = {"Person":labbelStylePerson,"Place":labbelStylePlace,"Other":labbelStyleOthers,"Organization":labbelStyleOrganization}
-    const iconTag = {
-        Person: 'user circle',
-        Place: 'map marker alternate',
-        Location: 'map marker alternate',
-        Other: 'tags',
-        Thing: 'tags',
-        Custom: 'tags',
-        Corporation: 'tag',
-        Institution: 'tag',
-        Organisation: 'tag',
-        Organization: 'tag'
-      };
-      
+    let storeFormData = useSelector(selectFormData);
+    let result = {};
+    const dispatch = useDispatch();
     const sendData = () => {
-        console.log("sendData");
-        console.log(props);
+        const result = { ...storeFormData };
+        result.description = { ...storeFormData.description };
+        result.description.semantic_tags = [...storeFormData.description.semantic_tags, props.xtag];
+        
+        console.log(result["description"]["semantic_tags"]);
+        dispatch(setFormData(result));
     };
     //
     return (

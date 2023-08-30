@@ -10,14 +10,13 @@ import LabbelButton from "./LabbelButton";
 const AiData = (props) => {
   const [value, setValue] = useState(0);
   const classes = useStyles();
-  const dispatch = useDispatch();
   let storeFormData = useSelector(selectFormData);
   const [Xtags, setXtags] = useState();
   const [XtagUnliked,setXtagUnliked] = useState();
   useEffect(() => {
    setXtags(storeFormData?.description?.entities_linked.filter(obj => obj.uuid === props.uuid));
    setXtagUnliked(storeFormData?.description?.entities_non_linked.filter(obj => obj.uuid === props.uuid));
-    console.log(Xtags)
+
   }, [props.uuid])
   
   const handleChange = async (event: React.ChangeEvent<{}>, newValue: number) => {

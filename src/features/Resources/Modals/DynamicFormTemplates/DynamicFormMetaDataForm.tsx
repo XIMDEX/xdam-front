@@ -15,17 +15,13 @@ const MetaDataForm = (props) => {
         TextWidget: InputText,
     };
 
-    const postData = (form, event) => {
-        props.postData(form,event);
-    }
-
     return (
         <Grid item sm={6}>
             <div className="forms-main-btns">
                 <Btn
                     color="teal"
                     icon="facebook"
-                    onClick={() => props._refForm.current.click(console.log("TEst"))}
+                    onClick={() => props._refForm.current.click()}
                     loading={props.processing}
                 >
                     {props.dataForUpdate ? (

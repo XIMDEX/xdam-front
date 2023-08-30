@@ -9,6 +9,7 @@ import store from "../../../../app/store";
 import "./tab.css";
 
 const DynamicFormTabs = (props) => {
+   
     const metaData = {
         menuItem: "Main Data",
         render: () => <Tab.Pane> {<props.mainData />}</Tab.Pane>,
@@ -61,7 +62,6 @@ const DynamicFormTabs = (props) => {
     };
 
     return (
-        // style={{width:"8rem",scrollBehavior:"auto",overflow:"hidden"}}
         <Grid item sm={12} id="form-content ">
             {storeTags &&
             props.dataForUpdate &&
