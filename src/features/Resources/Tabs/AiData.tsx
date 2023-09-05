@@ -2,72 +2,104 @@ import React, { useEffect, useState } from "react";
 import MainService from "../../../api/service";
 import { useDispatch, useSelector } from "react-redux";
 import { selectFormData, setFormData } from "../../../appSlice";
-import { Tab } from '@material-ui/core';
-import { Tabs } from '@material-ui/core';
+import { Tab } from "@material-ui/core";
+import { Tabs } from "@material-ui/core";
 import useStyles from "../LOM/hooks/useStyles";
-import LabbelButton from "./LabbelButton"; 
+import LabbelButton from "./LabbelButton";
 
 const AiData = (props) => {
-  const [value, setValue] = useState(0);
-  const classes = useStyles();
-  let storeFormData = useSelector(selectFormData);
-  const [Xtags, setXtags] = useState();
-  const [XtagUnliked,setXtagUnliked] = useState();
-  useEffect(() => {
-   setXtags(storeFormData?.description?.entities_linked.filter(obj => obj.uuid === props.uuid));
-   setXtagUnliked(storeFormData?.description?.entities_non_linked.filter(obj => obj.uuid === props.uuid));
+    const [value, setValue] = useState(0);
+    const classes = useStyles();
+    let storeFormData = useSelector(selectFormData);
+    const [Xtags, setXtags] = useState();
+    const [XtagUnliked, setXtagUnliked] = useState();
+    const [imageCaptionAi, setImageCaptionAi] = useState();
+    useEffect(() => {
+        if (
+            storeFormData.description &&
+            storeFormData.description.semantic_tags
+        ) {
+            setXtags(
+                storeFormData?.description?.semantic_tags.filter(
+                    (obj) => obj.uuid === props.uuid
+                )
+            );
+        }
+        if (
+            storeFormData.description &&
+            storeFormData.description.semantic_tags_unlinked
+        ) {
+            setXtagUnliked(
+                storeFormData?.description?.semantic_tags_unlinked.filter(
+                    (obj) => obj.uuid === props.uuid
+                )
+            );
+        }
+        if (storeFormData.description.imageCaptionAi) {
+          setImageCaptionAi(storeFormData.description.imageCaptionAi);
+        }
+        console.log(imageCaptionAi);
+    }, [props.uuid]);
 
-  }, [props.uuid])
-  
-  const handleChange = async (event: React.ChangeEvent<{}>, newValue: number) => {
-    setValue(newValue);
-  }
+    const handleChange = async (
+        event: React.ChangeEvent<{}>,
+        newValue: number
+    ) => {
+        setValue(newValue);
+    };
 
-    const flexLine = {"display":"flex","padding":"0.5rem","gap":"1rem"};
-    const labbel   = {"width":"100%","border-width": "4px","display":"flex","alignItems":"center","flexDirection":"column","gap":"1rem","height":"600px","overflow":"auto"
-    }
+    const flexLine = { display: "flex", padding: "0.5rem", gap: "1rem" };
+    const labbel = {
+        width: "100%",
+        "border-width": "4px",
+        display: "flex",
+        alignItems: "center",
+        flexDirection: "column",
+        gap: "1rem",
+        height: "600px",
+        overflow: "auto",
+    };
 
-  return (
-    <div>
-      {storeFormData.description && (
-        
+    return (
         <div>
-          {(storeFormData.description && Xtags && XtagUnliked) && (
-        
-            <div>
-              <div style={flexLine as React.CSSProperties}>
+            {storeFormData.description && (
                 <div>
-                <Tabs
-                  orientation='vertical'
-                  variant="scrollable"
-                  value={value}
-                  onChange={handleChange}
-                  aria-label="Vertical tabs example"
-                  className={classes.tabs}
-                  
-                >
-                  <Tab key="1" label="Xtags"  />,
-                  <Tab key="2" label="Xtags(unlinked)"  />
-                  <Tab key="3" label="Image"  />
-              </Tabs>
+                    
+                        <div>
+                            <div style={flexLine as React.CSSProperties}>
+                                <div>
+                                    <Tabs
+                                        orientation="vertical"
+                                        variant="scrollable"
+                                        value={value}
+                                        onChange={handleChange}
+                                        aria-label="Vertical tabs example"
+                                        className={classes.tabs}
+                                    >
+                                        <Tab key="1" label="Xtags" />,
+                                        <Tab key="2" label="Xtags(unlinked)" />
+                                        <Tab key="3" label="Image" />
+                                    </Tabs>
+                                </div>
+                                <div style={labbel}>
+                                    {Xtags && value == 0 && (
+                                        Xtags.map((xtag) => (
+                                            <LabbelButton xtag={xtag} />
+                                        )))}
+                                    {XtagUnliked && value == 1 &&
+                                        XtagUnliked.map((xtag) => (
+                                            <LabbelButton xtag={xtag} />
+                                        ))}
+                                    {value == 2 && 
+                                      <p>test {imageCaptionAi}</p>
+                                    }
+                                </div>
+                            </div>
+                        </div>
                 </div>
-              <div style={labbel}>
-               {value==0 && Xtags.map(xtag => <LabbelButton xtag={xtag} />)}
-               {value==1 &&XtagUnliked.map(xtag => <LabbelButton xtag={xtag} />)}
-              </div>
-              </div>
-            </div>
-          )}
-          {/*storeFormData.aiData.imageCaptionAi && (
-            <div>
-              <h3 style={{ color:"#43a1a2" }}>Image</h3>
-              <div  style={flexLine as React.CSSProperties}>{/*storeFormData.aiData.imageCaptionAi}</div>
-            </div>
-          )*/}
+            )}
         </div>
-      )}
-    </div>
-  );
+    );
 };
 
 export default AiData;
