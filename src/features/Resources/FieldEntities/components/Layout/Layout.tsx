@@ -5,7 +5,7 @@ import Suggestions from '../Suggestions/Suggestions'
 import Taxon from '../Taxon/Taxon'
 
 function Layout(props) {
-
+    console.log(props.formData)
     const [suggestions, setSuggestion] = useState([])
     const [data, setData] = useState(props.formData)
 
@@ -27,6 +27,7 @@ function Layout(props) {
     }
     
     const handleData = value => {
+        
         setData([...data, value])
     }
 

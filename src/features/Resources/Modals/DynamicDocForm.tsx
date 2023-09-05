@@ -158,7 +158,6 @@ export default function DynamicDocForm({ resourceType, action, schema, dataForUp
   }
 
   const postData = async (form, event) => {
-    console.log('entro')
     localStorage.setItem('reload_catalogue', '1');
     setMessage(messageDefaultState)
 
@@ -197,7 +196,6 @@ export default function DynamicDocForm({ resourceType, action, schema, dataForUp
     if (dataForUpdate) {
       res = await MainService().updateResource(dataForUpdate.id, theFormData);
     } else {
-      console.log(theFormData);
       res = await MainService().createResource(theFormData);
     }
    

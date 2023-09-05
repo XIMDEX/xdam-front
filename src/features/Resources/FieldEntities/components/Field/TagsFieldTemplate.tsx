@@ -1,10 +1,11 @@
 import React from 'react'
-import { ArrayFieldTemplate} from "@rjsf/semantic-ui";
+//import { ArrayFieldTemplate} from "@rjsf/semantic-ui";
 import Layout from '../Layout/Layout';
 import { Button } from 'semantic-ui-react';
+import ArrayFieldTemplate from '../../../Modals/DynamicFormTemplates/ArrayFieldTemplate';
 
 const TagsFieldTemplate = (props) => {
-
+    console.log(props);
     return (
       <>
         <h3 style={{marginBottom: 25}}>{props.title}{false && props.canAdd && (
@@ -12,9 +13,10 @@ const TagsFieldTemplate = (props) => {
         )}</h3>
         
         {
-            props.title !== 'Entities Linked' &&  props.title !== 'Entities Non-Linked' 
+            /*props.title !== 'Entities Linked' &&  props.title !== 'Entities Non-Linked' 
                 ? (<ArrayFieldTemplate {...props} />)
-                : (<Layout {...props}/> )
+                : (<Layout {...props}/> )*/
+               // <ArrayFieldTemplate {...props} />
         }
       </>
     )

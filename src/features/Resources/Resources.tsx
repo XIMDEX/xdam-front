@@ -105,7 +105,7 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
   const fetchCatalogue = async () => {
 
     if (typeof selectedColl !== 'undefined') {
-      const catalogue = await mainService.getCatalogue(selectedColl.id, '?' + param(query) + (facetsQuery ? '&' + buildFacetsQuery(facetsQuery) : ''));
+      const catalogue = await mainService.getCatalogue(selectedColl.id, '?' + param(query) + (facetsQuery ? '&' + buildFacetsQuery(facetsQuery)+"XDEBUG_SESSION_START=VSCODE" : ''));
       // const catalogue = mockup;
       let pages = {
         ...catalogue

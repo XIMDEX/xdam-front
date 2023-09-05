@@ -12,8 +12,6 @@ const LabbelButton = (props) => {
         const result = { ...storeFormData };
         result.description = { ...storeFormData.description };
         result.description.semantic_tags = [...storeFormData.description.semantic_tags, props.xtag];
-        
-        console.log(result["description"]["semantic_tags"]);
         dispatch(setFormData(result));
     };
     //

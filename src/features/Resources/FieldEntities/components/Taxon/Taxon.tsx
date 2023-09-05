@@ -3,31 +3,23 @@ import { XTag } from "@ximdex/xui-react/material";
 
 function Taxon({ data, handleData, checkIfExists, addSuggestions, items }) {
     const [xtags, setXtags] = useState();
+  //  const [data, setData] = useState(props.formData)
     const deleteXtag = (e, key) => {
         e.preventDefault();
 
         setXtags(
             xtags.filter(function (obj) {
-                return obj.name !== key;
+                return obj.label !== key;
             })
         );
-        console.log(xtags);
+        console.log(data);
+        handleData(xtags);
     };
     useEffect(() => {
       let xtagsFormat = [];
-      /*data.forEach(tag => {
-        let newTag = {
-            id: tag.id,
-            label: tag.name,
-            type: tag.type,
-            link: tag.uri
-        }
-        xtagsFormat.push(newTag);
-      });*/
       data.map((tag,index)=>{
         let newTag = {
             id: index,
-            vocabulary: "Test",
             label: tag.name,
             type: tag.type,
             link: tag.uri
@@ -35,7 +27,6 @@ function Taxon({ data, handleData, checkIfExists, addSuggestions, items }) {
         xtagsFormat.push(newTag);
       })
       setXtags(xtagsFormat)
-      console.log(xtagsFormat)
     }, [])
     
     return (
@@ -55,7 +46,7 @@ function Taxon({ data, handleData, checkIfExists, addSuggestions, items }) {
                         tag={tag}
                         status="correct"
                         canDelete
-                        onDelete={(e) => deleteXtag(e, tag.name)}
+                        onDelete={(e) => deleteXtag(e, tag.label)}
                         lite
                     />
                 ))}

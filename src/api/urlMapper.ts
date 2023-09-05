@@ -26,7 +26,7 @@ const api = () => {
         },
         getSchemas: {
             method: 'GET',
-            url: baseUrl + '/resourcesSchema'
+            url: baseUrl + '/resourcesSchema?XDEBUG_SESSION_START=VSCODE'
         },
         getLomesSchema: {
             method: 'GET',
@@ -46,11 +46,11 @@ const api = () => {
         }),
         getResource: (resource_id) => ({
             method: 'GET',
-            url: baseUrl + '/resource/' + resource_id
+            url: baseUrl + '/resource/' + resource_id + "?XDEBUG_SESSION_START=VSCODE"
         }),
         getCatalog: (id) => ({
             method: 'GET',
-            url: baseUrl + '/catalogue/' + id
+            url: baseUrl + '/catalogue/' + id  
         }),
         downloadFile: (dam_url) => ({
             method: 'GET',
@@ -78,7 +78,7 @@ const api = () => {
         },
         getResourceJson: (resource_id) => ({    
             method: 'GET',   
-            url: baseUrl + '/resource/json/' + resource_id 
+            url: baseUrl + '/resource/json/' + resource_id+'?XDEBUG_SESSION_START=VSCODE'
         }),
         createResourceSemantic: {    
             method: 'POST',   
@@ -102,7 +102,7 @@ const api = () => {
         }),
         updateResource: (id) => ({
             method: 'POST',
-            url: baseUrl + '/resource/' + id + '/update'
+            url: baseUrl + '/resource/' + id + '/update?XDEBUG_SESSION_START=VSCODE'
         }),
         updateResourceInes: (id) => ({
             method: 'POST',
