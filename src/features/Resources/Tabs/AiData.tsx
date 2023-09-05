@@ -6,6 +6,7 @@ import { Tab } from "@material-ui/core";
 import { Tabs } from "@material-ui/core";
 import useStyles from "../LOM/hooks/useStyles";
 import LabbelButton from "./LabbelButton";
+import AddButton from "./AddButton";
 
 const AiData = (props) => {
     const [value, setValue] = useState(0);
@@ -36,9 +37,8 @@ const AiData = (props) => {
             );
         }
         if (storeFormData.description.imageCaptionAi) {
-          setImageCaptionAi(storeFormData.description.imageCaptionAi);
+            setImageCaptionAi(storeFormData.description.imageCaptionAi);
         }
-        console.log(imageCaptionAi);
     }, [props.uuid]);
 
     const handleChange = async (
@@ -64,38 +64,37 @@ const AiData = (props) => {
         <div>
             {storeFormData.description && (
                 <div>
-                    
-                        <div>
-                            <div style={flexLine as React.CSSProperties}>
-                                <div>
-                                    <Tabs
-                                        orientation="vertical"
-                                        variant="scrollable"
-                                        value={value}
-                                        onChange={handleChange}
-                                        aria-label="Vertical tabs example"
-                                        className={classes.tabs}
-                                    >
-                                        <Tab key="1" label="Xtags" />,
-                                        <Tab key="2" label="Xtags(unlinked)" />
-                                        <Tab key="3" label="Image" />
-                                    </Tabs>
-                                </div>
-                                <div style={labbel}>
-                                    {Xtags && value == 0 && (
-                                        Xtags.map((xtag) => (
-                                            <LabbelButton xtag={xtag} />
-                                        )))}
-                                    {XtagUnliked && value == 1 &&
-                                        XtagUnliked.map((xtag) => (
-                                            <LabbelButton xtag={xtag} />
-                                        ))}
-                                    {value == 2 && 
-                                      <p>test {imageCaptionAi}</p>
-                                    }
-                                </div>
+                    <div>
+                        <div style={flexLine as React.CSSProperties}>
+                            <div>
+                                <Tabs
+                                    orientation="vertical"
+                                    variant="scrollable"
+                                    value={value}
+                                    onChange={handleChange}
+                                    aria-label="Vertical tabs example"
+                                    className={classes.tabs}
+                                >
+                                    <Tab key="1" label="Xtags" />,
+                                    <Tab key="2" label="Xtags(unlinked)" />
+                                    <Tab key="3" label="Image" />
+                                </Tabs>
+                            </div>
+                            <div style={labbel}>
+                                {Xtags &&
+                                    value == 0 &&
+                                    Xtags.map((xtag) => (
+                                        <LabbelButton xtag={xtag} />
+                                    ))}
+                                {XtagUnliked &&
+                                    value == 1 &&
+                                    XtagUnliked.map((xtag) => (
+                                        <LabbelButton xtag={xtag} />
+                                    ))}
+                                {value == 2 && (<AddButton text={imageCaptionAi}/>)}
                             </div>
                         </div>
+                    </div>
                 </div>
             )}
         </div>

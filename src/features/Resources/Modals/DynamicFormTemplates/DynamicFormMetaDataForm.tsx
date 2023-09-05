@@ -5,7 +5,7 @@ import DynamicFormUi from "./DynamicFormUi";
 import { JSONSchema7 } from "json-schema";
 import { Button, Grid } from "@material-ui/core";
 import { Button as Btn, Dropdown, Icon, Message } from "semantic-ui-react";
-import { InputText, InputTextArea, CustomToggle, CustomInputText, CustomDropdown } from './CustomFields';
+import { InputText } from './CustomFields';
 import { MULTIMEDIA } from '../../../../constants';
 
 const MetaDataForm = (props) => {

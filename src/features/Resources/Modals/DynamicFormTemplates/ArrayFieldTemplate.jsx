@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card } from "@material-ui/core";
 import { Button, Dropdown, Label } from "semantic-ui-react";
 import { ArrayFieldTemplate as ArrayFieldTemplateRJSF } from "@rjsf/semantic-ui";
@@ -8,8 +8,7 @@ import { XTag } from '@ximdex/xui-react/material'
 export default function ArrayFieldTemplate(props) {
     const [data] = useState(props.formData)
     return (
-
-        <Card variant='outlined' className='forms-arrayField'>
+         (<Card variant='outlined' className='forms-arrayField'>
             <label className='forms-arrayLabel'>{props.title}</label>
             {props.canAdd && (
                 <Button
@@ -23,23 +22,20 @@ export default function ArrayFieldTemplate(props) {
                 />
                 )}
             <div className='forms-arrayContainer'>
-                {props.schema.items.type === 'object' && !props.schema?.subType
-                    ? ( <ArrayFieldTemplateRJSF {...props} canAdd={false}/>)
-                    : (<CustomItem
+                <CustomItem
                         array={data}
                         schema={props.schema}
                         formData={props.formData}
                         items={props.items}
                         props={props}
-                    />)
-                }
+                    />
             </div>
-        </Card>
+        </Card>)
   );
 }
 
 function CustomItem({schema, array, ...props}) {
-    if (schema?.subType === 'dropdown') {
+  /*  if (schema?.subType === 'dropdown') {
         return (
             <ArrayDropdown
                 array={array}
@@ -59,8 +55,17 @@ function CustomItem({schema, array, ...props}) {
             />
         )
 
-    }
-    return ( <ListItems items={props.items}  props={props.props}/> )
+    }*/
+
+    return (
+       <ArrayXTags
+            array={array}
+            options={schema.options}
+            formData={props.formData}
+            items={props.items}
+        />
+    )
+   // return ( <ListItems items={props.items}  props={props.props}/> )
 }
 
 function ArrayDropdown({array, options, formData, ...props}) {
@@ -157,6 +162,7 @@ const ListItems = ({items, handleAction, ...props}) => {
 function ArrayXTags({array, options, formData, ...props}) {
     const [show, setShow] = useState(false);
     const [opts, setOpts] = useState({});
+    
 
     const onSearch = (options) => {
         if (opts?.id !== options.id) {
@@ -200,6 +206,7 @@ function ArrayXTags({array, options, formData, ...props}) {
                     <Button icon='close' size='mini' className={'forms-btn-removeArrayItem'} onClick={handleDelete} style={{height: 41}} />
                 </div>
             )}
+          
             <ListItemsXTags items={props.items} handleAction={onSearch} />
         </>
     )
@@ -210,7 +217,7 @@ function ListItemsXTags({items, handleAction, ...props}) {
     const onDelete = () => {
 
     }
-
+   
     return items.map(element => {
         const {children: data, onDropIndexClick: popIndex, index: indexToPop} = element
 
@@ -218,18 +225,24 @@ function ListItemsXTags({items, handleAction, ...props}) {
             handleAction({onChange: data.props.onChange, id: data.props.idSchema.$id, popIndex, indexToPop})
             return null
         }
-
+        //dar buen formato
         let tag ={...data.props.formData}
+        let newTag = {
+            id: element.key,
+            label: tag.name,
+            type: tag.type,
+            link: tag.uri
+        }
         tag.link = ''
         tag.description = ''
         tag.type = tag.vocabulary === 'thesauro' ? 'organization' : 'custom'
-
+       
         return (
             <div key={element.key} className='forms-arrayItem'>
                 <div className='forms-textField'>
                     <XTag
                         key={tag.id}
-                        tag={tag}
+                        tag={newTag}
                         onDelete={popIndex(indexToPop)}
                         // canEdit
                         canDelete
@@ -238,6 +251,7 @@ function ListItemsXTags({items, handleAction, ...props}) {
                                 color: '#43A1A2',
                             }
                         }}
+                        lite
                     />
                 </div>
             </div>
