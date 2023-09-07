@@ -101,8 +101,21 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const [fillAlert, setFillAlert] = useState(false);
   const formulario = React.useRef(null);
 
-  useEffect(() => {
+  const [loadingTheme, setLoadingTheme] = useState(true)
+  const [themes, setThemes] = useState([])
 
+  useEffect(() => {
+    const getThemes = async () => {
+        const themes_scorm = await MainService().getBookThemes()
+        const newThemes = themes_scorm.map(th => ({key: th, value: th, text: th === 'v1' ? `${th} (deprecated)` : th}))
+        setThemes(newThemes)
+    }
+    if (action === 'edit' && resourceType === 'book') {
+        getThemes()
+    }
+  }, [])
+
+  useEffect(() => {
     if(action === 'create') {
       if(typeof getStoreFormData() !== 'object') {
         dispatch(setFormData({}));
@@ -147,7 +160,13 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
           const version = await MainService().getBookVersion(dataForUpdate.id)
           res.version = version
         }
+        if (resourceType === 'book' && !res.theme) {
+            setLoadingTheme(true)
+            const theme = await MainService().getBookTheme(dataForUpdate.id)
+            res.theme = theme
+        }
         setResourceData(res);
+        setLoadingTheme(false)
         setTheFiles(res.files);
       }
       if(!loaded) {
@@ -170,8 +189,17 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
       const version = await MainService().getBookVersion(resourceData.id);
       setResourceData({...resourceData, version})
     }
+    async function addThemeBook() {
+        const theme = await MainService().getBookTheme(resourceData.id);
+        setResourceData({...resourceData, theme})
+        setLoadingTheme(false)
+    }
     if (resourceType === 'book' && resourceData !== null && !resourceData.hasOwnProperty('version')) {
-      addVersionBook()
+        addVersionBook()
+    }
+    if (resourceType === 'book' && resourceData !== null && !resourceData.hasOwnProperty('theme')) {
+        setLoadingTheme(true)
+        addThemeBook()
     }
   }, [resourceData, setResourceData, resourceType])
 
@@ -182,7 +210,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     backgroundRepeat: 'no-repeat',
   }
 
-  const showUpgradeButton = resourceType === 'book' && action === 'edit' && resourceData && +resourceData.version !== CURRENT_BOOK_VERSION
+  const showUpgradeButton = resourceType === 'book' && action === 'edit' && resourceData && +resourceData.version !== 0 && +resourceData.version !== CURRENT_BOOK_VERSION
 
   const handleFiles = (e) => {
     if (typeof e.target.type === 'string' && e.target.type === 'file' && e.target.name === 'Preview') {
@@ -399,9 +427,9 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   }
 
   const saveMetaDataResource = async () => {
-
     const data = formulario?.current?.state?.formData?.description ?? resourceData?.data?.description
     data.id = resourceData.id
+    data.theme = resourceData.theme
 
     if (resourceData.version === 1) data.upgrading = true
 
@@ -410,12 +438,15 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
         form_data.append(key, data[key]);
     }
 
-    const res = await MainService().upgradeVersionBook(data)
+    const res = await MainService().updateMetadataBook(data)
     const resData = res.ok ? await res.json() : {error: await res.text()}
 
     return {res, resData}
   }
 
+  const handleResourceTheme = (_, {value}) => {
+    setResourceData({...resourceData, theme: value})
+  }
   const MetaDataForm = () => {
     return (
       <Grid item sm={6}>
@@ -468,6 +499,20 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
 
           </Message>
         </div>
+        {resourceType === 'book' && action !== 'create' && (
+            <div className='form-theme'>
+                <label style={{fontWeight: 'bold'}}>Select Theme</label>
+                <Dropdown
+                    placeholder='Select theme'
+                    fluid
+                    selection
+                    onChange={handleResourceTheme}
+                    loading={loadingTheme}
+                    value={resourceData?.theme}
+                    options={themes}
+                />
+            </div>
+        )}
         <SemanticForm
           id='sfu'
           className={fillAlert ? 'fill-alert' : ''}
@@ -522,7 +567,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
 
             <Grid item sm={12} className={classes.divider}>
               {dataForUpdate ? (
-                <ResourceActionButtons resource={dataForUpdate} />
+                <ResourceActionButtons resource={dataForUpdate} theme={resourceData?.theme ?? 'base'} />
               ) : null}
             </Grid>
 

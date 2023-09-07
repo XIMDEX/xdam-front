@@ -522,7 +522,41 @@ class AppService {
       }
     }
 
-    async upgradeVersionBook(resource)
+    async getBookTheme(bookid)
+    {
+      const _api = api().getBookTheme(bookid);
+      const request = {
+        method: _api.method
+      }
+      try {
+        const res = await (await fetch(_api.url, request)).json();
+        if (res.error) throw Error(res.error)
+        return res.theme
+      }
+      catch (e) {
+        console.error(e.message)
+        return 'base';
+      }
+    }
+
+    async getBookThemes()
+    {
+        const _api = api().getBookThemes()
+        const request = {
+            method: _api.method
+          }
+          try {
+            const res = await (await fetch(_api.url, request)).json();
+            if (res.error) throw Error(res.error)
+            return res
+          }
+          catch (e) {
+            console.error(e.message)
+            return ['base'];
+          }
+    }
+
+    async updateMetadataBook(resource)
     {
       const _api = api().postBookMetadata()
       const request = {
