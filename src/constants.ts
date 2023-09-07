@@ -78,7 +78,7 @@ export enum courseLanguages {
     "uk-UA" = 'Ukranian'
 }
 
-globalThis.aaa = courseLanguages;
-
-
 export const SHOW_DAM_ORGANIZATIONS = process.env.REACT_APP_SHOW_DAM_ORGANIZATIONS === 'false' ? false : true
+
+export const SHOW_THEMES_BOOK = process.env.REACT_APP_SHOW_THEMES_BOOK === 'true'
+export const DEFAULT_THEME_BOOK = process.env.REACT_APP_DEFAULT_THEME_BOOK ?? 'base'

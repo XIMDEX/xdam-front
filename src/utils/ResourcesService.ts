@@ -1,5 +1,5 @@
 import { Cookies } from 'react-cookie';
-import { COURSE, BOOK, MULTIMEDIA, IMAGE, VIDEO, AUDIO, ACTIVITY, ASSESSMENT, BOOK_EDITOR_URL, COURSE_EDITOR_URL, KAKUMA_URL_API } from '../constants';
+import { COURSE, BOOK, MULTIMEDIA, IMAGE, VIDEO, AUDIO, ACTIVITY, ASSESSMENT, BOOK_EDITOR_URL, COURSE_EDITOR_URL, KAKUMA_URL_API, DEFAULT_THEME_BOOK } from '../constants';
 import MainService from '../api/service';
 
 class ResourcesService {
@@ -70,7 +70,7 @@ class ResourcesService {
           ra = this.getCourseActions();
           break;
         case BOOK:
-          ra = this.getBookActions(resource.id, resource.theme ?? 'base');
+          ra = this.getBookActions(resource.id, resource.theme ?? DEFAULT_THEME_BOOK);
           break;
         case MULTIMEDIA:
         case IMAGE:
@@ -86,7 +86,6 @@ class ResourcesService {
           break;
         default:
           throw new Error('resource type invalid: ' + resource.type)
-          break;
       }
 
       return ra;
