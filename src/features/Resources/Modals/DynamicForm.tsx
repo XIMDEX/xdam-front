@@ -9,7 +9,7 @@ import {
 } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import MainService from '../../../api/service';
-import { bookLanguages, courseLanguages, CURRENT_BOOK_VERSION, MULTIMEDIA, VALIDS_LOM } from '../../../constants';
+import { bookLanguages, courseLanguages, CURRENT_BOOK_VERSION, DEFAULT_THEME_BOOK, MULTIMEDIA, SHOW_THEMES_BOOK, VALIDS_LOM } from '../../../constants';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectCollection } from '../../../slices/organizationSlice';
 import SemanticForm from "@rjsf/semantic-ui";
@@ -110,7 +110,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
         const newThemes = themes_scorm.map(th => ({key: th, value: th, text: th === 'v1' ? `${th} (deprecated)` : th}))
         setThemes(newThemes)
     }
-    if (action === 'edit' && resourceType === 'book') {
+    if (SHOW_THEMES_BOOK && action === 'edit' && resourceType === 'book') {
         getThemes()
     }
   }, [])
@@ -160,10 +160,10 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
           const version = await MainService().getBookVersion(dataForUpdate.id)
           res.version = version
         }
-        if (resourceType === 'book' && !res.theme) {
+        if (SHOW_THEMES_BOOK && resourceType === 'book' && !res.theme) {
             setLoadingTheme(true)
-            const theme = await MainService().getBookTheme(dataForUpdate.id)
-            res.theme = theme
+            const _theme = await MainService().getBookTheme(dataForUpdate.id)
+            res.theme = _theme
         }
         setResourceData(res);
         setLoadingTheme(false)
@@ -197,7 +197,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     if (resourceType === 'book' && resourceData !== null && !resourceData.hasOwnProperty('version')) {
         addVersionBook()
     }
-    if (resourceType === 'book' && resourceData !== null && !resourceData.hasOwnProperty('theme')) {
+    if (SHOW_THEMES_BOOK && resourceType === 'book' && resourceData !== null && !resourceData.hasOwnProperty('theme')) {
         setLoadingTheme(true)
         addThemeBook()
     }
@@ -292,18 +292,19 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     const resData = await res.json()
 
 
-    if(!res.ok) {
-      return setMessage({display: true, ok: res.ok, text: resData.error ?? 'Error 0' })
-    }
-    let output_message = ''
+    let output_message = 'Resource and metadata saved'
     let ouput_ok = res.ok
 
+    if(!res.ok) {
+      output_message = 'Error 0';
+    }
+
     if (!showUpgradeButton && resourceType === 'book' && action !== 'create') {
-      const {res: resMetadata} = await saveMetaDataResource()
+      const {res: resMetadata, resData: dataMetadata} = await saveMetaDataResource()
       if (!resMetadata.ok) {
-        return setMessage({display: true, ok: resMetadata.ok, text: 'Resource saved, but save metada is failed' })
+        ouput_ok = resMetadata.ok;
+        output_message = "Resource saved, but save metada is failed - " + dataMetadata.error
       }
-      output_message = 'Resource and metadata saved'
     }
 
     setLoaded(false)
@@ -314,7 +315,6 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   }
 
   const getStoreFormData = () => {
-    const state = store.getState()
     const fd = store.getState().app.formData;
     return fd;
   }
@@ -447,6 +447,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const handleResourceTheme = (_, {value}) => {
     setResourceData({...resourceData, theme: value})
   }
+
   const MetaDataForm = () => {
     return (
       <Grid item sm={6}>
@@ -499,7 +500,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
 
           </Message>
         </div>
-        {resourceType === 'book' && action !== 'create' && (
+        {SHOW_THEMES_BOOK && resourceType === 'book' && action !== 'create' && (
             <div className='form-theme'>
                 <label style={{fontWeight: 'bold'}}>Select Theme</label>
                 <Dropdown
@@ -567,7 +568,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
 
             <Grid item sm={12} className={classes.divider}>
               {dataForUpdate ? (
-                <ResourceActionButtons resource={dataForUpdate} theme={resourceData?.theme ?? 'base'} />
+                <ResourceActionButtons resource={dataForUpdate} themeBook={resourceData?.theme ?? DEFAULT_THEME_BOOK} />
               ) : null}
             </Grid>
 
