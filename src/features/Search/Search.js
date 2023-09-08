@@ -1,27 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
-import { List, Typography } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faCircleNotch, faClipboard } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faCircleNotch, faClipboard, faFilter } from '@fortawesome/free-solid-svg-icons';
 import { XInput, XButton, XDropdown, XPopUp } from '@ximdex/xui-react/material';
 import { COMMON_FILTERS, CORE_FILTERS, FILTERS } from './constants';
 import './Search.scss'
 import useQueryParams from '../../hooks/useQueryParams';
 import useFederatedSearches from '../../hooks/useFederatedSearches';
-import { ListItem } from 'semantic-ui-react';
 
 function Search() {
     const [viewMode, setViewMode] = useState('list');                       // list || th
     const [filters, setFilters] = useState({})
     const {addQueryParam, clearQueryParam, getQueryParams} = useQueryParams();
     const {abort, data: data_resources, error, fetching: isFetching, search} = useFederatedSearches()
+    const [showFilters, setShowFilters] = useState(false)
 
     useEffect(() => {
         const paramsURL = getQueryParams()
         if (Object.keys(paramsURL).length > 0) setFilters(paramsURL)
     }, [])
 
-window.xpoup =XPopUp
     useEffect(()=> {
         if (Object.keys(error).length > 0) {
             console.error('Error 5.0: ', error)
@@ -36,9 +34,13 @@ window.xpoup =XPopUp
         }
     }, [error])
 
+    const handleShowFilters = () => {
+        setShowFilters(!showFilters)
+    }
+
     const federatedSearch = () => {
         search(filters)
-        Object.keys(filters).forEach(key => addQueryParam(key, filters[key]))
+        addQueryParam(filters)
         return () => abort()
     };
 
@@ -97,6 +99,16 @@ window.xpoup =XPopUp
         };
     };
 
+    const handleCore = (core) =>{
+        let newFilters = {...filters}
+        if (!core) {
+            delete newFilters.c
+        } else {
+            newFilters.c = core
+        }
+        setFilters(newFilters)
+    }
+
     return (
         <div className='searchpage-container'>
             {Object.keys(filters).length === 0 && ( <Typography className='title' variant='h1' component="h1" >DAMSearch</Typography> )}
@@ -113,9 +125,20 @@ window.xpoup =XPopUp
                 <XButton className='search-button' onClick={federatedSearch}>
                     <FontAwesomeIcon icon={isFetching ? faCircleNotch : faSearch} spin={isFetching} size='1x' />
                 </XButton>
+                <XButton className='search-button' onClick={handleShowFilters}>
+                    <FontAwesomeIcon icon={faFilter} size='1x' />
+                </XButton>
             </section>
 
-            {Object.keys(filters).length > 0 && (
+            <section className='searchpage-cores'>
+                {filters?.c && (
+                    <XButton key={`all_r`} size="large" variant={'outlined'} onClick={()=> handleCore()}>All resources</XButton>
+                )}
+                {Object.keys(CORE_FILTERS).map((core, idx) => (
+                    <XButton key={`${core}_${idx}`} size="large" variant={filters?.c !== core.toLowerCase() ? 'outlined' : 'contained'} onClick={() => handleCore(core)}>{core}</XButton>
+                ))}
+            </section>
+            {(Object.keys(filters).length > 0 || showFilters ) && (
                 <>
                     <section className='filters-container'>
                         <XButton className="clear-filters" onClick={clearFilters}>CLEAR</XButton>
@@ -129,7 +152,7 @@ window.xpoup =XPopUp
                                             key={`filter-${option}-${index}`}
                                             label={filterOption?.label ?? 'filter'}
                                             options={filterOption?.options}
-                                            value={filters?.[option]}
+                                            value={filterOption.options.filter(e => e.label === filters[option])?.[0]}
                                             labelOptions={filterOption?.option_label ?? 'label'}
                                             hasCheckboxes={filterOption?.multiple_selection ?? false}
                                             multiple={filterOption?.multiple_selection ?? false}

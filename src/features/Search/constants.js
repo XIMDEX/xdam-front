@@ -2,9 +2,9 @@ export const INIT_FILTER_QUERY = '*:*'
 export const COMMON_FILTERS = ['l', 's', 'rt', 'r', 'cp', 'cpr', 'acc', 'll', 'sk', 'dp', 'ft'];
 export const CORE_FILTERS = {
     multimedia: [...COMMON_FILTERS],
-    activity: [...COMMON_FILTERS, 'ld', 'la', 'units'],
-    assessment: [...COMMON_FILTERS, 'ld', 'la'],
-    book: [...COMMON_FILTERS, 'units'],
+    activity: [...COMMON_FILTERS],
+    assessment: [...COMMON_FILTERS],
+    book: [...COMMON_FILTERS],
 };
 
 export const FILTERS = {
@@ -20,6 +20,28 @@ export const FILTERS = {
     },
     l: {
         label: "Language",
+        option_label: "label",
+        multiple_selection: false,
+        options: [
+            { label: "Español", value: "es_ES" },
+            { label: "English", value: "en_EN" },
+            { label: "Català", value: "ca_ES" },
+            { label: "Euskera", value: "eu_ES" },
+        ],
+    },
+    ld: {
+        label: "Language default",
+        option_label: "label",
+        multiple_selection: false,
+        options: [
+            { label: "Español", value: "es_ES" },
+            { label: "English", value: "en_EN" },
+            { label: "Català", value: "ca_ES" },
+            { label: "Euskera", value: "eu_ES" },
+        ],
+    },
+    la: {
+        label: "Available Languages",
         option_label: "label",
         multiple_selection: false,
         options: [
@@ -59,7 +81,7 @@ export const FILTERS = {
         ],
     },
     r: {
-        label: "Resources Type",
+        label: "Receiver",
         multiple_selection: false,
         options: [
             { label: "Profesor", value: "Profesor" },
@@ -68,7 +90,7 @@ export const FILTERS = {
         ],
     },
     cp: {
-        label: "Resources Type",
+        label: "Cognition Process",
         multiple_selection: false,
         options: [
             { label: "Nivel 1: Recordar", value: "Nivel 1: Recordar" },

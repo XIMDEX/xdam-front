@@ -5,10 +5,12 @@ function useQueryParams() {
 
     const {location, push: pushLocation} = useHistory()
 
-    const handleAddQueryParam = (param, value) => {
+    const handleAddQueryParam = (params) => {
         const currentLocation = location;
         const newSearchParams = new URLSearchParams(currentLocation.search);
-        newSearchParams.set(param, value);
+        Object.keys(params).forEach(key => {
+            newSearchParams.set(key, params[key]);
+        })
         pushLocation({ search: newSearchParams.toString() });
     };
 

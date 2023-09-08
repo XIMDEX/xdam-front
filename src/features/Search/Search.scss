@@ -39,6 +39,14 @@
 
 }
 
+.searchpage-cores {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    margin-bottom: 10px;
+}
+
 .filters-dropdowns-container {
     margin: 0px 12px;
     padding: 6px 0 2px;
@@ -120,8 +128,4 @@
 
 .resource-info-container {
     width: -webkit-fill-available;
-}
-
-.resource-action-container {
-
 }
