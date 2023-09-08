@@ -18,20 +18,20 @@ const AiData = (props) => {
     useEffect(() => {
         if (
             storeFormData.description &&
-            storeFormData.description.semantic_tags
+            storeFormData.description.entities_linked
         ) {
             setXtags(
-                storeFormData?.description?.semantic_tags.filter(
+                storeFormData?.description?.entities_linked.filter(
                     (obj) => obj.uuid === props.uuid
                 )
             );
         }
         if (
             storeFormData.description &&
-            storeFormData.description.semantic_tags_unlinked
+            storeFormData.description.entities_non_linked
         ) {
             setXtagUnliked(
-                storeFormData?.description?.semantic_tags_unlinked.filter(
+                storeFormData?.description?.entities_non_linked.filter(
                     (obj) => obj.uuid === props.uuid
                 )
             );
