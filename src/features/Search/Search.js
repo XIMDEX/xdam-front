@@ -1,135 +1,63 @@
 import React, { useState, useEffect } from 'react';
-import { XInput, XButton, XDropdown, XPopUp } from '@ximdex/xui-react/material';
-import './Search.scss'
+import { useHistory } from 'react-router-dom';
+import { Typography } from '@material-ui/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faCircleNotch, faFilter, faClipboard } from '@fortawesome/free-solid-svg-icons';
-
+import { faSearch, faCircleNotch, faClipboard } from '@fortawesome/free-solid-svg-icons';
+import { XInput, XButton, XDropdown, XPopUp } from '@ximdex/xui-react/material';
+import { COMMON_FILTERS, CORE_FILTERS, FILTERS, PARAMS } from './constants';
+import './Search.scss'
+import useQueryParams from '../../hooks/useQueryParams';
 
 function Search() {
-    // TODO: move and then import as constant
-    const mutualFilters = [
-        {  
-            filter_key: 'core',
-            label: 'collection',
-            option_label: 'label',
-            multiple_selection: false,
-            options: [
-                {key: 'multimedia', label: 'multimedia', value: 'multimedia_v3'},      // image, video, audio
-                {key: 'activity', label: 'activity', value: 'activity_v3'},
-                {key: 'assessment', label: 'assessment', value: 'assessment_v3'},
-                {key: 'book', label: 'book', value: 'book_v3'},
-            ]
-        }, 
-        {
-            filter_key: 'active',
-            label: 'active',
-            option_label: 'label',
-            multiple_selection: false,
-            options: [
-                {label: 'yes', value: 'true'},
-                {label: 'no', value: 'false'},
-            ]
-        },
-        {
-            filter_key: 'derechos_autor',
-            label: 'Derechos de autor',
-            option_label: 'label',
-            multiple_selection: false,
-            options: [
-                {label: 'Propietaria MHE', value: 'Propietaria MHE'},
-                {label: 'Creative Comnmons', value: 'Creative Comnmons'},
-                {label: 'De terceros', value: 'De terceros'},
-                {label: 'Licencia GFDL', value: 'Licencia GFDL'},
-                {label: 'Dominio público', value: 'Dominio público'},
-            ]
-        }
-    ];
-
-    // TODO: move and then import as constant
-    const initFilters = {
-        multimedia: [
-            ...mutualFilters,
-        ],
-        activity: [
-            ...mutualFilters,
-        ],
-        assessment: [
-            ...mutualFilters,
-        ],
-        book: [ 
-            ...mutualFilters,
-            {
-                filter_key: 'lang',
-                label: 'language',
-                option_label: 'label',
-                multiple_selection: false,
-                options: [
-                    {label: 'español', value: 'es_ES'},
-                    {label: 'english', value: 'en_EN'},
-                    {label: 'català', value: 'ca_ES'},
-                ]
-            },
-        ]
-    };
-    
-    const initFilterQuery = '*:*'
-
-    const [viewMode, setViewMode] = useState('list');                       // list || th
-    const [isFetching, setIsFetching] = useState(true);                     // TODO use this variable to control the appearance of a loading spinner
-    const [filterOptions, setFilterOptions] = useState(initFilters.book);
-    const [filtersSelected, setFiltersSelected] = useState({
-        search_term: '',
-        core: {key: 'book', label: 'book', value: 'book_v3'}
-    }); 
-    const [filterQuery, setFilterQuery] = useState(initFilterQuery);
+    const [viewMode, setViewMode] = useState('th');                       // list || th
+    const [isFetching, setIsFetching] = useState(false);                     // TODO use this variable to control the appearance of a loading spinner
     const [fetchResults, setFetchResults] = useState(undefined);
+    const [filters, setFilters] = useState({})
+    const {addQueryParam, clearQueryParam, getQueryParams} = useQueryParams();
 
     useEffect(() => {
-        if (isFetching) fetchResources();
-    }, [isFetching]);
+        const paramsURL = getQueryParams()
+        if (Object.keys(paramsURL).length > 0) setFilters(paramsURL)
+    }, [])
+
+    useEffect(() => {
+        if (isFetching) {
+            fetchResources()
+            const filterKeys = Object.keys(filters)
+            if (filterKeys.length > 0) filterKeys.forEach(fk => addQueryParam(fk, filters[fk]))
+        };
+    }, [isFetching, filters, addQueryParam]);
 
     const fetchResources = () => {
-        console.info('start fetching results')
-        // TODO change url to stop using mockup data 
+        // TODO change url to stop using mockup data
         // let url = `http://xdambackv3.mhe.ximdex.net/solr/${filters?.core}/select?$q={filterQuery}`;
         let url = '/data/search.json'
         fetch(url)
             .then(response => response.json())
-            .then(results => setFetchResults(results))
+            .then(results => setFetchResults([]))
             .finally(() => {
                 setIsFetching(false);
             });
     };
 
-    const modifyFiltersSelected = (key, value) => {
-        setFiltersSelected(prevState => ({ ...prevState, [key]: value }));
+    const handleFilters = (param, value) => {
+        setFilters({...filters, [param]:value})
+    }
 
-        if (key === 'core') {
-            setFilterOptions(initFilters[value?.key ?? 'mutual']);
-            setFilterQuery(initFilterQuery);
-        };
-        
-        if (key !== 'search_term' && key !== 'core') {
-            // TODO test and posibly handle keys with multiple values allowed
-            setFilterQuery(prevState => {
-                const queryValue = value?.value ?? value;
-                const params = new URLSearchParams(prevState === initFilterQuery ? '' : prevState);
-                if (params.has(key)) {
-                    params.set(key, queryValue);
-                } else {
-                    params.append(key, queryValue);
-                };
-                return params.toString();
-            })
-        };
+    const handleSearch = txt => {
+        let newFilters = {...filters}
+        if (txt.trim() === '') {
+            delete newFilters.q
+        } else {
+            newFilters.q = txt.trim()
+        }
+        setFilters(newFilters)
+    }
 
-        // TODO if key === 'search_term' (what would the key value be?)
-
-        if (key !== 'search_term') {
-            // avoid fetching while user is still writting in the search bar
-            setIsFetching(true);
-        };
-    };
+    const clearFilters = () => {
+        setFilters({})
+        clearQueryParam()
+    }
 
     const handleFetchOnKeyDown = (e) => {
         if (e.key === 'Enter') {
@@ -141,7 +69,7 @@ function Search() {
         const textToCopy = key ? data?.[key] : data;
 
         try {
-            if ('clipboard' in navigator) { 
+            if ('clipboard' in navigator) {
                 navigator.clipboard.writeText(textToCopy);
             } else {
                 throw new Error('Force catch block to execute as it looks like this browser does not support the method used to copy into the clipboard.');
@@ -167,17 +95,15 @@ function Search() {
         };
     };
 
-console.log('filtersSelected--->', filtersSelected);
-console.log('filterQuery--->', filterQuery);
-
     return (
         <div className='searchpage-container'>
-
+            {Object.keys(filters).length === 0 && ( <Typography className='title' variant='h1' component="h1" >DAMSearch</Typography> )}
             <section className='searchbar-container'>
+                {Object.keys(filters).length > 0 && ( <Typography className='title' variant='h4' component="h1" >DAMSearch</Typography> )}
                 <XInput
                     label='Search bar'
-                    value={filtersSelected?.search_term ?? ''}
-                    onChange={(e) => modifyFiltersSelected('search_term', e?.target?.value || e?.nativeEvent?.data || '')}
+                    value={filters?.q ?? ''}
+                    onChange={(e) => handleSearch(e?.target?.value || e?.nativeEvent?.data || '')}
                     onKeyDown={(e) => handleFetchOnKeyDown(e)}
                     debounce={800}
                     style={{ width: '-webkit-fill-available' }}
@@ -187,41 +113,47 @@ console.log('filterQuery--->', filterQuery);
                 </XButton>
             </section>
 
-            {filterOptions?.length > 0 &&
-                <section className='filters-container'>
-                    <p style={{ margin: 'unset', minWidth: 'fit-content' }}>
-                        <FontAwesomeIcon icon={faFilter} style={{ marginRight: '6px' }}/> 
-                        Filters: 
-                    </p>
-                    <div className='filters-dropdowns-container'>
-                        {filterOptions?.map((filterOption, index) => (
-                            <XDropdown 
-                                key={filterOption?.label ?? 'filter-' + index}
-                                label={filterOption?.label ?? 'filter'}
-                                options={filterOption?.options}
-                                value={filtersSelected?.[filterOption?.filter_key]}
-                                labelOptions={filterOption?.option_label ?? 'label'}
-                                hasCheckboxes={filterOption?.multiple_selection ?? false}
-                                multiple={filterOption?.multiple_selection ?? false}
-                                className='filter-dropdown'
-                                size="small"
-                                disableClearable
-                                onChange={(e, value) => modifyFiltersSelected(filterOption.filter_key, value)}
-                            />
-                        ))}
-                    </div>
-                </section>
-            }
-
-            <p>{fetchResults?.response?.numFound ?? 0} resource{fetchResults?.response?.numFound === 1 ? '' : 's'} found</p>
+            {Object.keys(filters).length > 0 && (
+                <>
+                    <section className='filters-container'>
+                        <XButton className="clear-filters" onClick={clearFilters}>CLEAR</XButton>
+                        <div className='filters-dropdowns-container'>
+                            {[...(filters.hasOwnProperty('c') ? CORE_FILTERS[filters.c] : COMMON_FILTERS)]
+                                .sort((a,b) => {return (FILTERS[a]?.disabled ? 1 : 0)-(FILTERS[b]?.disabled ? 1 : 0)})
+                                .map((option, index) => {
+                                    const filterOption = FILTERS[option];
+                                    // TODO value if exists
+                                    return (
+                                        <XDropdown
+                                            key={`filter-${option}-${index}`}
+                                            label={filterOption?.label ?? 'filter'}
+                                            options={filterOption?.options}
+                                            value={filters?.[option]}
+                                            labelOptions={filterOption?.option_label ?? 'label'}
+                                            hasCheckboxes={filterOption?.multiple_selection ?? false}
+                                            multiple={filterOption?.multiple_selection ?? false}
+                                            className='filter-dropdown'
+                                            size="small"
+                                            disableClearable
+                                            disabled={filterOption?.disabled ?? false}
+                                            onChange={(e, value) => handleFilters(option, value.value)}
+                                        />
+                                    )
+                                })
+                            }
+                        </div>
+                    </section>
+                    <Typography variant='h5'>{fetchResults?.response?.numFound ?? 0} resource{fetchResults?.response?.numFound === 1 ? '' : 's'} found</Typography>
+                </>
+            )}
 
             <ul className='resources-container'>
                 {fetchResults?.response?.docs?.map((doc, index) => (
                     <li key={doc?.id ?? index} className={`resource-container ${viewMode} ${index % 2 === 0 ? 'odd' : 'even'}`}>
                         <div className='resource-preview-image-container'>
-                            <img 
+                            <img
                                 src={`${process.env.REACT_APP_API_BASE_URL}/resource/render/${doc?.previews?.[0]}/small`}
-                                alt='preview image' 
+                                alt='preview resource'
                                 loading='lazy'
                                 onError={(e) => { e.target.onError = null; e.target.src = "/noimg.png" }}
                             />
@@ -233,10 +165,10 @@ console.log('filterQuery--->', filterQuery);
                         <div className='resource-action-container'>
                             <XButton style={{ minWidth: 'unset' }} onClick={()=> handleCopyToClipboard(doc, 'id')}>
                                 {console.log(doc?.id)}
-                                <FontAwesomeIcon 
-                                    icon={faClipboard} 
+                                <FontAwesomeIcon
+                                    icon={faClipboard}
                                     title={`Add id ${doc?.id} to clipboard.`}
-                                    size='1x' style={{ marginRight: '6px' }} 
+                                    size='1x' style={{ marginRight: '6px' }}
                                 />
                                 <span>Id</span>
                             </XButton>

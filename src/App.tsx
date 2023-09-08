@@ -100,7 +100,6 @@ function App() {
       } else if (mainService.getToken()) {
         if(!localUser) {
           let fetchedUser = await MainService().getUser();
-          console.log(fetchedUser);
           if (fetchedUser?.error) {
             setLoading(false);
             setLocalUser(null);
@@ -168,26 +167,21 @@ function App() {
     )
   } else if (location.pathname === '/search' && localUser) {
     return (
-      <XthemeProvider>
-        <Grid container>
-          <Grid item sm={12} className='main-header'>
-            <Header _user={user}/>
-          </Grid>
-        </Grid>
-        <Container maxWidth='md' disableGutters>
-          <Search />
+          <Container maxWidth='xl' disableGutters>
+            <XthemeProvider>
+                <Grid container>
+                    <Grid item sm={12} className='main-header'>
+                        <Header _user={user}/>
+                    </Grid>
+                </Grid>
+                <Search />
+            </XthemeProvider>
         </Container>
-      </XthemeProvider>
-      
+
     )
   } else if (localUser) {
     return (
       <Container maxWidth='xl' disableGutters>
-        {/* {
-          !sidebarOpen ? (
-            <div className='closedFacetsBG' style={{height: document.body.scrollHeight - 83}}> </div>
-          ) : null
-        } */}
         {
           !sidebarOpen ? (
             <div>

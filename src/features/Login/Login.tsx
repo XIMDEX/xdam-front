@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { reloadApp } from '../../appSlice';
-import { Grid, Button } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 import MainService from '../../api/service';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
@@ -55,7 +55,11 @@ export function Login() {
     }
     MainService().setToken('JWT', user.data.access_token);
     setLoginStatus('Login success. Loading user data, please wait.');
-    history.push('/home');
+    if (history.location.pathname === '/search') {
+        history.push(history.location.pathname + history.location.search);
+    } else {
+        history.push('/home')
+    }
     dispatch(reloadApp());
   };
 
