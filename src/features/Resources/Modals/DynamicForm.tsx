@@ -370,15 +370,6 @@ export default function DynamicForm({
                   </Tab.Pane>
               ),
           }));
-    const AICaptions = {
-        menuItem: "AI DATA",
-        render: () => (
-            <Tab.Pane>
-                {" "}
-                <AiData id={dataForUpdate.id} />
-            </Tab.Pane>
-        ),
-    };
 
     const pane = [metaData];
     const storeTags = store.getState().app.formData;

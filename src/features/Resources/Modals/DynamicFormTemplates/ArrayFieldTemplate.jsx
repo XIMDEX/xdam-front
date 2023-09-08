@@ -10,7 +10,7 @@ export default function ArrayFieldTemplate(props) {
     return (
          (<Card variant='outlined' className='forms-arrayField'>
             <label className='forms-arrayLabel'>{props.title}</label>
-            {props.canAdd && (
+            {(props.canAdd && props.title !== 'Semantic Tags') && (
                 <Button
                     circular
                     icon='plus'
@@ -206,7 +206,6 @@ function ArrayXTags({array, options, formData, ...props}) {
                     <Button icon='close' size='mini' className={'forms-btn-removeArrayItem'} onClick={handleDelete} style={{height: 41}} />
                 </div>
             )}
-          
             <ListItemsXTags items={props.items} handleAction={onSearch} />
         </>
     )
@@ -227,15 +226,16 @@ function ListItemsXTags({items, handleAction, ...props}) {
         }
         //dar buen formato
         let tag ={...data.props.formData}
+
         let newTag = {
             id: element.key,
             label: tag.name,
             type: tag.type,
             link: tag.uri
         }
-        tag.link = ''
+      /*  tag.link = ''
         tag.description = ''
-        tag.type = tag.vocabulary === 'thesauro' ? 'organization' : 'custom'
+        tag.type = tag.vocabulary === 'thesauro' ? 'organization' : 'custom'*/
        
         return (
             <div key={element.key} className='forms-arrayItem'>
