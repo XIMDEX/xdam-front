@@ -612,6 +612,41 @@ class AppService {
 
       return true;
     }
+
+    async alfrescoIn2FederatedSearches(params, core, signal) {
+        const _api = api().alfrescoIn2FederatedSearches(params, core)
+        const data = {
+            query: {
+                query: 'TYPE:"macgh:media" OR TYPE:"macgh:proyecto_editorial" OR TYPE:"macgh:documento_original"'
+            },
+            include: ['properties']
+        }
+        Object.keys(params).forEach(param => {
+            data.query.query = data.query.query + ` OR ${param}:${params[param]}`
+        })
+        const request = {
+          method: _api.method,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': _api.auth
+          },
+          body: JSON.stringify(data),
+          signal
+        }
+        return fetch(_api.url, request);
+    }
+
+    async internalFederatedSearches(params, core, signal) {
+        const _api = api().internalFederatedSearches(params, core)
+        const request = {
+          method: _api.method,
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          signal
+        }
+        return fetch(_api.url, request)
+    }
 }
 
 export default function MainService()

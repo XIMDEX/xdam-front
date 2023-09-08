@@ -1,5 +1,5 @@
 import { Cookies } from 'react-cookie';
-import { API_BASE_URL, BOOK_EDITOR_URL, XTAGS_API_BASE_URL } from '../constants';
+import { API_BASE_URL, BOOK_EDITOR_URL, REACT_APP_TOKEN_ALFRESCO, SOLR_ALFRESCO_URL, SOLR_DAM_URL, XTAGS_API_BASE_URL } from '../constants';
 
 const api = () => {
     let cookies = new Cookies();
@@ -181,6 +181,21 @@ const api = () => {
             method: 'GET',
             url: `${process.env.REACT_APP_KAKUMA_URL}/course/${course_id}/IMSCC`
         }),
+        internalFederatedSearches: (params, core) => {
+            let paramXimdex = Object.keys(params).map(param => `${param}:${params[param]}`)
+
+            return {
+                method: 'GET',
+                url: `${SOLR_DAM_URL}/${core}/select?q=` + paramXimdex.join(' OR ')
+            }
+        },
+        alfrescoIn2FederatedSearches: (params, core) => {
+            return {
+                method: 'POST',
+                url: `${SOLR_ALFRESCO_URL}/alfresco/api/-default-/public/search/versions/1/search`,
+                auth: 'Basic ' + REACT_APP_TOKEN_ALFRESCO,
+            }
+        }
     }
     return mapper;
 }

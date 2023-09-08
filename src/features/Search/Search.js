@@ -1,43 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Typography } from '@material-ui/core';
+import { List, Typography } from '@material-ui/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faCircleNotch, faClipboard } from '@fortawesome/free-solid-svg-icons';
 import { XInput, XButton, XDropdown, XPopUp } from '@ximdex/xui-react/material';
-import { COMMON_FILTERS, CORE_FILTERS, FILTERS, PARAMS } from './constants';
+import { COMMON_FILTERS, CORE_FILTERS, FILTERS } from './constants';
 import './Search.scss'
 import useQueryParams from '../../hooks/useQueryParams';
+import useFederatedSearches from '../../hooks/useFederatedSearches';
+import { ListItem } from 'semantic-ui-react';
 
 function Search() {
-    const [viewMode, setViewMode] = useState('th');                       // list || th
-    const [isFetching, setIsFetching] = useState(false);                     // TODO use this variable to control the appearance of a loading spinner
-    const [fetchResults, setFetchResults] = useState(undefined);
+    const [viewMode, setViewMode] = useState('list');                       // list || th
     const [filters, setFilters] = useState({})
     const {addQueryParam, clearQueryParam, getQueryParams} = useQueryParams();
+    const {abort, data: data_resources, error, fetching: isFetching, search} = useFederatedSearches()
 
     useEffect(() => {
         const paramsURL = getQueryParams()
         if (Object.keys(paramsURL).length > 0) setFilters(paramsURL)
     }, [])
 
-    useEffect(() => {
-        if (isFetching) {
-            fetchResources()
-            const filterKeys = Object.keys(filters)
-            if (filterKeys.length > 0) filterKeys.forEach(fk => addQueryParam(fk, filters[fk]))
-        };
-    }, [isFetching, filters, addQueryParam]);
+window.xpoup =XPopUp
+    useEffect(()=> {
+        if (Object.keys(error).length > 0) {
+            console.error('Error 5.0: ', error)
 
-    const fetchResources = () => {
-        // TODO change url to stop using mockup data
-        // let url = `http://xdambackv3.mhe.ximdex.net/solr/${filters?.core}/select?$q={filterQuery}`;
-        let url = '/data/search.json'
-        fetch(url)
-            .then(response => response.json())
-            .then(results => setFetchResults([]))
-            .finally(() => {
-                setIsFetching(false);
+            XPopUp({
+                message: "There's been an error while trying to search. Please contact with your Administrator.",
+                iconType:'error',
+                timer:'4000',
+                popUpPosition:'top',
+                iconColor: 'red',
             });
+        }
+    }, [error])
+
+    const federatedSearch = () => {
+        search(filters)
+        Object.keys(filters).forEach(key => addQueryParam(key, filters[key]))
+        return () => abort()
     };
 
     const handleFilters = (param, value) => {
@@ -61,7 +63,7 @@ function Search() {
 
     const handleFetchOnKeyDown = (e) => {
         if (e.key === 'Enter') {
-            setIsFetching(true);
+            federatedSearch()
         };
     };
 
@@ -108,7 +110,7 @@ function Search() {
                     debounce={800}
                     style={{ width: '-webkit-fill-available' }}
                 />
-                <XButton className='search-button' onClick={() => setIsFetching(true)}>
+                <XButton className='search-button' onClick={federatedSearch}>
                     <FontAwesomeIcon icon={isFetching ? faCircleNotch : faSearch} spin={isFetching} size='1x' />
                 </XButton>
             </section>
@@ -122,7 +124,6 @@ function Search() {
                                 .sort((a,b) => {return (FILTERS[a]?.disabled ? 1 : 0)-(FILTERS[b]?.disabled ? 1 : 0)})
                                 .map((option, index) => {
                                     const filterOption = FILTERS[option];
-                                    // TODO value if exists
                                     return (
                                         <XDropdown
                                             key={`filter-${option}-${index}`}
@@ -143,28 +144,28 @@ function Search() {
                             }
                         </div>
                     </section>
-                    <Typography variant='h5'>{fetchResults?.response?.numFound ?? 0} resource{fetchResults?.response?.numFound === 1 ? '' : 's'} found</Typography>
+                    <Typography variant='h5'>{data_resources?.totalItems ?? 0} resource{data_resources?.totalItems === 1 ? '' : 's'} found</Typography>
                 </>
             )}
 
             <ul className='resources-container'>
-                {fetchResults?.response?.docs?.map((doc, index) => (
+                {data_resources?.data?.map((doc, index) => (
                     <li key={doc?.id ?? index} className={`resource-container ${viewMode} ${index % 2 === 0 ? 'odd' : 'even'}`}>
                         <div className='resource-preview-image-container'>
+                            <div className='resource-type'>{doc.type}</div>
                             <img
-                                src={`${process.env.REACT_APP_API_BASE_URL}/resource/render/${doc?.previews?.[0]}/small`}
+                                src={doc?.img ? `${process.env.REACT_APP_API_BASE_URL}/resource/render/${doc?.img}/small`: '/noimg.png'}
                                 alt='preview resource'
                                 loading='lazy'
                                 onError={(e) => { e.target.onError = null; e.target.src = "/noimg.png" }}
                             />
                         </div>
                         <div className='resource-info-container'>
-                            <p>{doc?.type?.toUpperCase()}</p>
+                            <p>{doc?.type?.resource_type}</p>
                             <h3>{doc?.name}</h3>
                         </div>
                         <div className='resource-action-container'>
                             <XButton style={{ minWidth: 'unset' }} onClick={()=> handleCopyToClipboard(doc, 'id')}>
-                                {console.log(doc?.id)}
                                 <FontAwesomeIcon
                                     icon={faClipboard}
                                     title={`Add id ${doc?.id} to clipboard.`}

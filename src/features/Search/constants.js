@@ -22,15 +22,11 @@ export const FILTERS = {
         label: "Language",
         option_label: "label",
         multiple_selection: false,
-        alternatives: {
-            es_ES: ['es_ES', 'es'],
-            en_EN: ['en_EN', 'en'],
-            ca_ES: ['ca_ES', 'ca', 'cat']
-        },
         options: [
-            { label: "español", value: "es_ES" },
-            { label: "english", value: "en_EN" },
-            { label: "català", value: "ca_ES" },
+            { label: "Español", value: "es_ES" },
+            { label: "English", value: "en_EN" },
+            { label: "Català", value: "ca_ES" },
+            { label: "Euskera", value: "eu_ES" },
         ],
     },
     s: {
@@ -38,8 +34,8 @@ export const FILTERS = {
         label: "Status",
         multiple_selection: false,
         options: [
-            { label: "Yes", value: "true" },
-            { label: "No", value: "false" },
+            { label: "Published", value: "true" },
+            { label: "Draft", value: "false" },
         ],
     },
     rt: {
@@ -159,7 +155,7 @@ export const FILTERS = {
     un: {
         label: "Units",
         multiple_selection: false,
-        options: [[
+        options: [
             { "label": 0, "value": "00" }, { "label": 1, "value": "01" }, { "label": 2, "value": "02" }, { "label": 3, "value": "03" }, { "label": 4, "value": "04" },
             { "label": 5, "value": "05" }, { "label": 6, "value": "06" }, { "label": 7, "value": "07" }, { "label": 8, "value": "08" }, { "label": 9, "value": "09" },
             { "label": 10, "value": "10" }, { "label": 11, "value": "11" }, { "label": 12, "value": "12" }, { "label": 13, "value": "13" }, { "label": 14, "value": "14" },
@@ -170,7 +166,16 @@ export const FILTERS = {
             { "label": 35, "value": "35" }, { "label": 36, "value": "36" }, { "label": 37, "value": "37" }, { "label": 38, "value": "38" }, { "label": 39, "value": "39" },
             { "label": 40, "value": "40" }, { "label": 41, "value": "41" }, { "label": 42, "value": "42" }, { "label": 43, "value": "43" }, { "label": 44, "value": "44" },
             { "label": 45, "value": "45" }, { "label": 46, "value": "46" }, { "label": 47, "value": "47" }, { "label": 48, "value": "48" }, { "label": 49, "value": "49" }
-        ]
+        ],
+    },
+    mt: {
+        label: "Multimedia Type",
+        multiple_selection: false,
+        options: [
+            {label: "Audio", value: "audio"},
+            {label: "Video", value: "video"},
+            {label: "Image", value: "image"},
+            // {label: "Document", value: "document"},
         ],
     }
 }
@@ -191,7 +196,7 @@ export const PARAMS = {
     dp: 'discipline',
     ft: 'type_file',
     at: 'activity_type',
-    mt: 'multimedia_tupe',
+    mt: 'multimedia_type',
     ld: 'language_default',
     la: 'languages_allow'
 }

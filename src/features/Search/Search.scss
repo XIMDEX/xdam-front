@@ -99,6 +99,17 @@
 .resource-preview-image-container {
     width: 100px;
     height: 80px;
+    display: flex;
+    align-items: flex-end;
+
+    .resource-type {
+        position: absolute;
+        text-align: center;
+        width: 100px;
+        background: rgba(0, 128, 128, 0.445);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+    }
 
     & img {
         width: 100px;
