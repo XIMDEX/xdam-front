@@ -41,7 +41,7 @@ const FilesAndActions = (props) => {
                 />
               </Button>
             </Grid>
-            <Grid item sm={12}>
+            <Grid item sm={12} style={{"paddingTop":"1.25rem"}}>
                     <Button variant="outlined" component="label" fullWidth>
                         Attach files
                         <input
