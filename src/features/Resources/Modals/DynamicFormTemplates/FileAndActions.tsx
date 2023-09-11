@@ -16,13 +16,14 @@ import useStyles from './DynamicFormStyles';
 
 const FilesAndActions = (props) => {
     const classes = useStyles();
+    
     return (
       <Grid item sm={6}>
-          {props.dataForUpdate?.data?.description?.image == '' && (<ButtonGroup orientation='vertical'>
+          <ButtonGroup orientation='vertical'>
             <Grid item sm={12} style={{ minWidth: 400 }}>
               <span
                 className={`${classes.addPreview}`}
-              >Uplad preview image</span>
+              >Upload preview image</span>
               <Button
                 className={`${classes.btnPreview}`}
                 component="label"
@@ -43,12 +44,12 @@ const FilesAndActions = (props) => {
             <Grid item sm={12} className={classes.divider}>
               {props.dataForUpdate ? (
                 <ButtonGroup orientation='horizontal' fullWidth id='forms-btn-actions'>    
-                    <ResourceActionButtons resource={props.dataForUpdate} />
+                   {/*} <ResourceActionButtons resource={props.dataForUpdate} />*/}
                 </ButtonGroup>
               ) : null}
             </Grid>
 
-          </ButtonGroup>)}
+          </ButtonGroup>
           <div style={{ margin: '15px 42px 0px 0px' }}>
             {
               (props.action === 'view' || props.action === 'edit' )  && props.dataForUpdate?.data?.description?.image == '' ? (
