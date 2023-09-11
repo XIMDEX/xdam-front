@@ -12,6 +12,7 @@ import RelatedFiles from '../RelatedFiles';
 import { Label } from 'semantic-ui-react';
 import ResourceActionButtons from '../ResourceActionButtons';
 import useStyles from './DynamicFormStyles';
+import { MULTIMEDIA } from '../../../../constants';
 
 
 const FilesAndActions = (props) => {
@@ -40,7 +41,26 @@ const FilesAndActions = (props) => {
                 />
               </Button>
             </Grid>
-
+            <Grid item sm={12}>
+                    <Button variant="outlined" component="label" fullWidth>
+                        Attach files
+                        <input
+                            type="file"
+                            multiple
+                            accept={
+                                props.resourceType === MULTIMEDIA
+                                    ? "audio/*,video/*,image/*"
+                                    : "*"
+                            }
+                            onChange={(e) => props.handleFiles(e)}
+                            name="File"
+                            hidden
+                        />
+                    </Button>
+                    {/* {resourceType === MULTIMEDIA ? (
+                  <Label> You will upload a {mediaType}</Label>
+              ) : null} */}
+                </Grid>
             <Grid item sm={12} className={classes.divider}>
               {props.dataForUpdate ? (
                 <ButtonGroup orientation='horizontal' fullWidth id='forms-btn-actions'>    

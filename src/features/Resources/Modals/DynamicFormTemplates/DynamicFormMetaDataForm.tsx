@@ -80,26 +80,7 @@ const MetaDataForm = (props) => {
                         </>
                     )}
                 </Message>
-                <Grid item sm={12}>
-                    <Button variant="outlined" component="label" fullWidth>
-                        Attach files
-                        <input
-                            type="file"
-                            multiple
-                            accept={
-                                props.resourceType === MULTIMEDIA
-                                    ? "audio/*,video/*,image/*"
-                                    : "*"
-                            }
-                            onChange={(e) => props.handleFiles(e)}
-                            name="File"
-                            hidden
-                        />
-                    </Button>
-                    {/* {resourceType === MULTIMEDIA ? (
-                  <Label> You will upload a {mediaType}</Label>
-              ) : null} */}
-                </Grid>
+              
             </div>
             <SemanticForm
                 id="sfu"
