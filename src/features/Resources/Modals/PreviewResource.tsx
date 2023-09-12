@@ -56,12 +56,16 @@ export default function PreviewResource( { resData } ) {
     const [resourceDataFacet, setResourceDataFacet] = useState(null)
     const [preview,setPreview] = useState(null)
 
+    const setImgPreview = () => {
+      const previewUrl = resourceData?.previews[0]?.dam_url || resourceData?.previews[0] || resourceData?.files[0]?.dam_url || 'noimg.png';
+      setPreview(MainService().render(previewUrl) + '/medium');
+    }
 
     useEffect(() => {
         const getResourceData = async () => {
             let res = await MainService().getResource(id);
             setResourceData(res);
-            console.log(res)
+        
         }
         getResourceData();
     }, [])
@@ -72,7 +76,8 @@ export default function PreviewResource( { resData } ) {
        setResourceDataFacet(resFacet.data[0]);   
      }
      resourceData && getResourceDataFaceted();
-     resourceData && setPreview(MainService().render(resourceData.previews[0].dam_url) + '/medium');
+     resourceData &&  setImgPreview();
+     
     },[resourceData])
 
     
