@@ -56,21 +56,16 @@ export default function PreviewResource( { resData } ) {
     const { id } = resData;
     const [resourceData, setResourceData] = useState(null)
     const [resourceDataFacet, setResourceDataFacet] = useState(null)
+    const [preview,setPreview] = useState(null)
     const coll = useSelector(selectCollection);
 
     useEffect(() => {
         const getResourceData = async () => {
             let res = await MainService().getResource(id);
             setResourceData(res);
+            console.log(res)
         }
-
-        const getResourceDataFaceted = async () => {
-           let resFacet = await MainService().getCatalogue(resourceData.collection[0].id, '?facets[id]='+id);
-          setResourceDataFacet(resFacet.data[0]);
-        }
-
         getResourceData();
-        
     }, [])
 
     useEffect(() => {
@@ -79,12 +74,10 @@ export default function PreviewResource( { resData } ) {
        setResourceDataFacet(resFacet.data[0]);   
      }
      resourceData && getResourceDataFaceted();
+     resourceData && setPreview(MainService().render(resourceData.previews[0].dam_url) + '/medium');
     },[resourceData])
 
-
-
-    let preview = render(resData, 'medium')
-
+    
     const closeModal = () => {
       let element: HTMLElement = document.getElementsByClassName('MuiBackdrop-root')[0] as HTMLElement;
       element.click();
@@ -166,9 +159,6 @@ export default function PreviewResource( { resData } ) {
 
     return (
       <Grid container>
-        <Grid container justify='flex-end' >
-          <Button circular onClick={closeModal} icon='close' color='teal' className='read-card-close-button' />
-        </Grid>
         <Grid item sm={12}>
           {resourceData !== null && (
             <>
