@@ -5,13 +5,11 @@ import {
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import MainService from '../../../api/service';
 
-import { render } from '../../../utils/render';
 import RelatedFiles from './RelatedFiles';
-import { Button, Label } from 'semantic-ui-react';
+import { Label } from 'semantic-ui-react';
 import _ from 'lodash';
 import { useSelector } from 'react-redux';
 import { API_BASE_URL, WORKSPACES } from '../../../constants';
-import { selectCollection } from '../../../slices/organizationSlice';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 import { selectWorkspacesData } from '../../../appSlice';
 
@@ -57,7 +55,7 @@ export default function PreviewResource( { resData } ) {
     const [resourceData, setResourceData] = useState(null)
     const [resourceDataFacet, setResourceDataFacet] = useState(null)
     const [preview,setPreview] = useState(null)
-    const coll = useSelector(selectCollection);
+
 
     useEffect(() => {
         const getResourceData = async () => {
@@ -159,7 +157,7 @@ export default function PreviewResource( { resData } ) {
 
     return (
       <Grid container>
-        <Grid item sm={12}>
+        <Grid item sm={12} style={{padding:"2rem"}}>
           {resourceData !== null && (
             <>
               <div style={{backgroundImage: 'url('+preview+')'}} className={classes.imgView}/>
