@@ -198,7 +198,7 @@ export default function DynamicDocForm({
     const postData = async (form, event) => {
         localStorage.setItem("reload_catalogue", "1");
         setMessage(messageDefaultState);
-
+       
         const data = form.formData;
         /*
     IMPORTANTE: DEFINE MEDIA TYPE ON MULTIMEDIA COLLECTION.
@@ -242,9 +242,9 @@ export default function DynamicDocForm({
 
         //FormFiles are the files 'adding'
         if (action !== "create") {
-            setFormFiles([]);
+          //  setFormFiles([]);
         }
-        setLoaded(false);
+  //      setLoaded(false);
         setProcessing(false);
         const resData = await res.json();
 
@@ -255,7 +255,8 @@ export default function DynamicDocForm({
                 text: resData.error ?? "Error 0",
             });
         } else {
-            //setForm(resData.data);
+            console.log(resData);
+         //   setForm(resData.data);
             setMessage({ display: true, text: "", ok: res.ok });
         }
         event.preventDefault();
