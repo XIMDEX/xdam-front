@@ -57,8 +57,11 @@ export default function PreviewResource( { resData } ) {
     const [preview,setPreview] = useState(null)
 
     const setImgPreview = () => {
-      const previewUrl = resourceData?.previews[0]?.dam_url || resourceData?.previews[0] || resourceData?.files[0]?.dam_url || 'noimg.png';
-      setPreview(MainService().render(previewUrl) + '/medium');
+        console.log(resourceData);
+        let previewUrl = resourceData?.previews[0]?.dam_url || resourceData?.previews[0] || resourceData?.files[0]?.dam_url || 'noimg.png';
+        if(!previewUrl.includes('@@@dam:@image')) previewUrl = 'noimg.png'
+        const previewSize = previewUrl === 'noimg.png' ? '' : '/medium';
+        setPreview(MainService().render(previewUrl + previewSize));
     }
 
     useEffect(() => {
