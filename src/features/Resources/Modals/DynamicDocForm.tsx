@@ -255,7 +255,7 @@ export default function DynamicDocForm({
                 text: resData.error ?? "Error 0",
             });
         } else {
-            setForm(resData.data);
+            //setForm(resData.data);
             setMessage({ display: true, text: "", ok: res.ok });
         }
         event.preventDefault();

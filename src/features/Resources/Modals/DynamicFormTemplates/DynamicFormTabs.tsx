@@ -31,33 +31,35 @@ const DynamicFormTabs = (props) => {
     const storeTags = store.getState().app.formData;
     const panes = () => {
         if (
-            storeTags.description !== null &&
-            typeof storeTags.description !== "undefined"
+            storeTags?.description
         ) {
             const entities = storeTags.description.entities_linked ?? "";
             const uuids = [];
             const uuidsTabs = [];
-            entities.forEach((element) => {
-                if (uuids.indexOf(element.uuid) === -1) {
-                    uuids.push(element.uuid);
-                }
-            });
-            uuids.forEach((element,index) => {
-                uuidsTabs.push({
-                    menuItem: `File${index+1}`,
-                    render: () => (
-                       
-                            <Tab.Pane>
-                                <AiData uuid={element} />
-                            </Tab.Pane>
-                       
-                    ),
+            if(entities){
+                entities.forEach((element) => {
+                    if (uuids.indexOf(element.uuid) === -1) {
+                        uuids.push(element.uuid);
+                    }
                 });
-            });
-            return [
-                metaData,
-                ...uuidsTabs,
-            ];
+                uuids.forEach((element,index) => {
+                    uuidsTabs.push({
+                        menuItem: `File${index+1}`,
+                        render: () => (
+                           
+                                <Tab.Pane>
+                                    <AiData uuid={element} />
+                                </Tab.Pane>
+                           
+                        ),
+                    });
+                });
+                return [
+                    metaData,
+                    ...uuidsTabs,
+                ];
+            }
+          
         }
     };
 
