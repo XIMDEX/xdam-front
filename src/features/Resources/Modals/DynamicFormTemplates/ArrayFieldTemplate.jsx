@@ -35,7 +35,7 @@ export default function ArrayFieldTemplate(props) {
 }
 
 function CustomItem({schema, array, ...props}) {
-  /*  if (schema?.subType === 'dropdown') {
+    if (schema?.subType === 'dropdown') {
         return (
             <ArrayDropdown
                 array={array}
@@ -55,17 +55,9 @@ function CustomItem({schema, array, ...props}) {
             />
         )
 
-    }*/
+    }
 
-    return (
-       <ArrayXTags
-            array={array}
-            options={schema.options}
-            formData={props.formData}
-            items={props.items}
-        />
-    )
-   // return ( <ListItems items={props.items}  props={props.props}/> )
+    return ( <ListItems items={props.items}  props={props.props}/> )
 }
 
 function ArrayDropdown({array, options, formData, ...props}) {
@@ -226,7 +218,7 @@ function ListItemsXTags({items, handleAction, ...props}) {
         }
         //dar buen formato
         let tag ={...data.props.formData}
-
+        console.log(data.props);
         let newTag = {
             id: element.key,
             label: tag.name,
