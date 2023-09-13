@@ -71,7 +71,7 @@ class ResourcesService {
 
     getActions(resource) {
       let ra = {}
-
+      
       switch (resource.type) {
         case COURSE:
           ra = this.getCourseActions();
@@ -92,7 +92,12 @@ class ResourcesService {
           ra = this.getAssessmentActions();
           break;
         case DOCUMENT:
-          ra = this.getAssessmentActions();
+          if (resource.core_resource_type[0]==="multimedia") {
+            ra = this.getMultimediaActions();
+          }else if(resource.core_resource_type[0]==="document"){
+            ra = this.getDocumentActions();
+          }
+         
           break;
         default:
           throw new Error('resource type invalid: ' + resource.type)
