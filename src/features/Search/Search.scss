@@ -3,9 +3,16 @@
     margin: 0 auto;
 
     .title {
-        color: #214F61;
+        color: teal;
         font-weight: bold;
         text-align: center;
+    }
+
+    .title-f {
+        color: #214f61;
+        font-weight: 300;
+        vertical-align: middle;
+        font-size: 1.5em;
     }
 }
 

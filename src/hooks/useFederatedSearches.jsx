@@ -3,6 +3,7 @@ import MainService from '../api/service'
 import { FromAlfrescoIn2Parser, FromXimdexParser, toAlfrescoIn2Parser, toXimdexParser } from '../utils/federatedSearchesParsers'
 import mockup_internal from '../features/Search/mockup_internal'
 import mockup_external from '../features/Search/mockup_external'
+import { CORE_VERSION } from '../constants'
 
 const SEARCH_IN = ['internal', 'alfrescoIn2']
 const CORES = ['book', 'multimedia','assessment','activity']
@@ -74,13 +75,15 @@ function useFederatedSearches() {
                     let parsed_params = toXimdexParser(params)
                     if (params.c) {
                         let contr = new AbortController()
+                        let core = params.c + CORE_VERSION
                         promises.push({
                             id:`${type}_${params.c}`,
-                            promise: MainService().internalFederatedSearches(parsed_params, params.c, contr.signal)
+                            promise: MainService().internalFederatedSearches(parsed_params, core, contr.signal)
                         })
                     } else {
                         CORES.forEach(core => {
                             let contr = new AbortController()
+                            core = core + CORE_VERSION
                             promises.push({
                                 id:`${type}_${core}`,
                                 promise: MainService().internalFederatedSearches(parsed_params, core, contr.signal)
@@ -102,7 +105,7 @@ function useFederatedSearches() {
                                 result.response.docs.forEach(item => {
                                     _data.push(FromXimdexParser(item))
                                 })
-                                numFound += result.response.doc.lenght
+                                numFound += result.response.doc.length
                                 totalItems += result.response.doc.numFound
                             } else {
                                 result?.list?.entries.forEach(entry => {

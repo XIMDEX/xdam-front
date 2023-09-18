@@ -47,10 +47,10 @@ function Search() {
     const handleFilters = (param, value) => {
         setFilters({...filters, [param]:value})
     }
-
     const handleSearch = txt => {
         let newFilters = {...filters}
         if (txt.trim() === '') {
+
             delete newFilters.q
         } else {
             newFilters.q = txt.trim()
@@ -111,9 +111,23 @@ function Search() {
 
     return (
         <div className='searchpage-container'>
-            {Object.keys(filters).length === 0 && ( <Typography className='title' variant='h1' component="h1" >DAMSearch</Typography> )}
+            {Object.keys(filters).length === 0 && (
+                    <Typography
+                        className='title'
+                        variant='h1'
+                        component="h1"
+                    >X<Typography className='title-f' variant='h1' component="span" >f</Typography>IND
+                    </Typography>
+            )}
             <section className='searchbar-container'>
-                {Object.keys(filters).length > 0 && ( <Typography className='title' variant='h4' component="h1" >DAMSearch</Typography> )}
+                {Object.keys(filters).length > 0 && (
+                    <Typography
+                        className='title title-side'
+                        variant='h4'
+                        component="h1"
+                    >X<Typography className='title-f title-side-f' variant='h1' component="span" >f</Typography>IND
+                    </Typography>
+                )}
                 <XInput
                     label='Search bar'
                     value={filters?.q ?? ''}
