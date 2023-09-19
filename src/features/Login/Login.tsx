@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export function Login() {
+const Login = () =>  {
   let history = useHistory();
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -114,3 +114,4 @@ export function Login() {
     </div>
   );
 }
+export default Login;
