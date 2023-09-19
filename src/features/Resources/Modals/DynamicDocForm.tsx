@@ -80,10 +80,8 @@ export default function DynamicDocForm({
 
     useEffect(() => {
         if (action === "create") {
-            if (typeof getStoreFormData() !== "object") {
                 dispatch(setFormData({}));
                 triggerReload(!tr);
-            }
         } else if (action === "edit") {
             const fetchLomesSchema = async () => {
                 let lomesSchema = await MainService().getLomesSchema();
@@ -242,7 +240,7 @@ export default function DynamicDocForm({
 
         //FormFiles are the files 'adding'
         if (action !== "create") {
-          //  setFormFiles([]);
+           setFormFiles([]);
         }
   //      setLoaded(false);
         setProcessing(false);

@@ -126,13 +126,9 @@ export default function DynamicForm({
 
     useEffect(() => {
         if (action === "create") {
-            if (typeof getStoreFormData() !== "object") {
                 dispatch(setFormData({}));
                 triggerReload(!tr);
-            }
-        }
-
-        if (action === "edit") {
+        }else if (action === "edit") {
             const fetchLomesSchema = async () => {
                 let lomesSchema = await MainService().getLomesSchema();
                 dispatch(setLomesSchema(lomesSchema));
@@ -341,7 +337,7 @@ export default function DynamicForm({
         setLoaded(false);
         setProcessing(false);
 
-        setForm(resData.data);
+        //setForm(resData.data);
         setMessage({ display: true, text: output_message, ok: ouput_ok });
     };
 
