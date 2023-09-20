@@ -2,14 +2,14 @@ import React, { createContext } from 'react';
 import { XThemeProvider } from '@ximdex/xui-react/providers/';
 import useBool from '../hooks/useBool';
 import themee from '../theme'
-import { createMuiTheme } from '@material-ui/core';
+import { createTheme } from '@material-ui/core/styles';
 
 
 const XthemeContext = createContext();
 
 const XthemeProvider = ({ children }) => {
 
-    const theme = createMuiTheme(
+    const theme = createTheme(
         {
             palette: {
                 mode: 'light',
