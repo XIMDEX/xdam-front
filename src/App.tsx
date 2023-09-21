@@ -179,6 +179,23 @@ function App() {
         </Container>
 
     )
+  }else if (location.pathname.startsWith('/resource/') && location.pathname.endsWith('/preview') && localUser) {
+    const urlParts = location.pathname.split('/');
+    const resourceId = urlParts[2]; // Assuming the id is at index 2
+  
+    return (
+          <Container maxWidth='xl' disableGutters>
+            <XthemeProvider>
+                <Grid container>
+                    <Grid item sm={12} className='main-header'>
+                        <Header _user={user}/>
+                    </Grid>
+                </Grid>
+                <Search />
+            </XthemeProvider>
+        </Container>
+
+    )
   } else if (localUser) {
     return (
       <Container maxWidth='xl' disableGutters>
