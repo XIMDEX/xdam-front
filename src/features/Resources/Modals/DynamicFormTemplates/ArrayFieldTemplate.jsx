@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Card } from "@material-ui/core";
 import { Button, Dropdown, Label } from "semantic-ui-react";
-import { ArrayFieldTemplate as ArrayFieldTemplateRJSF } from "@rjsf/semantic-ui";
+import  ArrayFieldTemplateRJSF  from "@rjsf/semantic-ui";
 import XTagsSearch from '@ximdex/xui-react/material/XTags/XTagsSearch/XTagsSearch'
 import { XTag } from '@ximdex/xui-react/material'
 

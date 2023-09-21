@@ -39,11 +39,11 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
         console.log('UPDATED')
 
         const get_post_max_size = async () => {
-            let res = await axios.get(api().baseUrl + '/ini_pms', {
+            let res = await axios.get(api().baseUrl + '/ini_pms', /*{
                 headers: {
                     authorization: api().auth,
                 }
-            });
+            }*/);
             console.log(res);
             if(res.status === 200) {
 
@@ -139,7 +139,7 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
             headers: request.headers
           }
           
-        axios.post(_api.url, fd, config).then(res => {
+        axios.post(_api.url, fd, /*config*/).then(res => {
             
             if (res.status == 200) {
                 console.log("done: ", res.data.message);

@@ -1,5 +1,5 @@
 import React from 'react'
-import { ArrayFieldTemplate} from "@rjsf/semantic-ui";
+import  ArrayFieldTemplate from "@rjsf/semantic-ui";
 import Layout from '../Layout/Layout';
 import { Button } from 'semantic-ui-react';
 

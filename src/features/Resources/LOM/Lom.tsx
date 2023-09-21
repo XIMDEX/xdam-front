@@ -3,7 +3,8 @@ import React, { useEffect, useState } from 'react'
 import TabPanel from './components/TabPanel/TabPanel';
 import useLomSchema from './hooks/useLomSchema';
 import useStyles from './hooks/useStyles'
-import SemanticForm, { ArrayFieldTemplate } from "@rjsf/semantic-ui";
+import SemanticForm from "@rjsf/semantic-ui";
+import ArrayFieldTemplate from "@rjsf/semantic-ui";
 import { JSONSchema7 } from 'json-schema';
 import { Button } from 'semantic-ui-react';
 import { Tab } from '@material-ui/core';
@@ -99,21 +100,7 @@ function Lom({resourceData, standard}) {
           return (
           <TabPanel value={value} index={parseInt(tab.key) - 1} key={ix}>
             <div className={loading ? classes.blur : null}></div>
-            <SemanticForm
-                    uiSchema={uiSchema}
-                    liveOmit={false}
-                    idPrefix={"rjsf_prefix"}
-                    schema={tab as JSONSchema7}
-                    widgets={widgets}
-                    onSubmit={saveTabData}
-                    formData={tabFormData(tab)}
-                    noValidate
-                    ArrayFieldTemplate={Field}
-                  >
-                    <div>
-                      <Button type="submit">Submit</Button>
-                    </div>
-                  </ SemanticForm>
+  
           </TabPanel>
         )})
       }

@@ -13,6 +13,7 @@ import { bookLanguages, courseLanguages, CURRENT_BOOK_VERSION, MULTIMEDIA, VALID
 import { useSelector, useDispatch } from 'react-redux';
 import { selectCollection } from '../../../slices/organizationSlice';
 import SemanticForm from "@rjsf/semantic-ui";
+import { RJSFSchema, UiSchema,ArrayFieldTemplateProps } from '@rjsf/utils';
 import { JSONSchema7 } from 'json-schema';
 import { render } from '../../../utils/render';
 import { Tab, Label, Icon, Dropdown } from 'semantic-ui-react'
@@ -28,6 +29,7 @@ import { InputText, InputTextArea, CustomToggle, CustomInputText, CustomDropdown
 import LomForm from '../LOM/LomForm';
 import { ResourceLanguage } from './DynamicFormTemplates/ResourceLanguage';
 import { ExtraBookData } from './DynamicFormTemplates/CustomFields/ExtraBookData';
+import validator from '@rjsf/validator-ajv8';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -513,6 +515,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                 />
             </div>
         )}
+        
         <SemanticForm
           id='sfu'
           className={fillAlert ? 'fill-alert' : ''}
@@ -521,9 +524,10 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
           onSubmit={postData}
           formData={getStoreFormData()}
           onChange={(fd)=> setForm(fd.formData)}
-          ArrayFieldTemplate={ArrayFieldTemplate}
+          templates={{ArrayFieldTemplate}}
           widgets={customWidgets}
           fields={fields}
+          validator={validator}
         >
           <button ref={_refForm} type="submit" style={{ display: "none" }} />
         </SemanticForm>
