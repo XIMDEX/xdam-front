@@ -10,7 +10,7 @@ import { reloadCatalogue } from '../../../../appSlice';
 import api from '../../../../api/urlMapper';
 import MainService from '../../../../api/service';
 import { selectCollection } from '../../../../slices/organizationSlice';
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import MultipleValueTextInput from '../../../../components/forms/MultipleValueTextInput/MultipleValueTextInput';
 import { MULTIMEDIA, BOOK } from '../../../../constants';
 import ResourceLanguageWrapper from '../../../../components/forms/ResourceLanguageWrapper/ResourceLanguageWrapper';
@@ -39,12 +39,11 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
         console.log('UPDATED')
 
         const get_post_max_size = async () => {
-            axios.defaults.headers.common['Authorization'] = api().auth;
-            let res = await axios.get(api().baseUrl + '/ini_pms',/* {
+            let res = await axios.get(api().baseUrl + '/ini_pms',{
                 headers: {
                     authorization: api().auth,
                 }
-            }*/);
+            });
             console.log(res);
             if(res.status === 200) {
 
@@ -131,16 +130,15 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
         }
         
         const { request, _api } = await MainService().createBatchOfResources(fd);
-        const config = {
+        const config: AxiosRequestConfig<FormData> = {
             onUploadProgress: progressEvent => {
-              //console.log(progressEvent)
               let progress = (progressEvent.loaded / progressEvent.total) * 100;
               setProgress(progress);
             },
-            headers: request.headers
+            headers: request.headers,
           }
           
-        axios.post(_api.url, fd, /*config*/).then(res => {
+        axios.post(_api.url, fd, config).then(res => {
             
             if (res.status == 200) {
                 console.log("done: ", res.data.message);
