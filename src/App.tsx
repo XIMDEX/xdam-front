@@ -21,6 +21,7 @@ import { Icon } from 'semantic-ui-react';
 import { useCookies } from 'react-cookie';
 import XthemeProvider from './providers/XthemeProvider';
 import Search from './features/Search/Search';
+import PreviewResource from './features/Resources/Modals/PreviewResource';
 
 
 const useStyles = makeStyles((theme) => {
@@ -185,15 +186,8 @@ function App() {
   
     return (
           <Container maxWidth='xl' disableGutters>
-            <XthemeProvider>
-                <Grid container>
-                    <Grid item sm={12} className='main-header'>
-                        <Header _user={user}/>
-                    </Grid>
-                </Grid>
-                <Search />
-            </XthemeProvider>
-        </Container>
+           <PreviewResource resData={{"id":resourceId}} /> 
+          </Container>
 
     )
   } else if (localUser) {
