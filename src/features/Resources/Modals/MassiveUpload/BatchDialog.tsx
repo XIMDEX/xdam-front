@@ -39,7 +39,8 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
         console.log('UPDATED')
 
         const get_post_max_size = async () => {
-            let res = await axios.get(api().baseUrl + '/ini_pms', /*{
+            axios.defaults.headers.common['Authorization'] = api().auth;
+            let res = await axios.get(api().baseUrl + '/ini_pms',/* {
                 headers: {
                     authorization: api().auth,
                 }
