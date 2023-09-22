@@ -9,10 +9,27 @@ const LabbelButton = (props) => {
     let result = {};
     const dispatch = useDispatch();
     const sendData = () => {
-        const result = { ...storeFormData };
-        result.description = { ...storeFormData.description };
-        result.description.semantic_tags = [...storeFormData.description.semantic_tags, props.xtag];
-        dispatch(setFormData(result));
+        if (isActive()) {
+            const result = {
+                ...storeFormData,
+                description: {
+                  ...storeFormData.description,
+                  semantic_tags: storeFormData.description.semantic_tags.filter(tag => tag.id !== props.xtag.id)
+                }
+              };
+              dispatch(setFormData(result));
+        }else{
+            const result = {
+                ...storeFormData,
+                description: {
+                  ...storeFormData.description,
+                  semantic_tags: [...storeFormData.description.semantic_tags, props.xtag]
+                }
+              };          
+              dispatch(setFormData(result));
+        }
+     
+       
     };
   
     const isActive = () => {
