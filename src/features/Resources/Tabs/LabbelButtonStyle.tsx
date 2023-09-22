@@ -3,7 +3,8 @@ export const tagStyle = {
     backgroundColor: "#43a1a2",
     borderRadius: "0.75rem",
     width : "55%",
-    border: "2px solid black"
+    border: "2px solid black",
+    overflow: "hidden",
 };
 export const labbelStylePerson = {
     display: "flex",
@@ -11,8 +12,6 @@ export const labbelStylePerson = {
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#e42e3f",
-    "border-top-left-radius": "0.75rem",
-    "border-bottom-left-radius": "0.75rem",
     width: "20%",
 };
 export const labbelStylePlace = {
@@ -21,8 +20,6 @@ export const labbelStylePlace = {
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#43c35b",
-    "border-top-left-radius": "0.75rem",
-    "border-bottom-left-radius": "0.75rem",
     width: "20%",
 };
 export const labbelStyleOthers = {
@@ -31,8 +28,6 @@ export const labbelStyleOthers = {
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#5c9eda",
-    "border-top-left-radius": "0.75rem",
-    "border-bottom-left-radius": "0.75rem",
     width: "20%",
 };
 export const labbelStyleOrganization = {
@@ -41,8 +36,6 @@ export const labbelStyleOrganization = {
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#dabe60",
-    "border-top-left-radius": "0.75rem",
-    "border-bottom-left-radius": "0.75rem",
     width: "20%",
 };
 export const textStyle = {
@@ -55,8 +48,6 @@ export const textStyle = {
 export const buttonStyle = {
     backgroundColor: "#c5c5c5",
     width: "20%",
-    "border-top-right-radius": "0.75rem",
-    "border-bottom-right-radius": "0.75rem",
     "border-top-left-radius": "0.00rem",
     "border-bottom-left-radius": "0.00rem",
     "font-size": "1.5rem",
@@ -64,6 +55,7 @@ export const buttonStyle = {
     
   
 };
+export const colorTag = {"Person":"#e42e3f","Place":"#43c35b","Other":"#5c9eda","Organization":"#dabe60"};
 export const stylesTag = {"Person":labbelStylePerson,"Place":labbelStylePlace,"Other":labbelStyleOthers,"Organization":labbelStyleOrganization}
 export const iconTag = {
     Person: 'user circle',

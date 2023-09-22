@@ -2,7 +2,7 @@ import { Button } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import { Icon } from "semantic-ui-react";
 import { selectFormData, setFormData } from "../../../appSlice";
-import { buttonStyle, iconTag, stylesTag, tagStyle, textStyle } from "./LabbelButtonStyle";
+import { buttonStyle, iconTag, stylesTag, tagStyle, textStyle,colorTag } from "./LabbelButtonStyle";
 
 const LabbelButton = (props) => {
     let storeFormData = useSelector(selectFormData);
@@ -16,7 +16,7 @@ const LabbelButton = (props) => {
     };
     //
     return (
-        <div style={tagStyle as React.CSSProperties}>
+        <div style={{...tagStyle,"borderColor":colorTag[props.xtag.type]}}>
             <div style={stylesTag[props.xtag.type]}>
                 <Icon style={{"font-size":'24px',"color":"white"}} name={iconTag[props.xtag.type]}></Icon>
             </div>
