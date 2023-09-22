@@ -182,7 +182,7 @@ function App() {
     )
   }else if (location.pathname.startsWith('/resource/') && location.pathname.endsWith('/preview') && localUser) {
     const urlParts = location.pathname.split('/');
-    const resourceId = urlParts[2]; // Assuming the id is at index 2
+    const resourceId = urlParts[2]; 
   
     return (
           <Container maxWidth='xl' disableGutters>

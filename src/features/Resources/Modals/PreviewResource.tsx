@@ -18,11 +18,13 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     imgView: {
       height: '400px',
+      width: '700px',
       display: 'block',
       backgroundRepeat: 'no-repeat',
       backgroundPosition: 'top',
       backgroundSize: 'cover',
       border: '1px solid #e1e1e1',
+      margin: '0 auto',
       borderRadius: 5,
       marginBottom: 15
     },

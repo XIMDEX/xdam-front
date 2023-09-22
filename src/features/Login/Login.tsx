@@ -57,6 +57,10 @@ export function Login() {
     setLoginStatus('Login success. Loading user data, please wait.');
     if (history.location.pathname === '/search') {
         history.push(history.location.pathname + history.location.search);
+    }else if(history.location.pathname.startsWith('/resource/') && history.location.pathname.endsWith('/preview')){
+      const urlParts = history.location.pathname.split('/');
+      const resourceId = urlParts[2]; 
+      history.push(history.location.pathname +`/resource/${resourceId}/preview`);
     } else {
         history.push('/home')
     }
