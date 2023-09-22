@@ -52,9 +52,10 @@ const AiData = (props) => {
     const labbel = {
         width: "100%",
         "border-width": "4px",
-        display: "flex",
+        display: "grid",
+        justifyItems: "center",
         alignItems: "center",
-        flexDirection: "column",
+        gridTemplateColumns: "1fr",
         gap: "1rem",
         height: "600px",
         overflow: "auto",

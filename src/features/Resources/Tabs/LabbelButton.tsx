@@ -14,6 +14,11 @@ const LabbelButton = (props) => {
         result.description.semantic_tags = [...storeFormData.description.semantic_tags, props.xtag];
         dispatch(setFormData(result));
     };
+  
+    const isActive = () => {
+        const semanticTags = storeFormData.description.semantic_tags;
+        return semanticTags.find(tag => tag.id === props.xtag.id);
+    }
     //
     return (
         <div style={{...tagStyle,"borderColor":colorTag[props.xtag.type]}}>
@@ -22,7 +27,7 @@ const LabbelButton = (props) => {
             </div>
             <div style={textStyle}><p>{props.xtag.name}</p></div>
             <Button style={buttonStyle} onClick={sendData}>
-                <Icon name="share square" />
+                {isActive() ?    <Icon name="remove" />:    <Icon name="add" />}
             </Button>
         </div>
     );
