@@ -136,6 +136,7 @@ export default function DynamicDocForm({
         return function cleanup() {
             //dispatch(setFormData({}));
         };
+        
     }, [theFiles, resourceData, loaded]);
 
     const styleBtnPreview = {
@@ -298,7 +299,7 @@ export default function DynamicDocForm({
         // setForm(res.data);
         // setResourceData(res);
     };
-
+    
     const MainData = memo(() => {
         return (
             <Grid container style={{ height: "75vh" }}>
@@ -352,6 +353,7 @@ export default function DynamicDocForm({
                         dataForUpdate={dataForUpdate}
                         action={action}
                         showLom={showLom}
+                        files={theFiles}
                     />
                 </Grid>
             </Grid>

@@ -7,8 +7,10 @@ import { Tabs } from "@material-ui/core";
 import useStyles from "../LOM/hooks/useStyles";
 import LabbelButton from "./LabbelButton";
 import AddButton from "./AddButton";
+import FileBar from "./FileBar";
 
 const AiData = (props) => {
+    console.log(props.file)
     const [value, setValue] = useState(0);
     const classes = useStyles();
     let storeFormData = useSelector(selectFormData);
@@ -63,6 +65,10 @@ const AiData = (props) => {
 
     return (
         <div>
+            <div style={{"display":"flex","justifyContent":"center"}}>
+             <FileBar file={props.file}/>
+            </div>
+            
             {storeFormData.description && (
                 <div>
                     <div>

@@ -9,7 +9,7 @@ import store from "../../../../app/store";
 import "./tab.css";
 
 const DynamicFormTabs = (props) => {
-   
+
     const metaData = {
         menuItem: "Main Data",
         render: () => <Tab.Pane> {<props.mainData />}</Tab.Pane>,
@@ -27,6 +27,9 @@ const DynamicFormTabs = (props) => {
                   </Tab.Pane>
               ),
           }));
+    const getFiles = (fileId) => {
+        return props.files.find((file) => file.id === fileId)
+    }
     const pane = [metaData];
     const storeTags = store.getState().app.formData;
     const panes = () => {
@@ -48,7 +51,7 @@ const DynamicFormTabs = (props) => {
                         render: () => (
                            
                                 <Tab.Pane>
-                                    <AiData uuid={element} />
+                                    <AiData uuid={element} file={getFiles(element)} />
                                 </Tab.Pane>
                            
                         ),
