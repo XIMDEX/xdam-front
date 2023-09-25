@@ -2,9 +2,10 @@ export const tagStyle = {
     display: "flex",
     backgroundColor: "#43a1a2",
     borderRadius: "0.75rem",
-    width : "55%",
-    border: "2px solid black",
+    width : "300px",
     overflow: "hidden",
+    border: "2px solid black",
+    
 };
 export const labbelStylePerson = {
     display: "flex",

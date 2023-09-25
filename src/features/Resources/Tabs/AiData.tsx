@@ -52,13 +52,13 @@ const AiData = (props) => {
     const labbel = {
         width: "100%",
         "border-width": "4px",
-        display: "grid",
-        justifyItems: "center",
+        display: "flex",
+        flexDirection: "column",
         alignItems: "center",
-        gridTemplateColumns: "1fr",
-        gap: "1rem",
-        height: "600px",
+        gap: "10px",
+        height:"400px",
         overflow: "auto",
+        paddingTop:"4px"
     };
 
     return (
