@@ -287,6 +287,17 @@ class AppService {
       return res;
     }
 
+    async getResourceHashed(resource_id)
+    {
+      const _api = api().getResourceHashed(resource_id)
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers,
+      }
+      const res = await (await fetch(_api.url, request)).json();
+      return res;
+    }
+
     async createResource (body)
     {
       const request = {

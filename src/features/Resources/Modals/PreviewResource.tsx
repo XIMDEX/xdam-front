@@ -59,7 +59,6 @@ export default function PreviewResource( { resData } ) {
     const [preview,setPreview] = useState(null)
 
     const setImgPreview = () => {
-        console.log(resourceData);
         let previewUrl = resourceData?.previews[0]?.dam_url || resourceData?.previews[0] || resourceData?.files[0]?.dam_url || 'noimg.png';
         if(!previewUrl.includes('@@@dam:@image')) previewUrl = 'noimg.png'
         const previewSize = previewUrl === 'noimg.png' ? '' : '/medium';
@@ -68,16 +67,16 @@ export default function PreviewResource( { resData } ) {
 
     useEffect(() => {
         const getResourceData = async () => {
-            let res = await MainService().getResource(id);
+            let res = await MainService().getResourceHashed(id);
             setResourceData(res);
-        
         }
         getResourceData();
     }, [])
 
     useEffect(() => {
       const getResourceDataFaceted = async () => {
-        let resFacet = await MainService().getCatalogue(resourceData.collection[0].id, '?facets[id]='+id);
+      
+        let resFacet = await MainService().getCatalogue(resourceData.collection[0].id, '?facets[id]='+resourceData.id);
        setResourceDataFacet(resFacet.data[0]);   
      }
      resourceData && getResourceDataFaceted();

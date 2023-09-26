@@ -48,6 +48,11 @@ const api = () => {
             method: 'GET',
             url: baseUrl + '/resource/' + resource_id
         }),
+    
+        getResourceHashed: (resource_id) => ({
+            method: 'GET',
+            url: baseUrl + '/cdn/resource/' + resource_id
+        }),
         getCatalog: (id) => ({
             method: 'GET',
             url: baseUrl + '/catalogue/' + id
