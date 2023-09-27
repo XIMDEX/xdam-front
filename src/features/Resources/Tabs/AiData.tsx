@@ -10,13 +10,17 @@ import AddButton from "./AddButton";
 import FileBar from "./FileBar";
 
 const AiData = (props) => {
-    console.log(props.file)
     const [value, setValue] = useState(0);
     const classes = useStyles();
     let storeFormData = useSelector(selectFormData);
     const [Xtags, setXtags] = useState();
     const [XtagUnliked, setXtagUnliked] = useState();
     const [imageCaptionAi, setImageCaptionAi] = useState();
+
+    const removeMedia = async (dam_id, media_id) => {
+        let res = await MainService().removeMedia(dam_id, media_id);
+        
+    }
     useEffect(() => {
         if (
             storeFormData.description &&
