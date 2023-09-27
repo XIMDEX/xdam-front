@@ -63,6 +63,11 @@ export default function PreviewResource( { resData } ) {
         if(!previewUrl.includes('@@@dam:@image')) previewUrl = 'noimg.png'
         const previewSize = previewUrl === 'noimg.png' ? '' : '/medium';
         setPreview(MainService().render(previewUrl + previewSize));
+        if (previewUrl === 'noimg.png') {
+          setPreview(window.location.protocol + "//" + window.location.host+"/noimg.png");
+        } 
+          
+        
     }
 
     useEffect(() => {
