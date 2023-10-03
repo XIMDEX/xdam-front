@@ -59,7 +59,7 @@ export default function PreviewResource( { resData } ) {
     const [preview,setPreview] = useState(null)
 
     const setImgPreview = () => {
-        let previewUrl = resourceData?.previews[0]?.dam_url || resourceData?.previews[0] || resourceData?.files[0]?.dam_url || 'noimg.png';
+        let previewUrl = resourceData?.previews?.[0].dam_url || resourceData?.previews?.[0] || resourceData?.files?.[0].dam_url || 'noimg.png';
         if(!previewUrl.includes('@@@dam:@image')) previewUrl = 'noimg.png'
         const previewSize = previewUrl === 'noimg.png' ? '' : '/medium';
         setPreview(MainService().render(previewUrl + previewSize));
@@ -84,7 +84,7 @@ export default function PreviewResource( { resData } ) {
         let resFacet = await MainService().getCatalogue(resourceData.collection[0].id, '?facets[id]='+resourceData.id);
        setResourceDataFacet(resFacet.data[0]);   
      }
-     resourceData && getResourceDataFaceted();
+     resourceData?.collection?.[0].id && getResourceDataFaceted();
      resourceData &&  setImgPreview();
      
     },[resourceData])
@@ -172,7 +172,7 @@ export default function PreviewResource( { resData } ) {
     return (
       <Grid container>
         <Grid item sm={12} style={{padding:"2rem"}}>
-          {resourceData !== null && (
+          {resourceData && resourceData.data !== null && (
             <>
               <div style={{backgroundImage: 'url('+preview+')'}} className={classes.imgView}/>
               <Grid container spacing={3}>
@@ -190,7 +190,7 @@ export default function PreviewResource( { resData } ) {
                           </div>
                         ))}
                       </Card>
-                    ) : ''
+                    ) : 'Resource metadata not found'
                   }
                 </Grid>
               </Grid>
