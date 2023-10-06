@@ -21,7 +21,7 @@ function useFederatedSearches() {
       });
     };
 
-    const search = async (params) => {
+    const search = async (params, page = 0) => {
         abort();
         setIsFetching(true)
         setErrors({});
@@ -105,8 +105,8 @@ function useFederatedSearches() {
                                 result.response.docs.forEach(item => {
                                     _data.push(FromXimdexParser(item))
                                 })
-                                numFound += result.response.doc.length
-                                totalItems += result.response.doc.numFound
+                                numFound += result.response.docs.length
+                                totalItems += result.response.numFound ?? result.response.doc.numFound
                             } else {
                                 result?.list?.entries.forEach(entry => {
                                     _data.push(FromAlfrescoIn2Parser(entry))
@@ -115,16 +115,18 @@ function useFederatedSearches() {
                                 totalItems += result.list.pagination.totalItems
 
                             }
+                            setData({data: _data, items: numFound, totalItems, hasMore: numFound < totalItems})
                         })
                     } else {
 
                     }
                 } else if (response.status === 'rejected') {
                     _errors[promises[index].id] = response.reason
+                    setErrors({...errors, ..._errors})
                 }
+                newData = {data: _data, items: numFound, totalItems, hasMore: numFound < totalItems}
+                setCancelTokens(_controllers);
             })
-            newData = {data: _data, items: numFound, totalItems, hasMore: numFound < totalItems}
-            setCancelTokens(_controllers);
         } catch(error) {
             if (!_errors.general) _errors.general = [];
             _errors.general = error.message

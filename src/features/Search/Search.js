@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Typography } from '@material-ui/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faCircleNotch, faClipboard, faFilter } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faCircleNotch, faPencil, faFilter, faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import { XInput, XButton, XDropdown, XPopUp } from '@ximdex/xui-react/material';
 import { COMMON_FILTERS, CORE_FILTERS, FILTERS } from './constants';
 import './Search.scss'
 import useQueryParams from '../../hooks/useQueryParams';
 import useFederatedSearches from '../../hooks/useFederatedSearches';
+import { ContentTypes } from '../../utils/federatedSearchesParsers';
+import { getFlagImage } from '../../utils/utils';
+
+const PS = 25
 
 function Search() {
     const [viewMode, setViewMode] = useState('list');                       // list || th
@@ -14,11 +18,29 @@ function Search() {
     const {addQueryParam, clearQueryParam, getQueryParams} = useQueryParams();
     const {abort, data: data_resources, error, fetching: isFetching, search} = useFederatedSearches()
     const [showFilters, setShowFilters] = useState(false)
+    const [page, setPage] = useState(0)
+    const [totalPages, setTotalPages] = useState(0)
+    const [pageShow, setPageShow] = useState([])
 
     useEffect(() => {
         const paramsURL = getQueryParams()
         if (Object.keys(paramsURL).length > 0) setFilters(paramsURL)
     }, [])
+
+    useEffect(() => {
+        let num_items = data_resources?.totalItems
+        if (!isNaN(num_items)) {
+            let tot_pages = Math.round(num_items / PS)
+            if (num_items % PS > 0) tot_pages++
+            setTotalPages(tot_pages)
+        }
+    }, [data_resources])
+
+    useEffect(() => {
+        let _data = []
+        _data = [...data_resources?.data ?? []].splice(page*PS, PS)
+        setPageShow(_data)
+    },[page, data_resources])
 
     useEffect(()=> {
         if (Object.keys(error).length > 0) {
@@ -109,6 +131,13 @@ function Search() {
         setFilters(newFilters)
     }
 
+    const handleLink = (id, link, type) => {
+        if (type === 'external') {
+            return window.open(link, '_blank')
+        }
+        console.log('open internal resource with ID: ' + id)
+    }
+
     return (
         <div className='searchpage-container'>
             {Object.keys(filters).length === 0 && (
@@ -181,34 +210,71 @@ function Search() {
                             }
                         </div>
                     </section>
-                    <Typography variant='h5'>{data_resources?.totalItems ?? 0} resource{data_resources?.totalItems === 1 ? '' : 's'} found</Typography>
                 </>
             )}
 
+            <Typography variant='h5'>{data_resources?.totalItems ?? 0} resource{data_resources?.totalItems === 1 ? '' : 's'} found</Typography>
             <ul className='resources-container'>
-                {data_resources?.data?.map((doc, index) => (
+                {pageShow?.map((doc, index) => (
                     <li key={doc?.id ?? index} className={`resource-container ${viewMode} ${index % 2 === 0 ? 'odd' : 'even'}`}>
                         <div className='resource-preview-image-container'>
-                            <div className='resource-type'>{doc.type}</div>
                             <img
-                                src={doc?.img ? `${process.env.REACT_APP_API_BASE_URL}/resource/render/${doc?.img}/small`: '/noimg.png'}
+                                src={doc?.img ? `${process.env.REACT_APP_API_BASE_URL}/resource/render/${doc?.img}/small`: (doc.type === 'external' ? '/alfresco_logo.png' : '/noimg.png')}
                                 alt='preview resource'
                                 loading='lazy'
+                                style={doc.type === 'external' ? {backgroundColor: 'white', padding: 20} : {}}
                                 onError={(e) => { e.target.onError = null; e.target.src = "/noimg.png" }}
                             />
                         </div>
                         <div className='resource-info-container'>
-                            <p>{doc?.type?.resource_type}</p>
-                            <h3>{doc?.name}</h3>
+                            <h3 style={{gap:15, display: 'flex', alignItems: 'center'}}>
+                                {doc?.name}
+                                {!doc?.languages_allowed && doc.language && getFlagImage(doc.language) !== '/noimg.png' && (
+                                    <img
+                                        src={getFlagImage(doc.language)}
+                                        alt={doc.language}
+                                        loading='lazy'
+                                        height={16}
+                                        onError={(e) => { e.target.onError = null; e.target.src = "/noimg.png" }}
+                                    />
+                                )}
+                                {doc?.languages_allowed && doc.languages_allowed.map((lang, idx) => {
+                                    if (getFlagImage(lang) == '/noimg.png') return null
+                                    return (
+                                        <img
+                                            src={getFlagImage(lang)}
+                                            alt={lang}
+                                            loading='lazy'
+                                            height={16}
+                                            onError={(e) => { e.target.onError = null; e.target.src = "/noimg.png" }}
+                                        />
+                                    )
+                                })}
+                            </h3>
+                            <p>{ContentTypes[doc?.resource_type]}</p>
+                            {doc.description && (
+                                <p
+                                    style={{
+                                        color: 'gray',
+                                        fontSize: '0.75rem',
+                                        width: '75%',
+                                        display: 'inline-block',
+                                        textOverflow: 'ellipsis',
+                                        overflow: 'hidden',
+                                        whiteSpace: 'nowrap'
+                                    }}
+                                >{doc.description}</p>
+                            )}
+                        <div className='tags'>
+                        </div>
                         </div>
                         <div className='resource-action-container'>
-                            <XButton style={{ minWidth: 'unset' }} onClick={()=> handleCopyToClipboard(doc, 'id')}>
+                            <XButton style={{ minWidth: 'unset' }} onClick={()=> handleLink(doc.id, doc.link, doc.type)}>
                                 <FontAwesomeIcon
-                                    icon={faClipboard}
-                                    title={`Add id ${doc?.id} to clipboard.`}
-                                    size='1x' style={{ marginRight: '6px' }}
+                                    icon={doc.type === 'internal' ? faPencil : faArrowUpRightFromSquare}
+                                    title={doc.type === 'internal' ? 'Edit internal resource' : 'Open external resource'}
+                                    size='1x'
                                 />
-                                <span>Id</span>
                             </XButton>
                         </div>
                     </li>

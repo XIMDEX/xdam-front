@@ -48,7 +48,7 @@ const api = () => {
             method: 'GET',
             url: baseUrl + '/resource/' + resource_id
         }),
-    
+
         getResourceHashed: (resource_id) => ({
             method: 'GET',
             url: baseUrl + '/cdn/resource/' + resource_id
@@ -187,11 +187,17 @@ const api = () => {
             url: `${process.env.REACT_APP_KAKUMA_URL}/course/${course_id}/IMSCC`
         }),
         internalFederatedSearches: (params, core) => {
-            let paramXimdex = Object.keys(params).map(param => `${param}:${params[param]}`)
+            let paramXimdex;
+            if (Object.keys(params).length === 1 && params?.['q'] === '*:*') {
+                paramXimdex = params.q;
+            } else {
+                paramXimdex = Object.keys(params).map(param => `${param}:${params[param]}`)
+                paramXimdex = paramXimdex.join(' OR ')
+            }
 
             return {
                 method: 'GET',
-                url: `${SOLR_DAM_URL}/${core}/select?q=` + paramXimdex.join(' OR ')
+                url: `${SOLR_DAM_URL}/${core}/select?q=` + paramXimdex
             }
         },
         alfrescoIn2FederatedSearches: (params, core) => {

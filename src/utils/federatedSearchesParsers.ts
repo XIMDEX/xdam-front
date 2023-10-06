@@ -1,5 +1,25 @@
+import { ALFRESCO_SITE, bookLanguages } from "../constants"
 import { COMMON_FILTERS, CORE_FILTERS } from "../features/Search/constants"
 import { render } from "./render"
+
+export enum ContentTypes {
+    'Fotografía',
+    'Ilustración',
+    'Vídeo',
+    'Audio',
+    'Animación',
+    'Locución',
+    'Infografía',
+    'Documento',
+    'Actividad',
+    'Presentación',
+    'Cuestionario',
+    'Base de datos',
+    'Programaciones',
+    'Solucionarios',
+    'Paquete SCORM',
+    'Directorio'
+}
 
 type ResourceType = {
     type: 'internal'|'external'
@@ -8,9 +28,9 @@ type ResourceType = {
     name:  String,
     description?: String,
     img?: String,
-    language: 'es_ES'|'en_EN'|'cat_ES',
+    language: 'es_ES'|'en_EN'|'cat_ES'|'ca_ES'|'eu_ES'|'gl_ES',
     status: Boolean,
-    resource_type: 'Fotografía'|'Ilustración'|'Vídeo'|'Animación'|'Locución'|'Infografía'|'Documento'|'Actividad'|'Presentación'|'Cuestionario'|'Base de datos'|'Programaciones'|'Solucionarios'|'Paquete SCORM',
+    resource_type: ContentTypes,
     receiver?: 'Alumno'|'Profesor'|'General',
     cognitive_process?:'Nivel 1: Recordar'|'Nivel 2: Comprender'|'Nivel 3: Aplicar'|'Nivel 4: Analizar'|'Nivel 5: Evaluar'|'Nivel 6: Crear',
     copyright?: 'Propietaria MHE'|'Creative Comnmons'|'De terceros'|'Licencia GFDL'|'Dominio público',
@@ -24,7 +44,7 @@ type ResourceType = {
     unit?: String,
     units?: Array<String>,
     isbn?: Array<String>,
-    languages_allowed?: Array<'es_ES'|'en_EN'|'cat_ES'>
+    languages_allowed?: Array<'es_ES'|'en_EN'|'cat_ES'|'ca_ES'|'eu_ES'|'gl_ES'>
     created_at: Date,
     updated_at: Date,
     project_type?: String,
@@ -132,27 +152,27 @@ export const toAlfrescoIn2Parser = (params: Object) => {
 }
 
 export const toXimdexParser = (params: Object) => {
-    let paramsAlfresco = {}
+    let paramsXimdex = {}
     let paramsArray = Object.keys(params)
     if (paramsArray.length === 0) {
-        paramsAlfresco['q'] = '*:*'
-        return paramsAlfresco;
+        paramsXimdex['q'] = '*:*'
+        return paramsXimdex;
     }
     if (paramsArray.length === 1 && paramsArray[0] === 'q') {
         const value = params[paramsArray[0]];
-        paramsAlfresco[DICT_XIMDEX['name']] = value
-        paramsAlfresco[DICT_XIMDEX['rt']] = value;
-        paramsAlfresco[DICT_XIMDEX['r']] = value;
-        paramsAlfresco[DICT_XIMDEX['cp']] = value;
-        paramsAlfresco[DICT_XIMDEX['cpr']] = value;
-        paramsAlfresco[DICT_XIMDEX['acc']] = value;
-        paramsAlfresco[DICT_XIMDEX['l']] = value;
-        paramsAlfresco[DICT_XIMDEX['s']] = value;
-        paramsAlfresco[DICT_XIMDEX['mt']] = value;
-        paramsAlfresco[DICT_XIMDEX['tags']] = value;
-        paramsAlfresco[DICT_XIMDEX['categories']] = value;
+        paramsXimdex[DICT_XIMDEX['name']] = value
+        paramsXimdex[DICT_XIMDEX['rt']] = value;
+        paramsXimdex[DICT_XIMDEX['r']] = value;
+        paramsXimdex[DICT_XIMDEX['cp']] = value;
+        paramsXimdex[DICT_XIMDEX['cpr']] = value;
+        paramsXimdex[DICT_XIMDEX['acc']] = value;
+        paramsXimdex[DICT_XIMDEX['l']] = value;
+        paramsXimdex[DICT_XIMDEX['s']] = value;
+        paramsXimdex[DICT_XIMDEX['mt']] = value;
+        paramsXimdex[DICT_XIMDEX['tags']] = value;
+        paramsXimdex[DICT_XIMDEX['categories']] = value;
 
-        return paramsAlfresco
+        return paramsXimdex
     }
 
     if (paramsArray.includes('c') && CORE_FILTERS[params['c']]) {
@@ -175,17 +195,19 @@ export const toXimdexParser = (params: Object) => {
             }
             if (param === 'units') param = 'unit'
             if (param === 'q') {
-                paramsAlfresco[DICT_XIMDEX['name']] = value;
-                paramsAlfresco[DICT_XIMDEX['tags']] = value;
-                paramsAlfresco[DICT_XIMDEX['categories']] = value;
+                paramsXimdex[DICT_XIMDEX['name']] = value;
+                paramsXimdex[DICT_XIMDEX['tags']] = value;
+                paramsXimdex[DICT_XIMDEX['categories']] = value;
                 return;
             }
-            paramsAlfresco[DICT_XIMDEX[param]] = value
+            paramsXimdex[DICT_XIMDEX[param]] = value
         }
     })
+    return paramsXimdex
 }
 
 export const FromAlfrescoIn2Parser = (data) => {
+    let type = ContentTypes['Paquete SCORM'];
     const parsedResource: ResourceType = {
         type: 'external',
         ID: data.entry.id,
@@ -193,10 +215,72 @@ export const FromAlfrescoIn2Parser = (data) => {
         name: data.entry.name,
         language: 'es_ES',
         status: data.entry.properties?.['macgh:estado_proyecto'] === 'abierto',
-        resource_type: 'Paquete SCORM',
+        resource_type: type,
         created_at: new Date(data.entry.createdAt),
         updated_at: new Date(data.entry.modifiedAt),
+        link: `http://20.56.53.187/share/page/site/${ALFRESCO_SITE}/document-details?nodeRef=workspace%3A%2F%2FSpacesStore%2F${data.entry.id}`
     };
+    let lang = data.entry.properties['macgh:idioma'].toLowerCase();
+    if (data.entry?.properties?.['cm:description']) parsedResource.description = data.entry?.properties?.['cm:description']
+    if (lang) {
+        if (lang === 'catalán' || lang === 'catalan') lang = 'català'
+        if (lang === 'euskera' || lang === 'vasco') lang = 'euskara'
+        if (lang === 'gallego') lang = 'galego'
+
+        for (const enumValue in bookLanguages) {
+            if (bookLanguages[enumValue].toLowerCase() === lang) {
+              switch (enumValue) {
+                case 'en':
+                    parsedResource.language = 'en_EN'
+                    break;
+                case 'es':
+                    parsedResource.language = 'es_ES'
+                    break;
+                case 'ca':
+                case 'cat':
+                    parsedResource.language = 'ca_ES'
+                    break;
+                case 'gl':
+                    parsedResource.language = 'gl_ES'
+                    break;
+                case 'eu':
+                    parsedResource.language = 'eu_ES'
+                    break;
+                default:
+                    break;
+              }
+              break;
+            }
+        }
+
+    }
+    if (data.entry.isFolder) {
+        type = ContentTypes.Directorio
+    } else if (!data.entry?.name?.endsWith?.('.zip')) {
+        if (data.entry.nodeType === 'macgh:documento_original') {
+           type = ContentTypes.Documento
+        }
+        if (data.entry.nodeType === 'macgh:media') {
+            if (data.entry?.content?.mimeType.startsWith('audio')) {
+                type = ContentTypes.Audio
+            } else if (data.entry?.content?.mimeType.startsWith('video'))  {
+                type = ContentTypes.Vídeo
+            } else if (data.entry.name.endsWith('.indd') ||
+                data.entry.name.endsWith('.idml') ||
+                data.entry.name.endsWith('.xml') ||
+                data.entry.name.endsWith('.cxml')
+            ) {
+                type = ContentTypes.Infografía
+            } else {
+                type = ContentTypes.Ilustración
+            }
+        }
+    }
+    parsedResource.resource_type = type;
+
+    if (type !== ContentTypes.Infografía && type !== ContentTypes["Paquete SCORM"]) {
+        parsedResource.core = 'multimedia'
+    }
 
     if (data.entry.properties['macgh:isbn']) {
         parsedResource['isbn'] = data.entry.properties['macgh:isbn']
@@ -228,22 +312,47 @@ export const FromAlfrescoIn2Parser = (data) => {
     if (data.entry.properties?.['macgh:tipo_media']) {
         parsedResource['type_file'] = data.entry.properties?.['macgh:tipo_media']
     }
-
     return parsedResource;
+}
 
-
+const parseLang = (lang) => {
+    if (Array.isArray(lang)) lang = lang[0]
+    if (lang) lang = lang.replace('-', '_')
+    switch (lang) {
+        case 'en':
+            lang = 'en_EN'
+            break;
+        case 'es':
+            lang = 'es_ES'
+            break;
+        case 'ca':
+        case 'cat':
+            lang = 'ca_ES'
+            break;
+        case 'gl':
+            lang = 'gl_ES'
+            break;
+        case 'eu':
+            lang = 'eu_ES'
+            break;
+        default:
+            break;
+    }
+    return lang
 }
 
 export const FromXimdexParser = (data) => {
+    let lang = parseLang(data.lang ?? data.language ?? data.language_default)
+
     const parsed =  {
         type: 'internal',
         project_type: 'digital',
         ID: data.id,
         core: data.type,
         name: data.name,
-        language: data.lang ?? data.language ?? data.language_default,
+        language: lang,
         status: data.active,
-        resource_type: getResourceType(data.core_resource_type, data.type),
+        resource_type: getResourceType(data.core_resource_type[0], data.type),
         receiver: data.destinatario || '',
         cognitive_process: data.proceso_cognitivo || '',
         copyright: data.derechos_autor || '',
@@ -255,6 +364,10 @@ export const FromXimdexParser = (data) => {
         created_at: new Date(data.created_at[0]),
         updated_at: new Date(data.updated_at[0]),
     };
+
+    if (data.description) {
+        parsed['description'] = data.description
+    }
 
     if (data?.previews?.[0]) {
         parsed['img'] = data?.previews?.[0]
@@ -270,34 +383,37 @@ export const FromXimdexParser = (data) => {
         parsed['isbn'] = Array.isArray(data.isbn) ? data.isbn : [data.isbn]
     }
 
-    if (data.core_resource_type === 'activity' || data.core_resource_type === 'assessment') {
-        parsed['languages_allowed'] = data.available_languages
+    if (data.core_resource_type[0] === 'activity' || data.core_resource_type[0] === 'assessment') {
+        parsed['languages_allowed'] = data.available_languages.map(e => parseLang(e.replace('-', '_')))
+        console.log('lant', parsed['languages_allowed'])
     }
 
-    if (data.core_resource_type === 'activity') parsed['activity_type'] = data.type
-    if (data.core_resource_type === 'multimedia') parsed['multimedia_type'] = data.type
+    if (data.core_resource_type[0] === 'activity') parsed['activity_type'] = data.type
+    if (data.core_resource_type[0] === 'multimedia') parsed['multimedia_type'] = data.type
 
     return parsed;
 }
 
 function getResourceType(core, subtype) {
-    let type = ''
+    let type = ContentTypes["Paquete SCORM"]
     switch (core) {
         case 'activity':
         case 'activity_v3':
+            type = ContentTypes.Actividad
+            break;
         case 'assessment':
         case 'assessment_v3':
-            type = 'Actividad'
+            type = ContentTypes.Cuestionario
             break;
         case 'multimedia':
         case 'multimedia_v3':
-            if (subtype === 'video') type = 'Vídeo'
-            if (subtype === 'audio') type = 'Locución'
-            if (subtype === 'image') type = 'Fotografía'
+            if (subtype === 'video') type = ContentTypes.Vídeo
+            if (subtype === 'audio') type = ContentTypes.Locución
+            if (subtype === 'image') type = ContentTypes.Fotografía
             break;
         case 'book':
         case 'book_v3':
-            type = "Paquete SCORM"
+            type = ContentTypes["Paquete SCORM"]
             break;
         default:
             break;
