@@ -19,6 +19,8 @@ class ResourcesService {
       let token = 'vd9NxuORVjd8xlkZfqAfEQjJw4rXuuPEVysaEV1T';
       let rid = resourceId + '/';
 
+      theme = process.env.REACT_APP_DEFAULT_THEME ?? 'base'
+
       let ob = {
         edit: { label: 'Edit', href: baseUrl + edit + rid + token },
         convert: { label: 'Convert', href: baseUrl + convert + rid + token + `?theme=${encodeURIComponent(theme)}`},
