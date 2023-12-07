@@ -129,7 +129,7 @@ export function Resource( { data, listMode, resourceType } ) {
     async function remove (e) {
         setBlur(true)
         e.stopPropagation();
-        let yes = window.confirm('This resource will be permanently deleted, are you sure?');
+        let yes = window.confirm('This resource will be permanently deleted, are you sure? If you delete this resource, you may lose any information that is associated with it'.toUpperCase());
         if (yes) {
             if (resourceType === 'course') {
                 if (!is_logged_to_kakuma()) {

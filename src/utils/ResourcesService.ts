@@ -63,33 +63,43 @@ class ResourcesService {
     }
 
     getActions(resource) {
-      let ra = {}
-
-      switch (resource.type) {
-        case COURSE:
-          ra = this.getCourseActions();
-          break;
-        case BOOK:
-          ra = this.getBookActions(resource.id, resource.theme ?? 'base');
-          break;
-        case MULTIMEDIA:
-        case IMAGE:
-        case VIDEO:
-        case AUDIO:
-          ra = this.getMultimediaActions();
-          break;
-        case ACTIVITY:
-          ra = this.getActivityActions();
-          break;
-        case ASSESSMENT:
-          ra = this.getAssessmentActions();
-          break;
-        default:
-          throw new Error('resource type invalid: ' + resource.type)
-          break;
-      }
-
-      return ra;
+      const resourceActions = {
+        COURSE: this.getCourseActions,
+        BOOK: this.getBookActions,
+        MULTIMEDIA: this.getMultimediaActions,
+        IMAGE: this.getMultimediaActions,
+        VIDEO: this.getMultimediaActions,
+        AUDIO: this.getMultimediaActions,
+        ACTIVITY: this.getActivityActions,
+        ASSESSMENT: this.getAssessmentActions,
+        SINGLE_CHOICE: this.getActivityActions,
+        MULTIPLE_CHOICE: this.getActivityActions,
+        TRUE_FALSE: this.getActivityActions,
+        FILL_THE_BLANKS: this.getActivityActions,
+        ORDER_CHRONOLOGY: this.getActivityActions,
+        WORD_SEARCH: this.getActivityActions,
+        WORD_CATCHER: this.getActivityActions,
+        SEEK_AND_FIND: this.getActivityActions,
+        CORRESPONDENCE: this.getActivityActions,
+        FLASH_CARDS: this.getActivityActions,
+        MATCH: this.getActivityActions,
+        INPUT: this.getActivityActions,
+        FIT_WORD: this.getActivityActions,
+        RANK: this.getActivityActions,
+        DEDUCTION: this.getActivityActions,
+        OPINION_SCALE: this.getActivityActions,
+        SHORT_QUESTION: this.getActivityActions,
+        TEXT_CHOICE: this.getActivityActions,
+        IMAGE_CHOICE: this.getActivityActions,
+        TEXT_PAIRING: this.getActivityActions,
+        IMAGE_PAIRING: this.getActivityActions,
+        CARD_CHOICE: this.getActivityActions,
+        FROGGY_JUMP: this.getActivityActions,
+        INPUT_LONG: this.getActivityActions,
+      };
+      
+      const result = resourceActions[resource.type.replace(/-/g, '_').toUpperCase()]();
+      return result;
     }
 }
 
