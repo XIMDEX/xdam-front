@@ -287,6 +287,17 @@ class AppService {
       return res;
     }
 
+    async getResourceHashed(resource_id)
+    {
+      const _api = api().getResourceHashed(resource_id)
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers,
+      }
+      const res = await (await fetch(_api.url, request)).json();
+      return res;
+    }
+
     async createResource (body)
     {
       const request = {
@@ -611,6 +622,40 @@ class AppService {
       window.URL.revokeObjectURL(blob as unknown as string);
 
       return true;
+    }
+
+    async alfrescoIn2FederatedSearches(params, core, signal) {
+        const _api = api().alfrescoIn2FederatedSearches(params, core)
+        const data = {
+            query: {
+                query: "macgh:id:*"
+            },
+            include: ['properties']
+        }
+        Object.keys(params).forEach(param => {
+            data.query.query = data.query.query + ` OR ${param}:${params[param]}`
+        })
+        let _headers = this.httpOptions.headers;
+        _headers.Authorization = _api.auth;
+        const request = {
+          method: _api.method,
+          headers: _headers,
+          body: JSON.stringify(data),
+          signal
+        }
+        return fetch(_api.url, request);
+    }
+
+    async internalFederatedSearches(params, core, signal) {
+        const _api = api().internalFederatedSearches(params, core)
+        let _headers = this.httpOptions.headers;
+        delete _headers.Authorization
+        const request = {
+          method: _api.method,
+          headers: _headers,
+          signal
+        }
+        return fetch(_api.url, request)
     }
 }
 

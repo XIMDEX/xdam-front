@@ -7,7 +7,11 @@ export const {
   REACT_APP_BOOK_EDITOR_URL: BOOK_EDITOR_URL,
   REACT_APP_XTAGS_API_BASE_URL: XTAGS_API_BASE_URL,
   REACT_APP_CLIENT: CLIENT,
-  REACT_APP_KAKUMA_URL: KAKUMA_URL_API
+  REACT_APP_KAKUMA_URL: KAKUMA_URL_API,
+  REACT_APP_SOLR_DAM: SOLR_DAM_URL,
+  REACT_APP_SOLR_ALFRESCO: SOLR_ALFRESCO_URL,
+  REACT_APP_TOKEN_ALFRESCO,
+  REACT_APP_SITE_ALFRESCO
 } = process.env
 export const VALID_LOMS = process.env.REACT_APP_VALID_LOMS?.split(',') ?? []
 
@@ -64,6 +68,9 @@ export enum bookLanguages {
   en = "English",
   es = "Castellano",
   cat = "Català",
+  ca = "Català",
+  eu = "Euskara",
+  gl = "Galego",
   false = "Undefined"
 }
 
@@ -78,7 +85,10 @@ export enum courseLanguages {
     "uk-UA" = 'Ukranian'
 }
 
-globalThis.aaa = courseLanguages;
-
-
 export const SHOW_DAM_ORGANIZATIONS = process.env.REACT_APP_SHOW_DAM_ORGANIZATIONS === 'false' ? false : true
+
+export const SHOW_THEMES_BOOK = process.env.REACT_APP_SHOW_THEMES_BOOK === 'true'
+export const DEFAULT_THEME_BOOK = process.env.REACT_APP_DEFAULT_THEME_BOOK ?? 'base'
+
+export const CORE_VERSION = process.env.REACT_APP_SOLR_VERSION  ?? ''
+export let ALFRESCO_SITE = REACT_APP_SITE_ALFRESCO ?? 'new-mc-graw'
