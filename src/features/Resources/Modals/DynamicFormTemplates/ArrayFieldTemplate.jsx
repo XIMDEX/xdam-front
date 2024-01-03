@@ -120,7 +120,7 @@ const ListItems = ({items, handleAction, ...props}) => {
     const [isActive,setIsActive] = useState(false)
 
     const handleKeyDown = (event, data) => {
-        if (event.key === "Enter") {
+        if (event.key === "Enter" && event.target.value !== "") {
           event.preventDefault();
           data.props.onChange(event.target.value);
         }
@@ -130,9 +130,10 @@ const ListItems = ({items, handleAction, ...props}) => {
     }
     const handleBlur = (event,data) => {
         event.preventDefault()
-        if(isActive && data !== ""){
+        if(isActive && event.target.value !== ""){
             data.props.onChange(event.target.value)
         }
+
     }
 
     return items.map(element => {
