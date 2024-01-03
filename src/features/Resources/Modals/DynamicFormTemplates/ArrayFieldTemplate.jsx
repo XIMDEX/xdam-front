@@ -117,13 +117,24 @@ function ArrayDropdown({array, options, formData, ...props}) {
 }
 
 const ListItems = ({items, handleAction, ...props}) => {
+    const [isActive,setIsActive] = useState(false)
 
     const handleKeyDown = (event, data) => {
-        if (event.key === "Enter") {
+        if (event.key === "Enter" && event.target.value !== "") {
           event.preventDefault();
           data.props.onChange(event.target.value);
         }
     };
+    const handleFocus = (value) =>{
+        setIsActive(value)
+    }
+    const handleBlur = (event,data) => {
+        event.preventDefault()
+        if(isActive && event.target.value !== ""){
+            data.props.onChange(event.target.value)
+        }
+
+    }
 
     return items.map(element => {
         const {children: data, onDropIndexClick: popIndex, index: indexToPop} = element
@@ -133,7 +144,8 @@ const ListItems = ({items, handleAction, ...props}) => {
             return null
         }
         return (
-            <div key={element.key} className='forms-arrayItem'>
+            <div key={element.key} className='forms-arrayItem' onMouseEnter={() => handleFocus(false)}
+            onMouseLeave={() => handleFocus(true)}>
                 <div className='forms-textField'>
                     {data.props.formData !== undefined && (<Label className='forms-currentItems' size='large'>{data.props.formData}</Label>)}
                     {!handleAction && data.props.formData === undefined && (
@@ -142,12 +154,12 @@ const ListItems = ({items, handleAction, ...props}) => {
                             id={data.props.idSchema.$id}
                             type='text'
                             defaultValue={data.props.formData}
-                            //onChange={(event) => data.props.onChange(event.target.value)}
+                            onBlur={(event)=>handleBlur(event,data)}
                             onKeyDown={(event) => handleKeyDown(event, data)}
                         />
                     )}
                 </div>
-                <Button icon='close' size='mini' className={data.props.formData !== undefined ? 'forms-btn-removeArrayItem' : 'forms-btn-removeArrayItem f-editing'} onClick={popIndex(indexToPop)} />
+                <Button icon='close' size='mini' className={data.props.formData !== undefined ? 'forms-btn-removeArrayItem' : 'forms-btn-removeArrayItem f-editing'} onClick={popIndex(indexToPop)}/>
             </div>
         )
 
