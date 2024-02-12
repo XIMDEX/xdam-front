@@ -7,7 +7,7 @@ const MediaData = (props) => {
     console.log(props.url)
     return (
         <div style={{"display":"flex","padding":"1rem","justifyContent":"center","flexDirection":"column","margin":"auto","borderWidth":"8px",}}>
-            <img src={MainService().render(src)} alt="Not Found" style={{"maxHeight":"250px","maxWidth":"250px","margin":"auto"}} />
+            <img src={MainService().render(src)} alt="Not Found" style={{"maxHeight":"250px","margin":"auto","objectFit":"contain"}} />
             <div style={{"borderTop":"2px solid #eaeaea","padding":"4px"}}>
                 <label style={{"fontWeight":"bold"}}>Description</label>
                 <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Id aspernatur, explicabo quas eos quasi pariatur facere culpa unde a ratione aut commodi. Nemo, accusamus. Nesciunt eligendi delectus ipsam eum officia?</p>
