@@ -28,6 +28,7 @@ import { InputText, InputTextArea, CustomToggle, CustomInputText, CustomDropdown
 import LomForm from '../LOM/LomForm';
 import { ResourceLanguage } from './DynamicFormTemplates/ResourceLanguage';
 import { ExtraBookData } from './DynamicFormTemplates/CustomFields/ExtraBookData';
+import MediaData from './DynamicForm/MediaData';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -321,9 +322,10 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
 
   const metaData = { menuItem: 'Main Data', render: () => <Tab.Pane > <MainData /></Tab.Pane> };
   const lomsData = VALIDS_LOM.map(typeLom => ({menuItem: typeLom.name, render: () => (<Tab.Pane><LomForm data={dataForUpdate} standard={typeLom.key}/></Tab.Pane>)}))
+  const mediaData = { menuItem: 'Media Data', render: () => <Tab.Pane > <MediaData url={resourceData?.files?.[0].dam_url}/> </Tab.Pane> };
 
   const pane = [metaData];
-  const panes = [metaData, ...lomsData];
+  const panes = [metaData, ...lomsData,mediaData];
 
   const setForm = (data) => {
     dispatch(setFormData(data))
