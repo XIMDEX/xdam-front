@@ -6,7 +6,7 @@ const XtagBox = ({xtags}) => {
                 <label style={{"fontWeight":"bold"}}>XTAGS</label>
                 <div style={{"display":"flex","flexWrap":"wrap"}}>
                     {
-                        xtags.map((index,xtag)=> 
+                        xtags.map((xtag,index)=> 
                             <XTag
                                 key={'v2_' + index + '_' + index}
                                 tag={xtag}
