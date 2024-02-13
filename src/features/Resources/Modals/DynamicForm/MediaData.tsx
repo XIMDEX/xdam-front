@@ -46,7 +46,7 @@ const MediaData = ({description,transcription,url,xtags}) => {
         link: "LINK"
       },]
     return (
-        <div style={{"display":"flex","padding":"1rem","justifyContent":"center","flexDirection":"column","margin":"auto","borderWidth":"8px",}}>
+        <div style={{"display":"flex","justifyContent":"center","flexDirection":"column","margin":"auto","borderWidth":"8px",}}>
             <MediaBox src={src} />
             {description && <TextBox title="description" text={description}  />}
             {transcription && <TextBox title="transcription" text={transcription}  />}

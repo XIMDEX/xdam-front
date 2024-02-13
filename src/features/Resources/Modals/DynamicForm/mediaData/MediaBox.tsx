@@ -3,25 +3,36 @@ import React from 'react';
 
 const MediaBox = ({src}) => {
     const fileName      = MainService().render(src);
+    const boxStyle = {
+        maxHeight: "250px",
+        margin: "auto",
+        objectFit: "contain",
+        padding:"4px"
+      };
     const checkTypeFile = () => {
-        if(src.includes("@@@dam:@image")){
-            return  "image"
-        }else if(src.includes("@@@dam:@video")) {
-            return "video"
-        }else if(src.includes("@@@dam:@audio")) {
-            return "audio"
-        }else if(src.includes("@@@dam:@document")) {
-            return "document"
-        }
+        const fileTypeMap = {
+            "@@@dam:@image": "image",
+            "@@@dam:@video": "video",
+            "@@@dam:@audio": "audio",
+            "@@@dam:@document": "document",
+          };
+        
+          for (const [key, value] of Object.entries(fileTypeMap)) {
+            if (src.includes(key)) {
+              return value;
+            }
+          }
+        
+          return "";
     }
     console.log(fileName)
     return (
         <>
         {checkTypeFile() === "video" && (
-          <video src={fileName} controls style={{ maxHeight: "250px", margin: "auto", objectFit: "contain" }} />
+          <video src={fileName} controls style={boxStyle} />
         )}
         {checkTypeFile() !== "video" && (
-          <img src={fileName} alt="Not Found" style={{ maxHeight: "250px", margin: "auto", objectFit: "contain" }} />
+          <img src={fileName} alt="Not Found" style={boxStyle} />
         )}
       </>
     )
