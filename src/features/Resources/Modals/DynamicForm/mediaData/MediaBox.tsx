@@ -31,9 +31,15 @@ const MediaBox = ({src}) => {
         {checkTypeFile() === "video" && (
           <video src={fileName} controls style={boxStyle} />
         )}
-        {checkTypeFile() !== "video" && (
+        {checkTypeFile() === "image" && (
           <img src={fileName} alt="Not Found" style={boxStyle} />
         )}
+        {checkTypeFile() === "audio" && (
+          <audio src={fileName} controls style={boxStyle} />
+        )}
+        {checkTypeFile() !== "video" && checkTypeFile() !== "audio" && (
+          <p>Resource Found</p>
+      )}
       </>
     )
     
