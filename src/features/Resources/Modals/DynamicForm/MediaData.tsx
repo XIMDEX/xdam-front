@@ -1,10 +1,10 @@
 import React from 'react';
-import MainService from '../../../../api/service';
 import { XTag } from '@ximdex/xui-react/material';
+import MediaBox from './mediaData/MediaBox';
+import TextBox from './mediaData/TextBox';
 
 const MediaData = (props) => {
     const src = props.url
-    console.log(props.url)
     const tag = {
         id: "demo1",
         label: "Demo Tag 1",
@@ -16,15 +16,9 @@ const MediaData = (props) => {
 
     return (
         <div style={{"display":"flex","padding":"1rem","justifyContent":"center","flexDirection":"column","margin":"auto","borderWidth":"8px",}}>
-            <img src={MainService().render(src)} alt="Not Found" style={{"maxHeight":"250px","margin":"auto","objectFit":"contain"}} />
-            {props.description && <div style={{"borderTop":"2px solid #eaeaea","padding":"4px"}}>
-                <label style={{"fontWeight":"bold"}}>Description</label>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Id aspernatur, explicabo quas eos quasi pariatur facere culpa unde a ratione aut commodi. Nemo, accusamus. Nesciunt eligendi delectus ipsam eum officia?</p>
-            </div>}
-            {props.transcription && <div style={{"borderTop":"2px solid #eaeaea","padding":"4px"}}>
-                <label style={{"fontWeight":"bold"}}>Transcripcion</label>
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Id aspernatur, explicabo quas eos quasi pariatur facere culpa unde a ratione aut commodi. Nemo, accusamus. Nesciunt eligendi delectus ipsam eum officia?</p>
-            </div>}
+            <MediaBox src={src} />
+            {props.description && <TextBox title="description" text="lorem"  />}
+            {props.transcription && <TextBox title="transcription" text="lorem"  />}
             {props.xtags && <div style={{"borderTop":"2px solid #eaeaea","padding":"4px","display":"flex","justifyContent":"center","flexDirection":"column","gap":"0.5rem"}}>
                 <label style={{"fontWeight":"bold"}}>XTAGS</label>
                 <div style={{"display":"flex","flexWrap":"wrap"}}>
