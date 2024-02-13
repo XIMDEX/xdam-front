@@ -1,7 +1,7 @@
 import MainService from "../../../../../api/service"
 import React from 'react';
 
-const MediaBox = ({src,...props}) => {
+const MediaBox = ({src}) => {
     const fileName      = MainService().render(src);
     //const fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
     console.log(fileName)
