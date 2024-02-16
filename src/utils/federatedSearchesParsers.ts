@@ -1,4 +1,4 @@
-import { ALFRESCO_SITE, bookLanguages } from "../constants"
+import { ALFRESCO_SITE, SOLR_ALFRESCO_URL, bookLanguages } from "../constants"
 import { COMMON_FILTERS, CORE_FILTERS } from "../features/Search/constants"
 import { render } from "./render"
 
@@ -218,7 +218,7 @@ export const FromAlfrescoIn2Parser = (data) => {
         resource_type: type,
         created_at: new Date(data.entry.createdAt),
         updated_at: new Date(data.entry.modifiedAt),
-        link: `http://20.56.53.187/share/page/site/${ALFRESCO_SITE}/document-details?nodeRef=workspace%3A%2F%2FSpacesStore%2F${data.entry.id}`
+        link: `${SOLR_ALFRESCO_URL}/share/page/site/${ALFRESCO_SITE}/document-details?nodeRef=workspace%3A%2F%2FSpacesStore%2F${data.entry.id}`
     };
     let lang = data.entry.properties['macgh:idioma'].toLowerCase();
     if (data.entry?.properties?.['cm:description']) parsedResource.description = data.entry?.properties?.['cm:description']
