@@ -206,6 +206,7 @@ function Search() {
                             .sort((a,b) => {return (FILTERS[a]?.disabled ? 1 : 0)-(FILTERS[b]?.disabled ? 1 : 0)})
                             .map((option, index) => {
                                 const filterOption = FILTERS[option];
+                                console.log({multiple_selection: filterOption?.multiple_selection ?? false})
                                 return (
                                     <XDropdown
                                         key={`filter-${option}-${index}`}

@@ -171,8 +171,6 @@ export default function PreviewResource( { resData, cdn } ) {
       )
     }
 
-    console.log(resourceDataFacet, 'resourceDataFacet')
-
     return (
       <Grid container>
         <Grid item sm={12} style={{padding:"2rem"}}>

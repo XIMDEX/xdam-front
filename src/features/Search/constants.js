@@ -22,8 +22,9 @@ export const FILTERS = {
     l: {
         label: "Language",
         option_label: "label",
-        multiple_selection: false,
+        multiple_selection: true,
         options: [
+            { label: "N/A", value: null },
             { label: "Español", value: "es_ES" },
             { label: "English", value: "en_EN" },
             { label: "Català", value: "ca_ES" },
@@ -33,8 +34,9 @@ export const FILTERS = {
     ld: {
         label: "Language default",
         option_label: "label",
-        multiple_selection: false,
+        multiple_selection: true,
         options: [
+            { label: "N/A", value: null },
             { label: "Español", value: "es_ES" },
             { label: "English", value: "en_EN" },
             { label: "Català", value: "ca_ES" },
@@ -44,8 +46,9 @@ export const FILTERS = {
     la: {
         label: "Available Languages",
         option_label: "label",
-        multiple_selection: false,
+        multiple_selection: true,
         options: [
+            { label: "N/A", value: null },
             { label: "Español", value: "es_ES" },
             { label: "English", value: "en_EN" },
             { label: "Català", value: "ca_ES" },
@@ -63,8 +66,9 @@ export const FILTERS = {
     },
     rt: {
         label: "Resources Type",
-        multiple_selection: false,
+        multiple_selection: true,
         options: [
+            { label: "N/A", value: null },
             { label: "Fotografía", value: "Fotografía"},
             { label: "Ilustración", value: "Ilustración"},
             { label: "Vídeo", value: "Vídeo"},
@@ -84,8 +88,9 @@ export const FILTERS = {
     },
     r: {
         label: "Receiver",
-        multiple_selection: false,
+        multiple_selection: true,
         options: [
+            { label: "N/A", value: null },
             { label: "Profesor", value: "Profesor" },
             { label: "Alumno", value: "Alumno" },
             { label: "General", value: "General" },
@@ -93,8 +98,9 @@ export const FILTERS = {
     },
     cp: {
         label: "Cognition Process",
-        multiple_selection: false,
+        multiple_selection: true,
         options: [
+            { label: "N/A", value: null },
             { label: "Nivel 1: Recordar", value: "Nivel 1: Recordar" },
             { label: "Nivel 2: Comprender", value: "Nivel 2: Comprender" },
             { label: "Nivel 3: Aplicar", value: "Nivel 3: Aplicar" },
@@ -105,8 +111,9 @@ export const FILTERS = {
     },
     cpr: {
         label: "Copyright",
-        multiple_selection: false,
+        multiple_selection: true,
         options: [
+            { label: "N/A", value: null },
             { label: "Propietaria MHE", value: "Propietaria MHE" },
             { label: "Creative Comnmons", value: "Creative Comnmons" },
             { label: "De terceros", value: "De terceros" },
@@ -116,8 +123,9 @@ export const FILTERS = {
     },
     acc: {
         label: "Accessibility",
-        multiple_selection: false,
+        multiple_selection: true,
         options: [
+            { label: "N/A", value: null },
             { label: "Nivel de accesibilidad AA", value: "Nivel de accesibilidad AA" },
             { label: "Nivel de accesibilidad AAA", value: "Nivel de accesibilidad AAA" },
             { label: "Cumplimiento de la norma WCAG 2.1", value: "Cumplimiento de la norma WCAG 2.1" },
@@ -126,7 +134,7 @@ export const FILTERS = {
     },
     ll: {
         label: "Learning level",
-        multiple_selection: false,
+        multiple_selection: true,
         disabled: true,
         options: [
             { label: "Pendiente de definir", value: ''}
@@ -134,7 +142,7 @@ export const FILTERS = {
     },
     sk: {
         label: "Skill",
-        multiple_selection: false,
+        multiple_selection: true,
         disabled: true,
         options: [
             { label: "Pendiente de definir", value: ''}
@@ -142,7 +150,7 @@ export const FILTERS = {
     },
     dp: {
         label: "Discipline",
-        multiple_selection: false,
+        multiple_selection: true,
         disabled: true,
         options: [
             { label: "Pendiente de definir", value: ''}
@@ -150,15 +158,35 @@ export const FILTERS = {
     },
     ft: {
         label: "File type",
-        multiple_selection: false,
+        multiple_selection: true,
         options: [
-            { label: "ZIP", value: 'zip'},
-            { label: "Pendiente de definir", value: ''}
+            { label: "ZIP", value: 'application/zip'},
+            { label: "PDF", value: 'application/pdf'},
+            { label: "DOC", value: 'application/msword'},
+            { label: "DOCX", value: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'},
+            { label: "PPT", value: 'application/vnd.ms-powerpoint'},
+            { label: "PPTX", value: 'application/vnd.openxmlformats-officedocument.presentationml.presentation'},
+            { label: "XLS", value: 'application/vnd.ms-excel'},
+            { label: "XLSX", value: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'},
+            { label: "ODT", value: 'application/vnd.oasis.opendocument.text'},
+            { label: 'JPG', value: 'image/jpeg'},
+            { label: 'PNG', value: 'image/png'},
+            { label: 'GIF', value: 'image/gif'},
+            { label: 'MP3', value: 'audio/mpeg'},
+            { label: 'WAV', value: 'audio/wav'},
+            { label: 'MP4', value: 'video/mp4'},
+            { label: 'AVI', value: 'video/x-msvideo'},
+            { label: 'MOV', value: 'video/quicktime'},
+            { label: 'WMV', value: 'video/x-ms-wmv'},
+            { label: 'FLV', value: 'video/x-flv'},
+            { label: 'OGG', value: 'video/ogg'},
+            { label: 'WEBM', value: 'video/webm'},
+            { label: 'SVG', value: 'image/svg+xml'}
         ],
     },
     at: {
         label: "Activity type",
-        multiple_selection: false,
+        multiple_selection: true,
         options: [
             {label: "Correspondence", value: "correspondence"},
             {label: "Fill in the blanks", value: "fill-the-blanks"},
@@ -178,7 +206,7 @@ export const FILTERS = {
     },
     un: {
         label: "Units",
-        multiple_selection: false,
+        multiple_selection: true,
         options: [
             { "label": 0, "value": "00" }, { "label": 1, "value": "01" }, { "label": 2, "value": "02" }, { "label": 3, "value": "03" }, { "label": 4, "value": "04" },
             { "label": 5, "value": "05" }, { "label": 6, "value": "06" }, { "label": 7, "value": "07" }, { "label": 8, "value": "08" }, { "label": 9, "value": "09" },
@@ -194,7 +222,7 @@ export const FILTERS = {
     },
     mt: {
         label: "Multimedia Type",
-        multiple_selection: false,
+        multiple_selection: true,
         options: [
             {label: "Audio", value: "audio"},
             {label: "Video", value: "video"},

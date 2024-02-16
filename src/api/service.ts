@@ -639,10 +639,9 @@ class AppService {
               }
             ]
         }
-        // Object.keys(params).forEach(param => {
-        //     data.query.query = data.query.query + ` OR ${param}:${params[param]}`
-        // })
-        debugger
+        Object.keys(params).forEach(param => {
+            data.query.query = data.query.query + ` AND ${param}:${params[param]}`
+        })
         Object.keys(params).forEach(param => {
           const {action, value} = params[param]
           data.query.query = data.query.query + ` ${action} ${param}:${params[param]}`
