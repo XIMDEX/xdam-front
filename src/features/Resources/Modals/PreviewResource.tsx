@@ -171,12 +171,15 @@ export default function PreviewResource( { resData, cdn } ) {
       )
     }
 
+    console.log(resourceDataFacet, 'resourceDataFacet')
+
     return (
       <Grid container>
         <Grid item sm={12} style={{padding:"2rem"}}>
           {resourceData && resourceData.data !== null && (
-            <>
-              <div style={{backgroundImage: 'url('+preview+')'}} className={classes.imgView}/>
+            <div style={{padding:"2rem", backgroundColor: '#f8f8f8', borderRadius: 10}}>
+              <h2>{resourceData.name}</h2>
+              <div style={{ backgroundSize: 'contain', backgroundImage: 'url('+preview+')'}} className={classes.imgView}/>
               <Grid container spacing={3}>
                 <Grid item sm={5} hidden={resourceData.files?.length < 1}>
                   <div>{resourceData.files?.length > 0 ? <RelatedFiles resData={resourceData} files={resourceData.files} withPlayer={true} /> : <Label>No files attached</Label>}</div>
@@ -196,7 +199,7 @@ export default function PreviewResource( { resData, cdn } ) {
                   }
                 </Grid>
               </Grid>
-            </>
+            </div>
           )}
         </Grid>
       </Grid>
