@@ -628,12 +628,24 @@ class AppService {
         const _api = api().alfrescoIn2FederatedSearches(params, core)
         const data = {
             query: {
-                query: "macgh:id:*"
+                query: "(macgh:id:* AND NOT TYPE:\"{http://www.alfresco.org/model/content/1.0}folder\")"
             },
-            include: ['properties']
+            include: ['properties'],
+            sort: [
+              {
+                type: "FIELD",
+                field: "cm:title",
+                ascending: true
+              }
+            ]
         }
+        // Object.keys(params).forEach(param => {
+        //     data.query.query = data.query.query + ` OR ${param}:${params[param]}`
+        // })
+        debugger
         Object.keys(params).forEach(param => {
-            data.query.query = data.query.query + ` OR ${param}:${params[param]}`
+          const {action, value} = params[param]
+          data.query.query = data.query.query + ` ${action} ${param}:${params[param]}`
         })
         let _headers = this.httpOptions.headers;
         _headers.Authorization = _api.auth;

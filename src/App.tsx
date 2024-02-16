@@ -182,11 +182,13 @@ function App() {
     )
   }else if (location.pathname.startsWith('/resource/') && location.pathname.endsWith('/preview') && localUser) {
     const urlParts = location.pathname.split('/');
-    const resourceId = urlParts[2]; 
-  
+    const resourceId = urlParts[2];
+    const params = new URLSearchParams(location.search);
+    const isCDN = params.get('cdn') === 'true';
+
     return (
           <Container maxWidth='xl' disableGutters>
-           <PreviewResource resData={{"id":resourceId}} /> 
+           <PreviewResource resData={{"id":resourceId}}  cdn={isCDN}/>
           </Container>
 
     )

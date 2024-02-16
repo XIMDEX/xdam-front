@@ -51,7 +51,7 @@ const ResourceWokspaces = ({ workspacesId }: { workspacesId: Array<string> }) =>
   return (<p><strong>workspaces:</strong> {resourceWorkspaces.join(', ')}</p>)
 }
 
-export default function PreviewResource( { resData } ) {
+export default function PreviewResource( { resData, cdn } ) {
     const classes = useStyles();
     const { id } = resData;
     const [resourceData, setResourceData] = useState(null)
@@ -65,14 +65,16 @@ export default function PreviewResource( { resData } ) {
         setPreview(MainService().render(previewUrl + previewSize));
         if (previewUrl === 'noimg.png') {
           setPreview(window.location.protocol + "//" + window.location.host+"/noimg.png");
-        } 
-          
-        
+        }
+
+
     }
 
     useEffect(() => {
         const getResourceData = async () => {
-            let res = await MainService().getResourceHashed(id);
+            let res = cdn
+                ? await MainService().getResourceHashed(id)
+                : await MainService().getResource(id);
             setResourceData(res);
         }
         getResourceData();
@@ -80,16 +82,16 @@ export default function PreviewResource( { resData } ) {
 
     useEffect(() => {
       const getResourceDataFaceted = async () => {
-      
+
         let resFacet = await MainService().getCatalogue(resourceData.collection[0].id, '?facets[id]='+resourceData.id);
-       setResourceDataFacet(resFacet.data[0]);   
+       setResourceDataFacet(resFacet.data[0]);
      }
      resourceData?.collection?.[0].id && getResourceDataFaceted();
      resourceData &&  setImgPreview();
-     
+
     },[resourceData])
 
-    
+
     const closeModal = () => {
       let element: HTMLElement = document.getElementsByClassName('MuiBackdrop-root')[0] as HTMLElement;
       element.click();

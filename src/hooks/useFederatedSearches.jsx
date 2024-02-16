@@ -102,17 +102,17 @@ function useFederatedSearches() {
                     if (response.value.ok) {
                         response.value.json().then(result => {
                             if (promises[index].id.includes('internal')) {
-                                result.response.docs.forEach(item => {
+                                result?.response?.docs?.forEach(item => {
                                     _data.push(FromXimdexParser(item))
                                 })
-                                numFound += result.response.docs.length
-                                totalItems += result.response.numFound ?? result.response.doc.numFound
+                                numFound += result?.response?.docs.length ?? 0
+                                totalItems += result?.response?.numFound ?? result?.response?.doc?.numFound ?? 0
                             } else {
                                 result?.list?.entries.forEach(entry => {
                                     _data.push(FromAlfrescoIn2Parser(entry))
                                 })
-                                numFound += result.list['pagination']['count']
-                                totalItems += result.list.pagination.totalItems
+                                numFound += result?.list['pagination']['count'] ?? 0
+                                totalItems += result?.list?.pagination?.totalItems ?? 0
 
                             }
                             setData({data: _data, items: numFound, totalItems, hasMore: numFound < totalItems})
@@ -124,7 +124,7 @@ function useFederatedSearches() {
                     _errors[promises[index].id] = response.reason
                     setErrors({...errors, ..._errors})
                 }
-                newData = {data: _data, items: numFound, totalItems, hasMore: numFound < totalItems}
+                newData = {data: _data.sort((a, b) => a.name.localeCompare(b.name)), items: numFound, totalItems, hasMore: numFound < totalItems}
                 setCancelTokens(_controllers);
             })
         } catch(error) {

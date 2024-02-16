@@ -194,6 +194,7 @@ const api = () => {
                 paramXimdex = Object.keys(params).map(param => `${param}:${params[param]}`)
                 paramXimdex = paramXimdex.join(' OR ')
             }
+            if (paramXimdex && core !== 'activity') paramXimdex += '&sort=name asc'
 
             return {
                 method: 'GET',

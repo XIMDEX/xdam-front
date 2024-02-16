@@ -282,8 +282,10 @@ export const FromAlfrescoIn2Parser = (data) => {
         parsedResource.core = 'multimedia'
     }
 
-    if (data.entry.properties['macgh:isbn']) {
-        parsedResource['isbn'] = data.entry.properties['macgh:isbn']
+    if (data.entry.properties['macgh:isbn_digital']) {
+        parsedResource['isbn'] = [data.entry.properties['macgh:isbn_digital']]
+    } else if (data.entry.properties['macgh:isbn']) {
+        parsedResource['isbn'] = [data.entry.properties['macgh:isbn']]
     }
     if (data.entry.properties?.['macgh:tipo_proyecto']) {
         parsedResource['project_type'] = data.entry.properties?.['macgh:tipo_proyecto']
@@ -311,6 +313,17 @@ export const FromAlfrescoIn2Parser = (data) => {
     }
     if (data.entry.properties?.['macgh:tipo_media']) {
         parsedResource['type_file'] = data.entry.properties?.['macgh:tipo_media']
+    }
+    if (data.entry.properties?.['macgh:anyo']) {
+        parsedResource['year'] = data.entry.properties?.['macgh:anyo']
+    } else {
+        parsedResource['year'] = data.entry.properties?.['cm:fecha_publicacion']?.split('-')[0] ?? 'N/A'
+    }
+    if (data.entry.properties?.['macgh:area_escolar']) {
+        parsedResource['area'] = data.entry.properties?.['macgh:area_escolar'] ?? 'N/A'
+    }
+    if (data.entry.properties?.['macgh:familia']) {
+        parsedResource['family'] = data.entry.properties?.['macgh:familia'] ?? 'N/A'
     }
     return parsedResource;
 }
@@ -363,6 +376,9 @@ export const FromXimdexParser = (data) => {
         type_file: data.tipo_archivo || '',
         created_at: new Date(data.created_at[0]),
         updated_at: new Date(data.updated_at[0]),
+        area: data.nivel_educativo ?? 'N/A',
+        family: data.competencia ?? 'N/A'
+
     };
 
     if (data.description) {
@@ -381,6 +397,8 @@ export const FromXimdexParser = (data) => {
     }
     if (data.isbn) {
         parsed['isbn'] = Array.isArray(data.isbn) ? data.isbn : [data.isbn]
+    } else {
+        parsed['isbn'] = ['N/A']
     }
 
     if (data.core_resource_type[0] === 'activity' || data.core_resource_type[0] === 'assessment') {
@@ -391,6 +409,7 @@ export const FromXimdexParser = (data) => {
     if (data.core_resource_type[0] === 'activity') parsed['activity_type'] = data.type
     if (data.core_resource_type[0] === 'multimedia') parsed['multimedia_type'] = data.type
 
+    parsed['year'] = parsed.created_at.getFullYear()
     return parsed;
 }
 

@@ -9,6 +9,7 @@ import useQueryParams from '../../hooks/useQueryParams';
 import useFederatedSearches from '../../hooks/useFederatedSearches';
 import { ContentTypes } from '../../utils/federatedSearchesParsers';
 import { getFlagImage } from '../../utils/utils';
+import Dialogs from '../Resources/Modals/Dialogs';
 
 const PS = 25
 
@@ -134,13 +135,15 @@ function Search() {
     const handleLink = (id, link, type) => {
         if (type === 'external') {
             return window.open(link, '_blank')
+        } else {
+            return window.open(`/resource/${id}/preview`, '_blank')
         }
-        console.log('open internal resource with ID: ' + id)
-    }
 
+    }
     return (
+    <>
         <div className='searchpage-container'>
-            {Object.keys(filters).length === 0 && (
+            {(data_resources?.data?.length ?? 0) === 0 && (
                     <Typography
                         className='title'
                         variant='h1'
@@ -149,7 +152,7 @@ function Search() {
                     </Typography>
             )}
             <section className='searchbar-container'>
-                {Object.keys(filters).length > 0 && (
+                {(data_resources?.data?.length ?? 0) > 0 && (
                     <Typography
                         className='title title-side'
                         variant='h4'
@@ -172,87 +175,154 @@ function Search() {
                     <FontAwesomeIcon icon={faFilter} size='1x' />
                 </XButton>
             </section>
-
             <section className='searchpage-cores'>
-                {filters?.c && (
-                    <XButton key={`all_r`} size="large" variant={'outlined'} onClick={()=> handleCore()}>All resources</XButton>
-                )}
+                <XButton
+                    key={`all_r`}
+                    size="small"
+                    variant={filters?.c ? 'outlined' : 'contained'}
+                    onClick={()=> handleCore()}
+                >All resources</XButton>
                 {Object.keys(CORE_FILTERS).map((core, idx) => (
-                    <XButton key={`${core}_${idx}`} size="large" variant={filters?.c !== core.toLowerCase() ? 'outlined' : 'contained'} onClick={() => handleCore(core)}>{core}</XButton>
+                    <XButton
+                        key={`${core}_${idx}`}
+                        size="small"
+                        variant={filters?.c !== core.toLowerCase() ? 'outlined' : 'contained'}
+                        onClick={() => handleCore(core)}
+                    >{core}</XButton>
                 ))}
+                {/* <XButton
+                    key={`alfresco_r`}
+                    size="small"
+                    variant={filters?.c !== 'alfresco' ? 'outlined' : 'contained'}
+                    onClick={() => handleCore('alfresco')}
+                >Alfresco</XButton> */}
             </section>
+
             {(Object.keys(filters).length > 0 || showFilters ) && (
-                <>
-                    <section className='filters-container'>
-                        <XButton className="clear-filters" onClick={clearFilters}>CLEAR</XButton>
-                        <div className='filters-dropdowns-container'>
-                            {[...(filters.hasOwnProperty('c') ? CORE_FILTERS[filters.c] : COMMON_FILTERS)]
-                                .sort((a,b) => {return (FILTERS[a]?.disabled ? 1 : 0)-(FILTERS[b]?.disabled ? 1 : 0)})
-                                .map((option, index) => {
-                                    const filterOption = FILTERS[option];
-                                    return (
-                                        <XDropdown
-                                            key={`filter-${option}-${index}`}
-                                            label={filterOption?.label ?? 'filter'}
-                                            options={filterOption?.options}
-                                            value={filterOption.options.filter(e => e.label === filters[option])?.[0]}
-                                            labelOptions={filterOption?.option_label ?? 'label'}
-                                            hasCheckboxes={filterOption?.multiple_selection ?? false}
-                                            multiple={filterOption?.multiple_selection ?? false}
-                                            className='filter-dropdown'
-                                            size="small"
-                                            disableClearable
-                                            disabled={filterOption?.disabled ?? false}
-                                            onChange={(e, value) => handleFilters(option, value.value)}
-                                        />
-                                    )
-                                })
-                            }
-                        </div>
-                    </section>
-                </>
+                <section className='filters-container'>
+                    <XButton  size='small' className="clear-filters" onClick={clearFilters}>CLEAR</XButton>
+                    <div className='filters-dropdowns-container'>
+                        {[...(filters.hasOwnProperty('c') ? CORE_FILTERS[filters.c] : COMMON_FILTERS)]
+                            .sort((a,b) => {return (FILTERS[a]?.disabled ? 1 : 0)-(FILTERS[b]?.disabled ? 1 : 0)})
+                            .map((option, index) => {
+                                const filterOption = FILTERS[option];
+                                return (
+                                    <XDropdown
+                                        key={`filter-${option}-${index}`}
+                                        label={filterOption?.label ?? 'filter'}
+                                        options={filterOption?.options}
+                                        value={filterOption.options.filter(e => e.label === filters[option])?.[0]}
+                                        labelOptions={filterOption?.option_label ?? 'label'}
+                                        hasCheckboxes={filterOption?.multiple_selection ?? false}
+                                        multiple={filterOption?.multiple_selection ?? false}
+                                        className='filter-dropdown'
+                                        size="small"
+                                        disableClearable
+                                        disabled={filterOption?.disabled ?? false}
+                                        onChange={(e, value) => handleFilters(option, value.value)}
+                                    />
+                                )
+                            })
+                        }
+                    </div>
+                </section>
             )}
 
-            <Typography variant='h5'>{data_resources?.totalItems ?? 0} resource{data_resources?.totalItems === 1 ? '' : 's'} found</Typography>
             <ul className='resources-container'>
                 {pageShow?.map((doc, index) => (
-                    <li key={doc?.id ?? index} className={`resource-container ${viewMode} ${index % 2 === 0 ? 'odd' : 'even'}`}>
+                    <li
+                        key={doc?.ID ?? index}
+                        className={`resource-container ${viewMode} ${index % 2 === 0 ? 'odd' : 'even'}`}
+                    >
                         <div className='resource-preview-image-container'>
                             <img
-                                src={doc?.img ? `${process.env.REACT_APP_API_BASE_URL}/resource/render/${doc?.img}/small`: (doc.type === 'external' ? '/alfresco_logo.png' : '/noimg.png')}
+                                src={doc?.img
+                                    ? `${process.env.REACT_APP_API_BASE_URL}/resource/render/${doc?.img}/small`
+                                    : (doc.type === 'external' ? '/alfresco_logo.png' : '/noimg.png')}
                                 alt='preview resource'
                                 loading='lazy'
-                                style={doc.type === 'external' ? {backgroundColor: 'white', padding: 20} : {}}
+                                style={doc.type === 'external'
+                                    ? {backgroundColor: 'white', padding: 20, objectFit: 'contain'}
+                                    : {}
+                                }
                                 onError={(e) => { e.target.onError = null; e.target.src = "/noimg.png" }}
                             />
                         </div>
                         <div className='resource-info-container'>
-                            <h3 style={{gap:15, display: 'flex', alignItems: 'center'}}>
-                                {doc?.name}
-                                {!doc?.languages_allowed && doc.language && getFlagImage(doc.language) !== '/noimg.png' && (
-                                    <img
-                                        src={getFlagImage(doc.language)}
-                                        alt={doc.language}
-                                        loading='lazy'
-                                        height={16}
-                                        onError={(e) => { e.target.onError = null; e.target.src = "/noimg.png" }}
-                                    />
-                                )}
-                                {doc?.languages_allowed && doc.languages_allowed.map((lang, idx) => {
-                                    if (getFlagImage(lang) == '/noimg.png') return null
-                                    return (
+                            <div className='resource-title-container' >
+
+                                <Typography variant='h6' component='h3'
+                                    style={{
+                                        gap:15,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        paddingBottom: 0,
+                                        marginBottom: 0
+                                    }}
+                                >
+                                    {doc?.name}
+                                    {!doc?.languages_allowed && doc.language && getFlagImage(doc.language) !== '/noimg.png' && (
                                         <img
-                                            src={getFlagImage(lang)}
-                                            alt={lang}
+                                            src={getFlagImage(doc.language)}
+                                            alt={doc.language}
                                             loading='lazy'
                                             height={16}
                                             onError={(e) => { e.target.onError = null; e.target.src = "/noimg.png" }}
                                         />
-                                    )
-                                })}
-                            </h3>
-                            <p>{ContentTypes[doc?.resource_type]}</p>
-                            {doc.description && (
+                                    )}
+                                    {doc?.languages_allowed && doc.languages_allowed.map((lang, idx) => {
+                                        if (getFlagImage(lang) == '/noimg.png') return null
+                                        return (
+                                            <img
+                                                src={getFlagImage(lang)}
+                                                alt={lang}
+                                                loading='lazy'
+                                                height={16}
+                                                onError={(e) => { e.target.onError = null; e.target.src = "/noimg.png" }}
+                                            />
+                                        )
+                                    })}
+
+                                </Typography>
+                                <Typography
+                                    variant='overline'
+                                    component='span'
+                                    style={{
+                                        display: 'inline'
+                                    }}
+                                >{ContentTypes[doc?.resource_type]}</Typography>
+                            </div>
+
+                            <p
+                                style={{
+                                    color: 'gray',
+                                    fontSize: '0.9rem',
+                                    fontWeight: 'bold',
+                                    marginBottom: 0
+                                }}
+                            >
+                                <span style={{fontSize: '0.75rem', fontWeight: 'normal'}}>AÑO:</span> {doc.year} - <span style={{fontSize: '0.75rem', fontWeight: 'normal'}}>ISBN:</span> {doc.isbn.join(', ')}
+                            </p>
+
+                            { (doc?.area || doc?.family) && (
+                                <p
+                                    style={{
+                                        color: 'gray',
+                                        fontSize: '0.9rem',
+                                        fontWeight: 'bold',
+                                    }}
+                                >
+                                    {doc?.area && (
+                                        <><span style={{fontSize: '0.75rem', fontWeight: 'normal'}}>AREA:</span> {doc.area}</>
+                                    )}
+                                    {doc?.area && doc?.family && (' - ')}
+                                    {doc?.family && (
+                                        <><span style={{fontSize: '0.75rem', fontWeight: 'normal'}}>FAMILY:</span> {doc.family}</>
+                                    )}
+                                </p>
+                            )}
+
+                            {/* {doc.description && (
                                 <p
                                     style={{
                                         color: 'gray',
@@ -264,14 +334,14 @@ function Search() {
                                         whiteSpace: 'nowrap'
                                     }}
                                 >{doc.description}</p>
-                            )}
-                        <div className='tags'>
-                        </div>
+                            )} */}
+                        {/* <div className='tags'>
+                        </div> */}
                         </div>
                         <div className='resource-action-container'>
-                            <XButton style={{ minWidth: 'unset' }} onClick={()=> handleLink(doc.id, doc.link, doc.type)}>
+                            <XButton style={{ minWidth: 'unset' }} onClick={()=> handleLink(doc.ID, doc.link, doc.type)}>
                                 <FontAwesomeIcon
-                                    icon={doc.type === 'internal' ? faPencil : faArrowUpRightFromSquare}
+                                    icon={faArrowUpRightFromSquare}
                                     title={doc.type === 'internal' ? 'Edit internal resource' : 'Open external resource'}
                                     size='1x'
                                 />
@@ -280,8 +350,41 @@ function Search() {
                     </li>
                 ))}
             </ul>
+
+            {data_resources.totalItems && (
+                <Typography variant='h6'>{data_resources?.totalItems ?? 0} resource{data_resources?.totalItems === 1 ? '' : 's'} found</Typography>
+            )}
+            {totalPages > 1 && (
+                <div
+                    className='pagination-container'
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        gap: 10,
+                        paddingBottom: 20
+                    }}
+                >
+                    <XButton
+                        onClick={()=> setPage(0)}
+                        disabled={page === 0}
+                    >First</XButton>
+                    <XButton
+                        onClick={()=> setPage(page - 1)}
+                        disabled={page === 0}
+                    >Prev</XButton>
+                    <XButton
+                        onClick={()=> setPage(page + 1)}
+                        disabled={page === totalPages - 1}
+                    >Next</XButton>
+                    <XButton
+                        onClick={()=> setPage(totalPages - 1)}
+                        disabled={page === totalPages - 1}
+                    >Last</XButton>
+                </div>
+            )}
         </div>
-    )
+        <Dialogs />
+    </>)
 }
 
 export default Search

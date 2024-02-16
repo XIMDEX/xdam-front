@@ -5,6 +5,7 @@ export const CORE_FILTERS = {
     activity: [...COMMON_FILTERS],
     assessment: [...COMMON_FILTERS],
     book: [...COMMON_FILTERS],
+    alfresco: [...COMMON_FILTERS],
 };
 
 export const FILTERS = {
@@ -12,10 +13,10 @@ export const FILTERS = {
         label: "Collection",
         multiple_selection: false,
         options: [
-            { key: "multimedia", label: "multimedia", value: "multimedia_v3" }, // image, video, audio
-            { key: "activity", label: "activity", value: "activity_v3" },
-            { key: "assessment", label: "assessment", value: "assessment_v3" },
-            { key: "book", label: "book", value: "book_v3" },
+            { key: "multimedia", label: "multimedia", value: "multimedia" }, // image, video, audio
+            { key: "activity", label: "activity", value: "activity" },
+            { key: "assessment", label: "assessment", value: "assessment" },
+            { key: "book", label: "book", value: "book" },
         ],
     },
     l: {
