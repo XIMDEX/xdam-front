@@ -59,7 +59,7 @@ export default function PreviewResource( { resData, cdn } ) {
     const [preview,setPreview] = useState(null)
 
     const setImgPreview = () => {
-        let previewUrl = resourceData?.previews?.[0].dam_url || resourceData?.previews?.[0] || resourceData?.files?.[0].dam_url || 'noimg.png';
+        let previewUrl = resourceData?.previews?.[0]?.dam_url || resourceData?.previews?.[0] || resourceData?.files?.[0]?.dam_url || 'noimg.png';
         if(!previewUrl.includes('@@@dam:@image')) previewUrl = 'noimg.png'
         const previewSize = previewUrl === 'noimg.png' ? '' : '/medium';
         setPreview(MainService().render(previewUrl + previewSize));
