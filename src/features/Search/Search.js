@@ -220,7 +220,7 @@ function Search() {
                                         size="small"
                                         disableClearable
                                         disabled={filterOption?.disabled ?? false}
-                                        onChange={(e, value) => handleFilters(option, value.value)}
+                                        onChange={(e, value) => handleFilters(option, value)}
                                     />
                                 )
                             })
