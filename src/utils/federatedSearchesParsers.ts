@@ -52,23 +52,23 @@ type ResourceType = {
 }
 
 const DICT_ALFRESCO = {
-    rt: 'properties.macgh:tipo_recurso',
-    r: 'properties.macgh:destinatario',
-    cp: 'properties.macgh:proceso_cognitivo',
-    cpr: 'properties.macgh:derechos_autor',
-    acc: 'properties.macgh:accesibilidad',
-    l: 'properties.macgh:idioma',
-    s: 'properties.macgh:estado_documento',
-    mt: 'properties.macgh:tipo_media',
+    rt: 'macgh:tipo_recurso',
+    r: 'macgh:destinatario',
+    cp: 'macgh:proceso_cognitivo',
+    cpr: 'macgh:derechos_autor',
+    acc: 'macgh:accesibilidad',
+    l: 'macgh:idioma',
+    s: 'macgh:estado_documento',
+    mt: 'macgh:tipo_media',
     description: 'cm:description',
-    project_type: 'properties.macgh:tipo_proyecto',
-    id: 'id',
+    project_type: 'macgh:tipo_proyecto',
+    id: 'macgh:id',
     created_at: 'createdAt',
     updated_at: 'modifiedAt',
     name: 'cm:name',
-    year: 'properties.macgh:anyo',
-    isbn_digital: 'properties.macgh:isbn_digital',
-    isbn: 'properties.macgh:isbn',
+    year: 'macgh:anyo',
+    isbn_digital: 'macgh:isbn_digital',
+    isbn: 'macgh:isbn',
 }
 
 
@@ -122,16 +122,6 @@ const DICT_LANG_XIMDEX = {
 export const toAlfrescoIn2Parser = (params: Object) => {
     let paramsAlfresco = []
     let paramsArray = Object.keys(params)
-    // if (paramsArray.length === 1 && paramsArray[0] === 'q') {
-    //     const value = params[paramsArray[0]];
-    //     paramsAlfresco[DICT_ALFRESCO['isbn_digital']] = value;
-    //     paramsAlfresco.push(`${DICT_ALFRESCO['isbn_digital']}:"${value}"`)
-    //     paramsAlfresco.push(`${DICT_ALFRESCO['isbn']}:"${value}"`)
-    //     paramsAlfresco.push(`${DICT_ALFRESCO['name']}:"${value}"`)
-    //     paramsAlfresco.push(`${DICT_ALFRESCO['description']}:"${value}"`)
-
-    //     return paramsAlfresco.join(' OR ')
-    // }
 
     paramsArray.forEach(param => {
         if (DICT_ALFRESCO.hasOwnProperty(param) || param === 'q') {
