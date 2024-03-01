@@ -52,22 +52,23 @@ type ResourceType = {
 }
 
 const DICT_ALFRESCO = {
-    rt: 'macgh:tipo_recurso',
-    r: 'macgh:destinatario',
-    cp: 'macgh:proceso_cognitivo',
-    cpr: 'macgh:derechos_autor',
-    acc: 'macgh:accesibilidad',
-    l: 'macgh:idioma',
-    s: 'macgh:estado_documento',
-    mt: 'macgh:tipo_media',
+    rt: 'properties.macgh:tipo_recurso',
+    r: 'properties.macgh:destinatario',
+    cp: 'properties.macgh:proceso_cognitivo',
+    cpr: 'properties.macgh:derechos_autor',
+    acc: 'properties.macgh:accesibilidad',
+    l: 'properties.macgh:idioma',
+    s: 'properties.macgh:estado_documento',
+    mt: 'properties.macgh:tipo_media',
     description: 'cm:description',
-    project_type: 'macgh:tipo_proyecto',
+    project_type: 'properties.macgh:tipo_proyecto',
     id: 'id',
-    isbn: 'isbn',
     created_at: 'createdAt',
     updated_at: 'modifiedAt',
     name: 'cm:name',
-    year: 'macgh:anyo'
+    year: 'properties.macgh:anyo',
+    isbn_digital: 'properties.macgh:isbn_digital',
+    isbn: 'properties.macgh:isbn',
 }
 
 
@@ -109,30 +110,33 @@ const DICT_LANG_XIMDEX = {
     eu_ES: 'eu'
 }
 
-export const toAlfrescoIn2Parser = (params: Object) => {
-    let paramsAlfresco = {}
-    let paramsArray = Object.keys(params)
-    if (paramsArray.length === 1 && paramsArray[0] === 'q') {
-        const value = params[paramsArray[0]];
-        paramsAlfresco[DICT_ALFRESCO['rt']] = value;
-        paramsAlfresco[DICT_ALFRESCO['r']] = value;
-        paramsAlfresco[DICT_ALFRESCO['cp']] = value;
-        paramsAlfresco[DICT_ALFRESCO['cpr']] = value;
-        paramsAlfresco[DICT_ALFRESCO['acc']] = value;
-        paramsAlfresco[DICT_ALFRESCO['l']] = value;
-        paramsAlfresco[DICT_ALFRESCO['s']] = value;
-        paramsAlfresco[DICT_ALFRESCO['mt']] = value;
-        paramsAlfresco[DICT_ALFRESCO['name']] = value
-        paramsAlfresco[DICT_ALFRESCO['description']] = value
-        paramsAlfresco[DICT_ALFRESCO['description']] = value;
-        paramsAlfresco[DICT_ALFRESCO['project_type']] = value;
+// {
+//     "query": {
+//       "query": "(macgh:id:* AND NOT TYPE:\"{http://www.alfresco.org/model/content/1.0}folder\" AND (name:\"esto es una prueba\" OR properties.macgh:descripcion:\"esto es una prueba\" OR properties.macgh:isbn:\"esto es una prueba\" OR properties.macgh:isbn_digital:\"esto es una prueba\"))"
+//     },
+//     "include": ["properties"],
+//     "sort": [{"type": "FIELD","field": "cm:title","ascending": true}]
+//   }
 
-        return paramsAlfresco
-    }
+
+export const toAlfrescoIn2Parser = (params: Object) => {
+    let paramsAlfresco = []
+    let paramsArray = Object.keys(params)
+    // if (paramsArray.length === 1 && paramsArray[0] === 'q') {
+    //     const value = params[paramsArray[0]];
+    //     paramsAlfresco[DICT_ALFRESCO['isbn_digital']] = value;
+    //     paramsAlfresco.push(`${DICT_ALFRESCO['isbn_digital']}:"${value}"`)
+    //     paramsAlfresco.push(`${DICT_ALFRESCO['isbn']}:"${value}"`)
+    //     paramsAlfresco.push(`${DICT_ALFRESCO['name']}:"${value}"`)
+    //     paramsAlfresco.push(`${DICT_ALFRESCO['description']}:"${value}"`)
+
+    //     return paramsAlfresco.join(' OR ')
+    // }
 
     paramsArray.forEach(param => {
-        if (DICT_ALFRESCO.hasOwnProperty(param)) {
+        if (DICT_ALFRESCO.hasOwnProperty(param) || param === 'q') {
             let value = params[param]
+            let search = '';
             if (param === 'ld' || param === 'la') param = 'l'
             if (param === 'l') {
                 value = DICT_LANG_ALFRESCO[value] ?? value
@@ -141,14 +145,21 @@ export const toAlfrescoIn2Parser = (params: Object) => {
                 value = (value === 'true' || value === true) ? 'abierto' : 'cerrado'
             }
             if (param === 'q') {
-                paramsAlfresco[DICT_ALFRESCO['name']] = value
-                paramsAlfresco[DICT_ALFRESCO['description']] = value
-                return;
+                let params_search = [
+                    `${DICT_ALFRESCO['isbn_digital']}:"${value}"`,
+                    `${DICT_ALFRESCO['isbn']}:"${value}"`,
+                    `${DICT_ALFRESCO['name']}:"${value}"`,
+                    `${DICT_ALFRESCO['description']}:"${value}"`
+                ]
+                search = paramsArray.length === 1
+                    ? params_search.join(' OR ')
+                    : `(${params_search.join(' OR ')})`;
             }
-            paramsAlfresco[DICT_ALFRESCO[param]] = value
+            if (!search) search = `${DICT_ALFRESCO[param]}:"${value}"`
+            paramsAlfresco.push(search)
         }
     })
-    return paramsAlfresco
+    return paramsAlfresco.join(' AND ')
 }
 
 export const toXimdexParser = (params: Object) => {
