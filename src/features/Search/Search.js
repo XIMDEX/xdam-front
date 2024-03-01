@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Typography } from '@material-ui/core';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faCircleNotch, faPencil, faFilter, faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
+import { faSearch, faCircleNotch, faFilter, faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import { XInput, XButton, XDropdown, XPopUp } from '@ximdex/xui-react/material';
 import { COMMON_FILTERS, CORE_FILTERS, FILTERS } from './constants';
 import './Search.scss'
@@ -68,7 +68,13 @@ function Search() {
     };
 
     const handleFilters = (param, value) => {
-        setFilters({...filters, [param]:value})
+        let data = [];
+        if (FILTERS[param]?.multiple_selection) {
+            value.forEach(i => data.push(i.value))
+        } else {
+            data.push(value.value)
+        }
+        setFilters({...filters, [param]:data})
     }
     const handleSearch = txt => {
         let newFilters = {...filters}
