@@ -130,7 +130,9 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     if (maxNumberOfFiles !== null && maxNumberOfFiles !== undefined && maxNumberOfFiles !== UNLIMITED_FILES) {
       let currentNumberOfFiles = getCurrentNumberOfFiles(resData);
       // setAttachFilesDisabled(false);
+      console.log(currentNumberOfFiles,"current")
 
+      console.log(maxNumberOfFiles,"max")
       if (currentNumberOfFiles > maxNumberOfFiles) {
         // setAttachFilesDisabled(true);
         setFilesMessage({ display: true, text: 'This resource only allows a maximum of ' + maxNumberOfFiles + ' files.' });
@@ -604,6 +606,9 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   });
 
   const FilesAndActions = () => {
+    const appData = getStoreFormData();
+    console.log(appData)
+    setMaxFiles(1);
     return (
       <Grid item sm={6}>
           <ButtonGroup orientation='vertical'>
@@ -621,7 +626,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                 <input
                   accept="image/*"
                   type="file"
-                  onChange={(e)=> handleFiles(e)}
+                  onChange={(e)=> handleFiles(e,resourceData, maxFiles)}
                   name='Preview'
                   hidden
                 />
@@ -650,6 +655,10 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                   hidden
                 />
               </Button>
+              <Message color={'orange'} className={filesMsg.display ? 'zoom-message' : 'hidden-message'} info>
+                <Message.Header>Warning!</Message.Header>
+                <p>{filesMsg.text}</p>                    
+              </Message>
               {/* {resourceType === MULTIMEDIA ? (
                   <Label> You will upload a {mediaType}</Label>
               ) : null} */}
@@ -680,6 +689,9 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                   onEditModal
                   setTheFiles={setTheFiles}
                   DynamicFormResourceData={setResourceData}
+                  maxNumberOfFiles={maxFiles}
+                 // replaceMedia={replaceMedia}
+                 // handleReplacedFiles={handleReplacedFiles}
                 />
               ) : null
             }

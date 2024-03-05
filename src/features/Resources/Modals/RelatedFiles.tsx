@@ -8,7 +8,7 @@ import MainService from '../../../api/service';
 
 import { render, renderFromUrl } from '../../../utils/render';
 import { Button, List, Label, Icon } from 'semantic-ui-react';
-import { MULTIMEDIA } from '../../../constants';
+import { MULTIMEDIA,UNLIMITED_FILES } from '../../../constants';
 import { iconHandler } from '../../../utils/iconHandler';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export default function RelatedFiles( { resData, files,  withPlayer = false, onEditModal = false, setTheFiles = null, DynamicFormResourceData = null } ) {
+export default function RelatedFiles( { resData, files,  withPlayer = false, onEditModal = false, setTheFiles = null, DynamicFormResourceData = null,maxNumberOfFiles = null } ) {
 
     const classes = useStyles();
     const [resourceData, setResourceData] = useState(resData)
@@ -133,7 +133,12 @@ export default function RelatedFiles( { resData, files,  withPlayer = false, onE
             <div >
                 {theFiles && theFiles.length > 0 ? (
                 <>
-                    <Label>{onEditModal ? 'Already attached:' : 'Associated files'}</Label> 
+                    <Label>
+                        { onEditModal ? 'Already attached' : 'Associated files' }
+                        { maxNumberOfFiles != undefined && maxNumberOfFiles != null && maxNumberOfFiles != UNLIMITED_FILES ?
+                        ' (max: ' + maxNumberOfFiles + ' files)' : '' }
+                        { onEditModal ? ':' : '' }
+                    </Label> 
                     <RenderFiles /> 
                 </>
                 ) : null
