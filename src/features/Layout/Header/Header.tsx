@@ -1,7 +1,7 @@
-import React from 'react'
-import { Link } from "react-router-dom";
+import React, { useState } from 'react'
+import { Link, Redirect } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
-import { Grid, Typography } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
 import { Dropdown, Image } from 'semantic-ui-react'
 import { makeStyles } from '@material-ui/core/styles';
 import MainService from '../../../api/service';
@@ -9,51 +9,53 @@ import { setLoading, selectFixedFacets } from '../../../appSlice';
 import { selectQuery } from '../../../slices/organizationSlice';
 import { Search } from '../../Resources/Search';
 import OrganizationSwitch from './OrganizationSwitch';
-import XTagsSearch from '@ximdex/xui-react/material/XTags/XTagsSearch'
-import {SHOW_DAM_ORGANIZATIONS, XTAGS_API_BASE_URL} from '../../../constants'
-import { XNav } from '@ximdex/xui-react/material'
+import { SHOW_DAM_ORGANIZATIONS } from '../../../constants'
 
 const useStyles = makeStyles((theme) => ({
     root: {
-      borderBottom: '1px solid #9eadba',
-      marginTop: 20,
-      padding: '0 10px',
-      paddingBottom: 23,
-      display: 'fixed'
+        marginBottom: "1px",
+        marginTop: 20,
+        padding: "0 10px",
+        paddingBottom: 23,
+        display: "fixed",
     },
     headerContent: {
-      maxHeight: 40
+        maxHeight: 40,
     },
     title: {
-      fontWeight: 'bolder',
-      marginBottom: 20,
-      color: '#02947d'
+        fontWeight: "bolder",
+        marginBottom: 20,
+        color: "#02947d",
     },
     logout: {
-      float: 'right',
-      marginTop: 5,
+        float: "right",
+        marginTop: 5,
     },
     divSearch: {
-      display: 'flex'
+        display: "flex",
     },
     rightHeader: {
-      display: 'flex',
-      justifyContent: 'flex-end',
-      maxHeight: 38
-    }
-  }
-));
+        display: "flex",
+        justifyContent: "flex-end",
+        maxHeight: 38,
+    },
+}));
 
 export function Header( {_user} ) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const query = useSelector(selectQuery);
+  const [redirect, setRedirect] = useState(false);
 
   const fixedFacets = useSelector(selectFixedFacets);
 
   const logout = () => {
     dispatch(setLoading(true))
     MainService().logout()
+  }
+
+  const goToSearchPage = () => {
+    window.location.href = '/search'
   }
 
   return (
@@ -75,6 +77,7 @@ export function Header( {_user} ) {
             <Dropdown text='Profile' floating button >
               <Dropdown.Menu>
                 <Dropdown.Item onClick={logout}>Logout</Dropdown.Item>
+                <Dropdown.Item onClick={goToSearchPage}>Search</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
 

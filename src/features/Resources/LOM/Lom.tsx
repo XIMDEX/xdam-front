@@ -94,7 +94,11 @@ function Lom({resourceData, standard}) {
         }
       </Tabs>
       {
-        schema.tabs.map((tab, ix) => {
+        [...schema.tabs].sort((a, b) => {
+            if (a.hide === b.hide) return 0;
+            if (b.hide) return -1;
+            return 1;
+        }).map((tab, ix) => {
           const uiSchema = getUiSchema(tab, uiSchema_default)
           return (
           <TabPanel value={value} index={parseInt(tab.key) - 1} key={ix}>
@@ -110,7 +114,7 @@ function Lom({resourceData, standard}) {
                     noValidate
                     ArrayFieldTemplate={Field}
                   >
-                    <div>
+                    <div style={{display: Object.keys(tab.properties).length > 0 ? 'inherit' : 'none'}}>
                       <Button type="submit">Submit</Button>
                     </div>
                   </ SemanticForm>
