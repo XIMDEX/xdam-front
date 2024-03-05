@@ -184,10 +184,6 @@ export const toXimdexParser = (params: Object) => {
     paramsArray.forEach(param => {
         if (DICT_XIMDEX.hasOwnProperty(param)) {
             let value = params[param]
-            // if (param === 'ld' || param === 'la') {
-            //     param = 'l'
-
-            // }
             if (param === 'l') {
                 value = DICT_LANG_XIMDEX[value] ?? value
             }
