@@ -110,9 +110,10 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const filesMessageDefaultState = { display: false, text: '' }
   const [filesMsg, setFilesMessage] = useState(filesMessageDefaultState);
   const [formFilesToRemove, setFormFilesToRemove] = useState([]);
+ 
   const removeMediaFromUploadingQueue = (array_id, resData, maxNumberOfFiles) => {
     let filesPendingAddition = formFiles;
-    console.log(filesPendingAddition)
+
     filesPendingAddition.splice(array_id, 1);
     setFormFiles(filesPendingAddition);
     disableFurtherFilesAttached(resData, maxNumberOfFiles);
@@ -129,12 +130,10 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const disableFurtherFilesAttached = (resData, maxNumberOfFiles) => {
     if (maxNumberOfFiles !== null && maxNumberOfFiles !== undefined && maxNumberOfFiles !== UNLIMITED_FILES) {
       let currentNumberOfFiles = getCurrentNumberOfFiles(resData);
-      // setAttachFilesDisabled(false);
-      console.log(currentNumberOfFiles,"current")
-
-      console.log(maxNumberOfFiles,"max")
+     
+   
       if (currentNumberOfFiles > maxNumberOfFiles) {
-        // setAttachFilesDisabled(true);
+        
         setFilesMessage({ display: true, text: 'This resource only allows a maximum of ' + maxNumberOfFiles + ' files.' });
       } else {
         setFilesMessage({ display: false, text: '' });
@@ -260,6 +259,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const showUpgradeButton = resourceType === 'book' && action === 'edit' && resourceData && +resourceData.version !== 0 && +resourceData.version !== CURRENT_BOOK_VERSION
 
   const handleFiles = (e,resData, maxNumberOfFiles) => {
+    if(maxNumberOfFiles)
     if (typeof e.target.type === 'string' && e.target.type === 'file' && e.target.name === 'Preview') {
       setPreviewImage(e.target.files[0]);
       if(formFiles.length === 0 && dataForUpdate?.files.length === 0) {
