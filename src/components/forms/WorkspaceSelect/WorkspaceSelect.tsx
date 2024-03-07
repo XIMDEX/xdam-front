@@ -77,6 +77,7 @@ export default function WorkspaceSelect({resourceData, dataForUpdate}) {
         });
         let data = new FormData();
         data.append('workspaces', JSON.stringify(newWorkspaces))
+
         await MainService().setWorkspaceResource(resourceData.id, data)
     };
 
@@ -97,6 +98,7 @@ export default function WorkspaceSelect({resourceData, dataForUpdate}) {
         let data = new FormData();
         data.append('workspaces', JSON.stringify(newWorkspaces))
         await MainService().setWorkspaceResource(resourceData.id, data)
+        setAddWorkspace(false)
     }
 
     return ( <div style={{display: 'flex'}}>
@@ -131,6 +133,9 @@ export default function WorkspaceSelect({resourceData, dataForUpdate}) {
                 label="Workspace:"
             />
             )}
+            getOptionDisabled={(option) =>
+                workspaceDefault.findIndex(defaultWk => defaultWk.value === option.value) !== -1
+            }
             renderTags={(tagValue, getTagProps) =>
                 tagValue.map((option, index) => (
                 <Chip
