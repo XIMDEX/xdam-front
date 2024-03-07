@@ -300,8 +300,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
 
   const handleFiles = (e,resData, maxNumberOfFiles) => {
     let currentNumberOfFiles = getCurrentNumberOfFiles(resData);
-    
-    if(maxNumberOfFiles > currentNumberOfFiles){
+    if(maxNumberOfFiles > currentNumberOfFiles || maxNumberOfFiles==="unlimited"){
       if (typeof e.target.type === 'string' && e.target.type === 'file' && e.target.name === 'Preview') {
         setPreviewImage(e.target.files[0]);
         if(formFiles.length === 0 && dataForUpdate?.files.length === 0) {
