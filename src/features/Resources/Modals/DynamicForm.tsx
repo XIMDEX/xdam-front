@@ -29,6 +29,7 @@ import LomForm from '../LOM/LomForm';
 import { ResourceLanguage } from './DynamicFormTemplates/ResourceLanguage';
 import { ExtraBookData } from './DynamicFormTemplates/CustomFields/ExtraBookData';
 import WorkspaceSelect from '../../../components/forms/WorkspaceSelect/WorkspaceSelect';
+import { CDNsAttachedToResource, CDNsAttachedToResourceV2 } from './ResourceCDNsAttached';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -127,18 +128,64 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     return currentCountOfTotalFiles;
   }
 
+
+  const removeMediaV2 = (dam, media_id, maxNumberOfFiles) => {
+    let filesPendingRemove = formFilesToRemove;
+    filesPendingRemove.push(media_id);
+    setFormFilesToRemove(filesPendingRemove);
+
+    for (var i = 0; i < resourceData.files.length; i++) {
+      if (media_id == resourceData.files[i].id) {
+        resourceData.files[i].pendingRemoval = true;
+      }
+    }
+
+    disableFurtherFilesAttached(dam, maxNumberOfFiles);
+    triggerReload(!tr);
+  }
+
   const disableFurtherFilesAttached = (resData, maxNumberOfFiles) => {
     if (maxNumberOfFiles !== null && maxNumberOfFiles !== undefined && maxNumberOfFiles !== UNLIMITED_FILES) {
       let currentNumberOfFiles = getCurrentNumberOfFiles(resData);
      
    
-      if (currentNumberOfFiles > maxNumberOfFiles) {
+      if (currentNumberOfFiles >= maxNumberOfFiles) {
         
         setFilesMessage({ display: true, text: 'This resource only allows a maximum of ' + maxNumberOfFiles + ' files.' });
       } else {
         setFilesMessage({ display: false, text: '' });
       }
     }
+  }
+
+  const handleReplacedFiles = (e, dam, media_id, maxNumberOfFiles) => {
+    let filesPendingRemove = formFilesToRemove;
+    filesPendingRemove.push(media_id);
+    setFormFilesToRemove(filesPendingRemove);
+   
+    for (var i = 0; i < resourceData.files.length; i++) {
+      if (media_id == resourceData.files[i].id) {
+        resourceData.files[i].pendingRemoval = true;
+      }
+    }
+
+    if (typeof e.target.type === 'string' && e.target.type === 'file' && e.target.name === 'File') {
+      let filesPendingAddition = formFiles;
+      let tempFiles = e.target.files;
+      
+      for (var i = 0; i < tempFiles.length; i++) {
+        filesPendingAddition.push(tempFiles[i]);
+      }
+
+      setFormFiles(filesPendingAddition);
+
+      if (resourceType === MULTIMEDIA) {
+        setMediaType(tempFiles[0].type.split('/')[0]);
+      }
+    }
+
+    disableFurtherFilesAttached(dam, maxNumberOfFiles);
+    triggerReload(!tr);
   }
   
   //end cdn functions
@@ -215,14 +262,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
         setLoaded(true);
       }
     }
-    const removeMediaFromUploadingQueue = (array_id, resData, maxNumberOfFiles) => {
-      let filesPendingAddition = formFiles;
-      filesPendingAddition.splice(array_id, 1);
-      setFormFiles(filesPendingAddition);
-      disableFurtherFilesAttached(resData, maxNumberOfFiles);
-      triggerReload(!tr);
-    }
-
+    
     if (action === 'view') {
       // TODO
     }
@@ -259,34 +299,37 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const showUpgradeButton = resourceType === 'book' && action === 'edit' && resourceData && +resourceData.version !== 0 && +resourceData.version !== CURRENT_BOOK_VERSION
 
   const handleFiles = (e,resData, maxNumberOfFiles) => {
-    if(maxNumberOfFiles)
-    if (typeof e.target.type === 'string' && e.target.type === 'file' && e.target.name === 'Preview') {
-      setPreviewImage(e.target.files[0]);
-      if(formFiles.length === 0 && dataForUpdate?.files.length === 0) {
-        setMediaType(e.target.files[0].type.split('/')[0])
+    let currentNumberOfFiles = getCurrentNumberOfFiles(resData);
+    
+    if(maxNumberOfFiles > currentNumberOfFiles){
+      if (typeof e.target.type === 'string' && e.target.type === 'file' && e.target.name === 'Preview') {
+        setPreviewImage(e.target.files[0]);
+        if(formFiles.length === 0 && dataForUpdate?.files.length === 0) {
+          setMediaType(e.target.files[0].type.split('/')[0])
+        }
+      }
+      if (typeof e.target.type === 'string' && e.target.type === 'file' && e.target.name === 'File') {
+        setFormFiles(e.target.files)
+        if(resourceType === MULTIMEDIA) {
+          setMediaType(e.target.files[0].type.split('/')[0])
+        }
+      }
+      if (typeof e.target.type === 'string' && e.target.type === 'file' && e.target.name === 'File') {
+        let filesPendingAddition = formFiles;
+        let tempFiles = e.target.files;
+        
+        for (var i = 0; i < tempFiles.length; i++) {
+          filesPendingAddition.push(tempFiles[i]);
+        }
+  
+        setFormFiles(filesPendingAddition);
+  
+        if (resourceType === MULTIMEDIA) {
+          setMediaType(e.target.files[0].type.split('/')[0])
+        }
       }
     }
-    if (typeof e.target.type === 'string' && e.target.type === 'file' && e.target.name === 'File') {
-      setFormFiles(e.target.files)
-      if(resourceType === MULTIMEDIA) {
-        setMediaType(e.target.files[0].type.split('/')[0])
-      }
-    }
-    if (typeof e.target.type === 'string' && e.target.type === 'file' && e.target.name === 'File') {
-      let filesPendingAddition = formFiles;
-      let tempFiles = e.target.files;
-      
-      for (var i = 0; i < tempFiles.length; i++) {
-        filesPendingAddition.push(tempFiles[i]);
-      }
-
-      setFormFiles(filesPendingAddition);
-
-      if (resourceType === MULTIMEDIA) {
-        setMediaType(e.target.files[0].type.split('/')[0])
-      }
-    }
-
+   
     disableFurtherFilesAttached(resData, maxNumberOfFiles);
     triggerReload(!tr);
 
@@ -313,7 +356,8 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     event.preventDefault();
     localStorage.setItem('reload_catalogue', '1');
     setMessage(messageDefaultState)
-
+    //filesPendingAddition.splice(array_id, 1);
+    //setFormFiles(filesPendingAddition);
     const data = form.formData
     /*
     IMPORTANTE: DEFINE MEDIA TYPE ON MULTIMEDIA COLLECTION.
@@ -342,8 +386,15 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
       theFormData.append('Preview', previewImage);
     }
 
+    if (formFilesToRemove) {
+      for (var i = 0; i < formFilesToRemove.length; i++) {
+        theFormData.append('FilesToRemove[]', formFilesToRemove[i]);
+      }
+    }
+
     let res;
     setProcessing(true)
+    
     if (dataForUpdate) {
       res = await MainService().updateResource(dataForUpdate.id, theFormData);
     } else {
@@ -606,8 +657,10 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   });
 
   const FilesAndActions = () => {
+    const replaceMedia = async (input_id) => {
+      document.getElementById(input_id).click();
+    }
     const appData = getStoreFormData();
-    console.log(appData)
     setMaxFiles(1);
     return (
       <Grid item sm={6}>
@@ -690,8 +743,10 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                   setTheFiles={setTheFiles}
                   DynamicFormResourceData={setResourceData}
                   maxNumberOfFiles={maxFiles}
-                 // replaceMedia={replaceMedia}
-                 // handleReplacedFiles={handleReplacedFiles}
+                  replaceMedia={replaceMedia}
+                  handleReplacedFiles={handleReplacedFiles}
+                  removeMediaV2={removeMediaV2}
+                  fileType={resourceType}
                 />
               ) : null
             }
@@ -714,7 +769,10 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                 </>
               ) : null
             }
-
+            <CDNsAttachedToResourceV2
+              resourceData={resourceData}
+              formData={appData}
+            />
           </div>
         </Grid>
     )
