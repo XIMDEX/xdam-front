@@ -661,7 +661,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
       document.getElementById(input_id).click();
     }
     const appData = getStoreFormData();
-    setMaxFiles(1);
+    setMaxFiles(appData?.max_files);
     return (
       <Grid item sm={6}>
           <ButtonGroup orientation='vertical'>
