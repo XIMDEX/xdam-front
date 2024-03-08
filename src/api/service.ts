@@ -425,6 +425,19 @@ class AppService {
       return res;
     }
 
+
+    async setWorkspaceResource(resource_id, workspaces)
+    {
+        const _api = api().updateWorkspaceResource(resource_id);
+        const request = {
+            method: _api.method,
+            headers: this.httpOptions.headersForm,
+            body: workspaces,
+        }
+        const res = await (await fetch(_api.url, request)).json();
+        return res;
+    }
+
     async setWorkspace(id: number)
     {
       const _api = api().setWorkspace;
@@ -669,6 +682,8 @@ class AppService {
         }
         return fetch(_api.url, request)
     }
+
+    
 }
 
 export default function MainService()

@@ -9,7 +9,7 @@ import {
 } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import MainService from '../../../api/service';
-import { bookLanguages, courseLanguages, CURRENT_BOOK_VERSION, DEFAULT_THEME_BOOK, MULTIMEDIA, SHOW_THEMES_BOOK, VALIDS_LOM } from '../../../constants';
+import { bookLanguages, courseLanguages, CURRENT_BOOK_VERSION, DEFAULT_THEME_BOOK, MULTIMEDIA, SHOW_THEMES_BOOK, VALIDS_LOM, UNLIMITED_FILES } from '../../../constants';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectCollection } from '../../../slices/organizationSlice';
 import SemanticForm from "@rjsf/semantic-ui";
@@ -30,6 +30,8 @@ import { ResourceLanguage } from './DynamicFormTemplates/ResourceLanguage';
 import { ExtraBookData } from './DynamicFormTemplates/CustomFields/ExtraBookData';
 import MediaData from './Tabs/MediaData';
 import CDNData from './Tabs/CDN/CDNData';
+import WorkspaceSelect from '../../../components/forms/WorkspaceSelect/WorkspaceSelect';
+import { CDNsAttachedToResource, CDNsAttachedToResourceV2 } from './ResourceCDNsAttached';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -105,6 +107,90 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
 
   const [loadingTheme, setLoadingTheme] = useState(true)
   const [themes, setThemes] = useState([])
+
+  //cdn functions
+  const [maxFiles, setMaxFiles] = useState(0);
+  const filesMessageDefaultState = { display: false, text: '' }
+  const [filesMsg, setFilesMessage] = useState(filesMessageDefaultState);
+  const [formFilesToRemove, setFormFilesToRemove] = useState([]);
+
+  const removeMediaFromUploadingQueue = (array_id, resData, maxNumberOfFiles) => {
+    let filesPendingAddition = formFiles;
+
+    filesPendingAddition.splice(array_id, 1);
+    setFormFiles(filesPendingAddition);
+    disableFurtherFilesAttached(resData, maxNumberOfFiles);
+    triggerReload(!tr);
+  }
+  const getCurrentNumberOfFiles = (resData) => {
+    let currentCountOfTotalFiles = 0;
+    currentCountOfTotalFiles += resData?.files.length;
+    currentCountOfTotalFiles += formFiles.length;
+    currentCountOfTotalFiles -= formFilesToRemove.length;
+    return currentCountOfTotalFiles;
+  }
+
+
+  const removeMediaV2 = (dam, media_id, maxNumberOfFiles) => {
+    let filesPendingRemove = formFilesToRemove;
+    filesPendingRemove.push(media_id);
+    setFormFilesToRemove(filesPendingRemove);
+
+    for (var i = 0; i < resourceData.files.length; i++) {
+      if (media_id == resourceData.files[i].id) {
+        resourceData.files[i].pendingRemoval = true;
+      }
+    }
+
+    disableFurtherFilesAttached(dam, maxNumberOfFiles);
+    triggerReload(!tr);
+  }
+
+  const disableFurtherFilesAttached = (resData, maxNumberOfFiles) => {
+    if (maxNumberOfFiles !== null && maxNumberOfFiles !== undefined && maxNumberOfFiles !== UNLIMITED_FILES) {
+      let currentNumberOfFiles = getCurrentNumberOfFiles(resData);
+
+
+      if (currentNumberOfFiles >= maxNumberOfFiles) {
+
+        setFilesMessage({ display: true, text: 'This resource only allows a maximum of ' + maxNumberOfFiles + ' files.' });
+      } else {
+        setFilesMessage({ display: false, text: '' });
+      }
+    }
+  }
+
+  const handleReplacedFiles = (e, dam, media_id, maxNumberOfFiles) => {
+    let filesPendingRemove = formFilesToRemove;
+    filesPendingRemove.push(media_id);
+    setFormFilesToRemove(filesPendingRemove);
+
+    for (var i = 0; i < resourceData.files.length; i++) {
+      if (media_id == resourceData.files[i].id) {
+        resourceData.files[i].pendingRemoval = true;
+      }
+    }
+
+    if (typeof e.target.type === 'string' && e.target.type === 'file' && e.target.name === 'File') {
+      let filesPendingAddition = formFiles;
+      let tempFiles = e.target.files;
+
+      for (var i = 0; i < tempFiles.length; i++) {
+        filesPendingAddition.push(tempFiles[i]);
+      }
+
+      setFormFiles(filesPendingAddition);
+
+      if (resourceType === MULTIMEDIA) {
+        setMediaType(tempFiles[0].type.split('/')[0]);
+      }
+    }
+
+    disableFurtherFilesAttached(dam, maxNumberOfFiles);
+    triggerReload(!tr);
+  }
+
+  //end cdn functions
 
   useEffect(() => {
     const getThemes = async () => {
@@ -214,19 +300,39 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
 
   const showUpgradeButton = resourceType === 'book' && action === 'edit' && resourceData && +resourceData.version !== 0 && +resourceData.version !== CURRENT_BOOK_VERSION
 
-  const handleFiles = (e) => {
-    if (typeof e.target.type === 'string' && e.target.type === 'file' && e.target.name === 'Preview') {
-      setPreviewImage(e.target.files[0]);
-      if(formFiles.length === 0 && dataForUpdate?.files.length === 0) {
-        setMediaType(e.target.files[0].type.split('/')[0])
+  const handleFiles = (e,resData, maxNumberOfFiles) => {
+    let currentNumberOfFiles = getCurrentNumberOfFiles(resData);
+    if(maxNumberOfFiles > currentNumberOfFiles || maxNumberOfFiles==="unlimited"){
+      if (typeof e.target.type === 'string' && e.target.type === 'file' && e.target.name === 'Preview') {
+        setPreviewImage(e.target.files[0]);
+        if(formFiles.length === 0 && dataForUpdate?.files.length === 0) {
+          setMediaType(e.target.files[0].type.split('/')[0])
+        }
+      }
+      if (typeof e.target.type === 'string' && e.target.type === 'file' && e.target.name === 'File') {
+        setFormFiles(e.target.files)
+        if(resourceType === MULTIMEDIA) {
+          setMediaType(e.target.files[0].type.split('/')[0])
+        }
+      }
+      if (typeof e.target.type === 'string' && e.target.type === 'file' && e.target.name === 'File') {
+        let filesPendingAddition = formFiles;
+        let tempFiles = e.target.files;
+
+        for (var i = 0; i < tempFiles.length; i++) {
+          filesPendingAddition.push(tempFiles[i]);
+        }
+
+        setFormFiles(filesPendingAddition);
+
+        if (resourceType === MULTIMEDIA) {
+          setMediaType(e.target.files[0].type.split('/')[0])
+        }
       }
     }
-    if (typeof e.target.type === 'string' && e.target.type === 'file' && e.target.name === 'File') {
-      setFormFiles(e.target.files)
-      if(resourceType === MULTIMEDIA) {
-        setMediaType(e.target.files[0].type.split('/')[0])
-      }
-    }
+
+    disableFurtherFilesAttached(resData, maxNumberOfFiles);
+    triggerReload(!tr);
 
   }
 
@@ -251,7 +357,8 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     event.preventDefault();
     localStorage.setItem('reload_catalogue', '1');
     setMessage(messageDefaultState)
-
+    //filesPendingAddition.splice(array_id, 1);
+    //setFormFiles(filesPendingAddition);
     const data = form.formData
     /*
     IMPORTANTE: DEFINE MEDIA TYPE ON MULTIMEDIA COLLECTION.
@@ -280,8 +387,15 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
       theFormData.append('Preview', previewImage);
     }
 
+    if (formFilesToRemove) {
+      for (var i = 0; i < formFilesToRemove.length; i++) {
+        theFormData.append('FilesToRemove[]', formFilesToRemove[i]);
+      }
+    }
+
     let res;
     setProcessing(true)
+
     if (dataForUpdate) {
       res = await MainService().updateResource(dataForUpdate.id, theFormData);
     } else {
@@ -551,6 +665,11 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   });
 
   const FilesAndActions = () => {
+    const replaceMedia = async (input_id) => {
+      document.getElementById(input_id).click();
+    }
+    const appData = getStoreFormData();
+    setMaxFiles(appData?.max_files);
     return (
       <Grid item sm={6}>
           <ButtonGroup orientation='vertical'>
@@ -568,7 +687,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                 <input
                   accept="image/*"
                   type="file"
-                  onChange={(e)=> handleFiles(e)}
+                  onChange={(e)=> handleFiles(e,resourceData, maxFiles)}
                   name='Preview'
                   hidden
                 />
@@ -592,14 +711,33 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                   type="file"
                   multiple
                   accept={resourceType === MULTIMEDIA ? "audio/*,video/*,image/*" : '*'}
-                  onChange={(e)=> handleFiles(e)}
+                  onChange={(e)=> handleFiles(e,resourceData, maxFiles)}
                   name='File'
                   hidden
                 />
               </Button>
+              <Message color={'orange'} className={filesMsg.display ? 'zoom-message' : 'hidden-message'} info>
+                <Message.Header>Warning!</Message.Header>
+                <p>{filesMsg.text}</p>
+              </Message>
               {/* {resourceType === MULTIMEDIA ? (
                   <Label> You will upload a {mediaType}</Label>
               ) : null} */}
+            </Grid>
+            <Grid item sm={12} className={classes.divider}>
+                <WorkspaceSelect resourceData={resourceData} dataForUpdate={dataForUpdate}/>
+                {/* <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">Wokspace</InputLabel>
+                    <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={workspaceSelect}
+                        label="Workspace"
+                        onChange={handleWorkspaceSelect}
+                    >
+                    {workspacesOptions.map(option => <MenuItem value={option.value}>{option.label}</MenuItem>)}
+                 </Select>
+                </FormControl> */}
             </Grid>
           </ButtonGroup>
           <div style={{ margin: '15px 42px 0px 0px' }}>
@@ -612,6 +750,11 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                   onEditModal
                   setTheFiles={setTheFiles}
                   DynamicFormResourceData={setResourceData}
+                  maxNumberOfFiles={maxFiles}
+                  replaceMedia={replaceMedia}
+                  handleReplacedFiles={handleReplacedFiles}
+                  removeMediaV2={removeMediaV2}
+                  fileType={resourceType}
                 />
               ) : null
             }
@@ -622,18 +765,22 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                   <Label>Adding:</Label>
                   {
                     Array.from(formFiles).map((f, i) => (
-                      <Card variant='outlined' className='associated-files-card' key={i}>
-                        <Icon name={iconHandler(f)}></Icon>
-                        <p><strong>File name:</strong> {f.name}</p>
-                        <p><strong>Mime type:</strong> {f.type}</p>
-                        <p><strong>Size:</strong> {(f.size / 1000000).toFixed(2)} MB</p>
-                      </Card>
+                      <Card variant='outlined' className='associated-files-card associated-files-card-pending-addition' key={i}>
+                      <Icon name={iconHandler(f)}></Icon>
+                      <p><strong>File name:</strong> {f.name}</p>
+                      <p><strong>Mime type:</strong> {f.type}</p>
+                      <p><strong>Size:</strong> {(f.size / 1000000).toFixed(2)} MB</p>
+                      <a className={'remove-media-from-uploading-queue-button'} onClick={() => removeMediaFromUploadingQueue(i, resourceData, maxFiles)} >Remove</a>
+                    </Card>
                     ))
                   }
                 </>
               ) : null
             }
-
+            <CDNsAttachedToResourceV2
+              resourceData={resourceData}
+              formData={appData}
+            />
           </div>
         </Grid>
     )
