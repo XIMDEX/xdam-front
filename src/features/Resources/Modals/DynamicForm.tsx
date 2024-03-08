@@ -28,7 +28,8 @@ import { InputText, InputTextArea, CustomToggle, CustomInputText, CustomDropdown
 import LomForm from '../LOM/LomForm';
 import { ResourceLanguage } from './DynamicFormTemplates/ResourceLanguage';
 import { ExtraBookData } from './DynamicFormTemplates/CustomFields/ExtraBookData';
-import MediaData from './DynamicForm/MediaData';
+import MediaData from './Tabs/MediaData';
+import CDNData from './Tabs/CDN/CDNData';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -323,11 +324,15 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const metaData = { menuItem: 'Main Data', render: () => <Tab.Pane > <MainData /></Tab.Pane> };
   const lomsData = VALIDS_LOM.map(typeLom => ({menuItem: typeLom.name, render: () => (<Tab.Pane><LomForm data={dataForUpdate} standard={typeLom.key}/></Tab.Pane>)}))
   const mediaData = { menuItem: "Media data", render: () => <Tab.Pane > <MediaData url={resourceData?.files?.[0].dam_url} description="test" transcription="Test" xtags={[]}/> </Tab.Pane> };
+  const cdnData = { menuItem: "CDN data", render: () => <Tab.Pane > <CDNData data={dataForUpdate?.data?.cdns_attached ?? []}/> </Tab.Pane> };
 
   const pane = [metaData];
   let panes = [metaData, ...lomsData];
   if(resourceType === MULTIMEDIA) {
     panes = [...panes,mediaData]
+  }
+  if (dataForUpdate?.data?.cdns_attached) {
+    panes = [...panes, cdnData]
   }
   const setForm = (data) => {
     dispatch(setFormData(data))
