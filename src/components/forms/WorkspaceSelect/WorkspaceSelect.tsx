@@ -49,7 +49,7 @@ export default function WorkspaceSelect({resourceData, dataForUpdate}) {
     const workspaces = useSelector(selectWorkspacesData);
     const resources  = useSelector(selectResources)
     const dispatch = useDispatch()
-    const workspacesList = resources.find(resource => resource.id === dataForUpdate.id).workspaces
+    const workspacesList = (resources.find(resource => resource.id === dataForUpdate?.id)?.workspaces) ?? [];
     const [addWorkspace,setAddWorkspace] = useState(false);
     const [newWorkspaceValue, setNewWorkspaceValue] = useState("");
     const workspaceDefault = [{
