@@ -460,7 +460,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
 
   const uiSchema={
     "description": {
-      "ui:order": ["active", "isFree", "*"],
+      "ui:order": ["active", "can_download", "isFree", "*"],
       "active": {
         "ui:widget": CustomToggle,
       },
@@ -517,7 +517,13 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
       },
       "extra": {
         "ui:field": "bookExtraData",
-      }
+      },
+      "can_download": {
+        "ui:widget": CustomToggle,
+        "ui:options": {
+            label: "Can download?"
+        }
+      },
     }
   }
 

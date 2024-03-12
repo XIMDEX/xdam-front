@@ -149,7 +149,6 @@ function App() {
     ]);
 
     if (location.pathname.startsWith('/cdn/')) {
-        console.log({location})
         return ( <CdnRenderPage /> )
     } else if (location.pathname === "/lom") {
         return ( <LomPage handleCookie={handleCookie} handleLoading={handleLoading} loading={loading}/> );
