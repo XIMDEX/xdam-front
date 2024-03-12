@@ -27,6 +27,31 @@ const useStyles = makeStyles((theme) => ({
             backgroundColor: "#43a1a2",
         },
     },
+    cdnsContainer: {
+        display: 'flex',
+        alignItems: 'start',
+        flexDirection: 'column',
+        width: '100%',
+        height: 'auto',
+        padding: '4em',
+        margin: '4em auto',
+        backgroundColor: 'white'
+    },
+    cdnsHeader: {
+        width: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: '1em'
+    },
+    cdnsTitle: {
+        fontSize: '20px',
+        color: "#214F61",
+    },
+    cdnsDetails: {
+        fontSize: '15px',
+        padding: '10px'
+    },
 }));
 
 function CdnPanelPage({ user }) {
