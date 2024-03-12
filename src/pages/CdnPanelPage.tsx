@@ -52,6 +52,10 @@ const useStyles = makeStyles((theme) => ({
         fontSize: '15px',
         padding: '10px'
     },
+    newCdnContainer: {
+        display:'flex',
+        alignItems: 'center'
+    }
 }));
 
 function CdnPanelPage({ user }) {
