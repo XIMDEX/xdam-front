@@ -147,7 +147,7 @@ export default function WorkspaceSelect({resourceData, dataForUpdate}) {
         
         const res = await MainService().setWorkspaceResource(resourceData.id, data)
         setResource(res.resource.workspaces.map(workspace => String(workspace.id)))
-        let workspaceArray = [...workspaceDefault]
+        let workspaceArray = []
         res.resource.workspaces.map(workspace => {
             let obj = {
                 label: workspace.name,
