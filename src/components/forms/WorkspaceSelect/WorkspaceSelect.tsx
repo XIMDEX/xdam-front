@@ -162,6 +162,7 @@ export default function WorkspaceSelect({resourceData, dataForUpdate}) {
             radio: false,
             name: newValue.name,
             canBeEdit: true,
+            canDelete:true,
             id: newValue.id
         }
         const workspacesArray = {...workspaces, [newValue.id]: newWorkspace}
