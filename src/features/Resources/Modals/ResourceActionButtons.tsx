@@ -42,7 +42,7 @@ function ResourceActionButtons( { resource, themeBook } ) {
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    setAction(ResourcesActions().getActions({...resource, themeBook}));
+    setAction(ResourcesActions().getActions({...resource, theme: themeBook}));
   }, [resource, themeBook]);
 
   return (
