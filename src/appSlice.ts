@@ -15,7 +15,7 @@ interface AppState {
   catalogueFlag: boolean,
   formData: any,
   reloadApp: boolean,
-  workspacesData: object | null,
+  workspacesData: object
 }
 
 const initialState: AppState = {
@@ -31,7 +31,7 @@ const initialState: AppState = {
   catalogueFlag: true,
   formData: null,
   reloadApp: false,
-  workspacesData: null,
+  workspacesData: {},
 };
 
 export const appSlice = createSlice({

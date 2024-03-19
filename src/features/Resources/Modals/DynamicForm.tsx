@@ -32,6 +32,7 @@ import MediaData from './Tabs/MediaData';
 import CDNData from './Tabs/CDN/CDNData';
 import WorkspaceSelect from '../../../components/forms/WorkspaceSelect/WorkspaceSelect';
 import { CDNsAttachedToResource, CDNsAttachedToResourceV2 } from './ResourceCDNsAttached';
+import { currentCollection, max_num_files_collection } from '../../../slices/collectionSlice';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -90,6 +91,8 @@ interface IBody {
 export default function DynamicForm({ resourceType, action, schema, dataForUpdate = null, handleClose }) {
   const classes = useStyles();
   let collection_id = useSelector(selectCollection);
+  const collection = useSelector(currentCollection)
+  const maxFiles = useSelector(max_num_files_collection)
   const dispatch = useDispatch();
   const [previewImage, setPreviewImage] = useState(null);
   const [formFiles, setFormFiles] = useState([]);
@@ -109,7 +112,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const [themes, setThemes] = useState([])
 
   //cdn functions
-  const [maxFiles, setMaxFiles] = useState(0);
+//   const [maxFiles, setMaxFiles] = useState(0);
   const filesMessageDefaultState = { display: false, text: '' }
   const [filesMsg, setFilesMessage] = useState(filesMessageDefaultState);
   const [formFilesToRemove, setFormFilesToRemove] = useState([]);
@@ -124,9 +127,9 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   }
   const getCurrentNumberOfFiles = (resData) => {
     let currentCountOfTotalFiles = 0;
-    currentCountOfTotalFiles += resData?.files.length;
-    currentCountOfTotalFiles += formFiles.length;
-    currentCountOfTotalFiles -= formFilesToRemove.length;
+    currentCountOfTotalFiles += resData?.files.length ?? 0;
+    currentCountOfTotalFiles += formFiles.length ?? 0;
+    currentCountOfTotalFiles -= formFilesToRemove.length ?? 0;
     return currentCountOfTotalFiles;
   }
 
@@ -302,7 +305,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
 
   const handleFiles = (e,resData, maxNumberOfFiles) => {
     let currentNumberOfFiles = getCurrentNumberOfFiles(resData);
-    if(maxNumberOfFiles > currentNumberOfFiles || maxNumberOfFiles==="unlimited"){
+    if(maxNumberOfFiles > currentNumberOfFiles || maxNumberOfFiles=== UNLIMITED_FILES || maxNumberOfFiles === -1){
       if (typeof e.target.type === 'string' && e.target.type === 'file' && e.target.name === 'Preview') {
         setPreviewImage(e.target.files[0]);
         if(formFiles.length === 0 && dataForUpdate?.files.length === 0) {
@@ -675,7 +678,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
       document.getElementById(input_id).click();
     }
     const appData = getStoreFormData();
-    setMaxFiles(appData?.max_files);
+    // setMaxFiles(appData?.max_files);
     return (
       <Grid item sm={6}>
           <ButtonGroup orientation='vertical'>

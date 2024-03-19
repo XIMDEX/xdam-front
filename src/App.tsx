@@ -36,6 +36,7 @@ import SearchPage from "./pages/SearchPage";
 import ResourcePreviewPage from "./pages/ResourcePreviewPage";
 import CdnPanelPage from "./pages/CdnPanelPage";
 import CdnRenderPage from "./pages/CdnRenderPage";
+import { setCollections, setCurrentCollection } from "./slices/collectionSlice";
 
 const useStyles = makeStyles((theme) => {
     let docHeight = document.body.scrollHeight;
@@ -131,6 +132,10 @@ function App() {
                         cid: initialCollection,
                     })
                 );
+                dispatch(
+                    setCurrentCollection(localUser.data.selected_org_data.collections[0].id)
+                )
+                dispatch(setCollections(localUser.data.selected_org_data.collections));
                 localStorage.setItem("lomes_loaded", "0");
                 localStorage.setItem("lom_loaded", "0");
             }
