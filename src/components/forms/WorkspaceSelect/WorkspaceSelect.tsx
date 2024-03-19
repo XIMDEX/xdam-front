@@ -49,7 +49,7 @@ export default function WorkspaceSelect({resourceData, dataForUpdate}) {
     const workspaces = useSelector(selectWorkspacesData);
     const resources  = useSelector(selectResources)
     const dispatch = useDispatch()
-    const workspacesList = (resources.find(resource => resource.id === dataForUpdate?.id)?.workspaces) ?? [];
+    const workspacesList = resources?.find(resource => resource.id === dataForUpdate?.id)?.workspaces ?? [];
     const [addWorkspace,setAddWorkspace] = useState(false);
     const [newWorkspaceValue, setNewWorkspaceValue] = useState("");
     const workspaceDefault = [{
@@ -111,7 +111,7 @@ export default function WorkspaceSelect({resourceData, dataForUpdate}) {
             />
         );
     };
-    
+
 
     const handleWorkspaceSelect = async (e: React.ChangeEvent<EventTarget>, values: Array<IWkoptions>) => {
         let newWorkspaces = []
@@ -144,7 +144,7 @@ export default function WorkspaceSelect({resourceData, dataForUpdate}) {
         })
         let data = new FormData();
         data.append('workspaces', JSON.stringify(newWorkspaces))
-        
+
         const res = await MainService().setWorkspaceResource(resourceData.id, data)
         setResource(res.resource.workspaces.map(workspace => String(workspace.id)))
         let workspaceArray = []
