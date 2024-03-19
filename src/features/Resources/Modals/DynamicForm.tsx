@@ -610,6 +610,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                 <Icon name='angle double up' /> Upgrade v2
               </Btn>
             )}
+            <Btn color='teal'>   <Icon name='cloud download' /> Export data</Btn>
         </div>
         <div className='form-messages'>
           <Message color={msg.ok ? 'teal' : 'red'} className={msg.display ? 'zoom-message' : 'hidden-message'} info onDismiss={() => setMessage(messageDefaultState)}>

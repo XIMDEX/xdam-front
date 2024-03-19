@@ -8,6 +8,7 @@ import { selectResources, selectWorkspacesData, setResources, setWorkspacesData 
 import { useDispatch, useSelector } from 'react-redux';
 import MainService from '../../../api/service';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { WORKSPACE_PUBLIC_ID } from '../../../constants';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -54,7 +55,7 @@ export default function WorkspaceSelect({resourceData, dataForUpdate}) {
     const [newWorkspaceValue, setNewWorkspaceValue] = useState("");
     const workspaceDefault = [{
         label: 'Public Workspace',
-        value: 25
+        value: WORKSPACE_PUBLIC_ID
     }]
     const [workspacesOptions, setWorkspacesOptions] = useState(()=> {
         let workspaceArray = []

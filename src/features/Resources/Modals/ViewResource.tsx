@@ -14,6 +14,8 @@ import { API_BASE_URL, WORKSPACES } from '../../../constants';
 import { selectCollection } from '../../../slices/organizationSlice';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
 import { selectWorkspacesData } from '../../../appSlice';
+import {Icon,Button as Btn  } from 'semantic-ui-react'
+
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -53,11 +55,10 @@ const ResourceWokspaces = ({ workspacesId }: { workspacesId: Array<string> }) =>
 
 export default function ViewResource( { resData } ) {
     const classes = useStyles();
-    const { id } = resData;
+    const { id,xeval_id } = resData;
     const [resourceData, setResourceData] = useState(null)
     const [resourceDataFacet, setResourceDataFacet] = useState(null)
     const coll = useSelector(selectCollection);
-
     useEffect(() => {
         const getResourceData = async () => {
             let res = await MainService().getResource(id);
@@ -76,6 +77,10 @@ export default function ViewResource( { resData } ) {
 
 
     let preview = render(resData, 'medium')
+
+    const fetchDataJson = () => {
+      MainService().getActivityJson(xeval_id)
+    }
 
     const closeModal = () => {
       let element: HTMLElement = document.getElementsByClassName('MuiBackdrop-root')[0] as HTMLElement;
@@ -158,6 +163,7 @@ export default function ViewResource( { resData } ) {
 
     return (
       <Grid container>
+        {xeval_id && <Btn color='teal' onClick={() => fetchDataJson()}>   <Icon name='cloud download'  /> Export data</Btn>}
         <Grid container justify='flex-end' >
           <Button circular onClick={closeModal} icon='close' color='teal' className='read-card-close-button' />
         </Grid>
