@@ -57,7 +57,6 @@ const WorkspaceFacetItems = ({ facet, filteredFacetValues, fixed, isChecked, cha
             {Object.keys(filteredFacetValues).map((workspaceId, index) =>
                 {
                     const values = filteredFacetValues[workspaceId];
-
                     if (!workspaces[workspaceId]) {
                         return null;
                     }
@@ -65,7 +64,7 @@ const WorkspaceFacetItems = ({ facet, filteredFacetValues, fixed, isChecked, cha
                     return (
                         <li key={index} style={{ listStyleType: "none" }}>
                             <FacetActionsWrapper name={workspaces[workspaceId].name} rename={renameWorkspace(workspaces[workspaceId].id)}
-                                canBeEdit={values.canBeEdit}>
+                                canBeEdit={values.canBeEdit} canDelete={values.canDelete} route_delete={values.route_delete} count={values.count}>
                                 <input
                                     type={values.radio ? 'radio' : 'checkbox'}
                                     name={workspaceId}
@@ -114,14 +113,13 @@ const EditableFacetItems = ({ facet, filteredFacetValues, fixed, isChecked, chan
             {Object.keys(filteredFacetValues).map((workspaceId, index) =>
                 {
                     const values = filteredFacetValues[workspaceId];
-
                     if (!workspaces[workspaceId]) {
                         return null;
                     }
 
                     return (
                         <li key={index} style={{ listStyleType: "none" }}>
-                            <FacetActionsWrapper name={workspaces[workspaceId].name} rename={renameWorkspace(workspaces[workspaceId].id)} canBeEdit={values.canBeEdit}>
+                            <FacetActionsWrapper name={workspaces[workspaceId].name} rename={renameWorkspace(workspaces[workspaceId].id)} canBeEdit={values.canBeEdit} canDelete={values.canDelete} route_delete={values.route_delete} count={values.count}>
                                 <input
                                     type={values.radio ? 'radio' : 'checkbox'}
                                     name={workspaceId}
