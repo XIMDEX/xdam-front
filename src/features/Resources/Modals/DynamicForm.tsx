@@ -19,7 +19,7 @@ import { Tab, Label, Icon, Dropdown } from 'semantic-ui-react'
 import { Button as Btn } from 'semantic-ui-react';
 import { Message } from 'semantic-ui-react';
 import RelatedFiles from './RelatedFiles';
-import { setFormData,  setLomesSchema, setLomSchema } from '../../../appSlice';
+import { selectResources, selectWorkspacesData, setFormData,  setLomesSchema, setLomSchema, setResources } from '../../../appSlice';
 import store from '../../../app/store';
 import ArrayFieldTemplate from './DynamicFormTemplates/ArrayFieldTemplate';
 import ResourceActionButtons from './ResourceActionButtons';
@@ -91,7 +91,8 @@ interface IBody {
 export default function DynamicForm({ resourceType, action, schema, dataForUpdate = null, handleClose }) {
   const classes = useStyles();
   let collection_id = useSelector(selectCollection);
-  const collection = useSelector(currentCollection)
+  const wps_data = useSelector(selectWorkspacesData);
+
   const maxFiles = useSelector(max_num_files_collection)
   const dispatch = useDispatch();
   const [previewImage, setPreviewImage] = useState(null);
@@ -107,6 +108,42 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const [tr, triggerReload] = useState(false);
   const [fillAlert, setFillAlert] = useState(false);
   const formulario = React.useRef(null);
+
+  const [wksSelected, setWksSelected] = useState(() => {
+    let wps = []
+    const wps_ids = dataForUpdate?.workspaces ?? []
+    Object.keys(wps_data).map((key) => {
+        if(wps_ids.some(id => wps_data[key].id == id)) {
+            wps.push(wps_data[key])
+        }
+    })
+
+    return {
+      resource_id: dataForUpdate?.id ?? null,
+      wsp: wps
+    }
+  });
+
+  const resources  = useSelector(selectResources)
+
+  const handleWorkspaceSelected = (data) => {
+    setWksSelected(data)
+
+  }
+
+  const setResource = (workspaces) => {
+    let resourceIndex = resources.findIndex(obj => obj.id === resourceData.id);
+    if (resourceIndex !== -1) {
+        let updatedResource = {
+            ...resources[resourceIndex],
+            workspaces: workspaces.map(workspace => String(workspace))
+        };
+        let updatedResources = [...resources];
+        updatedResources[resourceIndex] = updatedResource;
+        dispatch(setResources(updatedResources));
+    }
+}
+
 
   const [loadingTheme, setLoadingTheme] = useState(true)
   const [themes, setThemes] = useState([])
@@ -426,6 +463,14 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
       }
     }
 
+    if (dataForUpdate) {
+        let data_wsp = new FormData();
+        data_wsp.append('workspaces', JSON.stringify(wksSelected.wsp))
+        // setWksSelected({wsp: resData.workspace ,resource_id: resData.id})
+        setResource(wksSelected.wsp.map(workspace => workspace.id))
+        await MainService().setWorkspaceResource(wksSelected.resource_id, data_wsp)
+    }
+
     setLoaded(false)
     setProcessing(false)
 
@@ -434,7 +479,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   }
 
   const getStoreFormData = () => {
-    const fd = store.getState().app.formData;
+    const fd = action === 'create' ? {name: ""} : store.getState().app.formData;
     return fd;
   }
 
@@ -734,7 +779,12 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
               ) : null} */}
             </Grid>
             <Grid item sm={12} className={classes.divider}>
-                <WorkspaceSelect resourceData={resourceData} dataForUpdate={dataForUpdate}/>
+                <WorkspaceSelect
+                    resourceData={resourceData}
+                    dataForUpdate={dataForUpdate}
+                    handleWorkspaceSelected={handleWorkspaceSelected}
+                    newWorkspaces={wksSelected.wsp}
+                />
                 {/* <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">Wokspace</InputLabel>
                     <Select

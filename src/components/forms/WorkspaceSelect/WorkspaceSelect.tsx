@@ -1,10 +1,10 @@
-import React,{useState} from 'react'
+import React,{useMemo, useState} from 'react'
 import Chip from '@mui/material/Chip';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import { faPlusCircle, faCheckCircle, faXmarkCircle} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { selectResources, selectWorkspacesData, setResources, setWorkspacesData } from "../../../appSlice";
+import { selectWorkspacesData, setWorkspacesData } from "../../../appSlice";
 import { useDispatch, useSelector } from 'react-redux';
 import MainService from '../../../api/service';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
@@ -44,70 +44,76 @@ interface IWkoptions {
     value?: number
   }
 
-export default function WorkspaceSelect({resourceData, dataForUpdate}) {
+export default function WorkspaceSelect({resourceData, dataForUpdate, newWorkspaces, handleWorkspaceSelected}) {
     const classes = useStyles();
-    const workspaces = useSelector(selectWorkspacesData);
-    const resources  = useSelector(selectResources)
+    const wps_data = useSelector(selectWorkspacesData);
+    const [workspaces, setWorkspaces] = useState(wps_data)
     const dispatch = useDispatch()
-    const workspacesList = resources?.find(resource => resource.id === dataForUpdate?.id)?.workspaces ?? [];
     const [addWorkspace,setAddWorkspace] = useState(false);
     const [newWorkspaceValue, setNewWorkspaceValue] = useState("");
-    const workspaceDefault = [{
-        label: 'Public Workspace',
-        value: 25
-    }]
-    const [workspacesOptions, setWorkspacesOptions] = useState(()=> {
+
+    const workspaceDefault = useMemo(()=> {
+        const wpsdefault = wps_data[process.env.REACT_APP_PUBLIC_WORKSPACE_ID]
+
+        if (wpsdefault) {
+            return [{label: wpsdefault.name, value: Number(wpsdefault.id)}]
+        }
+        return []
+    }, [wps_data])
+
+
+    const workspacesOptions = useMemo(()=> {
         let workspaceArray = []
-        Object.keys(workspaces).map((number, workspace) => {
+        Object.keys(wps_data).map((number, _) => {
+            if (newWorkspaces.some(workspace => workspace.id == number)) {
+            }
             let obj = {
-                value: Number(workspaces[number].id),
-                label: workspaces[number].name,
+                value: Number(wps_data[number].id),
+                label: wps_data[number].name,
             }
             workspaceArray.push(obj)
         })
         return workspaceArray
-    })
-    const setResource = (workspaces) => {
-        let resourceIndex = resources.findIndex(obj => obj.id === resourceData.id);
-        if (resourceIndex !== -1) {
-            let updatedResource = {
-                ...resources[resourceIndex],
-                workspaces: workspaces.map(workspace => String(workspace))
-            };
-            let updatedResources = [...resources];
-            updatedResources[resourceIndex] = updatedResource;
-            dispatch(setResources(updatedResources));
-        }
+    }, [newWorkspaces, wps_data])
+
+    const setResource = (wsp) => {
+        let wsp_news = {}
+        Object.keys(wps_data).forEach(id => {
+            if ( wsp.some(workspace => workspace == id)) {
+                wsp_news[id] = wps_data[id]
+            }
+        })
+        setWorkspaces(wsp_news)
     }
+
     const MyAutocomplete = () => {
         return (
             <Autocomplete
-            className={classes.workspaceSelect}
-            multiple
-            id="tags-standard"
-            options={workspacesOptions}
-            onChange={(e,values) => handleWorkspaceSelect (e, values)}
-            defaultValue={workspacesOptions.filter((wkOption: IWkoptions) => workspacesList.includes(String(wkOption.value)))}
-            size="small"
-            clearIcon={false}
-            renderInput={(params) => (
-            <TextField
-                {...params}
-                label="Workspace:"
-            />
-            )}
-            getOptionDisabled={(option) =>
-                workspaceDefault.findIndex(defaultWk => defaultWk.value === option.value) !== -1
-            }
-            renderTags={(tagValue, getTagProps) =>
-                tagValue.map((option, index) => (
-                <Chip
-                    label={option.label}
-                    {...getTagProps({ index })}
-                    disabled={workspaceDefault.findIndex(defaultWk => defaultWk.value === option.value) !== -1}
-                />
-                ))
-            }
+                className={classes.workspaceSelect}
+                multiple
+                id="tags-standard"
+                options={workspacesOptions}
+                onChange={(e,values) => handleWorkspaceSelect (e, values)}
+                defaultValue={workspacesOptions.filter((wkOption: IWkoptions) => newWorkspaces.some(item => item.id == wkOption.value))}
+                size="small"
+                clearIcon={false}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        label="Workspace:"
+                    />
+                )}
+                getOptionDisabled={(option) =>
+                    workspaceDefault.findIndex(defaultWk => defaultWk.value === option.value) !== -1
+                }
+                renderTags={(tagValue, getTagProps) => tagValue.map((option, index) => (
+                    <Chip
+                        sx={{backgroundColor: '#43A1A2', color: 'white'}}
+                        label={option.label}
+                        {...getTagProps({ index })}
+                        disabled={workspaceDefault.findIndex(defaultWk => defaultWk.value === option.value) !== -1}
+                    />
+                ))}
             />
         );
     };
@@ -122,10 +128,8 @@ export default function WorkspaceSelect({resourceData, dataForUpdate}) {
             }
             newWorkspaces.push(obj)
         });
-        let data = new FormData();
-        data.append('workspaces', JSON.stringify(newWorkspaces))
         setResource(newWorkspaces.map(workspace => workspace.id))
-        await MainService().setWorkspaceResource(resourceData.id, data)
+        handleWorkspaceSelected({wsp:newWorkspaces, resource_id: resourceData.id})
     };
 
     const handleAddWorkspace = async () =>{
