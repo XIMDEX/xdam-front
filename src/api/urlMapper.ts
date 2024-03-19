@@ -1,5 +1,5 @@
 import { Cookies } from 'react-cookie';
-import { API_BASE_URL, BOOK_EDITOR_URL, REACT_APP_TOKEN_ALFRESCO, SOLR_ALFRESCO_URL, SOLR_DAM_URL, XTAGS_API_BASE_URL } from '../constants';
+import { API_BASE_URL, API_XEVAL_URL, BOOK_EDITOR_URL, REACT_APP_TOKEN_ALFRESCO, SOLR_ALFRESCO_URL, SOLR_DAM_URL, XTAGS_API_BASE_URL } from '../constants';
 
 const api = () => {
     let cookies = new Cookies();
@@ -134,11 +134,11 @@ const api = () => {
         }),
         removeResource: (id) => ({
             method: 'DELETE',
-            url: baseUrl + '/resource/' + id
+            url: baseUrl + '/resource/' + id 
         }),
         removeMedia: (dam_id, media_id) => ({
             method: 'DELETE',
-            url: baseUrl + '/resource/' + dam_id + '/associatedFile/' + media_id
+            url: baseUrl + '/resource/' + dam_id + '/associatedFile/' + media_id + "?XDEBUG_SESSION_START"
         }),
         searchInVocabularies: (query, lang, vocabulary) => {
             let url = `${baseUrlXTags}/vocabularies/searchq=${query}`;
@@ -158,6 +158,7 @@ const api = () => {
                 url
             }
         },
+
         postTags: (resource_id) => ({
             method: 'POST',
             url: `${baseUrlXTags}/resource-tags/${resource_id}`
@@ -210,6 +211,12 @@ const api = () => {
                 method: 'POST',
                 url: `${SOLR_ALFRESCO_URL}/alfresco/api/-default-/public/search/versions/1/search`,
                 auth: 'Basic ' + REACT_APP_TOKEN_ALFRESCO,
+            }
+        },
+        getActivityJson: (id) => {
+            return {
+                method:"get",
+                url:`${API_XEVAL_URL}/activities/${id}/JSON`
             }
         }
     }

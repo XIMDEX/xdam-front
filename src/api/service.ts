@@ -683,6 +683,32 @@ class AppService {
         return fetch(_api.url, request)
     }
 
+    async getActivityJson(resource_id){
+      const _api = api().getActivityJson(resource_id);
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers,
+      }
+      const res = await (await fetch(_api.url, request));
+
+      const blob = await res.blob();
+
+      // Create a URL for the blob
+      const url = window.URL.createObjectURL(blob);
+
+      // Create a link element
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'my_file.zip'); // Set the desired filename
+
+      // Append the link to the DOM and trigger the download
+      document.body.appendChild(link);
+      link.click();
+
+      // Clean up after download
+      link.parentNode.removeChild(link);
+    }
+
     
 }
 
