@@ -4,7 +4,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import { faPlusCircle, faCheckCircle, faXmarkCircle} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { selectWorkspacesData, setWorkspacesData } from "../../../appSlice";
+import { selectWorkspaceCollections, selectWorkspacesData, setWorkspacesData } from "../../../appSlice";
 import { useDispatch, useSelector } from 'react-redux';
 import MainService from '../../../api/service';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
@@ -47,6 +47,7 @@ interface IWkoptions {
 export default function WorkspaceSelect({resourceData, dataForUpdate, newWorkspaces, handleWorkspaceSelected}) {
     const classes = useStyles();
     const wps_data = useSelector(selectWorkspacesData);
+    const wsp_collections = useSelector(selectWorkspaceCollections)
     const [workspaces, setWorkspaces] = useState(wps_data)
     const dispatch = useDispatch()
     const [addWorkspace,setAddWorkspace] = useState(false);
@@ -61,20 +62,20 @@ export default function WorkspaceSelect({resourceData, dataForUpdate, newWorkspa
         return []
     }, [wps_data])
 
-
-    const workspacesOptions = useMemo(()=> {
+    const workspacesOptions = useMemo(()=>{
         let workspaceArray = []
-        Object.keys(wps_data).map((number, _) => {
-            if (newWorkspaces.some(workspace => workspace.id == number)) {
-            }
+        Object.keys(wsp_collections).map((number, _) => {
             let obj = {
-                value: Number(wps_data[number].id),
-                label: wps_data[number].name,
+                value: Number(wsp_collections[number].id),
+                label: wsp_collections[number].name,
             }
             workspaceArray.push(obj)
         })
         return workspaceArray
-    }, [newWorkspaces, wps_data])
+    }, [wsp_collections])
+    
+
+    console.log(workspacesOptions)
 
     const setResource = (wsp) => {
         let wsp_news = {}

@@ -8,6 +8,7 @@ import {
     selectUser,
     setResourcesLoading,
     selectReloadApp,
+    setWorkspaceCollections,
 } from "./appSlice";
 import {
     BrowserRouter as Router,
@@ -138,11 +139,14 @@ function App() {
                 dispatch(setCollections(localUser.data.selected_org_data.collections));
                 localStorage.setItem("lomes_loaded", "0");
                 localStorage.setItem("lom_loaded", "0");
+
+                dispatch(setWorkspaceCollections(localUser.data.selected_org_data.workspaces));
             }
         };
 
         initUser();
         prepareData();
+
     }, [
         reloadApp,
         localUser,
