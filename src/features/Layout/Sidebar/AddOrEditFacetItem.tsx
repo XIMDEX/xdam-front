@@ -49,7 +49,7 @@ const AddOrEditItemFacet = ({facet, requestOpts, values = {}, ...props}) => {
 
     const postNewItem = async (data) => {
         if (props?.editForm && facet.count > 0) {
-            alert('For delete this item, must be not assigned')
+            alert('For edit this item, must be not assigned')
             return;
         }
         try{
@@ -88,8 +88,9 @@ const AddOrEditItemFacet = ({facet, requestOpts, values = {}, ...props}) => {
                 <form ref={formRef} onSubmit={handleSuccess}>
                     <Grid key='form-add'  container spacing={3}>
                             {facet.fields.map((field, index) => {
-                                if (field.key === 'type' && form?.[field.key] !== 'course') {
-                                    handleChange(field.key, 'course')
+
+                                if (field.key === 'type' && !form.hasOwnProperty(field.key)) {
+                                    handleChange(field.key, field.value ?? 'course')
                                 }
                                 if (field.key === 'type') return null
                                 if (field.type === 'boolean' && field.key === 'is_default') return null

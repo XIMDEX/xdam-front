@@ -191,7 +191,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
       let currentNumberOfFiles = getCurrentNumberOfFiles(resData);
 
 
-      if (currentNumberOfFiles >= maxNumberOfFiles) {
+      if (currentNumberOfFiles >= maxNumberOfFiles && maxNumberOfFiles !== -1) {
 
         setFilesMessage({ display: true, text: 'This resource only allows a maximum of ' + maxNumberOfFiles + ' files.' });
       } else {
@@ -836,10 +836,10 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                 </>
               ) : null
             }
-            <CDNsAttachedToResourceV2
+            {/* <CDNsAttachedToResourceV2
               resourceData={resourceData}
               formData={appData}
-            />
+            /> */}
           </div>
         </Grid>
     )

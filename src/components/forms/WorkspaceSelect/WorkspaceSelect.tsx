@@ -73,9 +73,6 @@ export default function WorkspaceSelect({resourceData, dataForUpdate, newWorkspa
         })
         return workspaceArray
     }, [wsp_collections])
-    
-
-    console.log(workspacesOptions)
 
     const setResource = (wsp) => {
         let wsp_news = {}
@@ -87,8 +84,22 @@ export default function WorkspaceSelect({resourceData, dataForUpdate, newWorkspa
         setWorkspaces(wsp_news)
     }
 
-    const MyAutocomplete = () => {
-        return (
+    const handleWorkspaceSelect = async (e: React.ChangeEvent<EventTarget>, values: Array<IWkoptions>) => {
+        let newWorkspaces = []
+        values.forEach(option => {
+            let obj = {
+                name: option.label,
+                id: option.value,
+            }
+            newWorkspaces.push(obj)
+        });
+        setResource(newWorkspaces.map(workspace => workspace.id))
+        handleWorkspaceSelected({wsp:newWorkspaces, resource_id: resourceData.id})
+    };
+
+
+    return (
+        <div style={{display: 'flex'}}>
             <Autocomplete
                 className={classes.workspaceSelect}
                 multiple
@@ -116,135 +127,6 @@ export default function WorkspaceSelect({resourceData, dataForUpdate, newWorkspa
                     />
                 ))}
             />
-        );
-    };
-
-
-    const handleWorkspaceSelect = async (e: React.ChangeEvent<EventTarget>, values: Array<IWkoptions>) => {
-        let newWorkspaces = []
-        values.forEach(option => {
-            let obj = {
-                name: option.label,
-                id: option.value,
-            }
-            newWorkspaces.push(obj)
-        });
-        setResource(newWorkspaces.map(workspace => workspace.id))
-        handleWorkspaceSelected({wsp:newWorkspaces, resource_id: resourceData.id})
-    };
-
-    const handleAddWorkspace = async () =>{
-        let values = workspacesOptions.filter((wkOption: IWkoptions) => dataForUpdate.workspaces.includes(String(wkOption.value)))
-        let newWorkspaces = []
-        values.forEach(option => {
-            let obj = {
-                name: option.label,
-                id: option.value
-            }
-            newWorkspaces.push(obj)
-        });
-        newWorkspaces.push({
-            name: newWorkspaceValue,
-            id: -1
-        })
-        let data = new FormData();
-        data.append('workspaces', JSON.stringify(newWorkspaces))
-
-        const res = await MainService().setWorkspaceResource(resourceData.id, data)
-        setResource(res.resource.workspaces.map(workspace => String(workspace.id)))
-        let workspaceArray = []
-        res.resource.workspaces.map(workspace => {
-            let obj = {
-                label: workspace.name,
-                value: Number(workspace.id)
-            }
-            workspaceArray.push(obj)
-        })
-        const newValue = res.resource.workspaces[res.resource.workspaces.length - 1]
-        const newWorkspace = {
-            count: 1,
-            selected: false,
-            radio: false,
-            name: newValue.name,
-            canBeEdit: true,
-            canDelete:true,
-            id: newValue.id
-        }
-        const workspacesArray = {...workspaces, [newValue.id]: newWorkspace}
-        setWorkspacesOptions(workspaceArray)
-        dispatch(setWorkspacesData(workspacesArray))
-        setAddWorkspace(false)
-    }
-
-    return ( <div style={{display: 'flex'}}>
-    {addWorkspace
-    ?
-        <input
-            autoFocus={true}
-            name='New Workspace'
-            type="text"
-            placeholder="New workspace"
-            defaultValue={newWorkspaceValue}
-            onChange={(event) => {
-                setNewWorkspaceValue(event.target.value)}
-            }
-            className={classes.addWorkspaceInput}
-        />
-    :
-        (dataForUpdate !== null
-        ?
-            <MyAutocomplete/>
-        :
-            (null)
-        )
-   }
-    <div className={classes.workspacesActions}>
-    {addWorkspace ?
-        <>
-            <button
-                className={classes.buttonAddWorkspace}
-                onClick={handleAddWorkspace}
-                disabled={newWorkspaceValue === ""}
-            >
-                <FontAwesomeIcon
-                    style={{cursor: 'pointer'}}
-                    size='2x'
-                    icon={faCheckCircle}
-                    title="Add new workspace" />
-            </button>
-            <button
-                className={classes.buttonAddWorkspace}
-                onClick={() => {
-                    setAddWorkspace(false)
-                    setNewWorkspaceValue('')}}
-            >
-                <FontAwesomeIcon
-                    style={{cursor: 'pointer'}}
-                    size='2x'
-                    icon={faXmarkCircle}
-                    title={"Cancel"}
-                />
-            </button>
-        </>
-    :
-        (dataForUpdate !== null
-        ?
-            <button
-                className={classes.buttonAddWorkspace}
-                onClick={() => setAddWorkspace(true)}
-            >
-            <FontAwesomeIcon
-                style={{cursor: 'pointer'}}
-                size='2x'
-                icon={faPlusCircle}
-                title={'Add new workspace'}
-            />
-            </button>
-        :
-            (null)
-        )
-    }
-    </div>
-    </div>
+        </div>
     )
 }
