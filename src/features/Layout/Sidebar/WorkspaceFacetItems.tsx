@@ -39,16 +39,7 @@ const WorkspaceFacetItems = ({ facet, filteredFacetValues, fixed, isChecked, cha
             });
         }
     }
-    const handleRename = (id: number) => {
-        return async (newName: string) => {
-            const nextWorkspace = await renameItems(id, newName)
-            setWorkspaces({
-                ...workspaces,
-                [id]: nextWorkspace
-            })
-        }
 
-    }
 
     if (!workspaces) return null;
     if (Object.keys(workspaces).length === 0) return null;
@@ -63,7 +54,9 @@ const WorkspaceFacetItems = ({ facet, filteredFacetValues, fixed, isChecked, cha
 
                     return (
                         <li key={index} style={{ listStyleType: "none" }}>
-                            <FacetActionsWrapper name={workspaces[workspaceId].name} rename={renameWorkspace(workspaces[workspaceId].id)}
+                            <FacetActionsWrapper
+                                workspaces={workspaces}
+                                name={workspaces[workspaceId].name} rename={renameWorkspace(workspaces[workspaceId].id)}
                                 canBeEdit={values.canBeEdit} canDelete={values.canDelete} route_delete={values.route_delete} count={values.count}>
                                 <input
                                     type={values.radio ? 'radio' : 'checkbox'}

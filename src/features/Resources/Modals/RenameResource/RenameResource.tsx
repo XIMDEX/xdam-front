@@ -6,8 +6,7 @@ import styles from './RenameResource.module.scss';
 
 const MINIMUM_NAME_LENGTH = 3;
 
-const RenameResource = ({ currentName, action, hiddeEditButton }: { currentName: string, action: (newName: string) => void, hiddeEditButton: () => void }) => {
-
+const RenameResource = ({ workspaces, currentName, action, hiddeEditButton }: {workspaces: any, currentName: string, action: (newName: string) => void, hiddeEditButton: () => void }) => {
     const [open, setOpen] = useState(false);
     const [newName, setNewName] = useState<string>('');
 
@@ -19,7 +18,8 @@ const RenameResource = ({ currentName, action, hiddeEditButton }: { currentName:
     }
 
     const cannotSave = (): boolean => {
-        return newName.length < MINIMUM_NAME_LENGTH || currentName === newName;
+        const existWorkspaceName = workspaces?.filter(wks => wks.name === newName)[0]
+        return newName.length < MINIMUM_NAME_LENGTH || currentName === newName || !existWorkspaceName;
     }
 
     const openModal = () => {
@@ -29,7 +29,6 @@ const RenameResource = ({ currentName, action, hiddeEditButton }: { currentName:
     const closeModal = () => {
         setOpen(false);
         hiddeEditButton();
-
         dispatch(reloadCatalogue());
     }
 
@@ -38,7 +37,6 @@ const RenameResource = ({ currentName, action, hiddeEditButton }: { currentName:
 
         setNewName(data.value);
     }
-
     return (
         <Modal
             onClose={() => setOpen(false)}
@@ -71,4 +69,4 @@ const RenameResource = ({ currentName, action, hiddeEditButton }: { currentName:
     )
 }
 
-export default RenameResource; 
+export default RenameResource;
