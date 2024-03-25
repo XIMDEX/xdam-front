@@ -14,12 +14,12 @@ const RenameResource = ({ currentName, action, hiddeEditButton }: { currentName:
     const dispatch = useDispatch();
 
     const saveNewName = () => {
-        action(newName);
+        action((newName.trim()));
         closeModal();
     }
 
     const cannotSave = (): boolean => {
-        return newName.length < MINIMUM_NAME_LENGTH || currentName === newName;
+        return newName.trim().length < MINIMUM_NAME_LENGTH || currentName === newName;
     }
 
     const openModal = () => {
