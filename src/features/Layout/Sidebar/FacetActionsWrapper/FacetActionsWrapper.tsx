@@ -6,7 +6,7 @@ import MainService from "../../../../api/service";
 import { useDispatch } from "react-redux";
 import { reloadCatalogue, setSchemas } from "../../../../appSlice";
 
-const FacetActionsWrapper = ({ name,count, canBeEdit,canDelete,route_delete, rename, children }: {name: string,count:int, canBeEdit: boolean,canDelete: boolean,route_delete:string, rename?: (newName: string) => void, children: React.ReactNode }) => {
+const FacetActionsWrapper = ({ workspaces, name,count, canBeEdit,canDelete,route_delete, rename, children }: {workspaces:any, name: string, count:int, canBeEdit: boolean,canDelete: boolean,route_delete:string, rename?: (newName: string) => void, children: React.ReactNode }) => {
     const dispatch = useDispatch()
     const [editButtonVisibility, setEditButtonVisibility] = useState<'visible'| 'hidden'>('hidden');
 
@@ -40,7 +40,7 @@ const FacetActionsWrapper = ({ name,count, canBeEdit,canDelete,route_delete, ren
             }
             alert(message)
         }
-    
+
     }
 
     if (canBeEdit) {
@@ -49,13 +49,13 @@ const FacetActionsWrapper = ({ name,count, canBeEdit,canDelete,route_delete, ren
                 <div className={styles.facetActionsWrapper__content}>
                     { children }
                 </div>
-                <div 
+                <div
                     className={styles.facetActionsWrapper__buttons}
-                    style={{ "--visibility": editButtonVisibility} as React.CSSProperties}    
+                    style={{ "--visibility": editButtonVisibility} as React.CSSProperties}
                 >
                     { editButtonVisibility &&
-                    <RenameResource currentName={name} hiddeEditButton={ hiddeEditButton } action={rename} />
-                    
+                    <RenameResource workspaces={workspaces} currentName={name} hiddeEditButton={ hiddeEditButton } action={rename} />
+
                     }
                     { editButtonVisibility && canDelete  && (
                     <button
@@ -68,16 +68,16 @@ const FacetActionsWrapper = ({ name,count, canBeEdit,canDelete,route_delete, ren
                         }}
                         onClick={() => {
                             handleDelete()
-                            
+
                         }}
-                        
+
                     ><Icon name='trash alternate' size="small" /></button>
                 )}
                 </div>
             </div>
         );
     }
-    
+
     return (
         <div className={styles.facetActionsWrapper } >
             <div className={styles.facetActionsWrapper__content}>

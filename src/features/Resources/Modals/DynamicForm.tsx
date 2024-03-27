@@ -108,7 +108,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const [tr, triggerReload] = useState(false);
   const [fillAlert, setFillAlert] = useState(false);
   const formulario = React.useRef(null);
-
+  const [firstAction,setFirstAction] = useState(true);
   const [wksSelected, setWksSelected] = useState(() => {
     let wps = []
     const wps_ids = dataForUpdate?.workspaces ?? []
@@ -479,7 +479,11 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   }
 
   const getStoreFormData = () => {
-    const fd = action === 'create' ? {name: ""} : store.getState().app.formData;
+    let fd = store.getState().app.formData;
+    if(firstAction){
+       fd = {name:""}
+       setFirstAction(false)
+    }
     return fd;
   }
 
@@ -722,7 +726,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     const replaceMedia = async (input_id) => {
       document.getElementById(input_id).click();
     }
-    const appData = getStoreFormData();
+  
     // setMaxFiles(appData?.max_files);
     return (
       <Grid item sm={6}>
