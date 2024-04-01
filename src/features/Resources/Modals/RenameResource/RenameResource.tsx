@@ -19,9 +19,11 @@ const RenameResource = ({ workspaces, currentName, action, hiddeEditButton }: {w
     }
 
     const cannotSave = (): boolean => {
-        const workspacesArray = Object.values(workspacesCollections);
-        const existWorkspaceName = workspacesArray?.filter(wks => wks.name === newName)[0]
-        return newName.trim().length < MINIMUM_NAME_LENGTH || currentName === newName || existWorkspaceName;
+        if(workspacesCollections){
+            const workspacesArray = Object.values(workspacesCollections);
+            const existWorkspaceName = workspacesArray?.filter(wks => wks.name === newName)[0]
+            return newName.trim().length < MINIMUM_NAME_LENGTH || currentName === newName || existWorkspaceName;
+        }
     }
 
     const openModal = () => {
