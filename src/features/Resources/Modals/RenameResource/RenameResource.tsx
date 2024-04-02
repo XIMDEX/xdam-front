@@ -7,7 +7,7 @@ import styles from './RenameResource.module.scss';
 
 const MINIMUM_NAME_LENGTH = 3;
 
-const RenameResource = ({ workspaces, currentName, action, hiddeEditButton }: {workspaces: any, currentName: string, action: (newName: string) => void, hiddeEditButton: () => void }) => {
+const RenameResource = ({  currentName, action, hiddeEditButton }: { currentName: string, action: (newName: string) => void, hiddeEditButton: () => void }) => {
     const [open, setOpen] = useState(false);
     const [newName, setNewName] = useState<string>('');
     const workspacesCollections = useSelector(selectWorkspaceCollections)

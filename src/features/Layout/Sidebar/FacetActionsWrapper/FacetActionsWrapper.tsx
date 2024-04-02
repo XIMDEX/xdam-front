@@ -6,7 +6,7 @@ import MainService from "../../../../api/service";
 import { useDispatch } from "react-redux";
 import { reloadCatalogue, setSchemas } from "../../../../appSlice";
 
-const FacetActionsWrapper = ({ workspaces, name,count, canBeEdit,canDelete,route_delete, rename, children }: {workspaces:any, name: string, count:int, canBeEdit: boolean,canDelete: boolean,route_delete:string, rename?: (newName: string) => void, children: React.ReactNode }) => {
+const FacetActionsWrapper = ({name,count, canBeEdit,canDelete,route_delete, rename, children }: { name: string, count: int, canBeEdit: boolean,canDelete: boolean,route_delete:string, rename?: (newName: string) => void, children: React.ReactNode }) => {
     const dispatch = useDispatch()
     const [editButtonVisibility, setEditButtonVisibility] = useState<'visible'| 'hidden'>('hidden');
 
@@ -54,7 +54,7 @@ const FacetActionsWrapper = ({ workspaces, name,count, canBeEdit,canDelete,route
                     style={{ "--visibility": editButtonVisibility} as React.CSSProperties}
                 >
                     { editButtonVisibility &&
-                    <RenameResource workspaces={workspaces} currentName={name} hiddeEditButton={ hiddeEditButton } action={rename} />
+                    <RenameResource currentName={name} hiddeEditButton={ hiddeEditButton } action={rename} />
 
                     }
                     { editButtonVisibility && canDelete  && (
