@@ -345,7 +345,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     if(maxNumberOfFiles > currentNumberOfFiles || maxNumberOfFiles=== UNLIMITED_FILES || maxNumberOfFiles === -1){
       if (typeof e.target.type === 'string' && e.target.type === 'file' && e.target.name === 'Preview') {
         setPreviewImage(e.target.files[0]);
-        if(formFiles.length === 0 && dataForUpdate?.files.length === 0) {
+        if(formFiles?.length === 0 && dataForUpdate?.files?.length === 0) {
           setMediaType(e.target.files[0].type.split('/')[0])
         }
       }
@@ -726,7 +726,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     const replaceMedia = async (input_id) => {
       document.getElementById(input_id).click();
     }
-  
+
     // setMaxFiles(appData?.max_files);
     return (
       <Grid item sm={6}>
