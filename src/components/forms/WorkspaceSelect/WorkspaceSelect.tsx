@@ -94,7 +94,7 @@ export default function WorkspaceSelect({resourceData, dataForUpdate, newWorkspa
             newWorkspaces.push(obj)
         });
         setResource(newWorkspaces.map(workspace => workspace.id))
-        handleWorkspaceSelected({wsp:newWorkspaces, resource_id: resourceData.id})
+        handleWorkspaceSelected({wsp:newWorkspaces, resource_id: resourceData?.id})
     };
 
 
