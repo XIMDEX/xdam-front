@@ -6,12 +6,15 @@ import { store } from './app/store';
 import { Provider } from 'react-redux';
 import * as serviceWorker from './serviceWorker';
 import { BrowserRouter as Router } from "react-router-dom";
+import XthemeProvider from './providers/XthemeProvider';
 
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
       <Router>
-        <App />
+        <XthemeProvider>
+            <App />
+        </XthemeProvider>
       </Router>
     </Provider>
   </React.StrictMode>,
