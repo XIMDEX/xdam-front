@@ -10,15 +10,8 @@ import {
     selectReloadApp,
     setWorkspaceCollections,
 } from "./appSlice";
-import {
-    BrowserRouter as Router,
-    Switch,
-    Route,
-    Redirect,
-    useLocation,
-} from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import MainService from "./api/service";
-import { makeStyles } from "@material-ui/core/styles";
 import {
     selectCollection,
     selectOrganization,
@@ -28,79 +21,25 @@ import {
     setQuery,
     selectQuery,
 } from "./slices/organizationSlice";
-import { useCookies } from "react-cookie";
-
-import LomPage from "./pages/LomPage";
-import HomePage from "./pages/HomePage";
-import LoginPage from "./pages/LoginPage";
-import SearchPage from "./pages/SearchPage";
-import ResourcePreviewPage from "./pages/ResourcePreviewPage";
-import CdnPanelPage from "./pages/CdnPanelPage";
-import CdnRenderPage from "./pages/CdnRenderPage";
 import { setCollections, setCurrentCollection } from "./slices/collectionSlice";
+import Routes from "./routes/Routes";
 
-const useStyles = makeStyles((theme) => {
-    let docHeight = document.body.scrollHeight;
-
-    return {
-        "#root": {
-            height: docHeight,
-        },
-        clearAllFilters: {
-            position: "absolute",
-            top: 12,
-            left: 160,
-            color: "teal",
-            borderColor: "teal",
-        },
-    };
-});
 
 function App() {
-    const [cookies, setCookie] = useCookies(["JWT"]);
-    const location = useLocation();
-    const searchParams = new URLSearchParams(location?.search);
-    const classes = useStyles();
-    const user = useSelector(selectUser);
     const reloadApp = useSelector(selectReloadApp);
+    const history = useHistory()
     const dispatch = useDispatch();
     const mainService = MainService();
     const facetsQuery = useSelector(selectFacetsQuery);
-    const query = useSelector(selectQuery);
-    const [sidebarOpen, setSidebarOpen] = useState(true);
-    let organization_id = useSelector(selectOrganization);
-    let collection_id = useSelector(selectCollection);
+    const organization_id = useSelector(selectOrganization);
+    const collection_id = useSelector(selectCollection);
     const [initialOrganization, setInitialOrganization] = useState(null);
     const [initialCollection, setInitialCollection] = useState(null);
     const [localUser, setLocalUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const handleLoading = (status: boolean) => setLoading(status);
-
-    function clearAllFilters() {
-        let newQuery = {
-            ...query,
-        };
-
-        newQuery.page = 1;
-        newQuery.search = "";
-        dispatch(setQuery(newQuery));
-
-        dispatch(setResourcesLoading(true));
-        dispatch(setFacetsQuery({}));
-    }
-
-    function toggleSidebar() {
-        var toggle = !sidebarOpen;
-        setSidebarOpen(toggle);
-    }
-
-    const handleCookie = (auth) => setCookie("JWT", auth, { maxAge: 86400 });
-
     useEffect(() => {
         const initUser = async () => {
-            if (location.pathname === "/lom" && searchParams.get("courseId"))
-                return;
 
             if (mainService.getToken()) {
                 if (!localUser) {
@@ -116,6 +55,8 @@ function App() {
                     setLocalUser(fetchedUser);
                     dispatch(setUser(fetchedUser));
                 }
+            }else{
+                history.push('/login')
             }
             setLoading(false);
             return;
@@ -157,31 +98,32 @@ function App() {
         initialCollection,
     ]);
 
-    if (location.pathname.startsWith('/cdn/')) {
-        return ( <CdnRenderPage /> )
-    } else if (location.pathname === "/lom") {
-        return ( <LomPage handleCookie={handleCookie} handleLoading={handleLoading} loading={loading}/> );
-    } else if (location.pathname === "/search" && localUser) {
-        return ( <SearchPage user={user} /> );
-    } else if ( location.pathname.startsWith("/resource/") && location.pathname.endsWith("/preview") && localUser ) {
-        return ( <ResourcePreviewPage /> );
-    } else if (location.pathname === '/cdn_panel' && localUser) {
-        return ( <CdnPanelPage user={user}/> )
-    } else if (localUser) {
-        return ( <HomePage
-                user={user}
-                loading={loading}
-                toggleSidebar={toggleSidebar}
-                clearAllFilters={clearAllFilters}
-                facetsQuery={facetsQuery}
-                organization_id={organization_id}
-                collection_id={collection_id}
-                sidebarOpen={sidebarOpen}
-                classes={classes}
-            />);
-    } else {
-        return (<LoginPage loading={loading} />);
-    }
+    return <Routes/>
+
+    // if (location.pathname.startsWith('/cdn/')) {
+    //     return ( <CdnRenderPage /> )
+    // } else if (location.pathname === "/lom") {
+    //     return ( <LomPage handleCookie={handleCookie} handleLoading={handleLoading} loading={loading}/> );
+    // } else if ( location.pathname.startsWith("/resource/") && location.pathname.endsWith("/preview") && localUser ) {
+    //     return ( <ResourcePreviewPage /> );
+    // } else if (location.pathname === '/cdn_panel' && localUser) {
+    //     return ( <CdnPanelPage user={user}/> )
+    // } else if (localUser) {
+    //     return ( <HomePage
+    //             user={user}
+    //             loading={loading}
+    //             toggleSidebar={toggleSidebar}
+    //             clearAllFilters={clearAllFilters}
+    //             facetsQuery={facetsQuery}
+    //             organization_id={organization_id}
+    //             collection_id={collection_id}
+    //             sidebarOpen={sidebarOpen}
+    //             classes={classes}
+    //         />);
+    // } else {
+    //     return (<LoginPage loading={loading} />);
+
+    // }
 }
 
 
