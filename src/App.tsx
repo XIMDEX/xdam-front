@@ -5,8 +5,6 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
     setUser,
-    selectUser,
-    setResourcesLoading,
     selectReloadApp,
     setWorkspaceCollections,
 } from "./appSlice";
@@ -16,13 +14,11 @@ import {
     selectCollection,
     selectOrganization,
     selectFacetsQuery,
-    setFacetsQuery,
     setOrganization,
-    setQuery,
-    selectQuery,
 } from "./slices/organizationSlice";
 import { setCollections, setCurrentCollection } from "./slices/collectionSlice";
 import Routes from "./routes/Routes";
+import { Loading } from "./features/Loading/Loading";
 
 
 function App() {
@@ -98,32 +94,9 @@ function App() {
         initialCollection,
     ]);
 
-    return <Routes/>
-
-    // if (location.pathname.startsWith('/cdn/')) {
-    //     return ( <CdnRenderPage /> )
-    // } else if (location.pathname === "/lom") {
-    //     return ( <LomPage handleCookie={handleCookie} handleLoading={handleLoading} loading={loading}/> );
-    // } else if ( location.pathname.startsWith("/resource/") && location.pathname.endsWith("/preview") && localUser ) {
-    //     return ( <ResourcePreviewPage /> );
-    // } else if (location.pathname === '/cdn_panel' && localUser) {
-    //     return ( <CdnPanelPage user={user}/> )
-    // } else if (localUser) {
-    //     return ( <HomePage
-    //             user={user}
-    //             loading={loading}
-    //             toggleSidebar={toggleSidebar}
-    //             clearAllFilters={clearAllFilters}
-    //             facetsQuery={facetsQuery}
-    //             organization_id={organization_id}
-    //             collection_id={collection_id}
-    //             sidebarOpen={sidebarOpen}
-    //             classes={classes}
-    //         />);
-    // } else {
-    //     return (<LoginPage loading={loading} />);
-
-    // }
+    return <>
+        {loading ? <Loading text="Loading user data..."/> : <Routes/>}
+        </>
 }
 
 
