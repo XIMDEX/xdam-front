@@ -6,7 +6,7 @@ import { Workspace } from "../../../types/Workspace/Workspace";
 import { WorkspaceId } from "../../../types/Workspace/WorkspaceId";
 import FacetActionsWrapper from "./FacetActionsWrapper/FacetActionsWrapper";
 import { useDispatch, useSelector } from "react-redux";
-import { selectWorkspaceCollections, setWorkspaceCollections } from "../../../appSlice";
+import { selectWorkspaceCollections, selectWorkspacesData, setWorkspaceCollections, setWorkspacesData } from "../../../appSlice";
 
 interface Props {
     facet: Facet,
@@ -24,6 +24,7 @@ const WorkspaceFacetItems = ({ facet, filteredFacetValues, fixed, isChecked, cha
     const [workspaces, setWorkspaces] = useState(null);
     const dispatch = useDispatch()
     const workspacesCollections = useSelector(selectWorkspaceCollections)
+    const workspacesData = useSelector(selectWorkspacesData)
     useEffect(() => {
         setWorkspaces(supplementaryData)
     }, [supplementaryData]);
@@ -46,6 +47,16 @@ const WorkspaceFacetItems = ({ facet, filteredFacetValues, fixed, isChecked, cha
                 }
                 return obj;
             });
+           
+            const newWorkspaceData = Object.keys(workspacesData).reduce((acc, key) => {
+                if (parseInt(workspacesData[key].id) === parseInt(id)) {
+                    acc[key] = { ...workspacesData[key], name: newName.trim() };
+                } else {
+                    acc[key] = workspacesData[key];
+                }
+                return acc;
+            }, {});
+            dispatch(setWorkspacesData(newWorkspaceData));
             dispatch(setWorkspaceCollections(newWorkspaceCollections));
         }
     }
