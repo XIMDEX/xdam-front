@@ -75,15 +75,6 @@ function HomePage() {
                 </div>
             ) : null}
                 {loading ? <Loading /> : null}
-                <Grid container>
-                    <Grid item sm={12} className="main-header">
-                        {organization_id && collection_id ? (
-                            <Header />
-                        ) : (
-                            ""
-                        )}
-                    </Grid>
-                </Grid>
                 <div
                     className={
                         !sidebarOpen

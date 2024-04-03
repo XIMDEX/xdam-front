@@ -19,6 +19,7 @@ import {
 import { setCollections, setCurrentCollection } from "./slices/collectionSlice";
 import Routes from "./routes/Routes";
 import { Loading } from "./features/Loading/Loading";
+import { Header } from "./features/Layout/Header/Header";
 
 
 function App() {
@@ -94,8 +95,10 @@ function App() {
         initialOrganization,
         initialCollection,
     ]);
-
     return <>
+                    {(history.location.pathname === '/home' || history.location.pathname === '/cdn_panel' || history.location.pathname === '/search') &&
+            <Header/>
+        }
         {loading ? <Loading text="Loading user data..."/> : <Routes/>}
         </>
 }

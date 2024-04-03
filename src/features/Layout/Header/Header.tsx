@@ -60,28 +60,32 @@ export function Header() {
   }
 
   return (
-    <Grid container className={classes.root}>
-        <Grid item sm={3} >
-          <Link to="/home" style={{textDecoration: 'none'}}>
-              <Image src='logotipo_ximdex-DAM-small-header.png' className='headerLogo'/>
-          </Link>
-        </Grid>
-        <Grid item sm={6} >
-            {fixedFacets.length > 0 && (
-                <div className={classes.divSearch}>
-                  <Search currentQuery={query} collections={fixedFacets[1].values}/>
-                </div>
-            )}
-        </Grid>
-        <Grid item sm={3} className={classes.rightHeader}>
-            {SHOW_DAM_ORGANIZATIONS && fixedFacets.length > 0 && ( <OrganizationSwitch organizations={fixedFacets[0].values} user={_user} />)}
-            <Dropdown text='Profile' floating button >
-              <Dropdown.Menu>
-                <Dropdown.Item onClick={logout}>Logout</Dropdown.Item>
-                <Dropdown.Item onClick={goToSearchPage}>Search</Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
+    <Grid container>
+        <Grid item sm={12} className="main-header">
+            <Grid container className={classes.root}>
+                <Grid item sm={3} >
+                <Link to="/home" style={{textDecoration: 'none'}}>
+                    <Image src='logotipo_ximdex-DAM-small-header.png' className='headerLogo'/>
+                </Link>
+                </Grid>
+                <Grid item sm={6} >
+                    {fixedFacets.length > 0 && (
+                        <div className={classes.divSearch}>
+                        <Search currentQuery={query} collections={fixedFacets[1].values}/>
+                        </div>
+                    )}
+                </Grid>
+                <Grid item sm={3} className={classes.rightHeader}>
+                    {SHOW_DAM_ORGANIZATIONS && fixedFacets.length > 0 && ( <OrganizationSwitch organizations={fixedFacets[0].values} user={_user} />)}
+                    <Dropdown text='Profile' floating button >
+                    <Dropdown.Menu>
+                        <Dropdown.Item onClick={logout}>Logout</Dropdown.Item>
+                        <Dropdown.Item onClick={goToSearchPage}>Search</Dropdown.Item>
+                    </Dropdown.Menu>
+                    </Dropdown>
 
+                </Grid>
+            </Grid>
         </Grid>
     </Grid>
   );

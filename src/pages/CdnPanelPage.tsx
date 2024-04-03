@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Header } from "../features/Layout/Header/Header";
 import Container from "@material-ui/core/Container";
 import { Grid } from "@material-ui/core";
-import XthemeProvider from "../providers/XthemeProvider";
 import { makeStyles } from "@material-ui/core/styles";
 import LoginAdminPanel from "../features/PanelCDN/LoginAdminPanel";
 import PanelCDN from "../features/PanelCDN/PanelCDN";
@@ -46,16 +45,10 @@ function CdnPanelPage({ user }) {
                 overflow: "hidden",
             }}
         >
-            <XthemeProvider>
-                <Grid container>
-                    <Grid item sm={12} className="main-header">
-                        <Header _user={user} />
-                    </Grid>
-                </Grid>
-                {isAuth
-                    ? ( <PanelCDN classes={classes}/> )
-                    : ( <LoginAdminPanel handleAuth={handleAuth} classes={classes} /> )}
-            </XthemeProvider>
+            {isAuth
+                ? ( <PanelCDN classes={classes}/> )
+                : ( <LoginAdminPanel handleAuth={handleAuth} classes={classes} /> )
+            }
         </Container>
     );
 }
