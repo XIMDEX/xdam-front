@@ -4,7 +4,7 @@ import { Dropdown, Label } from 'semantic-ui-react'
 import { makeStyles } from '@material-ui/core/styles';
 import MainService from '../../api/service';
 import { useSelector, useDispatch } from 'react-redux';
-import { setFacets, setResources, setFixedFacets, selectResourcesLoading, setResourcesLoading, setLoading, setSchemas, selectCatalogueFlag } from '../../appSlice';
+import { setFacets, setResources, setFixedFacets, selectResourcesLoading, setResourcesLoading, setLoading, setSchemas, selectCatalogueFlag, selectUser } from '../../appSlice';
 import IFacet from '../../interfaces/IFacet';
 import { selectQuery, selectFacetsQuery, setQuery } from '../../slices/organizationSlice';
 import param from '../../utils/querybuilder';
@@ -75,7 +75,8 @@ const useStyles = makeStyles((theme) => ({
 }
 ));
 
-export function Resources({ collection, organization, sidebarOpen, _user }) {
+export function Resources({ collection, organization, sidebarOpen }) {
+  const _user = useSelector(selectUser);
   const mainService = MainService();
   const query = useSelector(selectQuery);
   const dispatch = useDispatch();
