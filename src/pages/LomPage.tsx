@@ -6,13 +6,18 @@ import { useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import MainService from "../api/service";
 import { setLomSchema } from "../appSlice";
+import { useCookies } from "react-cookie";
 
-function LomPage({handleCookie, handleLoading, loading}) {
+function LomPage() {
+    const [loading, setLoading] = useState(true);
+    const [cookies, setCookie] = useCookies(["JWT"]);
     const [limitedLomUseData, setLimitedLomUseData] = useState(undefined);
     const [error, setError] = useState(undefined);
     const location = useLocation();
     const dispatch = useDispatch();
     const searchParams = new URLSearchParams(location?.search);
+
+    const handleCookie = (auth) => setCookie("JWT", auth, { maxAge: 86400 });
 
 
     useEffect(() => {
@@ -45,7 +50,7 @@ function LomPage({handleCookie, handleLoading, loading}) {
             fetchCourseData(searchParams.get("courseId"));
         } else {
             setLimitedLomUseData(undefined);
-            handleLoading(false);
+            setLoading(false);
         }
     };
 
@@ -58,7 +63,7 @@ function LomPage({handleCookie, handleLoading, loading}) {
             } else {
                 setLimitedLomUseData(courseData?.data?.description ? courseData : undefined);
             }
-            handleLoading(false);
+            setLoading(false);
         }, 1500);
     };
 
