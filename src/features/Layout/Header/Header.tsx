@@ -5,7 +5,7 @@ import { Grid } from '@material-ui/core';
 import { Dropdown, Image } from 'semantic-ui-react'
 import { makeStyles } from '@material-ui/core/styles';
 import MainService from '../../../api/service';
-import { setLoading, selectFixedFacets } from '../../../appSlice';
+import { setLoading, selectFixedFacets, selectUser } from '../../../appSlice';
 import { selectQuery } from '../../../slices/organizationSlice';
 import { Search } from '../../Resources/Search';
 import OrganizationSwitch from './OrganizationSwitch';
@@ -41,11 +41,12 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-export function Header( {_user} ) {
+export function Header() {
   const classes = useStyles();
   const dispatch = useDispatch();
   const query = useSelector(selectQuery);
   const [redirect, setRedirect] = useState(false);
+  const _user = useSelector(selectUser);
 
   const fixedFacets = useSelector(selectFixedFacets);
 
