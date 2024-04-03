@@ -5,6 +5,8 @@ import { Facet } from "../../../types/Facet";
 import { Workspace } from "../../../types/Workspace/Workspace";
 import { WorkspaceId } from "../../../types/Workspace/WorkspaceId";
 import FacetActionsWrapper from "./FacetActionsWrapper/FacetActionsWrapper";
+import { useDispatch, useSelector } from "react-redux";
+import { selectWorkspaceCollections, setWorkspaceCollections } from "../../../appSlice";
 
 interface Props {
     facet: Facet,
@@ -20,23 +22,31 @@ interface Props {
 
 const WorkspaceFacetItems = ({ facet, filteredFacetValues, fixed, isChecked, changeFacet, supplementaryData, limit_items=0, renameItems }: Props ) => {
     const [workspaces, setWorkspaces] = useState(null);
-
+    const dispatch = useDispatch()
+    const workspacesCollections = useSelector(selectWorkspaceCollections)
     useEffect(() => {
         setWorkspaces(supplementaryData)
     }, [supplementaryData]);
 
     const renameWorkspace = (id: number) => {
-
         return async (newName: string) => {
+            
             await MainService().renameWorkspace(id, newName);
             const { data } = await MainService().getWorkspaces([id]);
-
+      
             const nextWorkspace = parseWorkspace(data[0]);
 
             setWorkspaces({
                 ...workspaces,
                 [id]: nextWorkspace
             });
+            const newWorkspaceCollections = workspacesCollections.map(obj => {
+                if (obj.id === parseInt(id)) {
+                    return { ...obj, name: newName.trim() };
+                }
+                return obj;
+            });
+            dispatch(setWorkspaceCollections(newWorkspaceCollections));
         }
     }
 
@@ -55,7 +65,6 @@ const WorkspaceFacetItems = ({ facet, filteredFacetValues, fixed, isChecked, cha
                     return (
                         <li key={index} style={{ listStyleType: "none" }}>
                             <FacetActionsWrapper
-                                workspaces={workspaces}
                                 name={workspaces[workspaceId].name} rename={renameWorkspace(workspaces[workspaceId].id)}
                                 canBeEdit={values.canBeEdit} canDelete={values.canDelete} route_delete={values.route_delete} count={values.count}>
                                 <input
