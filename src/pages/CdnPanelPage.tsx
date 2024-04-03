@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import { Header } from "../features/Layout/Header/Header";
 import Container from "@material-ui/core/Container";
-import { Grid } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import LoginAdminPanel from "../features/PanelCDN/LoginAdminPanel";
 import PanelCDN from "../features/PanelCDN/PanelCDN";
@@ -28,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function CdnPanelPage({ user }) {
+function CdnPanelPage() {
     const [isAuth, setAuth] = useState(false);
     const classes = useStyles();
 

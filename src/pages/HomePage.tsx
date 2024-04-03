@@ -1,18 +1,9 @@
 import React, { useState } from "react";
-
-import {
-    BrowserRouter as Router,
-    Switch,
-    Route,
-    Redirect
-} from "react-router-dom";
-import { Header } from "../features/Layout/Header/Header";
 import { Loading } from "../features/Loading/Loading";
 import Container from "@material-ui/core/Container";
 import { Grid, Button, LinearProgress, makeStyles } from "@material-ui/core";
 import Sidebar from "../features/Layout/Sidebar/Sidebar";
 import { Resources } from "../features/Resources/Resources";
-
 import _ from "lodash";
 import { Icon } from "semantic-ui-react";
 import { useDispatch, useSelector } from "react-redux";

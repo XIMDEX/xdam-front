@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Link, Redirect } from "react-router-dom";
+import React from 'react'
+import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux';
 import { Grid } from '@material-ui/core';
 import { Dropdown, Image } from 'semantic-ui-react'
@@ -45,7 +45,6 @@ export function Header() {
   const classes = useStyles();
   const dispatch = useDispatch();
   const query = useSelector(selectQuery);
-  const [redirect, setRedirect] = useState(false);
   const _user = useSelector(selectUser);
 
   const fixedFacets = useSelector(selectFixedFacets);
