@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import HomePage from '../pages/HomePage';
-import LoginPage from '../pages/LoginPage';
+import {LoginPage} from '../pages/LoginPage';
 import CdnPanelPage from '../pages/CdnPanelPage';
 import CdnRenderPage from '../pages/CdnRenderPage';
 import ResourcePreviewPage from '../pages/ResourcePreviewPage';
