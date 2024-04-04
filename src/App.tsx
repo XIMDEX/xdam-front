@@ -44,10 +44,10 @@ function App() {
                     if (fetchedUser?.error) {
                         setLoading(false);
                         setLocalUser(null);
+                        history.push('/login')
                         return alert(
                             "Error loading user: " + fetchedUser.error
-                        );
-                        history.push('login')
+                            );
                         // throw new Error('Error1.1: ' + fetchedUser.error);
                     }
                     setLocalUser(fetchedUser);
