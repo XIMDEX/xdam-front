@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme: Theme) =>
         padding: '2em'
     },
     contentContainer: {
-
+        minHeight: '60vh'
     }
 
   }),
@@ -49,7 +49,7 @@ function PanelCDN() {
 
             </div>
             <div className={`${classes.contentContainer} ${classes.layoutContainer}`}>
-
+                    TUS CDN
             </div>
         </Container>
     );
