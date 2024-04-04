@@ -45,10 +45,6 @@ function App() {
                         setLoading(false);
                         setLocalUser(null);
                         history.push('/login')
-                        return alert(
-                            "Error loading user: " + fetchedUser.error
-                            );
-                        // throw new Error('Error1.1: ' + fetchedUser.error);
                     }
                     setLocalUser(fetchedUser);
                     dispatch(setUser(fetchedUser));
