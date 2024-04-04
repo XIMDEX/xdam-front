@@ -694,6 +694,17 @@ class AppService {
       const res = await (await fetch(_api.url, request)).json();
       return res;
     }
+    async removeCDN(cdn_id: number | string)
+    {
+      const _api = api().removeCDN();
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers,
+        body: JSON.stringify({cdn_id: cdn_id}),
+      }
+      const res = await (await fetch(_api.url, request)).json();
+      return res;
+    }
 
 }
 

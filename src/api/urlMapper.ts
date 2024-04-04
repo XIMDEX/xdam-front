@@ -217,6 +217,11 @@ const api = () => {
                 method: 'POST',
                 url: baseUrl + '/cdn/admin/create'
         }},
+        removeCDN: () =>  {
+            return {
+                method: 'DELETE',
+                url: baseUrl + '/cdn/admin/remove'
+        }},
     }
     return mapper;
 }
