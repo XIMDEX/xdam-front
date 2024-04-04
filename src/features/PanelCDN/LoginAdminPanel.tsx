@@ -6,9 +6,32 @@ import {
     Typography
 } from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import { makeStyles } from "@material-ui/core/styles";
 
+const useStyles = makeStyles((theme) => ({
+    root: {
+        maxWidth: "400px",
+        padding: "0 20px",
+        margin: "25vh auto",
+    },
+    mbText: {
+        marginBottom: 30,
+    },
+    title: {
+        fontWeight: "bolder",
+        marginBottom: 50,
+        color: "#214F61",
+    },
+    btn: {
+        backgroundColor: "#43a1a2",
+        "&:hover, &:focus": {
+            backgroundColor: "#43a1a2",
+        },
+    },
+}));
 
-function LoginAdminPanel({classes, handleAuth}) {
+function LoginAdminPanel({handleAuth}) {
+    const classes = useStyles()
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");

@@ -211,7 +211,12 @@ const api = () => {
                 url: `${SOLR_ALFRESCO_URL}/alfresco/api/-default-/public/search/versions/1/search`,
                 auth: 'Basic ' + REACT_APP_TOKEN_ALFRESCO,
             }
-        }
+        },
+        createNewCDN: () =>  {
+            return {
+                method: 'POST',
+                url: baseUrl + '/cdn/admin/create'
+        }},
     }
     return mapper;
 }

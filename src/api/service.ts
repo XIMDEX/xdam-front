@@ -683,7 +683,18 @@ class AppService {
         return fetch(_api.url, request)
     }
 
-    
+    async createCDN(cdnName: string)
+    {
+      const _api = api().createNewCDN();
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers,
+        body: JSON.stringify({name: cdnName}),
+      }
+      const res = await (await fetch(_api.url, request)).json();
+      return res;
+    }
+
 }
 
 export default function MainService()
