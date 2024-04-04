@@ -37,6 +37,9 @@ const useStyles = makeStyles((theme: Theme) =>
     xrowContent: {
         display: 'flex',
         alignItems: 'center'
+    },
+    xrowDetails:{
+        padding: '1em'
     }
 
   }),
@@ -191,7 +194,7 @@ function PanelCDN() {
                                                             },
                                                         ]}
                                                         >
-                                                            <div className={classes.xrowContent}>
+                                                            <div className={classes.xrowDetails}>
                                                                 <span style={{fontWeight:'bold', marginRight: '8px'}}>Id: {cdn_collection.id}</span>
                                                                 <p>{cdn_collection?.name || 'name empty'}</p>
                                                             </div>
