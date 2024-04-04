@@ -8,10 +8,11 @@ const useStyles = makeStyles((theme) => ({
       height: '100vh',
       position: 'absolute',
       top: 0,
+      left: 0,
       zIndex: 2,
       background: '#a7a7a74a',
       backdropFilter: 'blur(7px)'
-    }, 
+    },
     circular: {
         marginTop: '45vh'
     },
@@ -22,9 +23,9 @@ const useStyles = makeStyles((theme) => ({
   }
 ));
 
-export function Loading({text = ''}) { 
+export function Loading({text = ''}) {
   const classes = useStyles();
-  
+
   return (
     <Grid container justify="center" className={classes.root}>
       <CircularProgress className={classes.circular}/>

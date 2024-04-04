@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Container from "@material-ui/core/Container";
 import { XInput, XButton, XDropdown, XPopUp } from '@ximdex/xui-react/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -6,6 +6,7 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import NewCDNModal from "./NewCDNModal";
+import { Loading } from "../Loading/Loading";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -31,6 +32,15 @@ const useStyles = makeStyles((theme: Theme) =>
 
 function PanelCDN() {
     const classes = useStyles()
+    const [loading, setLoading] = useState(true)
+    const [cdnList, setCDNList] = useState([])
+
+
+    useEffect(() => {
+        setCDNList(['1cdn', '2cdn'])
+        setLoading(false)
+    }, []);
+
 
     return (
         <Container maxWidth="lg">
@@ -49,7 +59,21 @@ function PanelCDN() {
 
             </div>
             <div className={`${classes.contentContainer} ${classes.layoutContainer}`}>
-                    TUS CDN
+                {loading ? <Loading text="Loading CDN list"/>
+                :
+                <>
+                    {cdnList.length === 0 ?
+                        <h2>Cdn list is empty, add a new CDN to see something</h2>
+                    :
+                        <>
+                            {cdnList.map((cdn, index) =>
+                                <h2>{cdn}</h2>
+                            )}
+                        </>
+                    }
+                </>
+
+                }
             </div>
         </Container>
     );
