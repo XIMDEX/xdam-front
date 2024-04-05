@@ -54,11 +54,9 @@ const AddCollectionModal = ({triggerButton, cdn}) => {
 
 
     const addCollectionToCDN = async () => {
-        console.log(collectionsToAdd);
         let collectionIDs = collectionsToAdd.map(coll => coll.value)
         try{
            const res = await MainService().addCollectionsToCDN(cdn.id, collectionIDs)
-
             if (res.created) {
                 alert('CDN created successfully')
             }
