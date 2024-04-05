@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Container from "@material-ui/core/Container";
 import { XInput, XButton, XDropdown, XPopUp, XRow,XRowContent, XRowDetails} from '@ximdex/xui-react/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faTrash, faChain, faChainSlash } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faTrash, faGear, faGears } from "@fortawesome/free-solid-svg-icons";
 import styled from "styled-components";
 
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
@@ -222,7 +222,7 @@ function PanelCDN() {
                                                                 <StyledGreenXButton
                                                                     onClick={() => alert('Generating hashes')}
                                                                 >
-                                                                    <FontAwesomeIcon icon={faChain} size='1x' title='Generate hashes for collection' />
+                                                                    <FontAwesomeIcon icon={faGear} size='1x' title='Generate hashes for collection' />
                                                                 </StyledGreenXButton>
                                                             },
                                                             {
@@ -232,7 +232,7 @@ function PanelCDN() {
                                                                     triggerButton={
                                                                         <StyledGreenXButton
                                                                     >
-                                                                        <FontAwesomeIcon icon={faChainSlash} size='1x' title='Generate multiple hashes for resources' />
+                                                                        <FontAwesomeIcon icon={faGears} size='1x' title='Generate multiple hashes for resources' />
                                                                     </StyledGreenXButton>}
                                                                 />
 
