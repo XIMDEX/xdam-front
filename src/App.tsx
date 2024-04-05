@@ -8,7 +8,7 @@ import {
     selectReloadApp,
     setWorkspaceCollections,
 } from "./appSlice";
-import { useHistory, useLocation } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import MainService from "./api/service";
 import {
     selectCollection,
@@ -91,8 +91,9 @@ function App() {
         initialOrganization,
         initialCollection,
     ]);
+
     return <>
-                    {(history.location.pathname === '/home' || history.location.pathname === '/cdn_panel' || history.location.pathname === '/search') &&
+                    {(history.location.pathname === '/home' || history.location.pathname === '/' || history.location.pathname === '/cdn_panel' || history.location.pathname === '/search') &&
             <Header/>
         }
         {loading ? <Loading text="Loading user data..."/> : <Routes/>}
