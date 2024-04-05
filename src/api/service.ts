@@ -669,6 +669,44 @@ class AppService {
         }
         return fetch(_api.url, request)
     }
+
+    async upgradeResourceScorm(bookId) {
+        const _api = api().upgradeScorm(bookId)
+
+        const request = {
+            method: _api.method
+        }
+
+        try {
+            const res = await fetch(_api.url, request);
+            if (!res.ok) throw Error(res.statusText)
+            return {status: 'OK', message: 'Resource upgraded successfully'};
+        }
+        catch (e) {
+            console.error(e.message)
+            return {status: 'KO', message: 'Error upgrading resource'};
+        }
+    }
+
+    async checkIfCanUpgradeScrom(bookId) {
+        const _api = api().checkIfCanUpgradeScorm(bookId)
+
+        const request = {
+            method: _api.method
+        }
+
+        try {
+            const res = await (await fetch(_api.url, request));
+
+            if (!res.ok) throw Error(res.statusText)
+            const json = await res.json();
+            return json.can_upgrade;
+        }
+        catch (e) {
+            console.error(e.message)
+            return false;
+        }
+    }
 }
 
 export default function MainService()

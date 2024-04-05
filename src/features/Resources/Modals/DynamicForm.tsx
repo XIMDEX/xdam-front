@@ -104,15 +104,19 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const [loadingTheme, setLoadingTheme] = useState(true)
   const [themes, setThemes] = useState([])
 
+  const [showUpgradeButton, setShowUpgradeButton] = useState(false)
+
   useEffect(() => {
     const getThemes = async () => {
         const themes_scorm = await MainService().getBookThemes()
         const newThemes = themes_scorm.map(th => ({key: th, value: th, text: th === 'v1' ? `${th} (deprecated)` : th}))
         setThemes(newThemes)
     }
+
     if (SHOW_THEMES_BOOK && action === 'edit' && resourceType === 'book') {
         getThemes()
     }
+
   }, [])
 
   useEffect(() => {
@@ -153,13 +157,18 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
         localStorage.setItem('lom_loaded', '1');
       }
 
+      const checkIfCanUpgrade = async (id) => {
+        const can_upgrade = await MainService().checkIfCanUpgradeScrom(id)
+        setShowUpgradeButton(can_upgrade)
+      }
+
       const getResourceData = async () => {
         //* get the resource from db. Data for update is faceted data
         let res = await MainService().getResource(dataForUpdate.id);
-        if (resourceType === 'book' && !res.version) {
-          const version = await MainService().getBookVersion(dataForUpdate.id)
-          res.version = version
-        }
+        // if (resourceType === 'book' && !res.version) {
+        //   const version = await MainService().getBookVersion(dataForUpdate.id)
+        //   res.version = version
+        // }
         if (SHOW_THEMES_BOOK && resourceType === 'book' && !res.theme) {
             setLoadingTheme(true)
             const _theme = await MainService().getBookTheme(dataForUpdate.id)
@@ -168,6 +177,11 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
         setResourceData(res);
         setLoadingTheme(false)
         setTheFiles(res.files);
+
+
+        if (resourceType === 'book' && action === 'edit') {
+            checkIfCanUpgrade(res.id)
+        }
       }
       if(!loaded) {
         getResourceData();
@@ -185,18 +199,18 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   }, [theFiles, resourceData, loaded ])
 
   useEffect(() => {
-    async function addVersionBook() {
-      const version = await MainService().getBookVersion(resourceData.id);
-      setResourceData({...resourceData, version})
-    }
+    // async function addVersionBook() {
+    //   const version = await MainService().getBookVersion(resourceData.id);
+    //   setResourceData({...resourceData, version})
+    // }
     async function addThemeBook() {
         const theme = await MainService().getBookTheme(resourceData.id);
         setResourceData({...resourceData, theme})
         setLoadingTheme(false)
     }
-    if (resourceType === 'book' && resourceData !== null && !resourceData.hasOwnProperty('version')) {
-        addVersionBook()
-    }
+    // if (resourceType === 'book' && resourceData !== null && !resourceData.hasOwnProperty('version')) {
+    //     addVersionBook()
+    // }
     if (SHOW_THEMES_BOOK && resourceType === 'book' && resourceData !== null && !resourceData.hasOwnProperty('theme')) {
         setLoadingTheme(true)
         addThemeBook()
@@ -210,7 +224,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     backgroundRepeat: 'no-repeat',
   }
 
-  const showUpgradeButton = resourceType === 'book' && action === 'edit' && resourceData && +resourceData.version !== 0 && +resourceData.version !== CURRENT_BOOK_VERSION
+//   const showUpgradeButton = resourceType === 'book' && action === 'edit' && resourceData && +resourceData.version !== 0 && +resourceData.version !== CURRENT_BOOK_VERSION
 
   const handleFiles = (e) => {
     if (typeof e.target.type === 'string' && e.target.type === 'file' && e.target.name === 'Preview') {
@@ -413,17 +427,10 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     triggerReload(!tr);
   }
 
-  const handleUpdateMetadataResource = async () => {
+  const handleUpgradeResource = async () => {
     setMessage(messageDefaultState)
-
-    const {res, resData} = await saveMetaDataResource()
-
-    if(!res.ok) {
-      setMessage({display: true, ok: res.ok, text: resData.error ?? 'Error 0' })
-    } else {
-      setMessage({display: true, text: 'Book updated at V2', ok: res.ok })
-    }
-
+    const res = await MainService().upgradeResourceScorm(resourceData.id)
+    setMessage({display: true, ok: res.status === 'OK', text: res.message ?? 'Error 0' })
   }
 
   const saveMetaDataResource = async () => {
@@ -431,7 +438,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     data.id = resourceData.id
     data.theme = resourceData.theme
 
-    if (resourceData.version === 1) data.upgrading = true
+    // if (resourceData.version === 1) data.upgrading = true
 
     var form_data = new FormData();
     for ( var key in data ) {
@@ -477,9 +484,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
               </Dropdown.Menu>
             </Dropdown>
             { showUpgradeButton && (
-              <Btn color='teal' onClick={handleUpdateMetadataResource} >
-                <Icon name='angle double up' /> Upgrade v2
-              </Btn>
+              <Btn color='teal' onClick={handleUpgradeResource} ><Icon name='angle double up' /> Upgrade</Btn>
             )}
         </div>
         <div className='form-messages'>

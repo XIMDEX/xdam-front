@@ -207,7 +207,17 @@ const api = () => {
                 url: `${SOLR_ALFRESCO_URL}/alfresco/api/-default-/public/search/versions/1/search`,
                 auth: 'Basic ' + REACT_APP_TOKEN_ALFRESCO,
             }
-        }
+        },
+
+        checkIfCanUpgradeScorm: (bookId) => ({
+            method: 'GET',
+            url: `${BOOK_EDITOR_URL}api/book/${bookId}/can_upgrade`
+        }),
+
+        upgradeScorm: (bookId) => ({
+            method: 'POST',
+            url: `${BOOK_EDITOR_URL}api/book/${bookId}/upgrade`
+        }),
     }
     return mapper;
 }
