@@ -102,6 +102,11 @@ function PanelCDN() {
         setLoading(false)
     }, []);
 
+
+     /** Get CDN collection
+     *
+     *  Args: cdn_id, index of cdn
+     */
     const getCDNCollection = async (cdn_id, index) => {
         handleCollectionLoading(index, true)
 
@@ -137,12 +142,21 @@ function PanelCDN() {
 
     }
 
+    /** Modify array that controls the loading for each collection
+     *
+     *  Args: index of the cdn, value
+     */
     const handleCollectionLoading = (index, value) => {
         let cdnCollectionLoadingCopy = [...cdnCollectionLoading]
         cdnCollectionLoadingCopy[index] = value
         setCdnCollectionLoading(cdnCollectionLoadingCopy)
     }
 
+
+    /** Regenerate hasesh for collection selected
+     *
+     *  Args: cdn_id, collection_name, collection_id
+     */
     const regenerateHashesForCollection = async (cdn_id, collection_name, collection_id) => {
         setLoading(true)
         setLoadingText(`Generating hashes for ${collection_name}`)
@@ -160,6 +174,10 @@ function PanelCDN() {
         }
     }
 
+    /** Remove collection from CDN
+     *
+     *  Args: cdn_id, collection_name, collection_id
+     */
     const removeCollectionFromCDN = async (cdn_id, collection_name, collection_id) => {
         setLoading(true)
         setLoadingText(`Removing ${collection_name}`)
