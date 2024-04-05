@@ -64,7 +64,8 @@ const useStyles = makeStyles((theme) => ({
 export function FacetCard({ facet, fixed, resources, collection, organization, facetsQuery }) {
     const classes = useStyles()
     const dispatch = useDispatch()
-    const [facetValues, setFacetValues] = useState(facet.values ?? {})
+    const values = facet.values ?? {}
+    const [facetValues, setFacetValues] = useState(values)
     const [cardOpen, setCardOpen] = useState(facet.key === COLLECTION || facet.key === ORGANIZATION ? false : true)
     const selectedOrg = organization
     const selectedColl = collection
@@ -75,10 +76,10 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
     const [showMore, setShowMore] = useState<Boolean>(false)
 
     useEffect( () => {
-        let values_selected = Object.keys(facetValues).filter(name => {
-            return facetValues[name].selected || selectedWS.includes(name)
+        let values_selected = Object.keys(facet.values).filter(name => {
+            return facet.values[name].selected || selectedWS.includes(name)
         })
-        let values_non_selected = Object.keys(facetValues).filter(name => !facetValues[name].selected  && !selectedWS.includes(name))
+        let values_non_selected = Object.keys(facet.values).filter(name => !facet.values[name].selected  && !selectedWS.includes(name))
         let new_values = [...values_selected, ...values_non_selected]
         let values_obj = {}
         if (!showMore ) {
@@ -94,7 +95,7 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
             new_values = values_non_selected.slice(0, limit)
         }
         new_values = [...values_selected, ...new_values]
-        new_values.forEach(value => values_obj[value] = facetValues[value])
+        new_values.forEach(value => values_obj[value] = facet.values[value])
         if (search === '') {
             setFacetValues(values_obj)
         }
