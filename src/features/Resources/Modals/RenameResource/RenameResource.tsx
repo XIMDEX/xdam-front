@@ -1,25 +1,29 @@
 import React, { useState } from "react";
 import { Button, Icon, Input, Modal } from "semantic-ui-react";
-import { useDispatch } from "react-redux";
-import { reloadCatalogue } from "../../../../appSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { reloadCatalogue, selectWorkspaceCollections } from "../../../../appSlice";
 import styles from './RenameResource.module.scss';
+
 
 const MINIMUM_NAME_LENGTH = 3;
 
-const RenameResource = ({ currentName, action, hiddeEditButton }: { currentName: string, action: (newName: string) => void, hiddeEditButton: () => void }) => {
-
+const RenameResource = ({  currentName, action, hiddeEditButton }: { currentName: string, action: (newName: string) => void, hiddeEditButton: () => void }) => {
     const [open, setOpen] = useState(false);
     const [newName, setNewName] = useState<string>('');
-
+    const workspacesCollections = useSelector(selectWorkspaceCollections)
     const dispatch = useDispatch();
 
     const saveNewName = () => {
-        action(newName);
+        action((newName.trim()));
         closeModal();
     }
 
     const cannotSave = (): boolean => {
-        return newName.length < MINIMUM_NAME_LENGTH || currentName === newName;
+        if(workspacesCollections){
+            const workspacesArray = Object.values(workspacesCollections);
+            const existWorkspaceName = workspacesArray?.filter(wks => wks.name === newName)[0]
+            return newName.trim().length < MINIMUM_NAME_LENGTH || currentName === newName || existWorkspaceName;
+        }
     }
 
     const openModal = () => {
@@ -29,7 +33,6 @@ const RenameResource = ({ currentName, action, hiddeEditButton }: { currentName:
     const closeModal = () => {
         setOpen(false);
         hiddeEditButton();
-
         dispatch(reloadCatalogue());
     }
 
@@ -38,7 +41,6 @@ const RenameResource = ({ currentName, action, hiddeEditButton }: { currentName:
 
         setNewName(data.value);
     }
-
     return (
         <Modal
             onClose={() => setOpen(false)}
@@ -71,4 +73,4 @@ const RenameResource = ({ currentName, action, hiddeEditButton }: { currentName:
     )
 }
 
-export default RenameResource; 
+export default RenameResource;

@@ -49,7 +49,6 @@ export default function Dialogs( { resourceType, action, dialogOpen = false, res
   };
 
   const handleClose = () => {
-    //console.log(reload, action)
     let shouldReload = localStorage.getItem('reload_catalogue');
     if(shouldReload === '1') {
       dispatch(setResourcesLoading(true));
@@ -65,7 +64,6 @@ export default function Dialogs( { resourceType, action, dialogOpen = false, res
   };
 
   useEffect(() => {
-    console.log(action)
     if(dialogOpen) {
       handleClickOpen()
     }

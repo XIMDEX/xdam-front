@@ -35,7 +35,7 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
     const [filesInfo, setFilesInfo] = useState<Record<string, any>>({});
 
     useEffect(() => {
-        
+
         console.log('UPDATED')
 
         const get_post_max_size = async () => {
@@ -44,15 +44,13 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
                     authorization: api().auth,
                 }
             });
-            console.log(res);
             if(res.status === 200) {
-
                 setServerConf(res.data);
             }
         }
-        
+
         get_post_max_size();
-        
+
     }, [uploaded])
 
     const updateGenericDataFor = (key: string): (data: any) => void => {
@@ -96,7 +94,7 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
         }
 
         fd.append('collection', collection.toString());
-        
+
         // if(workspace) {
         //     fd.append('workspace', workspace.id);
         //     fd.append('create_wsp', '0');
@@ -128,7 +126,7 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
         for (var i = 0; i < files.length; i++) {
             fd.append('files[]', files[i]);
         }
-        
+
         const { request, _api } = await MainService().createBatchOfResources(fd);
         const config = {
             onUploadProgress: progressEvent => {
@@ -138,9 +136,9 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
             },
             headers: request.headers
           }
-          
+
         axios.post(_api.url, fd, config).then(res => {
-            
+
             if (res.status == 200) {
                 console.log("done: ", res.data.message);
                 filesUploaded(true);
@@ -151,7 +149,7 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
             setErrorOnUpload("error: " + err.message);
             console.log("error: ", err.message);
         })
-        
+
     }
 
     const changeWorkspace = (event, data) => {
@@ -196,27 +194,27 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
 
     return (
         <div>
-            <Dialog 
-                open={open} 
+            <Dialog
+                open={open}
                 onEntered={handleOnEntered}
                 onChange={()=> console.log('CHANGED')}
-                onClose={handleClose} 
+                onClose={handleClose}
                 aria-labelledby="batch-dialog"
                 fullWidth
                 maxWidth={'md'}
-                
+
             >
                 <DialogTitle >New batch</DialogTitle>
                 <DialogContent style={{height: '100vh'}}>
-                    <Btn icon='close' circular onClick={handleClose} color="teal" className='read-card-close-button'/>    
-                    
-                    
+                    <Btn icon='close' circular onClick={handleClose} color="teal" className='read-card-close-button'/>
+
+
                     <DialogActions >
-                        <Btn 
+                        <Btn
                                 disabled={files === null}
-                                onClick={uploaded ? newBatch : handleUpload} 
+                                onClick={uploaded ? newBatch : handleUpload}
                                 color="teal"
-                                loading={progress && !uploaded}    
+                                loading={progress && !uploaded}
                             >
                                 {uploaded ? (
                                     <><Icon name='repeat'/> New batch</>
@@ -227,13 +225,13 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
                     </DialogActions>
                     <div className='batch-form'>
                         {/* <Message> Select one Workspace </Message>
-                        <Message 
+                        <Message
                             hidden={message === null}
-                            warning 
+                            warning
                             onDismiss={() => setMessage(null)}
                         >{message}</Message>
                         <Segment size='large'>
-                            
+
                             <Grid columns={2} relaxed='very' stackable textAlign='center'>
                                 <Grid.Column>
                                     <Dropdown
@@ -258,9 +256,9 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
                                     </Dropdown>
                                 </Grid.Column>
                                 <Grid.Column verticalAlign='middle'>
-                                    <Input 
+                                    <Input
                                         style={focus === 'exist' ? {opacity: 0.5} : {opacity: 1}}
-                                        placeholder='Create a new one' 
+                                        placeholder='Create a new one'
                                         onFocus={() => {
                                             setFocus('new')
                                             setWorkspace(null)
@@ -280,10 +278,10 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
                                     ? 'It will asociate the resource to the ISBN:'
                                     : 'It will create a new Workspace named:'
                                 }
-                                <Input 
+                                <Input
                                     size='small'
                                     style={(focus === 'exist' ? {minWidth: 200, opacity: 0.5, marginLeft: 10} : {minWidth: 200, opacity: 1, marginLeft: 10})}
-                                    placeholder='Create a new one' 
+                                    placeholder='Create a new one'
                                     onFocus={() => {
                                         setFocus('new')
                                         setWorkspace(null)
@@ -303,7 +301,7 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
                             }
                         </Message>
                         <Message warning> LIMIT: A total of {server?.pms}{server?.pms.includes('M') || server?.pms.includes('m') ? 'B' : 'MB'} in no more than {server?.mfu} files per batch</Message>
-                        
+
                         {resourceType === MULTIMEDIA
                             &&
                             (<div style={{ display: 'grid', gridTemplateColumns: '50% 50%', columnGap: '1rem' }}>
@@ -313,13 +311,13 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
                         }
                     </div>
 
-                    
-                    
+
+
                     <div
-                        style={files ? {} : {cursor: 'pointer'}} 
+                        style={files ? {} : {cursor: 'pointer'}}
                         className={highlighted ? 'batch-drop-area bda-highlight' : 'batch-drop-area'}
                     >
-                        
+
                         <FileDrop
                             onFrameDragEnter={(event) => {
                                 //console.log('onFrameDragEnter', event);
@@ -333,7 +331,7 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
                             //onDragOver={(event) => console.log('onDragOver', event)}
                             //onDragLeave={(event) => console.log('onDragLeave', event)}
                             onDrop={(files, event) => {
-                                console.log('onDrop!', files, event); 
+                                console.log('onDrop!', files, event);
                                 setProgress(null);
                                 filesUploaded(false);
                                 setFiles(Array.from(files))
@@ -366,11 +364,11 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
                                         hidden
                                     />
                                 </>
-                            }  
+                            }
                         </FileDrop>
                     </div>
                 </DialogContent>
-                
+
             </Dialog>
         </div>
     );

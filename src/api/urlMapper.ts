@@ -97,6 +97,10 @@ const api = () => {
             method: 'POST',
             url: baseUrl + '/resource/' + id + '/update'
         }),
+        updateWorkspaceResource: (id) => ({
+            method: 'POST',
+            url: baseUrl + '/resource/' + id + '/setWorkspace'
+        }),
         updateResourceFromOther: (resource_to_update, last_created, last_updated, other_resource) => {
             let req = {
                 method: 'POST',
