@@ -95,7 +95,6 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
   const isSelectable = false;
   const [mainContextAction, setMainContextAction] = useState(null)
 
-
   function toggleListMode(evt) {
     var val = evt.target.getAttribute('data-value') === '1' ? true : false;
     setListMode(val);
@@ -181,7 +180,7 @@ export function Resources({ collection, organization, sidebarOpen, _user }) {
       //we only need one fetch by session
       getSchemas();
     }
-  }, [facetsQuery, selectedColl, organization, reload, query, collection])
+  }, [facetsQuery, collection, organization, reload, query])
 
   const LoadingResources = (): any => {
     return (
