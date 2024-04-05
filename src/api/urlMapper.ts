@@ -222,6 +222,36 @@ const api = () => {
                 method: 'DELETE',
                 url: baseUrl + '/cdn/admin/remove'
         }},
+        addCollectionToCDN: () => {
+            return {
+                method: 'POST',
+                url: `${baseUrl}/cdn/admin/collection/add`
+        }},
+        getCDNCollectionList: () => {
+            return {
+                method: 'GET',
+                url: `${baseUrl}/cdn/admin/collection/list`
+        }},
+        removeCollectionFromCDN: () => {
+            return {
+                method: 'DELETE',
+                url: `${baseUrl}/cdn/admin/collection/remove`
+        }},
+        generateResourceHash: (cdn_id) => {
+            return {
+                method: 'POST',
+                url: `${baseUrl}/cdn/admin/${cdn_id}/generate_resources_hash`
+        }},
+        generateMultipleResourcesHash: (cdn_id) => {
+            return {
+                method: 'POST',
+                url: `${baseUrl}/cdn/admin/${cdn_id}/generate_multiple_resources_hash`
+        }},
+        generateCollectionResourcesHash: (cdn_id) => {
+            return {
+                method: 'POST',
+                url: `${baseUrl}/cdn/admin/${cdn_id}/generate_collection_resources_hash`
+        }}
     }
     return mapper;
 }

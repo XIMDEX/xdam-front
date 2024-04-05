@@ -705,6 +705,91 @@ class AppService {
       const res = await (await fetch(_api.url, request)).json();
       return res;
     }
+    async generateResourceHash(cdn_id: number | string, collection_id: number | string, resource_id: number | string )
+    {
+      const _api = api().generateResourceHash(cdn_id);
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers,
+        body: JSON.stringify({
+            collection_id: collection_id,
+            resource_id: resource_id
+        }),
+      }
+      const res = await (await fetch(_api.url, request)).json();
+      return res;
+    }
+    async generateMultipleResourcesHash (cdn_id: number | string, collection_id: number | string, resources_ids: number[] | string[])
+    {
+      const _api = api().generateMultipleResourcesHash(cdn_id);
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers,
+        body: JSON.stringify({
+            collection_id: collection_id,
+            resource_ids: resources_ids
+        }),
+      }
+      const res = await (await fetch(_api.url, request)).json();
+      return res;
+    }
+    async generateCollectionResourcesHash (cdn_id: number | string, collection_id: number | string )
+    {
+      const _api = api().generateCollectionResourcesHash(cdn_id);
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers,
+        body: JSON.stringify({
+            collection_id: collection_id,
+            cdn_id:cdn_id
+        }),
+      }
+      const res = await (await fetch(_api.url, request)).json();
+      return res;
+    }
+    async removeCollectionFromCDN (cdn_id: number | string, collection_id: number | string )
+    {
+      const _api = api().removeCollectionFromCDN();
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers,
+        body: JSON.stringify({
+            collection_id: collection_id,
+            cdn_id:cdn_id
+        }),
+      }
+      const res = await (await fetch(_api.url, request)).json();
+      return res;
+    }
+    async getCDNCollectionList (cdn_id: number | string, collection_id: number | string )
+    {
+      const _api = api().getCDNCollectionList();
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers,
+        body: JSON.stringify({
+            collection_id: collection_id,
+            cdn_id:cdn_id
+        }),
+      }
+      const res = await (await fetch(_api.url, request)).json();
+      return res;
+    }
+    async addCollectionToCDN (cdn_id: number | string, collection_id: number | string )
+    {
+      const _api = api().addCollectionToCDN();
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers,
+        body: JSON.stringify({
+            collection_id: collection_id,
+            cdn_id:cdn_id
+        }),
+      }
+      const res = await (await fetch(_api.url, request)).json();
+      return res;
+    }
+
 
 }
 
