@@ -2,13 +2,15 @@ import React, { useEffect, useState } from "react";
 import Container from "@material-ui/core/Container";
 import { XInput, XButton, XDropdown, XPopUp, XRow,XRowContent, XRowDetails} from '@ximdex/xui-react/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faTrash, faChain, faChainSlash } from "@fortawesome/free-solid-svg-icons";
 import styled from "styled-components";
 
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import NewCDNModal from "./NewCDNModal";
 import { Loading } from "../Loading/Loading";
 import { CircularProgress } from "@material-ui/core";
+import AddCollectionModal from "./AddCollectionModal";
+import MultipleHashesModal from "./MultipleHashesModal";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -32,14 +34,31 @@ const useStyles = makeStyles((theme: Theme) =>
         borderTop: '1px solid #BBBBBB',
         borderLeft: '1px solid #BBBBBB',
         borderRight: '1px solid #BBBBBB',
-        padding: '1em'
+        padding: '1em',
+        "& > div:nth-child(1)": {
+            "& > div:nth-child(3)": {
+                "& > div": {
+                    display: 'flex',
+                    alignItems:'center'
+                }
+            },
+        },
+        "& > div:nth-child(2)": {
+            "& > div": {
+                "& > div:nth-child(2)": {
+                    display: 'flex',
+                    alignItems:'center'
+                }
+            },
+        },
     },
     xrowContent: {
         display: 'flex',
         alignItems: 'center'
     },
     xrowDetails:{
-        padding: '1em'
+        padding: '1em',
+        display: 'flex'
     }
 
   }),
@@ -71,20 +90,31 @@ function PanelCDN() {
     useEffect(() => {
         setCDNList([{
             id: '1',
-            name: 'testing cdn'
-        }])
+            name: 'testing cdn 1'
+        },
+        {
+            id: '2',
+            name: 'testing cdn 2'
+        }
+        ])
         setLoading(false)
     }, []);
 
     const getCDNCollection = (cdn_id, index) => {
         handleCollectionLoading(index, true)
-        if(cdnCollection[index]) return
         setCdnCollection([
             [{
-                name:'collectiontesting',
+                name:'collectiontesting 1',
+                id: 'collection id 1',
+
+            },
+            {
+                name:'collectiontesting 2',
                 id: 'collection id 2',
 
-            }]
+            }
+            ],
+
         ])
 
         setTimeout(() => {
@@ -135,17 +165,20 @@ function PanelCDN() {
                                         identifier={cdn.id}
                                         isCollapsable={true}
                                         functionButtonCollapsable={() => getCDNCollection(cdn.id, index)}
-                                        labelButtonCollapsable={'Show details'}
+                                        labelButtonCollapsable={'Show CDN collections'}
                                         controls={[
                                         {
                                             component:
-                                            <StyledGreenXButton
-                                                onClick={() => alert('add collection to cdn')}>
-                                                <FontAwesomeIcon
-                                                    icon={faPlus}
-                                                    title={'Add collection to cdn'}
+                                            <AddCollectionModal
+                                                cdn={cdn}
+                                                triggerButton={
+                                                <StyledGreenXButton>
+                                                    <FontAwesomeIcon
+                                                        icon={faPlus}
+                                                        title={'Add collection to cdn'}
                                                 />
-                                            </StyledGreenXButton>
+                                                </StyledGreenXButton>}
+                                            />
                                         },
                                         {
                                             component:
@@ -186,12 +219,32 @@ function PanelCDN() {
                                                             controlsDetails={[
                                                             {
                                                                 component:
+                                                                <StyledGreenXButton
+                                                                    onClick={() => alert('Generating hashes')}
+                                                                >
+                                                                    <FontAwesomeIcon icon={faChain} size='1x' title='Generate hashes for collection' />
+                                                                </StyledGreenXButton>
+                                                            },
+                                                            {
+                                                                component:
+                                                                <MultipleHashesModal
+                                                                    cdn={cdn}
+                                                                    triggerButton={
+                                                                        <StyledGreenXButton
+                                                                    >
+                                                                        <FontAwesomeIcon icon={faChainSlash} size='1x' title='Generate multiple hashes for resources' />
+                                                                    </StyledGreenXButton>}
+                                                                />
+
+                                                            },
+                                                            {
+                                                                component:
                                                                 <StyledRedXButton
                                                                     onClick={() => alert('delete collection from cdn')}
                                                                 >
                                                                     <FontAwesomeIcon icon={faTrash} size='1x' title='delete collection' />
                                                                 </StyledRedXButton>
-                                                            },
+                                                            }
                                                         ]}
                                                         >
                                                             <div className={classes.xrowDetails}>
