@@ -11,6 +11,7 @@ import { Loading } from "../Loading/Loading";
 import { CircularProgress } from "@material-ui/core";
 import AddCollectionModal from "./AddCollectionModal";
 import MultipleHashesModal from "./MultipleHashesModal";
+import MainService from "../../api/service";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -82,6 +83,7 @@ const StyledRedXButton = styled(StyledGreenXButton)`
 function PanelCDN() {
     const classes = useStyles()
     const [loading, setLoading] = useState(true)
+    const [loadingText, setLoadingText] = useState('Loading CDN list')
     const [cdnList, setCDNList] = useState([])
     const [cdnCollection, setCdnCollection] = useState([])
     const [cdnCollectionLoading, setCdnCollectionLoading] = useState([])
@@ -129,6 +131,23 @@ function PanelCDN() {
         setCdnCollectionLoading(cdnCollectionLoadingCopy)
     }
 
+    const regenerateHashesForCollection = async (cdn_id, collection_name, collection_id) => {
+        setLoading(true)
+        setLoadingText(`Generating hashes for ${collection_name}`)
+
+        try{
+            const res = await MainService().generateCollectionResourcesHash(cdn_id, collection_id)
+             if (res.created) {
+                 alert('Hashes regenerated successfully')
+             }
+         } catch(error) {
+             alert('Network error, please contact with your proveedor')
+             console.error(error)
+         } finally {
+             setLoading(false)
+        }
+    }
+
     return (
         <Container maxWidth="lg">
             <div className={`${classes.headerContainer} ${classes.layoutContainer}`}>
@@ -146,7 +165,7 @@ function PanelCDN() {
 
             </div>
             <div className={`${classes.contentContainer} ${classes.layoutContainer}`}>
-                {loading ? <Loading text="Loading CDN list"/>
+                {loading ? <Loading text={loadingText}/>
                 :
                 <>
                     {cdnList.length === 0 ?
@@ -220,9 +239,9 @@ function PanelCDN() {
                                                             {
                                                                 component:
                                                                 <StyledGreenXButton
-                                                                    onClick={() => alert('Generating hashes')}
+                                                                    onClick={() => regenerateHashesForCollection(cdn.id, cdn_collection.name, cdn_collection.id)}
                                                                 >
-                                                                    <FontAwesomeIcon icon={faGear} size='1x' title='Generate hashes for collection' />
+                                                                    <FontAwesomeIcon icon={faGear} size='1x' title='Re-generate hashes for collection' />
                                                                 </StyledGreenXButton>
                                                             },
                                                             {
