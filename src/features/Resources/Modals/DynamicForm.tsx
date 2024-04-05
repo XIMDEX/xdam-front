@@ -638,7 +638,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
 
   const MetaDataForm = () => {
     return (
-      <Grid item sm={6}>
+      <Grid item sm={6} style={{paddingBottom: '20em'}}>
         <div className='forms-main-btns'>
             <Btn color='teal' icon='facebook' onClick={() =>  _refForm.current.click()} loading={processing}>
               {dataForUpdate ? (
