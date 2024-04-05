@@ -10,7 +10,8 @@ import SearchPage from '../pages/SearchPage';
 export default function Routes () {
     return (
         <Switch>
-            <Route exact path={'/home'} component={HomePage}/>
+            <Route exact path={'/'} component={HomePage}/>
+            <Route path={'/home'} component={HomePage}/>
             <Route path={'/login'} component={LoginPage}/>
             <Route path={'/cdn_panel'} component={CdnPanelPage}/>
             <Route path={'/cdn'} component={CdnRenderPage}/>
