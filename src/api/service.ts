@@ -747,28 +747,27 @@ class AppService {
       const res = await (await fetch(_api.url, request)).json();
       return res;
     }
-    async removeCollectionFromCDN (cdn_id: number | string, collection_id: number | string )
+    async removeCollectionFromCDN (cdn_id: number | string, collection_ids: number[] | string[] )
     {
       const _api = api().removeCollectionFromCDN();
       const request = {
         method: _api.method,
         headers: this.httpOptions.headers,
         body: JSON.stringify({
-            collection_id: collection_id,
+            collection_id: collection_ids,
             cdn_id:cdn_id
         }),
       }
       const res = await (await fetch(_api.url, request)).json();
       return res;
     }
-    async getCDNCollectionList (cdn_id: number | string, collection_id: number | string )
+    async getCDNCollectionList (cdn_id: number | string)
     {
       const _api = api().getCDNCollectionList();
       const request = {
         method: _api.method,
         headers: this.httpOptions.headers,
         body: JSON.stringify({
-            collection_id: collection_id,
             cdn_id:cdn_id
         }),
       }

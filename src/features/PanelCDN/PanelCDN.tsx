@@ -102,8 +102,20 @@ function PanelCDN() {
         setLoading(false)
     }, []);
 
-    const getCDNCollection = (cdn_id, index) => {
+    const getCDNCollection = async (cdn_id, index) => {
         handleCollectionLoading(index, true)
+
+        // try{
+        //     const res = await MainService().getCDNCollectionList(cdn_id)
+        //      if (res.created) {
+        //          alert('Hashes regenerated successfully')
+        //      }
+        //  } catch(error) {
+        //      alert('Network error, please contact with your proveedor')
+        //      console.error(error)
+        //  } finally {
+        //     handleCollectionLoading(index, true)
+        // }
         setCdnCollection([
             [{
                 name:'collectiontesting 1',
@@ -139,6 +151,23 @@ function PanelCDN() {
             const res = await MainService().generateCollectionResourcesHash(cdn_id, collection_id)
              if (res.created) {
                  alert('Hashes regenerated successfully')
+             }
+         } catch(error) {
+             alert('Network error, please contact with your proveedor')
+             console.error(error)
+         } finally {
+             setLoading(false)
+        }
+    }
+
+    const removeCollectionFromCDN = async (cdn_id, collection_name, collection_id) => {
+        setLoading(true)
+        setLoadingText(`Removing ${collection_name}`)
+
+        try{
+            const res = await MainService().removeCollectionFromCDN(cdn_id, [collection_id])
+             if (res.created) {
+                 alert('Collection removed successfully')
              }
          } catch(error) {
              alert('Network error, please contact with your proveedor')
@@ -202,11 +231,11 @@ function PanelCDN() {
                                         {
                                             component:
                                             <StyledRedXButton
-                                                onClick={() => alert('delete cdn')}
+                                                onClick={() => alert('Remove cdn')}
                                             >
                                                 <FontAwesomeIcon
                                                     icon={faTrash}
-                                                    title={'Delete cdn'}
+                                                    title={'Remove cdn'}
                                                 />
                                             </StyledRedXButton>
                                         },
@@ -259,9 +288,9 @@ function PanelCDN() {
                                                             {
                                                                 component:
                                                                 <StyledRedXButton
-                                                                    onClick={() => alert('delete collection from cdn')}
+                                                                    onClick={() => removeCollectionFromCDN(cdn.id, cdn_collection.name, cdn_collection.id)}
                                                                 >
-                                                                    <FontAwesomeIcon icon={faTrash} size='1x' title='delete collection' />
+                                                                    <FontAwesomeIcon icon={faTrash} size='1x' title='Remove collection' />
                                                                 </StyledRedXButton>
                                                             }
                                                         ]}
