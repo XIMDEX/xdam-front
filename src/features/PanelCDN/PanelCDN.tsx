@@ -298,7 +298,7 @@ function PanelCDN() {
                                                                     triggerButton={
                                                                         <StyledGreenXButton
                                                                     >
-                                                                        <FontAwesomeIcon icon={faGears} size='1x' title='Generate multiple hashes for resources' />
+                                                                        <FontAwesomeIcon icon={faGears} size='1x' title='Generate hashes for resources' />
                                                                     </StyledGreenXButton>}
                                                                 />
 
