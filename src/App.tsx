@@ -140,7 +140,7 @@ function App() {
                 localStorage.setItem("lomes_loaded", "0");
                 localStorage.setItem("lom_loaded", "0");
 
-                dispatch(setWorkspaceCollections(localUser.data.selected_org_data.workspaces));
+                dispatch(setWorkspaceCollections(localUser.data.workspaces));
             }
         };
 
