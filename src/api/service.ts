@@ -529,6 +529,23 @@ class AppService {
       return await response.json();
     }
 
+    async getWorkspacesOrganization(orgID)
+    {
+
+        if (!orgID)
+            return;
+
+        const _api = api().getWorkspacesOrganization(orgID);
+
+        const request = {
+            method: _api.method,
+            headers: this.httpOptions.headers,
+        }
+        const response = await fetch(_api.url, request);
+
+        return await response.json();
+    }
+
     async getBookVersion(bookid)
     {
       const _api = api().getBookVersion(bookid);
