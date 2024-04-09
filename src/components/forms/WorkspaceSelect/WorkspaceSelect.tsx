@@ -106,7 +106,7 @@ export default function WorkspaceSelect({resourceData, dataForUpdate, newWorkspa
                 id="tags-standard"
                 options={workspacesOptions}
                 onChange={(e,values) => handleWorkspaceSelect (e, values)}
-                defaultValue={workspacesOptions.filter((wkOption: IWkoptions) => newWorkspaces.some(item => item.id == wkOption.value))}
+                defaultValue={newWorkspaces.map((wk) => ({label: wk.name, value: wk.id}))}
                 size="small"
                 clearIcon={false}
                 renderInput={(params) => (
