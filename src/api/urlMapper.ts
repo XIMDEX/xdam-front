@@ -22,7 +22,7 @@ const api = () => {
         },
         getUser: {
             method: 'GET',
-            url: baseUrl + '/user/me'
+            url: baseUrl + '/user/me?lite=true'
         },
         getSchemas: {
             method: 'GET',
@@ -73,6 +73,10 @@ const api = () => {
             method: 'GET',
             url: `${baseUrl}/workspace/getMultiple`
         },
+        getWorkspacesOrganization: (orgID) =>  ({
+            method: 'GET',
+            url: `${baseUrl}/organization/${orgID}/workspaces?lite=true`
+        }),
         updateWorkspace: {
             method: 'POST',
             url: `${baseUrl}/workspace/update`
