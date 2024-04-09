@@ -68,8 +68,8 @@ function App() {
     const facetsQuery = useSelector(selectFacetsQuery);
     const query = useSelector(selectQuery);
     const [sidebarOpen, setSidebarOpen] = useState(true);
-    let organization_id = useSelector(selectOrganization);
-    let collection_id = useSelector(selectCollection);
+    const organization_id = useSelector(selectOrganization);
+    const collection_id = useSelector(selectCollection);
     const [initialOrganization, setInitialOrganization] = useState(null);
     const [initialCollection, setInitialCollection] = useState(null);
     const [localUser, setLocalUser] = useState(null);
