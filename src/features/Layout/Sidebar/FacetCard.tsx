@@ -210,7 +210,7 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
                     )}
                 </Grid>
                 <div className={cardOpen ? classes.cardFacet : classes.hidden}>
-                    {Object.keys(facetValues).length > LIMIT_ITEMS && search === '' ? (
+                    {Object.keys(values).length > LIMIT_ITEMS && search === '' ? (
                         // true ? (
                             <Grid item sm={12}>
                                 <TextField
@@ -248,7 +248,7 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
                         )}
                     </ul>
                     </Grid>
-                    { Object.keys(facetValues).length > LIMIT_ITEMS  && search === '' && (
+                    { Object.keys(values).length > LIMIT_ITEMS  && search === '' && (
                         <Grid item sm={12} style={{marginBottom: 10, marginTop: -10, textAlign: 'right'}}>
                             <Button onClick={handleShowMore} style={{fontSize: 8}} size='small'>Show {showMore ? 'less' : 'more'}...</Button>
                         </Grid>
