@@ -73,7 +73,7 @@ function Lom({resourceData, standard}) {
   }
 
   const uiSchema_default = { "ui:widget": "DropdownCustom" }
-  
+
   return (
     <div className={classes.root}>
       <Tabs
@@ -85,13 +85,20 @@ function Lom({resourceData, standard}) {
         className={classes.tabs}
       >
         {
-          schema.tabs.map((tab, ix) => (
-            <Tab key={ix} label={tab.title} {...a11yProps(tab.key)} />
-          ))
+            schema.tabs.map((tab, ix) => {
+                // if (tab.hide) return null;
+                return (
+                    <Tab key={ix} label={tab.title}  {...a11yProps(tab.key)} style={tab.hide ? {display: 'none'} : {}}/>
+                )
+            })
         }
       </Tabs>
       {
-        schema.tabs.map((tab, ix) => {
+        [...schema.tabs].sort((a, b) => {
+            if (a.hide === b.hide) return 0;
+            if (b.hide) return -1;
+            return 1;
+        }).map((tab, ix) => {
           const uiSchema = getUiSchema(tab, uiSchema_default)
           return (
           <TabPanel value={value} index={parseInt(tab.key) - 1} key={ix}>
@@ -106,8 +113,8 @@ function Lom({resourceData, standard}) {
                     formData={tabFormData(tab)}
                     noValidate
                     ArrayFieldTemplate={Field}
-                  > 
-                    <div>
+                  >
+                    <div style={{display: Object.keys(tab.properties).length > 0 ? 'inherit' : 'none'}}>
                       <Button type="submit">Submit</Button>
                     </div>
                   </ SemanticForm>

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import Dialog from '@material-ui/core/Dialog';
-import { 
+import {
   DialogTitle,
   DialogContent,
   DialogContentText,
-  Grid 
+  Grid
 } from '@material-ui/core';
 import DynamicForm from './DynamicForm';
-import { COURSE, MULTIMEDIA, IMAGE, VIDEO, AUDIO, BOOK, ACTIVITY, ASSESSMENT } from '../../../constants';
+import { COURSE, MULTIMEDIA, IMAGE, VIDEO, AUDIO, BOOK, ACTIVITY, ASSESSMENT, DOCUMENT } from '../../../constants';
 import { Typography } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { useSelector, useDispatch } from 'react-redux';
@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 export default function Dialogs( { resourceType, action, dialogOpen = false, resourceData = null, setDialogOpen = null } ) {
-  const classes = useStyles(); 
+  const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const schemas = useSelector(selectSchemas);
   const dispatch = useDispatch();
@@ -49,7 +49,6 @@ export default function Dialogs( { resourceType, action, dialogOpen = false, res
   };
 
   const handleClose = () => {
-    //console.log(reload, action)
     let shouldReload = localStorage.getItem('reload_catalogue');
     if(shouldReload === '1') {
       dispatch(setResourcesLoading(true));
@@ -61,11 +60,10 @@ export default function Dialogs( { resourceType, action, dialogOpen = false, res
       setDialogOpen(false)
     }
     setOpen(false);
-    
+
   };
 
   useEffect(() => {
-    console.log(action)
     if(dialogOpen) {
       handleClickOpen()
     }
@@ -80,17 +78,26 @@ export default function Dialogs( { resourceType, action, dialogOpen = false, res
       case MULTIMEDIA:
       case IMAGE:
       case VIDEO:
-      case AUDIO: 
+      case AUDIO:
         form = (<DynamicForm handleClose={handleClose} resourceType={resourceType} action={action} schema={schemas.multimedia_validator} dataForUpdate={resourceData} />);
         break;
       case BOOK:
-        form = (<DynamicForm handleClose={handleClose} resourceType={resourceType} action={action} schema={schemas.book_validator} dataForUpdate={resourceData} />);
+
+        const overridedBookSchema = JSON.parse(JSON.stringify(schemas.book_validator));
+
+        overridedBookSchema?.properties?.description?.required.push("unit");
+
+        form = (<DynamicForm handleClose={handleClose} resourceType={resourceType} action={action} schema={overridedBookSchema} dataForUpdate={resourceData} />);
         break;
       case ACTIVITY:
           form = (<DynamicForm handleClose={handleClose} resourceType={resourceType} action={action} schema={schemas.activity_validator} dataForUpdate={resourceData} />);
         break;
       case ASSESSMENT:
           form = (<DynamicForm handleClose={handleClose} resourceType={resourceType} action={action} schema={schemas.assessment_validator} dataForUpdate={resourceData} />);
+        break;
+
+      case DOCUMENT:
+        form = (<DynamicForm handleClose={handleClose} resourceType={resourceType} action={action} schema={schemas.document_validator} dataForUpdate={resourceData} />);
         break;
       default:
         form = (<Typography>Corrupted resource: type of "{resourceType}" is not allowed</Typography>);
@@ -107,7 +114,7 @@ export default function Dialogs( { resourceType, action, dialogOpen = false, res
       <DialogContent>
         <DialogContentText>
           {/* Describe here how to {action} a {resourceType} */}
-          
+
         </DialogContentText>
         <Grid container spacing={2}>
           <Grid item sm={12}>
@@ -120,11 +127,11 @@ export default function Dialogs( { resourceType, action, dialogOpen = false, res
 
   return (
     <div id='dialogs_container'>
-      <Dialog 
-        open={open} 
-        onClose={() => handleClose()} 
-        fullWidth 
-        maxWidth={'md'}  
+      <Dialog
+        open={open}
+        onClose={() => handleClose()}
+        fullWidth
+        maxWidth={'md'}
         aria-labelledby="form-dialog-title"
       >
         <DialogTitle id="form-dialog-title" style={{textTransform: 'capitalize'}}>{resourceData?.name}</DialogTitle>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Dropdown, Radio } from "semantic-ui-react"
+import { MAX_BOOK_UNITS } from '../../../../constants';
 
 export const InputText = (props) => {
     return (
@@ -14,7 +15,7 @@ export const InputText = (props) => {
 
 const clickForOutline = (e) => {
     const target = e.target as HTMLTextAreaElement;
-    target.click(); 
+    target.click();
     e.stopPropagation();
 }
 
@@ -23,10 +24,10 @@ export const InputTextArea = (props) => {
         <div className={`forms-textField`}>
             <section>
                 <label htmlFor={props.id}>{props.label} {props.required ? '*' : ''}</label>
-                <textarea 
-                    id={props.id} 
-                    defaultValue={props.value} 
-                    onClick={clickForOutline} 
+                <textarea
+                    id={props.id}
+                    defaultValue={props.value}
+                    onClick={clickForOutline}
                     onChange={(event) => props.onChange(event.target.value)}
                     rows={4}
                 />
@@ -38,7 +39,14 @@ export const InputTextArea = (props) => {
 export const CustomToggle = (props) => {
     return (
         <div className={`forms-textField`}>
-            <section>
+            <section
+                style={{
+                    ...(props.style?.container ?? {}),
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                }}
+            >
                 <label style={{display: 'block', marginBottom: 9}} htmlFor={props.id}>{props.label} {props.required ? '*' : ''}</label>
                 <Radio toggle defaultChecked={props.value} onClick={(event, data) => {props.onChange(data.checked)}}/>
             </section>
@@ -62,7 +70,7 @@ export const CustomDropdown = (props) => {
         <div className={`forms-textField `}>
             <section>
                 <label htmlFor={props.id}>{props.label} {props.required ? '*' : ''}</label>
-                <Dropdown 
+                <Dropdown
                     placeholder={props.value}
                     fluid
                     selection
@@ -79,37 +87,51 @@ export const CustomDropdown = (props) => {
     )
 }
 
-export const CustomBookNumberOfUnitsSelector = (props) => {
+export const CustomBookNumberOfUnitSelector = (props) => {
 
-    const maxUnits = props.options.max + 1 || 51;
+    const maxUnits = (props.maxOptions || MAX_BOOK_UNITS) + 1;
 
-    const formatUnits = (number: number = 0) => {
+    const formatUnits = (number: number) => {
+
+        if(number === undefined || number === null) return;
+
         return number.toLocaleString('en-US', {
             minimumIntegerDigits: 2,
             useGrouping: false
         })
     }
 
+    const disableItem = (value: string): boolean => {
+        if (!props.unavaliableValues) {
+            return false;
+        }
+
+        return props.unavaliableValues.includes(parseInt(value)) && props.value !== value;
+    }
+
     return (
         <div className={`forms-textField `}>
-            <section>
-                <label htmlFor={props.id}>{props.label} {props.required ? '*' : ''}</label>
-                <Dropdown 
-                    placeholder={formatUnits(props.value).toString()}
-                    fluid
-                    selection
-                    selectOnBlur={false}
-                    >
-                    <Dropdown.Menu>
-                    {    Array.from(Array(maxUnits).keys()).map((i, _) => (
-                            <Dropdown.Item onClick={(event, data) => {props.onChange(data.children)}}>
-                                {formatUnits(i)}
+            <label htmlFor={props.id}>{props.label} {props.required ? '*' : ''}</label>
+            <Dropdown
+                fluid
+                selection
+                selectOnBlur={false}
+                placeholder={formatUnits(props.value)  || "Introduce the book units"}
+                value={formatUnits(props.value)}
+                >
+                <Dropdown.Menu>
+                    {Array.from(Array(maxUnits).keys()).map((i, _) => {
+                        const value = formatUnits(i);
+
+                        return (
+                            <Dropdown.Item key={i} onClick={(event, data) => { props.onChange(data.children) }} value={i} disabled={disableItem(value)}>
+                                {value}
                             </Dropdown.Item>
-                        ))
+                        )
+                    })
                     }
-                    </Dropdown.Menu>
-                </Dropdown>
-            </section>
+                </Dropdown.Menu>
+            </Dropdown>
         </div>
     )
 }

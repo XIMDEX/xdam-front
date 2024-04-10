@@ -1,0 +1,1 @@
+export type ResourceValidation = (resource: any) => Promise<void>;

@@ -10,9 +10,10 @@ import RelatedFiles from './RelatedFiles';
 import { Button, Label } from 'semantic-ui-react';
 import _ from 'lodash';
 import { useSelector } from 'react-redux';
-import { API_BASE_URL } from '../../../constants';
+import { API_BASE_URL, WORKSPACES } from '../../../constants';
 import { selectCollection } from '../../../slices/organizationSlice';
 import {CopyToClipboard} from 'react-copy-to-clipboard';
+import { selectWorkspacesData } from '../../../appSlice';
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -39,6 +40,16 @@ const useStyles = makeStyles((theme: Theme) =>
     }
   }),
 );
+
+const ResourceWokspaces = ({ workspacesId }: { workspacesId: Array<string> }) => {
+  const workspaces = useSelector(selectWorkspacesData);
+
+  if (!workspaces) return null;
+
+  const resourceWorkspaces = workspacesId.map(id => workspaces[id].name);
+
+  return (<p><strong>workspaces:</strong> {resourceWorkspaces.join(', ')}</p>)
+}
 
 export default function ViewResource( { resData } ) {
     const classes = useStyles();
@@ -91,20 +102,20 @@ export default function ViewResource( { resData } ) {
           }, 150)
         }, 500)
       }
-      if(!exist) { 
+      if(!exist) {
         span()
       } else {
         exist.remove()
         span()
       }
-      
+
 
     }
 
-    function renderField (label, d) 
+    function renderField (label, d)
     {
       let field = <></>;
-      
+
       if (typeof d === 'string' || typeof d === 'boolean' ) {
         if (label !== 'id') {
           field = <p><strong>{label}:</strong> {d.toString()}</p>
@@ -134,10 +145,14 @@ export default function ViewResource( { resData } ) {
             </ul>
           </>)
         }
+
+        if(label === WORKSPACES) {
+          field = <ResourceWokspaces workspacesId={d} />
+        }
       }
-          
+
       return (
-        field 
+        field
       )
     }
 
@@ -152,7 +167,7 @@ export default function ViewResource( { resData } ) {
               <div style={{backgroundImage: 'url('+preview+')'}} className={classes.imgView}/>
               <Grid container spacing={3}>
                 <Grid item sm={5} hidden={resourceData.files?.length < 1}>
-                  <div>{resourceData.files?.length > 0 ? <RelatedFiles resData={resourceData} files={resourceData.files} withPlayer={true} /> : <Label>No files attached</Label>}</div>  
+                  <div>{resourceData.files?.length > 0 ? <RelatedFiles resData={resourceData} files={resourceData.files} withPlayer={true} /> : <Label>No files attached</Label>}</div>
                 </Grid>
                 <Grid item sm={resourceData.files?.length > 0 ? 7 : 12}>
                   <Label>Meta data</Label>

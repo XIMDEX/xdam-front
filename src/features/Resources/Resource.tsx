@@ -39,9 +39,9 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export function Resource( { data, listMode, resourceType } ) { 
+export function Resource( { data, listMode, resourceType } ) {
     const classes = useStyles();
-    const dispatch = useDispatch(); 
+    const dispatch = useDispatch();
     const [res, setRes] = useState(null)
     const [action, setAction] = useState(null)
     const [dialogOpen, setDialogOpen] = useState(null)
@@ -61,7 +61,7 @@ export function Resource( { data, listMode, resourceType } ) {
         } else {
             console.warn('Name must be faceted')
             return 'NO NAME'
-        }   
+        }
     }
 
     function edit (e) {
@@ -78,6 +78,32 @@ export function Resource( { data, listMode, resourceType } ) {
         setDialogOpen(true)
     }
 
+    function is_logged_to_kakuma() {
+        return MainService().isLoggedToKakuma();
+    }
+
+    async function get_course_enrollments_endpoint(data) {
+        if (data.type !== "course")
+            return 0;
+
+        let res = await MainService().getCourseEnrollments(data.id)
+        if (res.ok) {
+            let resData = await res.json();
+            return resData.data.length;
+        }
+        throw new Error('Error 1.1: On getting course enrollments')
+    }
+
+    async function login_kakuma() {
+        let res = await MainService().loginTokakuma();
+
+        if (res.ok) {
+            let resData = await res.json();
+            return resData.kakuma_token;
+        }
+        throw new Error('Error 1.1: On logging into Kakuma')
+    }
+
     async function remove_endpoint(data) {
         let res = await MainService().removeResource(data.id)
         if(res.ok) {
@@ -89,16 +115,43 @@ export function Resource( { data, listMode, resourceType } ) {
         throw new Error('Error 1.1: On remove resource')
     }
 
+    async function remove_course_enrollments_endpoint(data) {
+        let res = await MainService().removeCourseEnrollments(data.id)
+        if (res.ok) {
+            let updatedUser = await MainService().getUser();
+            dispatch(setUser(updatedUser));
+            dispatch(reloadCatalogue());
+            return true;
+        }
+        throw new Error('Error 1.1: On remove course enrollments')
+    }
+
     async function remove (e) {
         setBlur(true)
         e.stopPropagation();
-        let yes = window.confirm('sure?');
-        if(yes) {
-            let res = await remove_endpoint(data)
-            setBlur(false)
-        } else {
-            setBlur(false)
+        let yes = window.confirm('This resource will be permanently deleted, are you sure?');
+        if (yes) {
+            if (resourceType === 'course') {
+                if (!is_logged_to_kakuma()) {
+                    let kakumaLogin = await login_kakuma();
+                    MainService().setToken('JWT_Kakuma', kakumaLogin);
+                }
+                let enrollmentsRes = await get_course_enrollments_endpoint(data);
+                if (enrollmentsRes > 0) {
+                    let enrollmentsYes = window.confirm(`There are ${enrollmentsRes} users enrolled in this course. Are you sure you want to remove it?`);
+                    if (enrollmentsYes) {
+                        let removeEnrollmentsRes = await remove_course_enrollments_endpoint(data);
+                        if (!removeEnrollmentsRes) {
+                            alert("Error unenrolling users")
+                            setBlur(false);
+                            return
+                        }
+                    }
+                }
+            }
+            await remove_endpoint(data);
         }
+        setBlur(false)
     }
 
     const RCard = () => {
@@ -111,37 +164,37 @@ export function Resource( { data, listMode, resourceType } ) {
                             src={preview}
                             alt='lazy_img'
                             grid
-                        /> 
+                        />
                     </div>
-                    <div className="dam-preview-title" title={data.name || data.data.description.course_title}> 
+                    <div className="dam-preview-title" title={data.name || data.data.description.course_title}>
                         <strong>{data.name || data.data.description.course_title || 'no name set'} </strong>
                     </div>
                 </div>
                 <div className="dam-item-actions ">
-                    
+
                     <button className="xdam-btn-primary bg-primary group" title="Edit" onClick={edit}>
                         <Icon name='edit' />
                     </button>
-                    
+
                     <button className="xdam-btn-primary bg-primary group" title="Delete"  onClick={remove}>
                         <Icon name='trash' />
                     </button>
                 </div>
             </div>
         )
-    } 
+    }
 
     const RList = () => {
         return (
-            <div className={`${classes.root} ${blured ? classes.blur : null}`} onClick={itemView} >    
-                <ListResource 
-                    style={{pointerEvents: 'none'}} 
-                    truncate={truncate} 
-                    data={data} 
-                    preview={preview} 
-                    edit={edit} 
-                    remove={remove} 
-                    itemView={itemView} 
+            <div className={`${classes.root} ${blured ? classes.blur : null}`} onClick={itemView} >
+                <ListResource
+                    style={{pointerEvents: 'none'}}
+                    truncate={truncate}
+                    data={data}
+                    preview={preview}
+                    edit={edit}
+                    remove={remove}
+                    itemView={itemView}
                 />
             </div>
         )
@@ -154,15 +207,15 @@ export function Resource( { data, listMode, resourceType } ) {
             }
             {
                 action && res ? (
-                    <Dialogs 
-                        resourceType={resourceType} 
-                        action={action}                        
-                        dialogOpen={dialogOpen} 
-                        resourceData={res} 
+                    <Dialogs
+                        resourceType={resourceType}
+                        action={action}
+                        dialogOpen={dialogOpen}
+                        resourceData={res}
                         setDialogOpen={setDialogOpen}
                     />
                 ) : null
             }
         </>
-    );   
+    );
 }

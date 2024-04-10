@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { reloadApp } from '../../appSlice';
-import { Grid, Button } from '@material-ui/core';
+import { Button } from '@material-ui/core';
 import MainService from '../../api/service';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
@@ -21,6 +21,12 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: 'bolder',
     marginBottom: 50,
   },
+  btn: {
+    backgroundColor: '#43a1a2',
+    '&:hover, &:focus': {
+      backgroundColor: '#43a1a2',
+    },
+  }
 }));
 
 export function Login() {
@@ -49,7 +55,15 @@ export function Login() {
     }
     MainService().setToken('JWT', user.data.access_token);
     setLoginStatus('Login success. Loading user data, please wait.');
-    history.push('/home');
+    if (history.location.pathname === '/search') {
+        history.push(history.location.pathname + history.location.search);
+    }else if(history.location.pathname.startsWith('/resource/') && history.location.pathname.endsWith('/preview')){
+      const urlParts = history.location.pathname.split('/');
+      const resourceId = urlParts[2]; 
+      history.push(history.location.pathname +`/resource/${resourceId}/preview`);
+    } else {
+        history.push('/home')
+    }
     dispatch(reloadApp());
   };
 
@@ -96,6 +110,8 @@ export function Login() {
       <Button
         fullWidth
         color="primary"
+        className={classes.btn}
+        // style={{backgroundColor: '#43a1a2'}}
         variant="contained"
         onClick={log}
         disabled={loading}

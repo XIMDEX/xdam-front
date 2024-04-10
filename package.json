@@ -24,16 +24,20 @@
     "@types/react-jsonschema-form": "^1.7.4",
     "@types/react-redux": "^7.1.16",
     "@types/react-router-dom": "^5.1.7",
+    "@ximdex/xui-react": "^0.11.4",
     "axios": "^0.19.2",
+    "chromedriver": "^107.0.3",
     "fs-react": "0.0.4",
+    "i18next": "^22.4.13",
     "lodash": "^4.17.15",
-    "node-sass": "^5.0.0",
+    "node-sass": "^6.0.0",
     "qs": "^6.8.0",
     "react": "^17.0.2",
     "react-cookie": "^4.0.3",
     "react-copy-to-clipboard": "^5.0.3",
     "react-dom": "^17.0.1",
     "react-file-drop": "^3.1.2",
+    "react-i18next": "^12.2.0",
     "react-jsonschema-form": "^1.8.1",
     "react-lazyload": "^3.2.0",
     "react-overridable": "0.0.3",
@@ -76,5 +80,20 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.2",
+    "@babel/plugin-transform-modules-commonjs": "^7.19.6",
+    "@babel/register": "^7.18.9",
+    "babel-plugin-inline-react-svg": "^2.0.1",
+    "babel-preset-react-app-babel-7": "^4.0.2-0",
+    "chai": "^4.3.7",
+    "chai-enzyme": "^1.0.0-beta.1",
+    "cheerio": "^1.0.0-rc.12",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.7",
+    "ignore-styles": "^5.0.1",
+    "mocha": "^10.1.0",
+    "selenium-webdriver": "^4.6.1"
   }
 }

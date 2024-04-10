@@ -14,7 +14,9 @@ interface AppState {
   lomSchema: null|Record<string,any>;
   catalogueFlag: boolean,
   formData: any,
-  reloadApp: boolean
+  reloadApp: boolean,
+  workspacesData: object,
+  workspaces_collections: object
 }
 
 const initialState: AppState = {
@@ -29,7 +31,9 @@ const initialState: AppState = {
   lomSchema: null,
   catalogueFlag: true,
   formData: null,
-  reloadApp: false
+  reloadApp: false,
+  workspacesData: {},
+  workspaces_collections: {}
 };
 
 export const appSlice = createSlice({
@@ -41,7 +45,7 @@ export const appSlice = createSlice({
       // doesn't actually mutate the state because it uses the Immer library,
       // which detects changes to a "draft state" and produces a brand new
       // immutable state based off those changes
-      
+
       state.user = payload;
     },
     setLoading: (state, {payload}) => {
@@ -77,12 +81,18 @@ export const appSlice = createSlice({
     reloadApp: (state) => {
       state.reloadApp = !state.reloadApp;
     },
+    setWorkspacesData: (state: AppState, {payload}: {payload: object}) => {
+      state.workspacesData = payload
+    },
+    setWorkspaceCollections: (state: AppState, {payload}: {payload: object}) => {
+        state.workspaces_collections = payload
+    }
   },
 });
 
-export const { setUser, setLoading, setFixedFacets, setFacets, 
+export const { setUser, setLoading, setFixedFacets, setFacets,
   setResources, setResourcesLoading, setSchemas, setLomesSchema, setLomSchema,
-  reloadCatalogue, setFormData, reloadApp} = appSlice.actions;
+  reloadCatalogue, setFormData, reloadApp, setWorkspacesData, setWorkspaceCollections} = appSlice.actions;
 
 // The function below is called a thunk and allows us to perform async logic. It
 // can be dispatched like a regular action: `dispatch(incrementAsync(10))`. This
@@ -109,5 +119,7 @@ export const selectLomSchema = (state: RootState) => state.app.lomSchema;
 export const selectCatalogueFlag = (state: RootState) => state.app.catalogueFlag;
 export const selectReloadApp = (state: RootState) => state.app.reloadApp;
 export const selectFormData = (state: RootState) => state.app.formData;
+export const selectWorkspacesData = (state: RootState) => state.app.workspacesData;
+export const selectWorkspaceCollections = (state: RootState) => state.app.workspaces_collections;
 
 export default appSlice.reducer;

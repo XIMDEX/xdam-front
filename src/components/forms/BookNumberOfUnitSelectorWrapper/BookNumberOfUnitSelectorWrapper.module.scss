@@ -1,0 +1,21 @@
+
+
+.bookNumberOfUnitSelectorWrapper {
+
+    display: flex;
+    justify-items: flex-end;
+
+    &__selector {
+        width: 100%;
+        * {
+            border-top-right-radius: 0 !important;
+            border-bottom-right-radius: 0 !important;
+        }
+    }
+
+    &__unset {
+        max-height: 35px;
+        border-top-left-radius: 0 !important;
+        border-bottom-left-radius: 0 !important;
+    }
+}

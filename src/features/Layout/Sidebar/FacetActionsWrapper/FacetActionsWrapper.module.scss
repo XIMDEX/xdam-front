@@ -1,0 +1,36 @@
+
+.facetActionsWrapper {
+
+    display: flex;
+    align-items: flex-end;
+
+    &:hover {
+        font-weight: bold;
+    }
+
+    &__buttons {
+        padding: 0 5px;
+        display: flex;
+        align-items: center;
+        visibility: var(--visibility, 'hidden');
+    }
+
+    &__content {
+        overflow: hidden;
+        margin-right: auto;
+
+        label {
+            height: 21px;
+            display: grid !important;
+            grid-template-columns: calc(100% - 1.3rem - 5px) 1.5rem !important;
+            column-gap: 5px;
+            overflow: hidden;
+
+            span {
+                overflow:hidden;
+                white-space:nowrap;
+                text-overflow: ellipsis;
+            }
+        }
+    }
+}

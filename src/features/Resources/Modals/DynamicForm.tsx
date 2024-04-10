@@ -9,23 +9,30 @@ import {
 } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import MainService from '../../../api/service';
-import { MULTIMEDIA, VALIDS_LOM } from '../../../constants';
+import { bookLanguages, courseLanguages, CURRENT_BOOK_VERSION, DEFAULT_THEME_BOOK, MULTIMEDIA, SHOW_THEMES_BOOK, VALIDS_LOM, UNLIMITED_FILES } from '../../../constants';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectCollection } from '../../../slices/organizationSlice';
 import SemanticForm from "@rjsf/semantic-ui";
 import { JSONSchema7 } from 'json-schema';
 import { render } from '../../../utils/render';
-import { Tab, Label, Icon, Dropdown, Radio } from 'semantic-ui-react'
+import { Tab, Label, Icon, Dropdown } from 'semantic-ui-react'
 import { Button as Btn } from 'semantic-ui-react';
 import { Message } from 'semantic-ui-react';
 import RelatedFiles from './RelatedFiles';
-import { setFormData, selectFormData, reloadCatalogue, setLomesSchema, setLomSchema } from '../../../appSlice';
+import { selectResources, selectWorkspacesData, setFormData,  setLomesSchema, setLomSchema, setResources } from '../../../appSlice';
 import store from '../../../app/store';
 import ArrayFieldTemplate from './DynamicFormTemplates/ArrayFieldTemplate';
 import ResourceActionButtons from './ResourceActionButtons';
 import { iconHandler } from '../../../utils/iconHandler';
-import { InputText, InputTextArea, CustomToggle, CustomInputText, CustomDropdown, CustomBookNumberOfUnitsSelector } from './DynamicFormTemplates/CustomFields';
+import { InputText, InputTextArea, CustomToggle, CustomInputText, CustomDropdown, CustomBookNumberOfUnitSelector } from './DynamicFormTemplates/CustomFields';
 import LomForm from '../LOM/LomForm';
+import { ResourceLanguage } from './DynamicFormTemplates/ResourceLanguage';
+import { ExtraBookData } from './DynamicFormTemplates/CustomFields/ExtraBookData';
+import MediaData from './Tabs/MediaData';
+import CDNData from './Tabs/CDN/CDNData';
+import WorkspaceSelect from '../../../components/forms/WorkspaceSelect/WorkspaceSelect';
+import { CDNsAttachedToResource, CDNsAttachedToResourceV2 } from './ResourceCDNsAttached';
+import { currentCollection, max_num_files_collection } from '../../../slices/collectionSlice';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -84,7 +91,9 @@ interface IBody {
 export default function DynamicForm({ resourceType, action, schema, dataForUpdate = null, handleClose }) {
   const classes = useStyles();
   let collection_id = useSelector(selectCollection);
-  //let storeFormData = useSelector(selectFormData);
+  const wps_data = useSelector(selectWorkspacesData);
+
+  const maxFiles = useSelector(max_num_files_collection)
   const dispatch = useDispatch();
   const [previewImage, setPreviewImage] = useState(null);
   const [formFiles, setFormFiles] = useState([]);
@@ -98,18 +107,157 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const [loaded, setLoaded] = useState(false);
   const [tr, triggerReload] = useState(false);
   const [fillAlert, setFillAlert] = useState(false);
-  
-  
+  const formulario = React.useRef(null);
+  const [firstAction,setFirstAction] = useState(true);
+  const [wksSelected, setWksSelected] = useState(() => {
+    let wps = []
+    const wps_ids = dataForUpdate?.workspaces ?? []
+    Object.keys(wps_data).map((key) => {
+        if(wps_ids.some(id => wps_data[key].id == id)) {
+            wps.push(wps_data[key])
+        }
+    })
+
+    return {
+      resource_id: dataForUpdate?.id ?? null,
+      wsp: wps
+    }
+  });
+
+  const resources  = useSelector(selectResources)
+
+  const handleWorkspaceSelected = (data) => {
+    setWksSelected(data)
+
+  }
+
+  const setResource = (workspaces) => {
+    let resourceIndex = resources.findIndex(obj => obj.id === resourceData.id);
+    if (resourceIndex !== -1) {
+        let updatedResource = {
+            ...resources[resourceIndex],
+            workspaces: workspaces.map(workspace => String(workspace))
+        };
+        let updatedResources = [...resources];
+        updatedResources[resourceIndex] = updatedResource;
+        dispatch(setResources(updatedResources));
+    }
+}
+
+
+  const [loadingTheme, setLoadingTheme] = useState(true)
+  const [themes, setThemes] = useState([])
+
+  const [showUpgradeButton, setShowUpgradeButton] = useState(false)
+
+  //cdn functions
+//   const [maxFiles, setMaxFiles] = useState(0);
+  const filesMessageDefaultState = { display: false, text: '' }
+  const [filesMsg, setFilesMessage] = useState(filesMessageDefaultState);
+  const [formFilesToRemove, setFormFilesToRemove] = useState([]);
+
+  const removeMediaFromUploadingQueue = (array_id, resData, maxNumberOfFiles) => {
+    let filesPendingAddition = formFiles;
+
+    filesPendingAddition.splice(array_id, 1);
+    setFormFiles(filesPendingAddition);
+    disableFurtherFilesAttached(resData, maxNumberOfFiles);
+    triggerReload(!tr);
+  }
+  const getCurrentNumberOfFiles = (resData) => {
+    let currentCountOfTotalFiles = 0;
+    currentCountOfTotalFiles += resData?.files.length ?? 0;
+    currentCountOfTotalFiles += formFiles.length ?? 0;
+    currentCountOfTotalFiles -= formFilesToRemove.length ?? 0;
+    return currentCountOfTotalFiles;
+  }
+
+
+  const removeMediaV2 = (dam, media_id, maxNumberOfFiles) => {
+    let filesPendingRemove = formFilesToRemove;
+    filesPendingRemove.push(media_id);
+    setFormFilesToRemove(filesPendingRemove);
+
+    for (var i = 0; i < resourceData.files.length; i++) {
+      if (media_id == resourceData.files[i].id) {
+        resourceData.files[i].pendingRemoval = true;
+      }
+    }
+
+    disableFurtherFilesAttached(dam, maxNumberOfFiles);
+    triggerReload(!tr);
+  }
+
+  const disableFurtherFilesAttached = (resData, maxNumberOfFiles) => {
+    if (maxNumberOfFiles !== null && maxNumberOfFiles !== undefined && maxNumberOfFiles !== UNLIMITED_FILES) {
+      let currentNumberOfFiles = getCurrentNumberOfFiles(resData);
+
+
+      if (currentNumberOfFiles >= maxNumberOfFiles && maxNumberOfFiles !== -1) {
+
+        setFilesMessage({ display: true, text: 'This resource only allows a maximum of ' + maxNumberOfFiles + ' files.' });
+      } else {
+        setFilesMessage({ display: false, text: '' });
+      }
+    }
+  }
+
+  const handleReplacedFiles = (e, dam, media_id, maxNumberOfFiles) => {
+    let filesPendingRemove = formFilesToRemove;
+    filesPendingRemove.push(media_id);
+    setFormFilesToRemove(filesPendingRemove);
+
+    for (var i = 0; i < resourceData.files.length; i++) {
+      if (media_id == resourceData.files[i].id) {
+        resourceData.files[i].pendingRemoval = true;
+      }
+    }
+
+    if (typeof e.target.type === 'string' && e.target.type === 'file' && e.target.name === 'File') {
+      let filesPendingAddition = formFiles;
+      let tempFiles = e.target.files;
+
+      for (var i = 0; i < tempFiles.length; i++) {
+        filesPendingAddition.push(tempFiles[i]);
+      }
+
+      setFormFiles(filesPendingAddition);
+
+      if (resourceType === MULTIMEDIA) {
+        setMediaType(tempFiles[0].type.split('/')[0]);
+      }
+    }
+
+    disableFurtherFilesAttached(dam, maxNumberOfFiles);
+    triggerReload(!tr);
+  }
+
+  //end cdn functions
+
   useEffect(() => {
-    
+    const getThemes = async () => {
+        const themes_scorm = await MainService().getBookThemes()
+        const newThemes = themes_scorm.map(th => ({key: th, value: th, text: th === 'v1' ? `${th} (deprecated)` : th}))
+        setThemes(newThemes)
+    }
+
+    if (SHOW_THEMES_BOOK && action === 'edit' && resourceType === 'book') {
+        getThemes()
+    }
+
+  }, [])
+
+  useEffect(() => {
     if(action === 'create') {
-      if(getStoreFormData() !== {}) {
+      if(typeof getStoreFormData() !== 'object') {
         dispatch(setFormData({}));
         triggerReload(!tr)
       }
-    } else if (action === 'edit') {
-      
-      const fetchLomesSchema = async () => { 
+    }
+
+    if (action === 'edit') {
+
+      const fetchLomesSchema = async () => {
         let lomesSchema = await MainService().getLomesSchema();
         dispatch(setLomesSchema(lomesSchema));
       }
@@ -118,24 +266,50 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
         const lomSchema = await MainService().getLomSchema();
         dispatch(setLomSchema(lomSchema));
       }
-      
+
       let lomesl = localStorage.getItem('lomes_loaded');
-      if(lomesl === null || lomesl === '0') {
+      if(
+        (lomesl === null || lomesl === '0')
+        && VALIDS_LOM.map(type => type.key).includes('lomes')
+      ) {
         fetchLomesSchema()
         localStorage.setItem('lomes_loaded', '1');
       }
 
       let loml = localStorage.getItem('lom_loaded');
-      if(loml === null || loml === '0') {
+      if (
+        (loml === null || loml === '0')
+        && VALIDS_LOM.map(type => type.key).includes('lom')
+      ) {
         fecthLomSchema()
         localStorage.setItem('lom_loaded', '1');
       }
-      
+
+      const checkIfCanUpgrade = async (id) => {
+        const can_upgrade = await MainService().checkIfCanUpgradeScrom(id)
+        setShowUpgradeButton(can_upgrade)
+      }
+
       const getResourceData = async () => {
-        //get the resource from db. Data for update is faceted data
+        //* get the resource from db. Data for update is faceted data
         let res = await MainService().getResource(dataForUpdate.id);
+        // if (resourceType === 'book' && !res.version) {
+        //   const version = await MainService().getBookVersion(dataForUpdate.id)
+        //   res.version = version
+        // }
+        if (SHOW_THEMES_BOOK && resourceType === 'book' && !res.theme) {
+            setLoadingTheme(true)
+            const _theme = await MainService().getBookTheme(dataForUpdate.id)
+            res.theme = _theme
+        }
         setResourceData(res);
+        setLoadingTheme(false)
         setTheFiles(res.files);
+
+
+        if (resourceType === 'book' && action === 'edit') {
+            checkIfCanUpgrade(res.id)
+        }
       }
       if(!loaded) {
         getResourceData();
@@ -143,16 +317,34 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
         setFillAlert(false);
         setLoaded(true);
       }
-    } else if (action === 'view') { 
-
-    } else {
-
     }
-    return function cleanup() {
-      //dispatch(setFormData({}));
-    };
+
+    if (action === 'view') {
+      // TODO
+    }
+
+    return function cleanup() {};
   }, [theFiles, resourceData, loaded ])
-  
+
+  useEffect(() => {
+    // async function addVersionBook() {
+    //   const version = await MainService().getBookVersion(resourceData.id);
+    //   setResourceData({...resourceData, version})
+    // }
+    async function addThemeBook() {
+        const theme = await MainService().getBookTheme(resourceData.id);
+        setResourceData({...resourceData, theme})
+        setLoadingTheme(false)
+    }
+    // if (resourceType === 'book' && resourceData !== null && !resourceData.hasOwnProperty('version')) {
+    //     addVersionBook()
+    // }
+    if (SHOW_THEMES_BOOK && resourceType === 'book' && resourceData !== null && !resourceData.hasOwnProperty('theme')) {
+        setLoadingTheme(true)
+        addThemeBook()
+    }
+  }, [resourceData, setResourceData, resourceType])
+
   const styleBtnPreview = {
     backgroundImage: 'url(' + (previewImage ? URL.createObjectURL(previewImage) : (dataForUpdate ? render(dataForUpdate) : 'noimg.png')) + ')',
     backgroundPosition: 'center',
@@ -160,26 +352,46 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     backgroundRepeat: 'no-repeat',
   }
 
-  const handleFiles = (e) => {
-    if (typeof e.target.type === 'string' && e.target.type === 'file' && e.target.name === 'Preview') {
-      setPreviewImage(e.target.files[0]);
-      if(formFiles.length === 0 && dataForUpdate?.files.length === 0) {
-        setMediaType(e.target.files[0].type.split('/')[0])
+//   const showUpgradeButton = resourceType === 'book' && action === 'edit' && resourceData && +resourceData.version !== 0 && +resourceData.version !== CURRENT_BOOK_VERSION
+
+  const handleFiles = (e,resData, maxNumberOfFiles) => {
+    let currentNumberOfFiles = getCurrentNumberOfFiles(resData);
+    if(maxNumberOfFiles > currentNumberOfFiles || maxNumberOfFiles=== UNLIMITED_FILES || maxNumberOfFiles === -1){
+      if (typeof e.target.type === 'string' && e.target.type === 'file' && e.target.name === 'Preview') {
+        setPreviewImage(e.target.files[0]);
+        if(formFiles?.length === 0 && dataForUpdate?.files?.length === 0) {
+          setMediaType(e.target.files[0].type.split('/')[0])
+        }
+      }
+      if (typeof e.target.type === 'string' && e.target.type === 'file' && e.target.name === 'File') {
+        setFormFiles(e.target.files)
+        if(resourceType === MULTIMEDIA) {
+          setMediaType(e.target.files[0].type.split('/')[0])
+        }
+      }
+      if (typeof e.target.type === 'string' && e.target.type === 'file' && e.target.name === 'File') {
+        let filesPendingAddition = formFiles;
+        let tempFiles = e.target.files;
+
+        for (var i = 0; i < tempFiles.length; i++) {
+          filesPendingAddition.push(tempFiles[i]);
+        }
+
+        setFormFiles(filesPendingAddition);
+
+        if (resourceType === MULTIMEDIA) {
+          setMediaType(e.target.files[0].type.split('/')[0])
+        }
       }
     }
-    if (typeof e.target.type === 'string' && e.target.type === 'file' && e.target.name === 'File') {
-      // console.log('file attached', e.target.files)
-      setFormFiles(e.target.files)
-      if(resourceType === MULTIMEDIA) {
-        // console.log(e.target.files[0].type.split('/')[0])
-        setMediaType(e.target.files[0].type.split('/')[0])
-      }
-    }
-  
+
+    disableFurtherFilesAttached(resData, maxNumberOfFiles);
+    triggerReload(!tr);
+
   }
 
   function setType() {
-    
+
     if(resourceType !== MULTIMEDIA) {
       return resourceType;
     }
@@ -196,9 +408,11 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   }
 
   const postData = async (form, event) => {
+    event.preventDefault();
     localStorage.setItem('reload_catalogue', '1');
     setMessage(messageDefaultState)
-
+    //filesPendingAddition.splice(array_id, 1);
+    //setFormFiles(filesPendingAddition);
     const data = form.formData
     /*
     IMPORTANTE: DEFINE MEDIA TYPE ON MULTIMEDIA COLLECTION.
@@ -227,55 +441,96 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
       theFormData.append('Preview', previewImage);
     }
 
+    if (formFilesToRemove) {
+      for (var i = 0; i < formFilesToRemove.length; i++) {
+        theFormData.append('FilesToRemove[]', formFilesToRemove[i]);
+      }
+    }
+
     let res;
     setProcessing(true)
+
     if (dataForUpdate) {
       res = await MainService().updateResource(dataForUpdate.id, theFormData);
     } else {
       res = await MainService().createResource(theFormData);
     }
-    //FormFiles are the files 'adding'
+    //* FormFiles are the files 'adding'
     if(action !== 'create') {
       setFormFiles([])
     }
-    setLoaded(false)
-    setProcessing(false)
     const resData = await res.json()
 
+
+    let output_message = 'Resource and metadata saved'
+    let ouput_ok = res.ok
+
     if(!res.ok) {
-      setMessage({display: true, ok: res.ok, text: resData.error ?? 'Error 0' })
-    } else {  
-      setForm(resData.data);
-      setMessage({display: true, text: '', ok: res.ok })
+      output_message = 'Error 0';
     }
-    
-    event.preventDefault();
-    return false; // prevent reload
+
+    if (!showUpgradeButton && resourceType === 'book' && action !== 'create') {
+      const {res: resMetadata, resData: dataMetadata} = await saveMetaDataResource()
+      if (!resMetadata.ok) {
+        ouput_ok = resMetadata.ok;
+        output_message = "Resource saved, but save metada is failed - " + dataMetadata.error
+      }
+    }
+
+    if (dataForUpdate) {
+        let data_wsp = new FormData();
+        data_wsp.append('workspaces', JSON.stringify(wksSelected.wsp))
+        // setWksSelected({wsp: resData.workspace ,resource_id: resData.id})
+        setResource(wksSelected.wsp.map(workspace => workspace.id))
+        await MainService().setWorkspaceResource(wksSelected.resource_id, data_wsp)
+    }
+
+    setLoaded(false)
+    setProcessing(false)
+
+    setForm(resData.data);
+    setMessage({display: true, text: output_message, ok: ouput_ok })
   }
 
   const getStoreFormData = () => {
-    const fd = store.getState().app.formData;
+    let fd = store.getState().app.formData;
+    if(firstAction){
+       fd = {name:""}
+       setFirstAction(false)
+    }
     return fd;
   }
 
   const metaData = { menuItem: 'Main Data', render: () => <Tab.Pane > <MainData /></Tab.Pane> };
   const lomsData = VALIDS_LOM.map(typeLom => ({menuItem: typeLom.name, render: () => (<Tab.Pane><LomForm data={dataForUpdate} standard={typeLom.key}/></Tab.Pane>)}))
+  const mediaData = { menuItem: "Media data", render: () => <Tab.Pane > <MediaData url={resourceData?.files?.[0].dam_url} description="test" transcription="Test" xtags={[]}/> </Tab.Pane> };
+  const cdnData = { menuItem: "CDN data", render: () => <Tab.Pane > <CDNData data={dataForUpdate?.data?.cdns_attached ?? []}/> </Tab.Pane> };
 
   const pane = [metaData];
-  const panes = [metaData, ...lomsData];
-
+  let panes = [metaData, ...lomsData];
+  if(resourceType === MULTIMEDIA) {
+    panes = [...panes,mediaData]
+  }
+  if (dataForUpdate?.data?.cdns_attached) {
+    panes = [...panes, cdnData]
+  }
   const setForm = (data) => {
     dispatch(setFormData(data))
   }
-  
+
   const customWidgets = {
     TextWidget: InputText,
   };
+
+  const fields = { bookExtraData: ExtraBookData };
+
   const uiSchema={
-    
     "description": {
-      "ui:order": ["active", "*"],
+      "ui:order": ["active", "can_download", "isFree", "*"],
       "active": {
+        "ui:widget": CustomToggle,
+      },
+      "isFree": {
         "ui:widget": CustomToggle,
       },
       "course_source": {
@@ -284,8 +539,8 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
           label: 'Course source'
         }
       },
-      "units": {
-        "ui:widget": CustomBookNumberOfUnitsSelector,
+      "unit": {
+        "ui:widget": CustomBookNumberOfUnitSelector,
         "ui:options": {
           "max": 50
         }
@@ -302,7 +557,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
         }
       },
       "name": {
-        "ui:widget": CustomInputText,        
+        "ui:widget": CustomInputText,
       },
       "external_url": {
         "ui:widget": CustomInputText,
@@ -310,16 +565,40 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
           "title": 'External url'
         }
       },
+      "lang": {
+        "ui:widget": ResourceLanguage,
+        "ui:options": {
+          opt: ["es", "cat", "en", "eu", "gl"],
+          label: 'Language',
+          enum: bookLanguages
+        }
+      },
+      "language": {
+        "ui:widget": ResourceLanguage,
+        "ui:options": {
+          opt: Object.keys(courseLanguages),
+          label: 'Language',
+          enum: courseLanguages
+        }
+      },
+      "extra": {
+        "ui:field": "bookExtraData",
+      },
+      "can_download": {
+        "ui:widget": CustomToggle,
+        "ui:options": {
+            label: "Can download?"
+        }
+      },
     }
   }
+
 
   const updateResourceFromLastCreated = async () => {
     let lastUpdated = await MainService().getLastResource(collection_id, 'lastCreated');
     setForm(lastUpdated.data);
     setFillAlert(true);
     triggerReload(!tr);
-    // let res = await MainService().updateResourceFromLastCreated(resourceData.id);
-    // setResourceData(res);
   }
 
   const updateResourceFromLastUpdated = async () => {
@@ -327,55 +606,75 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     setForm(lastUpdated.data);
     setFillAlert(true);
     triggerReload(!tr);
-    // let res = await MainService().updateResourceFromLastUpdated(resourceData.id);
-    // setForm(res.data);
-    // setResourceData(res);
+  }
+
+  const handleUpgradeResource = async () => {
+    setMessage(messageDefaultState)
+    const res = await MainService().upgradeResourceScorm(resourceData.id)
+    setMessage({display: true, ok: res.status === 'OK', text: res.message ?? 'Error 0' })
+  }
+
+  const saveMetaDataResource = async () => {
+    const data = formulario?.current?.state?.formData?.description ?? resourceData?.data?.description
+    data.id = resourceData.id
+    data.theme = resourceData.theme
+
+    // if (resourceData.version === 1) data.upgrading = true
+
+    var form_data = new FormData();
+    for ( var key in data ) {
+        form_data.append(key, data[key]);
+    }
+
+    const res = await MainService().updateMetadataBook(data)
+    const resData = res.ok ? await res.json() : {error: await res.text()}
+
+    return {res, resData}
+  }
+
+  const handleResourceTheme = (_, {value}) => {
+    setResourceData({...resourceData, theme: value})
   }
 
   const MetaDataForm = () => {
     return (
-      <Grid item sm={6}>
+      <Grid item sm={6} style={{paddingBottom: '20em'}}>
         <div className='forms-main-btns'>
-            {/* <Btn onClick={dispatchForm} loading={processing}>Update</Btn> */}
-            
-            <Btn color='teal' icon='facebook' onClick={() =>  _refForm.current.click()} loading={processing}> 
+            <Btn color='teal' icon='facebook' onClick={() =>  _refForm.current.click()} loading={processing}>
               {dataForUpdate ? (
-                <>
-                  <Icon name='save' /> Save
-                </>
-              ) : 
-                <>
-                  <Icon name='save' /> Submit
-                </>
-              }
+                <><Icon name='save' /> Save</>
+              ) : (
+                <><Icon name='save' /> Submit</>
+              )}
             </Btn>
-            
-              <Dropdown
-                  text='Import data'
-                  icon='clone'
-                  color='teal'
-                  labeled
-                  button
-                  className='icon teal'
-              >
-                <Dropdown.Menu>
-                  <Dropdown.Item onClick={updateResourceFromLastCreated}>
-                    last resource created
-                  </Dropdown.Item>
-                  <Dropdown.Item onClick={updateResourceFromLastUpdated}>
-                    last resource updated
-                  </Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
-            
+            <Dropdown
+                text='Import data'
+                icon='clone'
+                color='teal'
+                labeled
+                button
+                className='icon teal'
+            >
+              <Dropdown.Menu>
+                <Dropdown.Item onClick={updateResourceFromLastCreated}>
+                  last resource created
+                </Dropdown.Item>
+                <Dropdown.Item onClick={updateResourceFromLastUpdated}>
+                  last resource updated
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+            { showUpgradeButton && (
+              <Btn color='teal' onClick={handleUpgradeResource} ><Icon name='angle double up' /> Upgrade</Btn>
+            )}
         </div>
-        <div className='form-messages'>    
+        <div className='form-messages'>
           <Message color={msg.ok ? 'teal' : 'red'} className={msg.display ? 'zoom-message' : 'hidden-message'} info onDismiss={() => setMessage(messageDefaultState)}>
               {
                 msg.ok ? (
                   <>
                     <Message.Header>Done</Message.Header>
-                    <p>Resource {dataForUpdate ? 'updated' : 'created'}</p>
+                    <p>{msg.text !== '' ? msg.text : `Resource ${dataForUpdate ? 'updated' : 'created'}`}</p>
                   </>
                 ) : (
                   <>
@@ -384,22 +683,37 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                   </>
                 )
               }
-              
+
           </Message>
         </div>
+        {SHOW_THEMES_BOOK && resourceType === 'book' && action !== 'create' && (
+            <div className='form-theme'>
+                <label style={{fontWeight: 'bold'}}>Select Theme</label>
+                <Dropdown
+                    placeholder='Select theme'
+                    fluid
+                    selection
+                    onChange={handleResourceTheme}
+                    loading={loadingTheme}
+                    value={resourceData?.theme}
+                    options={themes}
+                />
+            </div>
+        )}
         <SemanticForm
           id='sfu'
           className={fillAlert ? 'fill-alert' : ''}
           uiSchema={uiSchema}
           schema={schema as JSONSchema7}
           onSubmit={postData}
-          formData={getStoreFormData()} 
+          formData={getStoreFormData()}
           onChange={(fd)=> setForm(fd.formData)}
           ArrayFieldTemplate={ArrayFieldTemplate}
           widgets={customWidgets}
+          fields={fields}
         >
           <button ref={_refForm} type="submit" style={{ display: "none" }} />
-        </SemanticForm> 
+        </SemanticForm>
       </Grid>
     )
   };
@@ -414,6 +728,11 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   });
 
   const FilesAndActions = () => {
+    const replaceMedia = async (input_id) => {
+      document.getElementById(input_id).click();
+    }
+
+    // setMaxFiles(appData?.max_files);
     return (
       <Grid item sm={6}>
           <ButtonGroup orientation='vertical'>
@@ -431,7 +750,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                 <input
                   accept="image/*"
                   type="file"
-                  onChange={(e)=> handleFiles(e)}
+                  onChange={(e)=> handleFiles(e,resourceData, maxFiles)}
                   name='Preview'
                   hidden
                 />
@@ -440,9 +759,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
 
             <Grid item sm={12} className={classes.divider}>
               {dataForUpdate ? (
-                <ButtonGroup orientation='horizontal' fullWidth id='forms-btn-actions'>    
-                    <ResourceActionButtons resource={dataForUpdate} />
-                </ButtonGroup>
+                <ResourceActionButtons resource={dataForUpdate} themeBook={resourceData?.theme ?? DEFAULT_THEME_BOOK} />
               ) : null}
             </Grid>
 
@@ -457,14 +774,38 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                   type="file"
                   multiple
                   accept={resourceType === MULTIMEDIA ? "audio/*,video/*,image/*" : '*'}
-                  onChange={(e)=> handleFiles(e)}
+                  onChange={(e)=> handleFiles(e,resourceData, maxFiles)}
                   name='File'
                   hidden
                 />
               </Button>
+              <Message color={'orange'} className={filesMsg.display ? 'zoom-message' : 'hidden-message'} info>
+                <Message.Header>Warning!</Message.Header>
+                <p>{filesMsg.text}</p>
+              </Message>
               {/* {resourceType === MULTIMEDIA ? (
                   <Label> You will upload a {mediaType}</Label>
               ) : null} */}
+            </Grid>
+            <Grid item sm={12} className={classes.divider}>
+                <WorkspaceSelect
+                    resourceData={resourceData}
+                    dataForUpdate={dataForUpdate}
+                    handleWorkspaceSelected={handleWorkspaceSelected}
+                    newWorkspaces={wksSelected.wsp}
+                />
+                {/* <FormControl fullWidth>
+                    <InputLabel id="demo-simple-select-label">Wokspace</InputLabel>
+                    <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={workspaceSelect}
+                        label="Workspace"
+                        onChange={handleWorkspaceSelect}
+                    >
+                    {workspacesOptions.map(option => <MenuItem value={option.value}>{option.label}</MenuItem>)}
+                 </Select>
+                </FormControl> */}
             </Grid>
           </ButtonGroup>
           <div style={{ margin: '15px 42px 0px 0px' }}>
@@ -477,35 +818,44 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                   onEditModal
                   setTheFiles={setTheFiles}
                   DynamicFormResourceData={setResourceData}
+                  maxNumberOfFiles={maxFiles}
+                  replaceMedia={replaceMedia}
+                  handleReplacedFiles={handleReplacedFiles}
+                  removeMediaV2={removeMediaV2}
+                  fileType={resourceType}
                 />
               ) : null
             }
-            
+
             {
               formFiles && formFiles.length > 0 ? (
                 <>
                   <Label>Adding:</Label>
                   {
                     Array.from(formFiles).map((f, i) => (
-                      <Card variant='outlined' className='associated-files-card' key={i}>
-                        <Icon name={iconHandler(f)}></Icon>
-                        <p><strong>File name:</strong> {f.name}</p>
-                        <p><strong>Mime type:</strong> {f.type}</p>
-                        <p><strong>Size:</strong> {(f.size / 1000000).toFixed(2)} MB</p>
-                      </Card>
+                      <Card variant='outlined' className='associated-files-card associated-files-card-pending-addition' key={i}>
+                      <Icon name={iconHandler(f)}></Icon>
+                      <p><strong>File name:</strong> {f.name}</p>
+                      <p><strong>Mime type:</strong> {f.type}</p>
+                      <p><strong>Size:</strong> {(f.size / 1000000).toFixed(2)} MB</p>
+                      <a className={'remove-media-from-uploading-queue-button'} onClick={() => removeMediaFromUploadingQueue(i, resourceData, maxFiles)} >Remove</a>
+                    </Card>
                     ))
                   }
                 </>
               ) : null
             }
-
+            {/* <CDNsAttachedToResourceV2
+              resourceData={resourceData}
+              formData={appData}
+            /> */}
           </div>
         </Grid>
     )
   }
 
   return (
-    <DialogContent className='edit-create-dialog-content'>
+    <DialogContent className='edit-create-dialog-content' style={{paddingBottom: 233}}>
       <DialogContentText>
         {/* Describe here how to {action} a {resourceType} */}
         <Btn color='teal' circular icon='close' onClick={() => handleClose()} className='read-card-close-button'/>
