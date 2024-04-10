@@ -5,6 +5,8 @@ import { Facet } from "../../../types/Facet";
 import { Workspace } from "../../../types/Workspace/Workspace";
 import { WorkspaceId } from "../../../types/Workspace/WorkspaceId";
 import FacetActionsWrapper from "./FacetActionsWrapper/FacetActionsWrapper";
+import { useDispatch, useSelector } from "react-redux";
+import { selectWorkspaceCollections, selectWorkspacesData, setWorkspaceCollections, setWorkspacesData } from "../../../appSlice";
 
 interface Props {
     facet: Facet,
@@ -20,35 +22,45 @@ interface Props {
 
 const WorkspaceFacetItems = ({ facet, filteredFacetValues, fixed, isChecked, changeFacet, supplementaryData, limit_items=0, renameItems }: Props ) => {
     const [workspaces, setWorkspaces] = useState(null);
-
+    const dispatch = useDispatch()
+    const workspacesCollections = useSelector(selectWorkspaceCollections)
+    const workspacesData = useSelector(selectWorkspacesData)
     useEffect(() => {
         setWorkspaces(supplementaryData)
     }, [supplementaryData]);
 
     const renameWorkspace = (id: number) => {
-
         return async (newName: string) => {
+            
             await MainService().renameWorkspace(id, newName);
             const { data } = await MainService().getWorkspaces([id]);
-
+      
             const nextWorkspace = parseWorkspace(data[0]);
 
             setWorkspaces({
                 ...workspaces,
                 [id]: nextWorkspace
             });
+            const newWorkspaceCollections = workspacesCollections.map(obj => {
+                if (obj.id === parseInt(id)) {
+                    return { ...obj, name: newName.trim() };
+                }
+                return obj;
+            });
+           
+            const newWorkspaceData = Object.keys(workspacesData).reduce((acc, key) => {
+                if (parseInt(workspacesData[key].id) === parseInt(id)) {
+                    acc[key] = { ...workspacesData[key], name: newName.trim() };
+                } else {
+                    acc[key] = workspacesData[key];
+                }
+                return acc;
+            }, {});
+            dispatch(setWorkspacesData(newWorkspaceData));
+            dispatch(setWorkspaceCollections(newWorkspaceCollections));
         }
     }
-    const handleRename = (id: number) => {
-        return async (newName: string) => {
-            const nextWorkspace = await renameItems(id, newName)
-            setWorkspaces({
-                ...workspaces,
-                [id]: nextWorkspace
-            })
-        }
 
-    }
 
     if (!workspaces) return null;
     if (Object.keys(workspaces).length === 0) return null;
@@ -57,15 +69,15 @@ const WorkspaceFacetItems = ({ facet, filteredFacetValues, fixed, isChecked, cha
             {Object.keys(filteredFacetValues).map((workspaceId, index) =>
                 {
                     const values = filteredFacetValues[workspaceId];
-
                     if (!workspaces[workspaceId]) {
                         return null;
                     }
 
                     return (
                         <li key={index} style={{ listStyleType: "none" }}>
-                            <FacetActionsWrapper name={workspaces[workspaceId].name} rename={renameWorkspace(workspaces[workspaceId].id)}
-                                canBeEdit={values.canBeEdit}>
+                            <FacetActionsWrapper
+                                name={workspaces[workspaceId].name} rename={renameWorkspace(workspaces[workspaceId].id)}
+                                canBeEdit={values.canBeEdit} canDelete={values.canDelete} route_delete={values.route_delete} count={values.count}>
                                 <input
                                     type={values.radio ? 'radio' : 'checkbox'}
                                     name={workspaceId}
@@ -114,14 +126,13 @@ const EditableFacetItems = ({ facet, filteredFacetValues, fixed, isChecked, chan
             {Object.keys(filteredFacetValues).map((workspaceId, index) =>
                 {
                     const values = filteredFacetValues[workspaceId];
-
                     if (!workspaces[workspaceId]) {
                         return null;
                     }
 
                     return (
                         <li key={index} style={{ listStyleType: "none" }}>
-                            <FacetActionsWrapper name={workspaces[workspaceId].name} rename={renameWorkspace(workspaces[workspaceId].id)} canBeEdit={values.canBeEdit}>
+                            <FacetActionsWrapper name={workspaces[workspaceId].name} rename={renameWorkspace(workspaces[workspaceId].id)} canBeEdit={values.canBeEdit} canDelete={values.canDelete} route_delete={values.route_delete} count={values.count}>
                                 <input
                                     type={values.radio ? 'radio' : 'checkbox'}
                                     name={workspaceId}

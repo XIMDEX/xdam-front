@@ -63,10 +63,9 @@ const useStyles = makeStyles((theme) => ({
 
 export function FacetCard({ facet, fixed, resources, collection, organization, facetsQuery }) {
     const classes = useStyles()
-    const values = facet.values ?? {}
     const dispatch = useDispatch()
+    const values = facet.values ?? {}
     const [facetValues, setFacetValues] = useState(values)
-    const [errors, setErrors] = useState([])
     const [cardOpen, setCardOpen] = useState(facet.key === COLLECTION || facet.key === ORGANIZATION ? false : true)
     const selectedOrg = organization
     const selectedColl = collection
@@ -74,7 +73,6 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
     const currentFacets = JSON.parse(JSON.stringify(facetsQuery));
     const supplementaryData = useSupplementaryData(facet);
     const [selectedWS, setSelectedWS] = useState([])
-
     const [showMore, setShowMore] = useState<Boolean>(false)
 
     useEffect( () => {
@@ -113,23 +111,24 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
         setFacetValues(result)
     }
 
-    function Errors(): any
-    {
-        return (
-            errors.map((error) => (
-                <span>{error}</span>
-            ))
-        )
-    }
-
     function clearFilter(evt)
     {
         const facetKey = facet.key;
-        if (currentFacets.hasOwnProperty(facetKey)) {
-            delete currentFacets[facetKey]
+        let facetsQueryCopy = currentFacets
+        if(facetKey === 'lomes'){
+            if(facetsQueryCopy[facetKey].length === 1) {
+                delete facetsQueryCopy[facetKey]
+            }else{
+                const facetValues = Object.keys(facet.values)
+                facetsQueryCopy[facetKey] = facetsQueryCopy[facetKey].filter(label => !facetValues.includes(label))
+            }
+        }else{
+            if (currentFacets.hasOwnProperty(facetKey)) {
+                delete facetsQueryCopy[facetKey]
+            }
         }
         dispatch(setResourcesLoading(true))
-        dispatch(setFacetsQuery(currentFacets))
+        dispatch(setFacetsQuery(facetsQueryCopy))
     }
 
     function toggleCard()
@@ -137,7 +136,6 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
         var toggle = !cardOpen;
         setCardOpen(toggle)
     }
-
     function label()
     {
         if (facet.key === ORGANIZATION && typeof selectedOrg === 'object') {
@@ -151,7 +149,6 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
         if (facet.key in EFacetNameMapping) {
             return EFacetNameMapping[facet.key];
         }
-
         return facet.label
     }
 
@@ -160,6 +157,7 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
     const handleFilterSelected = (value, isChecked) => {
         let newValues = {...facetValues}
         newValues[value] = {...newValues[value], selected: isChecked}
+        console.log("FILTER SELECTED", newValues);
         setFacetValues(newValues)
         if (isChecked && !selectedWS.includes(value)) {
             setSelectedWS([...selectedWS,value ])
@@ -169,16 +167,18 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
         }
     }
 
+    const checkLomProperty = () => {
+        const facetValues = Object.keys(facet.values)
+        const existFilter = currentFacets[facet.key].filter(label => facetValues.includes(label))
+        return existFilter.length > 0;
+    }
+
     return (
 
         <Grid container className={`${classes.sidebarRoot} ${cardOpen ? 'cardOpen' : ''} facetCard facets-context`} >
-                {/* Errors */}
-                <Grid item sm={12}>
-                    <Errors />
-                </Grid>
                 {/* Facet title */}
                 <Grid container>
-                    <Grid item sm={!fixed && currentFacets.hasOwnProperty(facet.key) ? 11 : 12}>
+                    <Grid item sm={!fixed && currentFacets.hasOwnProperty(facet.key) && checkLomProperty() ? 11 : 12}>
                         <Button aria-label="facet-title"
                             onClick={toggleCard}
                             fullWidth
@@ -201,7 +201,7 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
                             )}
                         </Button>
                     </Grid>
-                    {!fixed && currentFacets.hasOwnProperty(facet.key) && (
+                    {!fixed && currentFacets.hasOwnProperty(facet.key) &&  checkLomProperty() && (
                         <Grid item sm={1}>
                             <IconButton color='primary' size='small' onClick={clearFilter} className={classes.clearIcon}>
                                 <ClearIcon color='secondary'/>
@@ -210,7 +210,7 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
                     )}
                 </Grid>
                 <div className={cardOpen ? classes.cardFacet : classes.hidden}>
-                    {Object.keys(facetValues).length > LIMIT_ITEMS && search === '' ? (
+                    {Object.keys(values).length > LIMIT_ITEMS && search === '' ? (
                         // true ? (
                             <Grid item sm={12}>
                                 <TextField

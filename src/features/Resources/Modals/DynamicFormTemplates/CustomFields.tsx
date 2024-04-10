@@ -39,7 +39,14 @@ export const InputTextArea = (props) => {
 export const CustomToggle = (props) => {
     return (
         <div className={`forms-textField`}>
-            <section style={{...(props.style?.container ?? {})}}>
+            <section
+                style={{
+                    ...(props.style?.container ?? {}),
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                }}
+            >
                 <label style={{display: 'block', marginBottom: 9}} htmlFor={props.id}>{props.label} {props.required ? '*' : ''}</label>
                 <Radio toggle defaultChecked={props.value} onClick={(event, data) => {props.onChange(data.checked)}}/>
             </section>

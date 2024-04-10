@@ -7,6 +7,7 @@ import { Input, Dropdown } from 'semantic-ui-react'
 import { setResourcesLoading } from '../../appSlice';
 import _ from 'lodash'
 import { SHOW_DAM_ORGANIZATIONS } from '../../constants';
+import { setCurrentCollection } from '../../slices/collectionSlice';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -77,6 +78,7 @@ export function Search( Props ) {
 
     dispatch(setQuery(newQuery))
     dispatch(setCollection(cid))
+    dispatch(setCurrentCollection(cid))
     dispatch(setFacetsQuery({}))
     return;
   };

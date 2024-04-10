@@ -425,6 +425,19 @@ class AppService {
       return res;
     }
 
+
+    async setWorkspaceResource(resource_id, workspaces)
+    {
+        const _api = api().updateWorkspaceResource(resource_id);
+        const request = {
+            method: _api.method,
+            headers: this.httpOptions.headersForm,
+            body: workspaces,
+        }
+        const res = await (await fetch(_api.url, request)).json();
+        return res;
+    }
+
     async setWorkspace(id: number)
     {
       const _api = api().setWorkspace;
@@ -514,6 +527,23 @@ class AppService {
       const response = await fetch(url, request);
 
       return await response.json();
+    }
+
+    async getWorkspacesOrganization(orgID)
+    {
+
+        if (!orgID)
+            return;
+
+        const _api = api().getWorkspacesOrganization(orgID);
+
+        const request = {
+            method: _api.method,
+            headers: this.httpOptions.headers,
+        }
+        const response = await fetch(_api.url, request);
+
+        return await response.json();
     }
 
     async getBookVersion(bookid)
@@ -668,6 +698,44 @@ class AppService {
           signal
         }
         return fetch(_api.url, request)
+    }
+
+    async upgradeResourceScorm(bookId) {
+        const _api = api().upgradeScorm(bookId)
+
+        const request = {
+            method: _api.method
+        }
+
+        try {
+            const res = await fetch(_api.url, request);
+            if (!res.ok) throw Error(res.statusText)
+            return {status: 'OK', message: 'Resource upgraded successfully'};
+        }
+        catch (e) {
+            console.error(e.message)
+            return {status: 'KO', message: 'Error upgrading resource'};
+        }
+    }
+
+    async checkIfCanUpgradeScrom(bookId) {
+        const _api = api().checkIfCanUpgradeScorm(bookId)
+
+        const request = {
+            method: _api.method
+        }
+
+        try {
+            const res = await (await fetch(_api.url, request));
+
+            if (!res.ok) throw Error(res.statusText)
+            const json = await res.json();
+            return json.can_upgrade;
+        }
+        catch (e) {
+            console.error(e.message)
+            return false;
+        }
     }
 }
 

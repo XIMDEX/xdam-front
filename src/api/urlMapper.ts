@@ -22,7 +22,7 @@ const api = () => {
         },
         getUser: {
             method: 'GET',
-            url: baseUrl + '/user/me'
+            url: baseUrl + '/user/me?lite=true'
         },
         getSchemas: {
             method: 'GET',
@@ -73,6 +73,10 @@ const api = () => {
             method: 'GET',
             url: `${baseUrl}/workspace/getMultiple`
         },
+        getWorkspacesOrganization: (orgID) =>  ({
+            method: 'GET',
+            url: `${baseUrl}/organization/${orgID}/workspaces?lite=true`
+        }),
         updateWorkspace: {
             method: 'POST',
             url: `${baseUrl}/workspace/update`
@@ -96,6 +100,10 @@ const api = () => {
         updateResource: (id) => ({
             method: 'POST',
             url: baseUrl + '/resource/' + id + '/update'
+        }),
+        updateWorkspaceResource: (id) => ({
+            method: 'POST',
+            url: baseUrl + '/resource/' + id + '/setWorkspace'
         }),
         updateResourceFromOther: (resource_to_update, last_created, last_updated, other_resource) => {
             let req = {
@@ -207,7 +215,17 @@ const api = () => {
                 url: `${SOLR_ALFRESCO_URL}/alfresco/api/-default-/public/search/versions/1/search`,
                 auth: 'Basic ' + REACT_APP_TOKEN_ALFRESCO,
             }
-        }
+        },
+
+        checkIfCanUpgradeScorm: (bookId) => ({
+            method: 'GET',
+            url: `${BOOK_EDITOR_URL}api/book/${bookId}/can_upgrade`
+        }),
+
+        upgradeScorm: (bookId) => ({
+            method: 'POST',
+            url: `${BOOK_EDITOR_URL}api/book/${bookId}/upgrade`
+        }),
     }
     return mapper;
 }

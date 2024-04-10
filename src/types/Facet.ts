@@ -3,6 +3,8 @@ export interface Facet {
     label: string,
     values: {
         [value: string]: {
+            route_delete: string
+            canDelete: boolean | null
             id: any | null,
             count: number,
             selected: boolean,

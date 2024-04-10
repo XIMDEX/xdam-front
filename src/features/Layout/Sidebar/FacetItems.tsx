@@ -83,7 +83,6 @@ const FacetItem = ({name, facet, fixed, facetValues, supplementaryData, changeFa
                                 <span
                                     style={{
                                         display: 'inline-block',
-                                        width: '80%',
                                         whiteSpace: 'nowrap',
                                         overflow: 'hidden',
                                         textOverflow: 'ellipsis',
@@ -95,7 +94,6 @@ const FacetItem = ({name, facet, fixed, facetValues, supplementaryData, changeFa
                                 <span
                                     style={{
                                         display: 'inline-block',
-                                        maxWidth: onHover ? '85%' : '100%',
                                         whiteSpace: 'nowrap',
                                         overflow: 'hidden',
                                         textOverflow: 'ellipsis',

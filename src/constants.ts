@@ -63,6 +63,7 @@ export const PATH_TAXONS_DATA = '9.formData.Taxon Path';
 
 export const MAX_BOOK_UNITS = 50;
 export const CURRENT_BOOK_VERSION = 2
+export const UNLIMITED_FILES = 'unlimited';
 
 export enum bookLanguages {
   en = "English",
@@ -87,7 +88,7 @@ export enum courseLanguages {
 
 export const SHOW_DAM_ORGANIZATIONS = process.env.REACT_APP_SHOW_DAM_ORGANIZATIONS === 'false' ? false : true
 
-export const SHOW_THEMES_BOOK = process.env.REACT_APP_SHOW_THEMES_BOOK === 'true'
+export const SHOW_THEMES_BOOK = process.env.REACT_APP_SHOW_THEMES_BOOK === 'true' ?? false
 export const DEFAULT_THEME_BOOK = process.env.REACT_APP_DEFAULT_THEME_BOOK ?? 'base'
 
 export const CORE_VERSION = process.env.REACT_APP_SOLR_VERSION  ?? ''
