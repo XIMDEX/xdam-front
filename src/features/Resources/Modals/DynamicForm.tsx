@@ -636,6 +636,10 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     setResourceData({...resourceData, theme: value})
   }
 
+  const handleUpdate = async () => {
+    const res = await MainService().duplicateResource(resourceData.id)
+  }
+
   const MetaDataForm = () => {
     return (
       <Grid item sm={6} style={{paddingBottom: '20em'}}>
@@ -646,6 +650,9 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
               ) : (
                 <><Icon name='save' /> Submit</>
               )}
+            </Btn>
+            <Btn color='teal' icon='facebook' onClick={() =>  handleUpdate()} loading={processing}>
+              <><Icon name='save' /> Duplicate</>
             </Btn>
             <Dropdown
                 text='Import data'

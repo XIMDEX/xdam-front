@@ -737,6 +737,27 @@ class AppService {
             return false;
         }
     }
+
+    async duplicateResource(id){
+      const _api = api().duplicateResource(id)
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers
+      }
+
+      try {
+        const res = await (await fetch(_api.url, request));
+
+        if (!res.ok) throw Error(res.statusText)
+        const json = await res.json();
+        return json.can_upgrade;
+      }
+      catch (e) {
+          console.error(e.message)
+          return false;
+      }
+
+    }
 }
 
 export default function MainService()

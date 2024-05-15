@@ -85,6 +85,10 @@ const api = () => {
             method: 'POST',
             url: baseUrl + '/resource'
         },
+        duplicateResource: (resource_id) => ({
+            method: 'GET',
+            url: baseUrl + `/resource/${resource_id}/duplicate?XDEBUG_SESSION_START`
+        }),
         createBatchOfResources: {
             method: 'POST',
             url: baseUrl + '/resource/createBatch'
