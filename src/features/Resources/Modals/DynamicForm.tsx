@@ -98,6 +98,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const [previewImage, setPreviewImage] = useState(null);
   const [formFiles, setFormFiles] = useState([]);
   const [processing, setProcessing] = useState(null);
+  const [processingDuplicate, setProcessingDuplicate] = useState(null);
   const messageDefaultState = { display: false, text: '', ok: false }
   const [msg, setMessage] = useState(messageDefaultState);
   const _refForm = React.useRef(null);
@@ -117,7 +118,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
             wps.push(wps_data[key])
         }
     })
-
+    
     return {
       resource_id: dataForUpdate?.id ?? null,
       wsp: wps
@@ -272,7 +273,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
         (lomesl === null || lomesl === '0')
         && VALIDS_LOM.map(type => type.key).includes('lomes')
       ) {
-        fetchLomesSchema()
+        fetchLomesSchema();
         localStorage.setItem('lomes_loaded', '1');
       }
 
@@ -636,8 +637,22 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     setResourceData({...resourceData, theme: value})
   }
 
-  const handleUpdate = async () => {
-    const res = await MainService().duplicateResource(resourceData.id)
+  const handleDuplicate = async () => {
+    setProcessingDuplicate(true);
+    let output_ok = false;
+    let output_message = ""; 
+    try {
+      const res = await MainService().duplicateResource(resourceData.id);
+      output_ok = true
+      output_message = "Resource Duplicated successfully"
+    } catch (error) {
+      output_message = 'Error 0';
+      console.error("Failed to duplicate resource:", error);
+    } finally {
+      setProcessingDuplicate(false); 
+      setMessage({display: true, ok: output_ok, text: output_message})
+      localStorage.setItem('reload_catalogue', '1');
+    }
   }
 
   const MetaDataForm = () => {
@@ -651,8 +666,8 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                 <><Icon name='save' /> Submit</>
               )}
             </Btn>
-            <Btn color='teal' icon='facebook' onClick={() =>  handleUpdate()} loading={processing}>
-              <><Icon name='save' /> Duplicate</>
+            <Btn color='teal' icon='facebook' onClick={() =>  handleDuplicate()} loading={processingDuplicate}>
+              <><Icon name='copy' /> Duplicate</>
             </Btn>
             <Dropdown
                 text='Import data'

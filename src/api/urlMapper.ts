@@ -55,7 +55,7 @@ const api = () => {
         }),
         getCatalog: (id) => ({
             method: 'GET',
-            url: baseUrl + '/catalogue/' + id
+            url: baseUrl + '/catalogue/' + id 
         }),
         downloadFile: (dam_url) => ({
             method: 'GET',
