@@ -150,6 +150,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const [themes, setThemes] = useState([])
 
   const [showUpgradeButton, setShowUpgradeButton] = useState(false)
+  const  showDuplicateButton = (resourceType === "book")
 
   //cdn functions
 //   const [maxFiles, setMaxFiles] = useState(0);
@@ -666,9 +667,10 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                 <><Icon name='save' /> Submit</>
               )}
             </Btn>
+            {showDuplicateButton  &&
             <Btn color='teal' icon='facebook' onClick={() =>  handleDuplicate()} loading={processingDuplicate}>
               <><Icon name='copy' /> Duplicate</>
-            </Btn>
+            </Btn>}
             <Dropdown
                 text='Import data'
                 icon='clone'
