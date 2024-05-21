@@ -99,6 +99,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const [formFiles, setFormFiles] = useState([]);
   const [processing, setProcessing] = useState(null);
   const [processingDuplicate, setProcessingDuplicate] = useState(null);
+  const [canDuplicate,setCanDuplicate] = useState(false);
   const messageDefaultState = { display: false, text: '', ok: false }
   const [msg, setMessage] = useState(messageDefaultState);
   const _refForm = React.useRef(null);
@@ -235,12 +236,15 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   }
 
   const getDuplicateStatus = async(resData)  => {
-    resourceData.files.map(async (file) => {
+    let isNotPending = true;
+    await Promise.all(resData.files.map(async (file) => {
       const duplicateStatus = await MainService().duplicateStatus(file.id);
-      if(duplicateStatus.status){
-        setMessage({display: true, text: "Processing Files, Please wait", ok: true} );
+      if (duplicateStatus.status === "pending") {
+        setMessage({ display: true, text: "Processing Files, Please wait", ok: true });
+        isNotPending = false;
       }
-    } )
+    }));
+    setCanDuplicate(isNotPending);
   }
 
   //end cdn functions
@@ -257,7 +261,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     if (SHOW_THEMES_BOOK && action === 'edit' && resourceType === 'book') {
         getThemes()
     }
-    const duplicateStatus = ";l";
+
   }, [])
 
   useEffect(() => {
@@ -652,21 +656,24 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   }
 
   const handleDuplicate = async () => {
-    setProcessingDuplicate(true);
-    let output_ok = false;
-    let output_message = ""; 
-    try {
-      const res = await MainService().duplicateResource(resourceData.id);
-      output_ok = true
-      output_message = "Resource Duplicated successfully"
-    } catch (error) {
-      output_message = 'Error 0';
-      console.error("Failed to duplicate resource:", error);
-    } finally {
-      setProcessingDuplicate(false); 
-      setMessage({display: true, ok: output_ok, text: output_message})
-      localStorage.setItem('reload_catalogue', '1');
+    if(canDuplicate){
+      setProcessingDuplicate(true);
+      let output_ok = false;
+      let output_message = ""; 
+      try {
+        const res = await MainService().duplicateResource(resourceData.id);
+        output_ok = true
+        output_message = "Resource Duplicated successfully"
+      } catch (error) {
+        output_message = 'Error 0';
+        console.error("Failed to duplicate resource:", error);
+      } finally {
+        setProcessingDuplicate(false); 
+        setMessage({display: true, ok: output_ok, text: output_message})
+        localStorage.setItem('reload_catalogue', '1');
+      }
     }
+   
   }
 
   const MetaDataForm = () => {
@@ -681,7 +688,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
               )}
             </Btn>
             {showDuplicateButton  &&
-            <Btn color='teal' icon='facebook' onClick={() =>  handleDuplicate()} loading={processingDuplicate}>
+            <Btn color={canDuplicate ? 'teal' : 'grey'} icon='facebook' onClick={() =>  handleDuplicate()} loading={processingDuplicate}>
               <><Icon name='copy' /> Duplicate</>
             </Btn>}
             <Dropdown
