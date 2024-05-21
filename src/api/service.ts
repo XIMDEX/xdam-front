@@ -750,13 +750,30 @@ class AppService {
 
         if (!res.ok) throw Error(res.statusText)
         const json = await res.json();
-        return json.can_upgrade;
+        return json;
       }
       catch (e) {
           console.error(e.message)
           return false;
       }
 
+    }
+
+    async duplicateStatus(id){
+      const _api = api().duplicateStatus(id)
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers
+      }
+      try {
+        const res = await (await fetch(_api.url, request));
+        
+        if (!res.ok) throw Error(res.statusText)
+          const json = await res.json();
+          return json;
+      } catch (error) {
+        
+      }
     }
 }
 

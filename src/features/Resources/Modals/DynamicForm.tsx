@@ -234,9 +234,20 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     triggerReload(!tr);
   }
 
+  const getDuplicateStatus = async(resData)  => {
+    resourceData.files.map(async (file) => {
+      const duplicateStatus = await MainService().duplicateStatus(file.id);
+      if(duplicateStatus.status){
+        setMessage({display: true, text: "Processing Files, Please wait", ok: true} );
+      }
+    } )
+  }
+
   //end cdn functions
 
   useEffect(() => {
+
+
     const getThemes = async () => {
         const themes_scorm = await MainService().getBookThemes()
         const newThemes = themes_scorm.map(th => ({key: th, value: th, text: th === 'v1' ? `${th} (deprecated)` : th}))
@@ -246,10 +257,12 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     if (SHOW_THEMES_BOOK && action === 'edit' && resourceType === 'book') {
         getThemes()
     }
-
+    const duplicateStatus = ";l";
   }, [])
 
   useEffect(() => {
+    if(resourceData)getDuplicateStatus(resourceData)
+    
     if(action === 'create') {
       if(typeof getStoreFormData() !== 'object') {
         dispatch(setFormData({}));
