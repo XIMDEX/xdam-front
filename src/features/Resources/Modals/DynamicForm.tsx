@@ -237,13 +237,11 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
 
   const getDuplicateStatus = async(resData)  => {
     let isNotPending = true;
-    await Promise.all(resData.files.map(async (file) => {
-      const duplicateStatus = await MainService().duplicateStatus(file.id);
-      if (duplicateStatus.status === "pending") {
-        setMessage({ display: true, text: "Processing Files, Please wait", ok: true });
-        isNotPending = false;
-      }
-    }));
+    const duplicateStatus =  await MainService().duplicateStatus(resData.id)
+    if (duplicateStatus.status === "pending") {
+      setMessage({ display: true, text: "Processing Files, Please wait", ok: true });
+      isNotPending = false;
+    }
     setCanDuplicate(isNotPending);
   }
 
