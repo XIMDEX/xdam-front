@@ -98,6 +98,8 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const [previewImage, setPreviewImage] = useState(null);
   const [formFiles, setFormFiles] = useState([]);
   const [processing, setProcessing] = useState(null);
+  const [processingDuplicate, setProcessingDuplicate] = useState(null);
+  const [canDuplicate,setCanDuplicate] = useState(false);
   const messageDefaultState = { display: false, text: '', ok: false }
   const [msg, setMessage] = useState(messageDefaultState);
   const _refForm = React.useRef(null);
@@ -117,7 +119,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
             wps.push(wps_data[key])
         }
     })
-
+    
     return {
       resource_id: dataForUpdate?.id ?? null,
       wsp: wps
@@ -149,6 +151,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const [themes, setThemes] = useState([])
 
   const [showUpgradeButton, setShowUpgradeButton] = useState(false)
+  const showDuplicateButton = (resourceType === "book")
 
   //cdn functions
 //   const [maxFiles, setMaxFiles] = useState(0);
@@ -232,9 +235,21 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     triggerReload(!tr);
   }
 
+  const getDuplicateStatus = async(resData)  => {
+    let isNotPending = true;
+    const duplicateStatus =  await MainService().duplicateStatus(resData.id)
+    if (duplicateStatus && duplicateStatus?.status === "pending") {
+      setMessage({ display: true, text: "Processing Files, Please wait", ok: true });
+      isNotPending = false;
+    }
+    setCanDuplicate(isNotPending);
+  }
+
   //end cdn functions
 
   useEffect(() => {
+   
+
     const getThemes = async () => {
         const themes_scorm = await MainService().getBookThemes()
         const newThemes = themes_scorm.map(th => ({key: th, value: th, text: th === 'v1' ? `${th} (deprecated)` : th}))
@@ -248,6 +263,8 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   }, [])
 
   useEffect(() => {
+    if(resourceData)getDuplicateStatus(resourceData)
+    
     if(action === 'create') {
       if(typeof getStoreFormData() !== 'object') {
         dispatch(setFormData({}));
@@ -272,7 +289,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
         (lomesl === null || lomesl === '0')
         && VALIDS_LOM.map(type => type.key).includes('lomes')
       ) {
-        fetchLomesSchema()
+        fetchLomesSchema();
         localStorage.setItem('lomes_loaded', '1');
       }
 
@@ -501,6 +518,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     return fd;
   }
 
+
   const metaData = { menuItem: 'Main Data', render: () => <Tab.Pane > <MainData /></Tab.Pane> };
   const lomsData = VALIDS_LOM.map(typeLom => ({menuItem: typeLom.name, render: () => (<Tab.Pane><LomForm data={dataForUpdate} standard={typeLom.key}/></Tab.Pane>)}))
   const mediaData = { menuItem: "Media data", render: () => <Tab.Pane > <MediaData url={resourceData?.files?.[0].dam_url} description="test" transcription="Test" xtags={[]}/> </Tab.Pane> };
@@ -636,6 +654,31 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     setResourceData({...resourceData, theme: value})
   }
 
+  const handleDuplicate = async () => {
+    if(canDuplicate){
+      setProcessingDuplicate(true);
+      let output_ok = false;
+      let output_message = ""; 
+      try {
+        const res = await MainService().duplicateResource(resourceData.id);
+        output_ok = true
+        output_message = "Resource Duplicated successfully"
+      } catch (error) {
+        output_message = 'Error 0';
+        console.error("Failed to duplicate resource:", error);
+      } finally {
+        setProcessingDuplicate(false); 
+        setCanDuplicate(false);
+        setMessage({display: true, ok: output_ok, text: output_message})
+        localStorage.setItem('reload_catalogue', '1');
+        setTimeout(() => {
+          setCanDuplicate(true);
+        }, 10000);
+      }
+    }
+   
+  }
+
   const MetaDataForm = () => {
     return (
       <Grid item sm={6} style={{paddingBottom: '20em'}}>
@@ -647,6 +690,10 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                 <><Icon name='save' /> Submit</>
               )}
             </Btn>
+            {(action === 'edit' && showDuplicateButton)  &&
+            (<Btn color={canDuplicate ? 'teal' : 'grey'} icon='facebook' onClick={() =>  handleDuplicate()} loading={processingDuplicate}>
+              <><Icon name='copy' /> Duplicate</>
+            </Btn>)}
             <Dropdown
                 text='Import data'
                 icon='clone'
