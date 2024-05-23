@@ -151,7 +151,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const [themes, setThemes] = useState([])
 
   const [showUpgradeButton, setShowUpgradeButton] = useState(false)
-  const  showDuplicateButton = (resourceType === "book")
+  const showDuplicateButton = (resourceType === "book")
 
   //cdn functions
 //   const [maxFiles, setMaxFiles] = useState(0);
@@ -238,7 +238,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const getDuplicateStatus = async(resData)  => {
     let isNotPending = true;
     const duplicateStatus =  await MainService().duplicateStatus(resData.id)
-    if (duplicateStatus.status === "pending") {
+    if (duplicateStatus && duplicateStatus?.status === "pending") {
       setMessage({ display: true, text: "Processing Files, Please wait", ok: true });
       isNotPending = false;
     }
@@ -518,6 +518,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     return fd;
   }
 
+
   const metaData = { menuItem: 'Main Data', render: () => <Tab.Pane > <MainData /></Tab.Pane> };
   const lomsData = VALIDS_LOM.map(typeLom => ({menuItem: typeLom.name, render: () => (<Tab.Pane><LomForm data={dataForUpdate} standard={typeLom.key}/></Tab.Pane>)}))
   const mediaData = { menuItem: "Media data", render: () => <Tab.Pane > <MediaData url={resourceData?.files?.[0].dam_url} description="test" transcription="Test" xtags={[]}/> </Tab.Pane> };
@@ -685,10 +686,10 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                 <><Icon name='save' /> Submit</>
               )}
             </Btn>
-            {showDuplicateButton  &&
-            <Btn color={canDuplicate ? 'teal' : 'grey'} icon='facebook' onClick={() =>  handleDuplicate()} loading={processingDuplicate}>
+            {(action === 'edit' && showDuplicateButton)  &&
+            (<Btn color={canDuplicate ? 'teal' : 'grey'} icon='facebook' onClick={() =>  handleDuplicate()} loading={processingDuplicate}>
               <><Icon name='copy' /> Duplicate</>
-            </Btn>}
+            </Btn>)}
             <Dropdown
                 text='Import data'
                 icon='clone'
