@@ -248,7 +248,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   //end cdn functions
 
   useEffect(() => {
-
+   
 
     const getThemes = async () => {
         const themes_scorm = await MainService().getBookThemes()
@@ -668,8 +668,12 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
         console.error("Failed to duplicate resource:", error);
       } finally {
         setProcessingDuplicate(false); 
+        setCanDuplicate(false);
         setMessage({display: true, ok: output_ok, text: output_message})
         localStorage.setItem('reload_catalogue', '1');
+        setTimeout(() => {
+          setCanDuplicate(true);
+        }, 10000);
       }
     }
    
