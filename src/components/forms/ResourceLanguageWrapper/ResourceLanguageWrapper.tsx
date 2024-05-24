@@ -9,7 +9,7 @@ const ResourceLanguageWrapper = (
 
     const widgetOptions = {
         label,
-        opt: Object.keys(bookLanguages),
+        opt: ["es", "ca", "en", "eu", "gl"],
         enum: bookLanguages
     }
 
