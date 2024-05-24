@@ -740,14 +740,19 @@ class AppService {
 
       try {
         const res = await (await fetch(_api.url, request));
+        let json;
+        try {
+            json = await res.json();
+        } catch (_) {}
 
+        if (json.error) throw Error(json.error)
         if (!res.ok) throw Error(res.statusText)
-        const json = await res.json();
+
         return json;
       }
       catch (e) {
           console.error(e.message)
-          return false;
+          return {error: e.message};
       }
 
     }
@@ -760,12 +765,31 @@ class AppService {
       }
       try {
         const res = await (await fetch(_api.url, request));
-        
+
         if (!res.ok) throw Error(res.statusText)
           const json = await res.json();
           return json;
       } catch (error) {
-        
+
+      }
+    }
+
+    async duplicateRetry(id) {
+
+      const _api = api().duplicateRetry(id)
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers
+      }
+      try {
+        const res = await (await fetch(_api.url, request));
+
+        if (!res.ok) throw Error(res.statusText)
+          const json = await res.json();
+          return json;
+      } catch (error) {
+        console.error(error)
+        return {error: 'Error on retrying duplication'}
       }
     }
 }

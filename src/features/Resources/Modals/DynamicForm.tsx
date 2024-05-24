@@ -119,7 +119,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
             wps.push(wps_data[key])
         }
     })
-    
+
     return {
       resource_id: dataForUpdate?.id ?? null,
       wsp: wps
@@ -235,6 +235,15 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     triggerReload(!tr);
   }
 
+  const retryDuplicate = async (id) => {
+    const res = await MainService().duplicateRetry(id);
+    if (res.error) {
+      setMessage({display: true, text: res.error + '. Please contact with your administrator', ok: false});
+    } else {
+      setMessage({display: true, text: "Resource Duplicated successfully", ok: true});
+    }
+  }
+
   const getDuplicateStatus = async(resData)  => {
     let isNotPending = true;
     const duplicateStatus =  await MainService().duplicateStatus(resData.id)
@@ -242,13 +251,33 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
       setMessage({ display: true, text: "Processing Files, Please wait", ok: true });
       isNotPending = false;
     }
+    if (duplicateStatus && duplicateStatus?.status === "error") {
+        setMessage({
+            display: true,
+            text: (
+                <p>Error: {duplicateStatus?.message}
+                <button
+                    onClick={() => retryDuplicate(resData.id)}
+                    style={{
+                        marginLeft: '0.25em',
+                        textDecoration: 'underline',
+                        backgroundColor: 'transparent',
+                        color: '#c82121',
+                        fontWeight: 'bold',
+                        border: 'none',
+                        cursor: 'pointer'
+                    }}
+                >Try again</button></p>
+            ), ok: false });
+        isNotPending = false;
+    }
     setCanDuplicate(isNotPending);
   }
 
   //end cdn functions
 
   useEffect(() => {
-   
+
 
     const getThemes = async () => {
         const themes_scorm = await MainService().getBookThemes()
@@ -263,8 +292,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   }, [])
 
   useEffect(() => {
-    if(resourceData)getDuplicateStatus(resourceData)
-    
+
     if(action === 'create') {
       if(typeof getStoreFormData() !== 'object') {
         dispatch(setFormData({}));
@@ -325,6 +353,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
 
 
         if (resourceType === 'book' && action === 'edit') {
+            getDuplicateStatus(res)
             checkIfCanUpgrade(res.id)
         }
       }
@@ -658,16 +687,16 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     if(canDuplicate){
       setProcessingDuplicate(true);
       let output_ok = false;
-      let output_message = ""; 
+      let output_message = "";
       try {
         const res = await MainService().duplicateResource(resourceData.id);
+        if (res.error) throw new Error(res.error)
         output_ok = true
         output_message = "Resource Duplicated successfully"
       } catch (error) {
-        output_message = 'Error 0';
-        console.error("Failed to duplicate resource:", error);
+        output_message = 'Error 0: ' + error.message;
       } finally {
-        setProcessingDuplicate(false); 
+        setProcessingDuplicate(false);
         setCanDuplicate(false);
         setMessage({display: true, ok: output_ok, text: output_message})
         localStorage.setItem('reload_catalogue', '1');
@@ -676,7 +705,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
         }, 10000);
       }
     }
-   
+
   }
 
   const MetaDataForm = () => {
@@ -726,7 +755,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                 ) : (
                   <>
                     <Message.Header>An error ocurred</Message.Header>
-                    <p>{msg.text}</p>
+                    {typeof msg.text == 'string' ? <p>{msg.text}</p> : msg.text}
                   </>
                 )
               }

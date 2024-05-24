@@ -55,7 +55,7 @@ const api = () => {
         }),
         getCatalog: (id) => ({
             method: 'GET',
-            url: baseUrl + '/catalogue/' + id 
+            url: baseUrl + '/catalogue/' + id
         }),
         downloadFile: (dam_url) => ({
             method: 'GET',
@@ -92,6 +92,10 @@ const api = () => {
         duplicateStatus: (resource_id) => ({
             method: 'GET',
             url: baseUrl + `/resource/${resource_id}/clone-status`
+        }),
+        duplicateRetry: (resource_id) => ({
+            method: 'POST',
+            url: baseUrl + `/resource/${resource_id}/clone-retry`
         }),
         createBatchOfResources: {
             method: 'POST',
