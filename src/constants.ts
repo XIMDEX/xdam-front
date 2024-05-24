@@ -69,7 +69,7 @@ export enum bookLanguages {
   en = "English",
   es = "Castellano",
   cat = "Català",
-//   ca = "Català",
+  ca = "Català",
   eu = "Euskara",
   gl = "Galego",
   false = "Undefined"
