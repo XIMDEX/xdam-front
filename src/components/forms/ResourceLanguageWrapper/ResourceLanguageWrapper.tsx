@@ -4,17 +4,18 @@ import { ResourceLanguage } from "../../../features/Resources/Modals/DynamicForm
 import styles from './ResourceLanguageWrapper.module.scss';
 
 const ResourceLanguageWrapper = (
-    { value, onChange, label = '', required = false }: { value: string, onChange: (value: string) => void, label?: string, required?: boolean }
+    { value='en', onChange, label = '', required = false }: { value: string, onChange: (value: string) => void, label?: string, required?: boolean }
 ) => {
 
     const widgetOptions = {
         label,
-        opt: Object.keys(bookLanguages)
+        opt: Object.keys(bookLanguages),
+        enum: bookLanguages
     }
 
     return(
         <div className={styles.resourceLanguageWrapper}>
-            <ResourceLanguage 
+            <ResourceLanguage
                 value={value}
                 options={widgetOptions}
                 onChange={onChange}
