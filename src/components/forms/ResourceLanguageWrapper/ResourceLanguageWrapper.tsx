@@ -9,7 +9,7 @@ const ResourceLanguageWrapper = (
 
     const widgetOptions = {
         label,
-        opt: ["es", "ca", "en", "eu", "gl"],
+        opt: Object.keys(bookLanguages).filter(lang => lang !== 'cat' && lang !== 'false'),
         enum: bookLanguages
     }
 
