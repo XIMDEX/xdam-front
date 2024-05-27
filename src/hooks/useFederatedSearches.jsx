@@ -71,7 +71,7 @@ function useFederatedSearches() {
                     })
                     _controllers.push(contr)
                 }
-                if (type === 'internal') {
+                if (type === 'internal' && params.c !== 'alfresco') {
                     let parsed_params = toXimdexParser(params)
                     if (params.c) {
                         let contr = new AbortController()

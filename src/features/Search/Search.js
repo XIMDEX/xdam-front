@@ -212,7 +212,6 @@ function Search() {
                             .sort((a,b) => {return (FILTERS[a]?.disabled ? 1 : 0)-(FILTERS[b]?.disabled ? 1 : 0)})
                             .map((option, index) => {
                                 const filterOption = FILTERS[option];
-                                console.log({multiple_selection: filterOption?.multiple_selection ?? false})
                                 return (
                                     <XDropdown
                                         key={`filter-${option}-${index}`}
@@ -358,7 +357,7 @@ function Search() {
                 ))}
             </ul>
 
-            {data_resources.totalItems && (
+            {data_resources?.totalItems && (
                 <Typography variant='h6'>{data_resources?.totalItems ?? 0} resource{data_resources?.totalItems === 1 ? '' : 's'} found</Typography>
             )}
             {totalPages > 1 && (

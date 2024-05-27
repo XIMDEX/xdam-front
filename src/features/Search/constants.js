@@ -29,6 +29,8 @@ export const FILTERS = {
             { label: "English", value: "en_EN" },
             { label: "Català", value: "ca_ES" },
             { label: "Euskera", value: "eu_ES" },
+            { label: "Portugués", value: "pt_PT" },
+            { label: "Italiano", value: "it_IT" },
         ],
     },
     ld: {
@@ -41,6 +43,8 @@ export const FILTERS = {
             { label: "English", value: "en_EN" },
             { label: "Català", value: "ca_ES" },
             { label: "Euskera", value: "eu_ES" },
+            { label: "Portugués", value: "pt_PT" },
+            { label: "Italiano", value: "it_IT" },
         ],
     },
     la: {
@@ -53,6 +57,8 @@ export const FILTERS = {
             { label: "English", value: "en_EN" },
             { label: "Català", value: "ca_ES" },
             { label: "Euskera", value: "eu_ES" },
+            { label: "Portugués", value: "pt_PT" },
+            { label: "Italiano", value: "it_IT" },
         ],
     },
     s: {
@@ -81,9 +87,11 @@ export const FILTERS = {
             { label: "Presentación", value: "Presentación"},
             { label: "Cuestionario", value: "Cuestionario"},
             { label: "Base de datos", value: "Base de datos"},
-            { label: "Programaciones", value: "Programaciones"},
-            { label: "Solucionarios", value: "Solucionarios"},
+            { label: "Programación", value: "Programación"},
+            { label: "Solucionario", value: "Solucionario"},
             { label: "Paquete SCORM", value: "Paquete SCORM"},
+            { label: "Proyecto", value: "Proyecto"},
+            { label: "Evaluación", value: "Evaluación"},
         ],
     },
     r: {
@@ -217,7 +225,8 @@ export const FILTERS = {
             { "label": 30, "value": "30" }, { "label": 31, "value": "31" }, { "label": 32, "value": "32" }, { "label": 33, "value": "33" }, { "label": 34, "value": "34" },
             { "label": 35, "value": "35" }, { "label": 36, "value": "36" }, { "label": 37, "value": "37" }, { "label": 38, "value": "38" }, { "label": 39, "value": "39" },
             { "label": 40, "value": "40" }, { "label": 41, "value": "41" }, { "label": 42, "value": "42" }, { "label": 43, "value": "43" }, { "label": 44, "value": "44" },
-            { "label": 45, "value": "45" }, { "label": 46, "value": "46" }, { "label": 47, "value": "47" }, { "label": 48, "value": "48" }, { "label": 49, "value": "49" }
+            { "label": 45, "value": "45" }, { "label": 46, "value": "46" }, { "label": 47, "value": "47" }, { "label": 48, "value": "48" }, { "label": 49, "value": "49" },
+            { "label": 50, "value": "50" }
         ],
     },
     mt: {
@@ -227,7 +236,7 @@ export const FILTERS = {
             {label: "Audio", value: "audio"},
             {label: "Video", value: "video"},
             {label: "Image", value: "image"},
-            // {label: "Document", value: "document"},
+            {label: "Document", value: "document"},
         ],
     }
 }
