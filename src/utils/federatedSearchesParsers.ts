@@ -69,6 +69,7 @@ const DICT_ALFRESCO = {
     year: 'macgh:anyo',
     isbn_digital: 'macgh:isbn_digital',
     isbn: 'macgh:isbn',
+    ft: 'content.mimetype',
 }
 
 
@@ -98,16 +99,22 @@ const DICT_XIMDEX = {
 }
 
 const DICT_LANG_ALFRESCO = {
-    es_ES: 'Castellano',
-    en_EN: 'Inglés',
-    ca_ES: 'Catalán',
-    eu_ES: 'Euskera'
+    es_ES: ['CAST', 'Castellano', 'CASTELLANO', 'castellano', 'español', 'Español', 'ESPAÑOL'],
+    en_EN: ['Inglés', 'INGLÉS', 'inglés', 'English', 'ENGLISH', 'english', 'INGLES', 'ingles', 'Ingles'],
+    ca_ES: ['Catalán', 'CATALÁN', 'catalán', 'Català', 'CATALÀ', 'català', 'Catalan', 'CATALAN', 'catalan'],
+    eu_ES: ['Euskera', 'EUSKERA', 'euskera', 'Euskara', 'EUSKARA', 'euskara', 'Vasco', 'VASCO', 'vasco'],
+    gl_ES: ['Gallego', 'GALLEGO', 'gallego', 'Galego', 'GALEGO', 'galego'],
+    it_IT: ['Italiano', 'ITALIANO', 'italiano'],
+    pt_PT: ['Portugués', 'PORTUGUÉS', 'portugués', 'Portugues', 'PORTUGUES', 'portugues'],
 }
 const DICT_LANG_XIMDEX = {
     es_ES: 'es',
     en_EN: 'en',
     ca_ES: 'ca',
-    eu_ES: 'eu'
+    eu_ES: 'eu',
+    gl_ES: 'gl',
+    it_IT: 'it',
+    pt_PT: 'pt'
 }
 
 // {
@@ -129,7 +136,16 @@ export const toAlfrescoIn2Parser = (params: Object) => {
             let search = '';
             if (param === 'ld' || param === 'la') param = 'l'
             if (param === 'l') {
-                value = DICT_LANG_ALFRESCO[value] ?? value
+                if (Array.isArray(value)) {
+                    value = value.map(v => DICT_LANG_ALFRESCO[v] ?? [v])
+                    value = value.flat()
+                } else {
+                    value = DICT_LANG_ALFRESCO[value] ?? [value]
+                }
+                value = value.map(v => `${DICT_ALFRESCO['l']}:"${v}"`)
+                search = paramsArray.length === 1
+                    ? value.join(' OR ')
+                    : `(${value.join(' OR ')})`;
             }
             if (param === 's') {
                 value = (value === 'true' || value === true) ? 'abierto' : 'cerrado'
@@ -139,13 +155,19 @@ export const toAlfrescoIn2Parser = (params: Object) => {
                     `${DICT_ALFRESCO['isbn_digital']}:"${value}"`,
                     `${DICT_ALFRESCO['isbn']}:"${value}"`,
                     `${DICT_ALFRESCO['name']}:"${value}"`,
-                    `${DICT_ALFRESCO['description']}:"${value}"`
+                    `${DICT_ALFRESCO['description']}:"${value}"`,
+                    `${DICT_ALFRESCO['id']}:"${value}"`
                 ]
                 search = paramsArray.length === 1
                     ? params_search.join(' OR ')
                     : `(${params_search.join(' OR ')})`;
             }
-            if (!search) search = `${DICT_ALFRESCO[param]}:"${value}"`
+            if (!search) {
+                const searches = Array.isArray(value)
+                    ? value.map(v => `${DICT_ALFRESCO[param]}:"${v}"`)
+                    : [`${DICT_ALFRESCO[param]}:"${value}"`]
+                search = `(${searches.join(' OR ')})`
+            }
             paramsAlfresco.push(search)
         }
     })
@@ -220,35 +242,11 @@ export const FromAlfrescoIn2Parser = (data) => {
     let lang = data.entry.properties['macgh:idioma'].toLowerCase();
     if (data.entry?.properties?.['cm:description']) parsedResource.description = data.entry?.properties?.['cm:description']
     if (lang) {
-        if (lang === 'catalán' || lang === 'catalan') lang = 'català'
-        if (lang === 'euskera' || lang === 'vasco') lang = 'euskara'
-        if (lang === 'gallego') lang = 'galego'
-
-        for (const enumValue in bookLanguages) {
-            if (bookLanguages[enumValue].toLowerCase() === lang) {
-              switch (enumValue) {
-                case 'en':
-                    parsedResource.language = 'en_EN'
-                    break;
-                case 'es':
-                    parsedResource.language = 'es_ES'
-                    break;
-                case 'ca':
-                case 'cat':
-                    parsedResource.language = 'ca_ES'
-                    break;
-                case 'gl':
-                    parsedResource.language = 'gl_ES'
-                    break;
-                case 'eu':
-                    parsedResource.language = 'eu_ES'
-                    break;
-                default:
-                    break;
-              }
-              break;
+        Object.keys(DICT_LANG_ALFRESCO).forEach(language => {
+            if (DICT_LANG_ALFRESCO[language].includes(lang)) {
+                parsedResource.language = language
             }
-        }
+        })
 
     }
     if (data.entry.isFolder) {

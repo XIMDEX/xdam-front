@@ -85,6 +85,18 @@ const api = () => {
             method: 'POST',
             url: baseUrl + '/resource'
         },
+        duplicateResource: (resource_id) => ({
+            method: 'GET',
+            url: baseUrl + `/resource/${resource_id}/duplicate`
+        }),
+        duplicateStatus: (resource_id) => ({
+            method: 'GET',
+            url: baseUrl + `/resource/${resource_id}/clone-status`
+        }),
+        duplicateRetry: (resource_id) => ({
+            method: 'POST',
+            url: baseUrl + `/resource/${resource_id}/clone-retry`
+        }),
         createBatchOfResources: {
             method: 'POST',
             url: baseUrl + '/resource/createBatch'

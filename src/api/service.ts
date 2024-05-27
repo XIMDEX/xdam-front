@@ -669,14 +669,7 @@ class AppService {
               }
             ]
         }
-        // Object.keys(params).forEach(param => {
-        //     data.query.query = data.query.query + ` AND ${param}:${params[param]}`
-        // })
-        // Object.keys(params).forEach(param => {
-        //   const {action, value} = params[param]
-        //   data.query.query = data.query.query + ` ${action} ${param}:${params[param]}`
-        // })
-        data.query.query = data.query.query + ` AND (${params})`
+        if (params || params !== "") data.query.query = data.query.query + ` AND (${params})`
         let _headers = this.httpOptions.headers;
         _headers.Authorization = _api.auth;
         const request = {
@@ -736,6 +729,68 @@ class AppService {
             console.error(e.message)
             return false;
         }
+    }
+
+    async duplicateResource(id){
+      const _api = api().duplicateResource(id)
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers
+      }
+
+      try {
+        const res = await (await fetch(_api.url, request));
+        let json;
+        try {
+            json = await res.json();
+        } catch (_) {}
+
+        if (json.error) throw Error(json.error)
+        if (!res.ok) throw Error(res.statusText)
+
+        return json;
+      }
+      catch (e) {
+          console.error(e.message)
+          return {error: e.message};
+      }
+
+    }
+
+    async duplicateStatus(id){
+      const _api = api().duplicateStatus(id)
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers
+      }
+      try {
+        const res = await (await fetch(_api.url, request));
+
+        if (!res.ok) throw Error(res.statusText)
+          const json = await res.json();
+          return json;
+      } catch (error) {
+
+      }
+    }
+
+    async duplicateRetry(id) {
+
+      const _api = api().duplicateRetry(id)
+      const request = {
+        method: _api.method,
+        headers: this.httpOptions.headers
+      }
+      try {
+        const res = await (await fetch(_api.url, request));
+
+        if (!res.ok) throw Error(res.statusText)
+          const json = await res.json();
+          return json;
+      } catch (error) {
+        console.error(error)
+        return {error: 'Error on retrying duplication'}
+      }
     }
 }
 

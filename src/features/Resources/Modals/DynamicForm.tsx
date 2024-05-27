@@ -98,6 +98,8 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const [previewImage, setPreviewImage] = useState(null);
   const [formFiles, setFormFiles] = useState([]);
   const [processing, setProcessing] = useState(null);
+  const [processingDuplicate, setProcessingDuplicate] = useState(null);
+  const [canDuplicate,setCanDuplicate] = useState(false);
   const messageDefaultState = { display: false, text: '', ok: false }
   const [msg, setMessage] = useState(messageDefaultState);
   const _refForm = React.useRef(null);
@@ -149,6 +151,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const [themes, setThemes] = useState([])
 
   const [showUpgradeButton, setShowUpgradeButton] = useState(false)
+  const showDuplicateButton = (resourceType === "book")
 
   //cdn functions
 //   const [maxFiles, setMaxFiles] = useState(0);
@@ -232,9 +235,50 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     triggerReload(!tr);
   }
 
+  const retryDuplicate = async (id) => {
+    const res = await MainService().duplicateRetry(id);
+    if (res.error) {
+      setMessage({display: true, text: res.error + '. Please contact with your administrator', ok: false});
+    } else {
+      setMessage({display: true, text: "Resource Duplicated successfully", ok: true});
+    }
+  }
+
+  const getDuplicateStatus = async(resData)  => {
+    let isNotPending = true;
+    const duplicateStatus =  await MainService().duplicateStatus(resData.id)
+    if (duplicateStatus && duplicateStatus?.status === "pending") {
+      setMessage({ display: true, text: "Processing Files, Please wait", ok: true });
+      isNotPending = false;
+    }
+    if (duplicateStatus && duplicateStatus?.status === "error") {
+        setMessage({
+            display: true,
+            text: (
+                <p>Error: {duplicateStatus?.message}
+                <button
+                    onClick={() => retryDuplicate(resData.id)}
+                    style={{
+                        marginLeft: '0.25em',
+                        textDecoration: 'underline',
+                        backgroundColor: 'transparent',
+                        color: '#c82121',
+                        fontWeight: 'bold',
+                        border: 'none',
+                        cursor: 'pointer'
+                    }}
+                >Try again</button></p>
+            ), ok: false });
+        isNotPending = false;
+    }
+    setCanDuplicate(isNotPending);
+  }
+
   //end cdn functions
 
   useEffect(() => {
+
+
     const getThemes = async () => {
         const themes_scorm = await MainService().getBookThemes()
         const newThemes = themes_scorm.map(th => ({key: th, value: th, text: th === 'v1' ? `${th} (deprecated)` : th}))
@@ -248,6 +292,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   }, [])
 
   useEffect(() => {
+
     if(action === 'create') {
       if(typeof getStoreFormData() !== 'object') {
         dispatch(setFormData({}));
@@ -272,7 +317,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
         (lomesl === null || lomesl === '0')
         && VALIDS_LOM.map(type => type.key).includes('lomes')
       ) {
-        fetchLomesSchema()
+        fetchLomesSchema();
         localStorage.setItem('lomes_loaded', '1');
       }
 
@@ -308,6 +353,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
 
 
         if (resourceType === 'book' && action === 'edit') {
+            getDuplicateStatus(res)
             checkIfCanUpgrade(res.id)
         }
       }
@@ -501,6 +547,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     return fd;
   }
 
+
   const metaData = { menuItem: 'Main Data', render: () => <Tab.Pane > <MainData /></Tab.Pane> };
   const lomsData = VALIDS_LOM.map(typeLom => ({menuItem: typeLom.name, render: () => (<Tab.Pane><LomForm data={dataForUpdate} standard={typeLom.key}/></Tab.Pane>)}))
   const mediaData = { menuItem: "Media data", render: () => <Tab.Pane > <MediaData url={resourceData?.files?.[0].dam_url} description="test" transcription="Test" xtags={[]}/> </Tab.Pane> };
@@ -636,6 +683,31 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     setResourceData({...resourceData, theme: value})
   }
 
+  const handleDuplicate = async () => {
+    if(canDuplicate){
+      setProcessingDuplicate(true);
+      let output_ok = false;
+      let output_message = "";
+      try {
+        const res = await MainService().duplicateResource(resourceData.id);
+        if (res.error) throw new Error(res.error)
+        output_ok = true
+        output_message = "Resource Duplicated successfully"
+      } catch (error) {
+        output_message = 'Error 0: ' + error.message;
+      } finally {
+        setProcessingDuplicate(false);
+        setCanDuplicate(false);
+        setMessage({display: true, ok: output_ok, text: output_message})
+        localStorage.setItem('reload_catalogue', '1');
+        setTimeout(() => {
+          setCanDuplicate(true);
+        }, 10000);
+      }
+    }
+
+  }
+
   const MetaDataForm = () => {
     return (
       <Grid item sm={6} style={{paddingBottom: '20em'}}>
@@ -647,6 +719,10 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                 <><Icon name='save' /> Submit</>
               )}
             </Btn>
+            {(action === 'edit' && showDuplicateButton)  &&
+            (<Btn color={canDuplicate ? 'teal' : 'grey'} icon='facebook' onClick={() =>  handleDuplicate()} loading={processingDuplicate}>
+              <><Icon name='copy' /> Duplicate</>
+            </Btn>)}
             <Dropdown
                 text='Import data'
                 icon='clone'
@@ -679,7 +755,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                 ) : (
                   <>
                     <Message.Header>An error ocurred</Message.Header>
-                    <p>{msg.text}</p>
+                    {typeof msg.text == 'string' ? <p>{msg.text}</p> : msg.text}
                   </>
                 )
               }
