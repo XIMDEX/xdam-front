@@ -477,6 +477,11 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
       theFormData.append(e, body[e]);
     })
 
+    if (wksSelected?.wsp?.length !== 0) {
+        const valuesWsp: number[] = wksSelected?.wsp?.map(e => e.id)
+        theFormData.append('toWorkspaceId', valuesWsp.join(',') )
+    }
+
     if (formFiles) {
       for (var i = 0; i < formFiles.length; i++) {
         theFormData.append('File[]', formFiles[i]);
