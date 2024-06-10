@@ -157,7 +157,6 @@ export function FacetCard({ facet, fixed, resources, collection, organization, f
     const handleFilterSelected = (value, isChecked) => {
         let newValues = {...facetValues}
         newValues[value] = {...newValues[value], selected: isChecked}
-        console.log("FILTER SELECTED", newValues);
         setFacetValues(newValues)
         if (isChecked && !selectedWS.includes(value)) {
             setSelectedWS([...selectedWS,value ])

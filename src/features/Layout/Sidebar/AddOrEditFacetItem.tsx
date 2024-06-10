@@ -66,7 +66,7 @@ const AddOrEditItemFacet = ({facet, requestOpts, values = {}, ...props}) => {
             if (facet.key === 'workspaces' && res.ok) {
                 alert('Workspace created successfully')
             }
-            
+
             const schemas = await MainService().getSchemas();
             dispatch(reloadCatalogue())
             dispatch(setSchemas(schemas));
@@ -82,11 +82,13 @@ const AddOrEditItemFacet = ({facet, requestOpts, values = {}, ...props}) => {
     }
 
     const handleChange = (key, value) => {
-        let newForm = {...form, [key]: value}
+        let newForm = {...values, ...form, [key]: value}
         if (value === '') {
             delete newForm[key]
         }
-        setDisableSuccess(Object.keys(newForm).length !== facet.fields.filter(obj => obj.type === "string").length)
+
+        setDisableSuccess(Object.keys(newForm).length === 0)
+        // setDisableSuccess(Object.keys(newForm).length !== facet.fields.filter(obj => obj.type === "string").length)
         setForm(newForm)
     }
 

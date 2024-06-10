@@ -245,7 +245,7 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
                         </Message>
                         <Message warning> LIMIT: A total of {server?.pms}{server?.pms.includes('M') || server?.pms.includes('m') ? 'B' : 'MB'} in no more than {server?.mfu} files per batch</Message>
 
-                        {resourceType === MULTIMEDIA && (
+                        {(resourceType === MULTIMEDIA || resourceType == DOCUMENT) && (
                             <div style={{ display: 'grid', gridTemplateColumns: '50% 50%', columnGap: '1rem' }}>
                                 <MultipleValueTextInput name='Tags' setData={updateGenericDataFor('tags')} />
                                 <MultipleValueTextInput name='Categories' setData={updateGenericDataFor('categories')} />

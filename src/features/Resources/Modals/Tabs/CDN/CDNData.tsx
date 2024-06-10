@@ -15,7 +15,6 @@ export default function CDNData({ data }) {
                             ? (
                                 <CDNLink hash={item.hash} />
                             ) : Object.keys(item.hash).map((key, index) => {
-                                console.log(item.hash[key])
                                 return (
                                     <>
                                         <h3>{key}:</h3>
