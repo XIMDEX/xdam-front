@@ -1,12 +1,13 @@
 import React, { useRef, useState } from 'react'
 import {  Grid, IconButton, styled, TextField } from '@material-ui/core';
 import { useDispatch, useSelector  } from 'react-redux';
-import { reloadCatalogue, setSchemas } from '../../../appSlice';
+import {  reloadCatalogue, selectWorkspaceCollections, selectWorkspacesData, setSchemas, setWorkspacesData } from '../../../appSlice';
 import PostAddRounded from '@material-ui/icons/PostAddRounded';
 import Modal from '../../Resources/Modals/Modal/Modal';
 import { CustomToggle } from '../../Resources/Modals/DynamicFormTemplates/CustomFields';
 import MainService from '../../../api/service';
 import { selectCollection, selectOrganization } from '../../../slices/organizationSlice';
+import { parseWorkspace } from '../../../api/providers/workspacesProvider';
 
 const StyledTextField = styled(TextField)({
     '& label.Mui-focused': {
@@ -35,6 +36,9 @@ const AddOrEditItemFacet = ({facet, requestOpts, values = {}, ...props}) => {
     const [form, setForm] = useState({});
     const formRef = useRef(null);
     const dispatch = useDispatch()
+    const [workspaces, setWorkspaces] = useState(null);
+    const workspacesCollections = useSelector(selectWorkspaceCollections)
+    const workspacesData = useSelector(selectWorkspacesData)
 
     const handleCloseModal = ()  => {
         setForm({})
@@ -65,6 +69,11 @@ const AddOrEditItemFacet = ({facet, requestOpts, values = {}, ...props}) => {
 
             if (facet.key === 'workspaces' && res.ok) {
                 alert('Workspace created successfully')
+                const { data } = await MainService().getWorkspaces([res.id]);
+        
+                const nextWorkspace = parseWorkspace(data[0]);
+                
+                dispatch(setWorkspacesData(...data));
             }
 
             const schemas = await MainService().getSchemas();
