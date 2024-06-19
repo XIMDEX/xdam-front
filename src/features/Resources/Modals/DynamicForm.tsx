@@ -15,7 +15,7 @@ import { selectCollection } from '../../../slices/organizationSlice';
 import SemanticForm from "@rjsf/semantic-ui";
 import { JSONSchema7 } from 'json-schema';
 import { render } from '../../../utils/render';
-import { Tab, Label, Icon, Dropdown } from 'semantic-ui-react'
+import { Tab, Label, Icon, Dropdown, Radio} from 'semantic-ui-react'
 import { Button as Btn } from 'semantic-ui-react';
 import { Message } from 'semantic-ui-react';
 import RelatedFiles from './RelatedFiles';
@@ -125,6 +125,8 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
       wsp: wps
     }
   });
+
+  const [accessibility, setAccessibility] = useState(false);
 
   const resources  = useSelector(selectResources)
 
@@ -688,6 +690,10 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     setResourceData({...resourceData, theme: value})
   }
 
+  const handleResourceAccessibility = (_, {checked}) => {
+    setAccessibility(checked)
+  }
+
   const handleDuplicate = async () => {
     if(canDuplicate){
       setProcessingDuplicate(true);
@@ -781,6 +787,12 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                 />
             </div>
         )}
+        {resourceType === 'book' && action !== 'create' && (
+            <div className='form-theme' style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', paddingInline: 20}}>
+                <label style={{fontWeight: 'bold', fontSize: 16}}><span style={{ color: 'tomato', fontSize: '1rem'}}>Test</span> Enable Accessibility: </label>
+                <Radio toggle defaultChecked={accessibility} onClick={handleResourceAccessibility}/>
+            </div>
+        )}
         <SemanticForm
           id='sfu'
           className={fillAlert ? 'fill-alert' : ''}
@@ -840,7 +852,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
 
             <Grid item sm={12} className={classes.divider}>
               {dataForUpdate ? (
-                <ResourceActionButtons resource={dataForUpdate} themeBook={resourceData?.theme ?? DEFAULT_THEME_BOOK} />
+                <ResourceActionButtons resource={dataForUpdate} themeBook={resourceData?.theme ?? DEFAULT_THEME_BOOK} accessibility={accessibility}/>
               ) : null}
             </Grid>
 
