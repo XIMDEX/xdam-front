@@ -1,12 +1,13 @@
 import React, { useRef, useState } from 'react'
 import {  Grid, IconButton, styled, TextField } from '@material-ui/core';
 import { useDispatch, useSelector  } from 'react-redux';
-import { reloadCatalogue, setSchemas } from '../../../appSlice';
+import {  reloadCatalogue, selectWorkspaceCollections, selectWorkspacesData, setSchemas, setUser, setWorkspaceCollections, setWorkspacesData } from '../../../appSlice';
 import PostAddRounded from '@material-ui/icons/PostAddRounded';
 import Modal from '../../Resources/Modals/Modal/Modal';
 import { CustomToggle } from '../../Resources/Modals/DynamicFormTemplates/CustomFields';
 import MainService from '../../../api/service';
 import { selectCollection, selectOrganization } from '../../../slices/organizationSlice';
+import { parseWorkspace } from '../../../api/providers/workspacesProvider';
 
 const StyledTextField = styled(TextField)({
     '& label.Mui-focused': {
@@ -30,7 +31,6 @@ const AddOrEditItemFacet = ({facet, requestOpts, values = {}, ...props}) => {
     const [disableSuccess, setDisableSuccess] = useState(true)
     const [disableCancel, setDisableCancel] = useState(false)
     const organization_id = useSelector(selectOrganization)
-    const collection_id = useSelector(selectCollection)
     const [open, setOpen] = useState(false)
     const [form, setForm] = useState({});
     const formRef = useRef(null);
@@ -65,6 +65,13 @@ const AddOrEditItemFacet = ({facet, requestOpts, values = {}, ...props}) => {
 
             if (facet.key === 'workspaces' && res.ok) {
                 alert('Workspace created successfully')
+                let fetchedUser = await MainService().getUser();
+                    if (fetchedUser?.error) {
+                        return alert(
+                            "Error loading user: " + fetchedUser.error
+                        );
+                    } 
+                    dispatch(setWorkspaceCollections(fetchedUser.data.workspaces));
             }
 
             const schemas = await MainService().getSchemas();
