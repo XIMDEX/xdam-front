@@ -126,6 +126,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     }
   });
 
+  const [loadingAccessibiliy, setLoadingAccessibility] = useState(true)
   const [accessibility, setAccessibility] = useState(false);
 
   const resources  = useSelector(selectResources)
@@ -279,8 +280,6 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   //end cdn functions
 
   useEffect(() => {
-
-
     const getThemes = async () => {
         const themes_scorm = await MainService().getBookThemes()
         const newThemes = themes_scorm.map(th => ({key: th, value: th, text: th === 'v1' ? `${th} (deprecated)` : th}))
@@ -292,6 +291,20 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     }
 
   }, [])
+
+
+  useEffect(() => {
+    const getAccessibility = async () => {
+        const {accessibility} = await MainService().checkAccessibility(resourceData.id)
+        setAccessibility(accessibility)
+        setLoadingAccessibility(false)
+    }
+
+    if (resourceData?.id && SHOW_THEMES_BOOK && action === 'edit' && resourceType === 'book') {
+        getAccessibility()
+    }
+
+  }, [resourceData])
 
   useEffect(() => {
 
@@ -790,7 +803,10 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
         {resourceType === 'book' && action !== 'create' && (
             <div className='form-theme' style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', paddingInline: 20}}>
                 <label style={{fontWeight: 'bold', fontSize: 16}}><span style={{ color: 'tomato', fontSize: '1rem'}}>Test</span> Enable Accessibility: </label>
-                <Radio toggle defaultChecked={accessibility} onClick={handleResourceAccessibility}/>
+                {loadingAccessibiliy
+                    ? (<Icon loading name='spinner' />)
+                    : (<Radio toggle defaultChecked={accessibility} onClick={handleResourceAccessibility}/>)
+                }
             </div>
         )}
         <SemanticForm
