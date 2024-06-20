@@ -300,7 +300,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
         setLoadingAccessibility(false)
     }
 
-    if (resourceData?.id && SHOW_THEMES_BOOK && action === 'edit' && resourceType === 'book') {
+    if (resourceData?.id && action === 'edit' && resourceType === 'book') {
         getAccessibility()
     }
 
