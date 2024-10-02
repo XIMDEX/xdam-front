@@ -4,7 +4,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { FileDrop } from 'react-file-drop';
-import { Button as Btn, Input, Message, Label, Icon } from 'semantic-ui-react';
+import { Button as Btn, Input, Message, Label, Icon, Divider, Segment, Grid, Dropdown } from 'semantic-ui-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { reloadCatalogue } from '../../../../appSlice';
 import api from '../../../../api/urlMapper';
@@ -12,9 +12,10 @@ import MainService from '../../../../api/service';
 import { selectCollection } from '../../../../slices/organizationSlice';
 import axios from 'axios';
 import MultipleValueTextInput from '../../../../components/forms/MultipleValueTextInput/MultipleValueTextInput';
-import { MULTIMEDIA, BOOK } from '../../../../constants';
+import { MULTIMEDIA, BOOK, DOCUMENT } from '../../../../constants';
 import ResourceLanguageWrapper from '../../../../components/forms/ResourceLanguageWrapper/ResourceLanguageWrapper';
 import DropContent from './DropContent';
+import WorkspaceSelect from '../../../../components/forms/WorkspaceSelect/WorkspaceSelect';
 
 export default function BatchDialog( {open, setOpenBatch, action, resourceType} ) {
     const [files, setFiles] = useState(null);
@@ -31,13 +32,11 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
     const collection = useSelector(selectCollection);
     const dispatch = useDispatch();
     //const workspaces = useSelector(selectUser).data.selected_org_data.workspaces;
-    const [genericData, setGenericData] = useState({});
+    const [genericData, setGenericData] = useState({lang: 'en'});
     const [filesInfo, setFilesInfo] = useState<Record<string, any>>({});
+    const [workspaces, setWorkspaces] = useState([]);
 
     useEffect(() => {
-
-        console.log('UPDATED')
-
         const get_post_max_size = async () => {
             let res = await axios.get(api().baseUrl + '/ini_pms', {
                 headers: {
@@ -72,7 +71,7 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
         setProgress(null);
         setErrorOnUpload(null);
         setOpenBatch(false);
-        setGenericData({});
+        setGenericData({lang: 'en'});
         setFilesInfo({});
     };
 
@@ -95,15 +94,8 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
 
         fd.append('collection', collection.toString());
 
-        // if(workspace) {
-        //     fd.append('workspace', workspace.id);
-        //     fd.append('create_wsp', '0');
-        // } else {
-        //     fd.append('workspace', newWorkspace);
-        //     fd.append('create_wsp', '1');
-        // }
-
         fd.append('workspace', newWorkspace);
+        fd.append('workspaces', JSON.stringify(workspaces))
         fd.append('create_wsp', '1');
 
         if (Object.keys(genericData).length > 0) {
@@ -130,7 +122,6 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
         const { request, _api } = await MainService().createBatchOfResources(fd);
         const config = {
             onUploadProgress: progressEvent => {
-              //console.log(progressEvent)
               let progress = (progressEvent.loaded / progressEvent.total) * 100;
               setProgress(progress);
             },
@@ -152,25 +143,15 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
 
     }
 
-    const changeWorkspace = (event, data) => {
-        event.preventDefault();
-
-        setNewWorkspace(data.value);
-
-        if(resourceType === BOOK) {
-            updateGenericDataFor('isbn')(data.value);
-        }
+    const handleWsp = (data) => {
+        setWorkspaces(data.wsp.map(e => e.id));
     }
 
     function now () {
         var today = new Date();
         var date = today.getDate()+'-'+(today.getMonth()+1)+'-'+today.getFullYear();
         var time = today.getHours()+'_'+today.getMinutes()+'_'+today.getSeconds();
-        console.log(date + ' '+ time);
         return 'Batch ' + date + ' '+ time;
-        // const timeElapsed = Date.now();
-        // const today = new Date(timeElapsed);
-        // return today.toDateString(); // "Sun Jun 14 2020"
     }
 
     const newBatch = () => {
@@ -179,6 +160,7 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
         setProgress(null);
         filesUploaded(false);
         setNewWorkspace(now());
+        setWorkspaces([])
     }
 
     const filesModified = (updatedFiles) => {
@@ -197,12 +179,10 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
             <Dialog
                 open={open}
                 onEntered={handleOnEntered}
-                onChange={()=> console.log('CHANGED')}
                 onClose={handleClose}
                 aria-labelledby="batch-dialog"
                 fullWidth
                 maxWidth={'md'}
-
             >
                 <DialogTitle >New batch</DialogTitle>
                 <DialogContent style={{height: '100vh'}}>
@@ -224,73 +204,35 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
                             </Btn>
                     </DialogActions>
                     <div className='batch-form'>
-                        {/* <Message> Select one Workspace </Message>
-                        <Message
-                            hidden={message === null}
-                            warning
-                            onDismiss={() => setMessage(null)}
-                        >{message}</Message>
-                        <Segment size='large'>
-
-                            <Grid columns={2} relaxed='very' stackable textAlign='center'>
-                                <Grid.Column>
-                                    <Dropdown
-                                        style={focus === 'new' ? {opacity: 0.5} : {opacity: 1}}
-                                        text={workspace ? workspace.name : 'Select one'}
-                                        color='teal'
-                                        button
-                                        onFocus={() => {
-                                            setFocus('exist')
-                                            setNewWorkspace('');
+                        <Message  info >
+                            <div style={{display: 'flex', flexDirection: 'row', alignItems:'center'}}>
+                                <div
+                                    style={{
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        flexGrow: 1,
+                                        alignItems: 'center',
+                                        paddingTop: 8,
+                                    }}
+                                >
+                                    <span style={{marginRight: '10px'}}>
+                                        It will asociate the resource to the {resourceType === BOOK ? 'ISBN' : 'Workspace'}:
+                                    </span>
+                                    <div
+                                        style={{
+                                            flexGrow: 1,
+                                            maxWidth: 300
                                         }}
                                     >
-                                        <Dropdown.Menu>
-                                            {
-                                                workspaces.map(wsp => (
-                                                    <Dropdown.Item onClick={() => setWorkspace(wsp)}>
-                                                        {wsp.name}
-                                                    </Dropdown.Item>
-                                                ))
-                                            }
-                                        </Dropdown.Menu>
-                                    </Dropdown>
-                                </Grid.Column>
-                                <Grid.Column verticalAlign='middle'>
-                                    <Input
-                                        style={focus === 'exist' ? {opacity: 0.5} : {opacity: 1}}
-                                        placeholder='Create a new one'
-                                        onFocus={() => {
-                                            setFocus('new')
-                                            setWorkspace(null)
-                                        }}
-                                        onChange={(e, d) => {
-                                            setNewWorkspace(d.value)
-                                        }}
-                                        value={newWorkspace}
-                                    />
-                                </Grid.Column>
-                            </Grid>
-                            <Divider vertical>Or</Divider>
-                        </Segment> */}
-                        <Message info >
-                            <span style={{marginRight: '10px'}}>
-                                { resourceType === BOOK
-                                    ? 'It will asociate the resource to the ISBN:'
-                                    : 'It will create a new Workspace named:'
-                                }
-                                <Input
-                                    size='small'
-                                    style={(focus === 'exist' ? {minWidth: 200, opacity: 0.5, marginLeft: 10} : {minWidth: 200, opacity: 1, marginLeft: 10})}
-                                    placeholder='Create a new one'
-                                    onFocus={() => {
-                                        setFocus('new')
-                                        setWorkspace(null)
-                                    }}
-                                    onChange={changeWorkspace}
-                                    value={newWorkspace}
-                                />
-                            </span>
-                            { resourceType === BOOK &&
+                                        <WorkspaceSelect
+                                            resourceData={null}
+                                            dataForUpdate={null}
+                                            handleWorkspaceSelected={handleWsp}
+                                            newWorkspaces={[]}
+                                        />
+                                    </div>
+                                </div>
+                            { (resourceType === BOOK || resourceType === DOCUMENT) &&
                                 <div style={{ display: 'inline-block' }}>
                                     <span>And with the language</span>
                                     <ResourceLanguageWrapper
@@ -299,16 +241,16 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
                                     />
                                 </div>
                             }
+                            </div>
                         </Message>
                         <Message warning> LIMIT: A total of {server?.pms}{server?.pms.includes('M') || server?.pms.includes('m') ? 'B' : 'MB'} in no more than {server?.mfu} files per batch</Message>
 
-                        {resourceType === MULTIMEDIA
-                            &&
-                            (<div style={{ display: 'grid', gridTemplateColumns: '50% 50%', columnGap: '1rem' }}>
+                        {(resourceType === MULTIMEDIA || resourceType == DOCUMENT) && (
+                            <div style={{ display: 'grid', gridTemplateColumns: '50% 50%', columnGap: '1rem' }}>
                                 <MultipleValueTextInput name='Tags' setData={updateGenericDataFor('tags')} />
                                 <MultipleValueTextInput name='Categories' setData={updateGenericDataFor('categories')} />
-                            </div>)
-                        }
+                            </div>
+                        )}
                     </div>
 
 
@@ -319,26 +261,16 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
                     >
 
                         <FileDrop
-                            onFrameDragEnter={(event) => {
-                                //console.log('onFrameDragEnter', event);
-                                highlightArea(true)
-                            }} //in
-                            //onFrameDragLeave={(event) => console.log('onFrameDragLeave', event)}
-                            onFrameDrop={(event) => {
-                                console.log('onFrameDrop', event);
-                                highlightArea(false)
-                            }} //drop
-                            //onDragOver={(event) => console.log('onDragOver', event)}
-                            //onDragLeave={(event) => console.log('onDragLeave', event)}
+                            onFrameDragEnter={(event) => highlightArea(true) } //in
+                            onFrameDrop={(event) => highlightArea(false) } //drop
                             onDrop={(files, event) => {
-                                console.log('onDrop!', files, event);
                                 setProgress(null);
                                 filesUploaded(false);
                                 setFiles(Array.from(files))
                             }}
                             onTargetClick={files ? null : onTargetClick}
                         >
-                            {files ?
+                            {files ? (
                                 <DropContent
                                     files={files}
                                     updateFiles={filesModified}
@@ -349,7 +281,7 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
                                     filesInfo={filesInfo}
                                     setFilesInfo={setFilesInfo}
                                 />
-                                :
+                            ) : (
                                 <>
                                     <div className='label-drop'>
                                         <p>
@@ -364,11 +296,10 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
                                         hidden
                                     />
                                 </>
-                            }
+                            )}
                         </FileDrop>
                     </div>
                 </DialogContent>
-
             </Dialog>
         </div>
     );

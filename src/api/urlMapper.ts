@@ -238,6 +238,11 @@ const api = () => {
             method: 'POST',
             url: `${BOOK_EDITOR_URL}api/book/${bookId}/upgrade`
         }),
+
+        checkAccessibility: (resource_id) => ({
+            method: 'GET',
+            url: `${BOOK_EDITOR_URL}api/book/${resource_id}/checkaccessibility`
+        }),
     }
     return mapper;
 }

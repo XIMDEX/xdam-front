@@ -15,7 +15,7 @@ import { selectCollection } from '../../../slices/organizationSlice';
 import SemanticForm from "@rjsf/semantic-ui";
 import { JSONSchema7 } from 'json-schema';
 import { render } from '../../../utils/render';
-import { Tab, Label, Icon, Dropdown } from 'semantic-ui-react'
+import { Tab, Label, Icon, Dropdown, Radio} from 'semantic-ui-react'
 import { Button as Btn } from 'semantic-ui-react';
 import { Message } from 'semantic-ui-react';
 import RelatedFiles from './RelatedFiles';
@@ -125,6 +125,9 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
       wsp: wps
     }
   });
+
+  const [loadingAccessibiliy, setLoadingAccessibility] = useState(true)
+  const [accessibility, setAccessibility] = useState(false);
 
   const resources  = useSelector(selectResources)
 
@@ -277,8 +280,6 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   //end cdn functions
 
   useEffect(() => {
-
-
     const getThemes = async () => {
         const themes_scorm = await MainService().getBookThemes()
         const newThemes = themes_scorm.map(th => ({key: th, value: th, text: th === 'v1' ? `${th} (deprecated)` : th}))
@@ -290,6 +291,20 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     }
 
   }, [])
+
+
+  useEffect(() => {
+    const getAccessibility = async () => {
+        const {accessibility} = await MainService().checkAccessibility(resourceData.id)
+        setAccessibility(accessibility)
+        setLoadingAccessibility(false)
+    }
+
+    if (resourceData?.id && action === 'edit' && resourceType === 'book') {
+        getAccessibility()
+    }
+
+  }, [resourceData])
 
   useEffect(() => {
 
@@ -476,6 +491,11 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     Object.keys(body).map((e) => {
       theFormData.append(e, body[e]);
     })
+
+    if (wksSelected?.wsp?.length !== 0) {
+        const valuesWsp: number[] = wksSelected?.wsp?.map(e => e.id)
+        theFormData.append('toWorkspaceId', valuesWsp.join(',') )
+    }
 
     if (formFiles) {
       for (var i = 0; i < formFiles.length; i++) {
@@ -683,6 +703,10 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     setResourceData({...resourceData, theme: value})
   }
 
+  const handleResourceAccessibility = (_, {checked}) => {
+    setAccessibility(checked)
+  }
+
   const handleDuplicate = async () => {
     if(canDuplicate){
       setProcessingDuplicate(true);
@@ -776,6 +800,15 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
                 />
             </div>
         )}
+        {resourceType === 'book' && action !== 'create' && (
+            <div className='form-theme' style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', paddingInline: 20}}>
+                <label style={{fontWeight: 'bold', fontSize: 16}}><span style={{ color: 'tomato', fontSize: '1rem'}}>Test</span> Enable Accessibility: </label>
+                {loadingAccessibiliy
+                    ? (<Icon loading name='spinner' />)
+                    : (<Radio toggle defaultChecked={accessibility} onClick={handleResourceAccessibility}/>)
+                }
+            </div>
+        )}
         <SemanticForm
           id='sfu'
           className={fillAlert ? 'fill-alert' : ''}
@@ -835,7 +868,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
 
             <Grid item sm={12} className={classes.divider}>
               {dataForUpdate ? (
-                <ResourceActionButtons resource={dataForUpdate} themeBook={resourceData?.theme ?? DEFAULT_THEME_BOOK} />
+                <ResourceActionButtons resource={dataForUpdate} themeBook={resourceData?.theme ?? DEFAULT_THEME_BOOK} accessibility={accessibility}/>
               ) : null}
             </Grid>
 

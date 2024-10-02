@@ -792,6 +792,24 @@ class AppService {
         return {error: 'Error on retrying duplication'}
       }
     }
+
+    async checkAccessibility(id)
+    {
+        const _api = api().checkAccessibility(id)
+        const request = {
+            method: _api.method
+          }
+          try {
+            const res = await (await fetch(_api.url, request)).json();
+            if (res.error) throw Error(res.error)
+            return res
+          }
+          catch (e) {
+            console.error(e.message)
+            return ['base'];
+          }
+    }
+
 }
 
 export default function MainService()

@@ -11,7 +11,7 @@ class ResourcesService {
       }
     }
 
-    getBookActions(resourceId, theme)
+    getBookActions(resourceId, theme, accessibility = false)
     {
       let baseUrl = BOOK_EDITOR_URL;
       let edit = 'edit/';
@@ -21,7 +21,7 @@ class ResourcesService {
 
       let ob = {
         edit: { label: 'Edit', href: baseUrl + edit + rid + token },
-        convert: { label: 'Convert', href: baseUrl + convert + rid + token + `?theme=${encodeURIComponent(theme)}`},
+        convert: { label: 'Convert', href: baseUrl + convert + rid + token + `?theme=${encodeURIComponent(theme)}&accessibility=${accessibility}`},
       }
 
       return ob;
@@ -72,7 +72,7 @@ class ResourcesService {
           ra = this.getCourseActions();
           break;
         case BOOK:
-          ra = this.getBookActions(resource.id, resource.theme ?? DEFAULT_THEME_BOOK);
+          ra = this.getBookActions(resource.id, resource.theme ?? DEFAULT_THEME_BOOK, resource.accessibility);
           break;
         case MULTIMEDIA:
         case IMAGE:

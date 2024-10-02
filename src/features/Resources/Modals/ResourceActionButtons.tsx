@@ -36,14 +36,14 @@ const ResourceActionButton = (
   );
 }
 
-function ResourceActionButtons( { resource, themeBook } ) {
+function ResourceActionButtons( { resource, themeBook, accessibility } ) {
 
   const [actions, setAction] = useState({});
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    setAction(ResourcesActions().getActions({...resource, theme: themeBook}));
-  }, [resource, themeBook]);
+    setAction(ResourcesActions().getActions({...resource, theme: themeBook, accessibility}));
+  }, [resource, themeBook, accessibility]);
 
   return (
     <>
