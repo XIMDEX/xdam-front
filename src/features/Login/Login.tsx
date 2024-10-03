@@ -53,7 +53,7 @@ export function Login() {
       setLoading(false);
       return;
     }
-    MainService().setToken('JWT', user.data.access_token);
+    MainService().setToken('JWT', user.access_token);
     setLoginStatus('Login success. Loading user data, please wait.');
     if (history.location.pathname === '/search') {
         history.push(history.location.pathname + history.location.search);

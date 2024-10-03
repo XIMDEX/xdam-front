@@ -70,10 +70,10 @@ class AppService {
           password: password,
         }),
       }
-      const res = await fetch(api().login.url, request);
+      const res = await fetch(api().loginXdir.url, request);
       const resToJson = await res.json();
 
-      return resToJson;
+      return resToJson.user;
     }
 
     async loginTokakuma()

@@ -1,5 +1,5 @@
 import { Cookies } from 'react-cookie';
-import { API_BASE_URL, BOOK_EDITOR_URL, REACT_APP_TOKEN_ALFRESCO, SOLR_ALFRESCO_URL, SOLR_DAM_URL, XTAGS_API_BASE_URL } from '../constants';
+import { API_BASE_URL, BOOK_EDITOR_URL, REACT_APP_TOKEN_ALFRESCO, SOLR_ALFRESCO_URL, SOLR_DAM_URL, XTAGS_API_BASE_URL,API_XDIR } from '../constants';
 
 const api = () => {
     let cookies = new Cookies();
@@ -15,6 +15,10 @@ const api = () => {
         loginToKakuma: {
             method: 'POST',
             url: baseUrl + '/auth/kakumaLogin'
+        },
+        loginXdir: {
+            method: 'POST',
+            url: API_XDIR + '/login'
         },
         logout: {
             method: 'POST',
