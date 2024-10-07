@@ -1,4 +1,20 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) template.
+| Technology     | Version |
+|----------------|---------|
+| node           | 14      |
+
+## Configure Environment Variables
+
+Copy .env.example to .env and fill in the variables with your own values.
+
+## Install Dependencies
+
+Navigate to the project directory and run the following command to install the dependencies:
+
+```bash
+npm install
+```
+
+This command will install all the required dependencies listed in the package.json file.
 
 ## Available Scripts
 
