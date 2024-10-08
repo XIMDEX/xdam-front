@@ -160,7 +160,6 @@ export default function BatchDialog( {open, setOpenBatch, action, resourceType} 
         setProgress(null);
         filesUploaded(false);
         setNewWorkspace(now());
-        setWorkspaces([])
     }
 
     const filesModified = (updatedFiles) => {
