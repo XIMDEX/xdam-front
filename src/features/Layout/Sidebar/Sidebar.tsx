@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme) => ({
   }
 ));
 
-function Sidebar( { collection, organization } ) { 
+function Sidebar({ collection, organization }) { 
   const classes = useStyles();
   const user = useSelector(selectUser)
   const selectedOrg = getOrgData(user, organization)
@@ -36,13 +36,24 @@ function Sidebar( { collection, organization } ) {
   const facets = useSelector(selectFacets)
   const resources = useSelector(selectResources)
   const resourcesLoading = useSelector(selectResourcesLoading)
-  
+
+  const mergedFacets = [];
+
+  facets.forEach(facet => {
+    const existingFacet = mergedFacets.find(f => f.label === facet.label);
+    if (existingFacet) {
+      existingFacet.values = { ...existingFacet.values, ...facet.values };
+    } else {
+      mergedFacets.push({ ...facet, values: { ...facet.values } });
+    }
+  });
+
   return (
     <Grid container className={`${classes.sidebarComp}`} > 
       <Grid item sm={12}>
         {
-          facets?.length > 0 ? (
-            facets.map( (item: any, key) => {
+          mergedFacets.length > 0 ? (
+            mergedFacets.map((item: any, key) => {
               return (
                 <FacetCard key={key} 
                   facet={item} 
