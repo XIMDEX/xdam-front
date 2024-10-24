@@ -42,9 +42,21 @@ function Sidebar({ collection, organization }) {
   facets.forEach(facet => {
     const existingFacet = mergedFacets.find(f => f.label === facet.label);
     if (existingFacet) {
-      existingFacet.values = { ...existingFacet.values, ...facet.values };
+      existingFacet.values = {
+        ...existingFacet.values,
+        ...Object.keys(facet.values).reduce((acc, key) => {
+          acc[key] = { ...facet.values[key], key: facet.key };
+          return acc;
+        }, {})
+      };
     } else {
-      mergedFacets.push({ ...facet, values: { ...facet.values } });
+      mergedFacets.push({
+        ...facet,
+        values: Object.keys(facet.values).reduce((acc, key) => {
+          acc[key] = { ...facet.values[key], key: facet.key };
+          return acc;
+        }, {})
+      });
     }
   });
 

@@ -17,7 +17,6 @@ const FacetItem = ({name, facet, fixed, facetValues, supplementaryData, changeFa
     const [onHover, setHover] = useState(false)
     let auxName = name;
     const dispatch = useDispatch()
-
     if (facet.key === LANGUAGE_FACET && name in bookLanguages) {
         auxName = bookLanguages[name];
     }
@@ -57,6 +56,40 @@ const FacetItem = ({name, facet, fixed, facetValues, supplementaryData, changeFa
         setHover(inside)
     }
 
+    const getLomCategory = () => {
+      
+        if (facet.label === 'LOMES' || facet.label === 'LOM') {
+            console.log(facetValues,"facet")
+          const parts = facetValues[name].key.split('.');
+      
+          // Ensure there are enough parts to extract at least one value
+          if (parts.length >= 3) {
+            let firstValue = parts[2];
+            let secondValue = parts.length >= 5 ? parts[4] : null;
+      
+            // Remove '_str' suffix if present
+            if (firstValue.endsWith('_str')) {
+              firstValue = firstValue.slice(0, -4);
+            }
+            if (secondValue && secondValue.endsWith('_str')) {
+              secondValue = secondValue.slice(0, -4);
+            }
+      
+            const lomCategory = secondValue ? `${firstValue} - ${secondValue}` : `${firstValue}`;
+            console.log(lomCategory);
+            return lomCategory;
+          } else {
+            console.error("Not enough parts found in facet.id");
+            return null;
+          }
+        }
+        return null;
+      };
+      
+      
+    
+
+
     return (
         <div
             onMouseEnter={() => handleHover(true)}
@@ -65,10 +98,10 @@ const FacetItem = ({name, facet, fixed, facetValues, supplementaryData, changeFa
         >
             <input
                 type={facetValues[name].radio ? 'radio' : 'checkbox'}
-                name={supplementaryData ? supplementaryData.name : facet.key}
+                name={ supplementaryData ? supplementaryData.name : facet.key}
                 value={fixed ? facetValues[name].id : name}
                 onChange={changeFacet(facetValues[name].radio)}
-                checked={facetIsActive(fixed ? facetValues.id : name, facet.key)}
+                checked={facetIsActive(fixed ? facetValues.id : name, facetValues[name].key)}
                 id={(facet.key + '-' + name + '-' + (facetValues[name]?.id ?? '')).replace(/ /g, '--')}
                 style={{flexShrink: 3}}
             />
@@ -101,7 +134,7 @@ const FacetItem = ({name, facet, fixed, facetValues, supplementaryData, changeFa
                                 >{supplementaryData?.[name]
                                     ? supplementaryData[name].name
                                     : facetValues[name].label ?? name
-                                }</span>&nbsp;<strong>({facetValues[name].count})</strong>
+                                } - {getLomCategory()}</span>&nbsp;<strong>({facetValues[name].count})</strong>
                             </>
                         )
                 }
@@ -186,7 +219,7 @@ const FacetItems = ({ supplementaryData, fixed, facet, facetValues, currentFacet
     }
 
     const filterCheck = (value: any, checked: boolean) => {
-        const facetKey = facet.key;
+        const facetKey = facet.values[value].key;
 
         if (currentFacets.hasOwnProperty(facetKey)) {
             if (checked) {
@@ -213,6 +246,7 @@ const FacetItems = ({ supplementaryData, fixed, facet, facetValues, currentFacet
         let nQ = {
             ...cQuery
         };
+
         nQ.page = 1
         dispatch(setResourcesLoading(true))
         dispatch(setQuery(nQ));
@@ -222,8 +256,9 @@ const FacetItems = ({ supplementaryData, fixed, facet, facetValues, currentFacet
     const changeFacet = (isRadio: boolean): (event) => void => {
 
         const update = isRadio ? filterRadio : filterCheck;
-
+        
         return (event) => {
+            
             const checked = event.target.checked;
             const value = event.target.value;
             onFilterSelected?.(value, checked)
