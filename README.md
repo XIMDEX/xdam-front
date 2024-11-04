@@ -3,6 +3,10 @@ The Digital Asset Management service of the Ximdex Platform (XDAM) provides a si
 
 # Installation of XDAM Frontend
 
+Use the .env.example file to prepare a .env file in one of the deploy_config directories
+Run 'npm install && npm run build:mhe:pro'
+For additional details, check the README.md file located in the deploy_config directory.
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) template.
 
 ## Available Scripts
