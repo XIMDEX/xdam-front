@@ -57,16 +57,15 @@ const FacetItem = ({name, facet, fixed, facetValues, supplementaryData, changeFa
     }
 
     const getLomCategory = () => {
-      
+
         if (facet.label === 'LOMES' || facet.label === 'LOM') {
-            console.log(facetValues,"facet")
           const parts = facetValues[name].key.split('.');
-      
+
           // Ensure there are enough parts to extract at least one value
           if (parts.length >= 3) {
             let firstValue = parts[2];
             let secondValue = parts.length >= 5 ? parts[4] : null;
-      
+
             // Remove '_str' suffix if present
             if (firstValue.endsWith('_str')) {
               firstValue = firstValue.slice(0, -4);
@@ -74,9 +73,8 @@ const FacetItem = ({name, facet, fixed, facetValues, supplementaryData, changeFa
             if (secondValue && secondValue.endsWith('_str')) {
               secondValue = secondValue.slice(0, -4);
             }
-      
-            const lomCategory = secondValue ? `${firstValue} - ${secondValue}` : `${firstValue}`;
-            console.log(lomCategory);
+
+            const lomCategory = secondValue ? `- ${firstValue} - ${secondValue}` : `- ${firstValue}`;
             return lomCategory;
           } else {
             console.error("Not enough parts found in facet.id");
@@ -85,9 +83,9 @@ const FacetItem = ({name, facet, fixed, facetValues, supplementaryData, changeFa
         }
         return null;
       };
-      
-      
-    
+
+
+
 
 
     return (
@@ -134,7 +132,7 @@ const FacetItem = ({name, facet, fixed, facetValues, supplementaryData, changeFa
                                 >{supplementaryData?.[name]
                                     ? supplementaryData[name].name
                                     : facetValues[name].label ?? name
-                                } - {getLomCategory()}</span>&nbsp;<strong>({facetValues[name].count})</strong>
+                                }  {getLomCategory()}</span>&nbsp;<strong>({facetValues[name].count})</strong>
                             </>
                         )
                 }
@@ -256,9 +254,9 @@ const FacetItems = ({ supplementaryData, fixed, facet, facetValues, currentFacet
     const changeFacet = (isRadio: boolean): (event) => void => {
 
         const update = isRadio ? filterRadio : filterCheck;
-        
+
         return (event) => {
-            
+
             const checked = event.target.checked;
             const value = event.target.value;
             onFilterSelected?.(value, checked)
