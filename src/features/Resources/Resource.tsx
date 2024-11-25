@@ -48,7 +48,7 @@ export function Resource( { data, listMode, resourceType } ) {
     const [blured, setBlur] = useState(false)
     const [focusedDom, setFocusedDom] = useState(null)
 
-    const preview = render(data)
+    const preview = render(data,"thumbnail")
 
     function truncate(string, length = 150)
     {
