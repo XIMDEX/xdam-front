@@ -160,11 +160,17 @@ export function Resource( { data, listMode, resourceType } ) {
                 <div className="dam-type">{resourceType === MULTIMEDIA ? 'multimedia' : resourceType}</div>
                 <div className="dam-preview">
                     <div className="dam-preview-img">
-                        <LazyImage
-                            src={preview}
-                            alt='lazy_img'
-                            grid
-                        />
+                        {
+                            data?.data?.img ?
+                                <img src={`${data.data.img}`} alt="img" />
+                            :
+                                <LazyImage
+                                    src={preview}
+                                    alt='lazy_img'
+                                    grid
+                                />
+                        }
+
                     </div>
                     <div className="dam-preview-title" title={data.name || data.data.description.course_title}>
                         <strong>{data.name || data.data.description.course_title || 'no name set'} </strong>
