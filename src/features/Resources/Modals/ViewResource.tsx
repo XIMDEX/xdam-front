@@ -78,7 +78,7 @@ export default function ViewResource( { resData } ) {
 
 
 
-    let preview = render(resData, 'medium')
+    let preview = render(resData, '')
     let previewVideo = render(resData,"")
     const closeModal = () => {
       let element: HTMLElement = document.getElementsByClassName('MuiBackdrop-root')[0] as HTMLElement;
