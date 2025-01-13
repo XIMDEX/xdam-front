@@ -167,9 +167,10 @@ export default function ViewResource( { resData } ) {
         <Grid item sm={12}>
           {resourceData !== null && (
             <>
-              {resourceData.type === 'image' && (
+              {(resourceData.type === 'image' || resourceData.type === 'audio') && (
                 <div style={{backgroundImage: 'url('+preview+')'}} className={classes.imgView}/>
               )}
+
               {resourceData.type === 'video' && (
                 <video controls className={classes.mediaPlayer}> <source src={previewVideo} /></video>
               )}
