@@ -167,13 +167,18 @@ export default function ViewResource( { resData } ) {
         <Grid item sm={12}>
           {resourceData !== null && (
             <>
-              {(resourceData.type === 'image' || resourceData.type === 'audio') && (
+              {(resourceData.type !== 'video' && resourceData.type !== 'audio' ) && (
                 <div style={{backgroundImage: 'url('+preview+')'}} className={classes.imgView}/>
               )}
 
-              {resourceData.type === 'video' && (
+              {(resourceData.type === 'video' ) && (
                 <video controls className={classes.mediaPlayer}> <source src={previewVideo} /></video>
               )}
+                {console.log(resourceData)}
+              {(resourceData.type === 'audio' ) && (
+                <audio controls className={classes.mediaPlayer}> <source src={MainService().render(resData.previews[0])} /> </audio>
+              )}
+
               <Grid container spacing={3}>
                 <Grid item sm={5} hidden={resourceData.files?.length < 1}>
                   <div>{resourceData.files?.length > 0 ? <RelatedFiles resData={resourceData} files={resourceData.files} withPlayer={true} /> : <Label>No files attached</Label>}</div>
