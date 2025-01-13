@@ -170,7 +170,7 @@ export default function ViewResource( { resData } ) {
               {(resourceData.type === 'image' || resourceData.type === 'audio') && (
                 <div style={{backgroundImage: 'url('+preview+')'}} className={classes.imgView}/>
               )}
-              {console.log(resourceData)}
+
               {resourceData.type === 'video' && (
                 <video controls className={classes.mediaPlayer}> <source src={previewVideo} /></video>
               )}
