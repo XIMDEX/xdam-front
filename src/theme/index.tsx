@@ -1,4 +1,5 @@
 import { createMuiTheme } from '@material-ui/core/styles';
+import { ENABLE_COGNITIVE } from '../constants';
 
 const theme = createMuiTheme({
   breakpoints: {
@@ -12,7 +13,7 @@ const theme = createMuiTheme({
   },
   palette: {
     primary: {
-      main: '#43a1a2',
+      main: ENABLE_COGNITIVE ? 'hsl(222 88% 44%)' : '#43A1A2',
     },
     secondary: {
       main: '#068873',

@@ -6,6 +6,7 @@ import XthemeProvider from "../providers/XthemeProvider";
 import { makeStyles } from "@material-ui/core/styles";
 import LoginAdminPanel from "../features/PanelCDN/LoginAdminPanel";
 import PanelCDN from "../features/PanelCDN/PanelCDN";
+import { ENABLE_COGNITIVE } from "../constants";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -22,9 +23,9 @@ const useStyles = makeStyles((theme) => ({
         color: "#214F61",
     },
     btn: {
-        backgroundColor: "#43a1a2",
+        backgroundColor: ENABLE_COGNITIVE ? 'hsl(222 88% 44%)' : '#43A1A2',
         "&:hover, &:focus": {
-            backgroundColor: "#43a1a2",
+            backgroundColor: ENABLE_COGNITIVE ? 'hsl(222 88% 44%)' : '#43A1A2',
         },
     },
 }));

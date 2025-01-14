@@ -88,8 +88,20 @@ export enum courseLanguages {
 
 export const SHOW_DAM_ORGANIZATIONS = process.env.REACT_APP_SHOW_DAM_ORGANIZATIONS === 'false' ? false : true
 
-export const SHOW_THEMES_BOOK = process.env.REACT_APP_SHOW_THEMES_BOOK === 'true' ?? false
+export const SHOW_THEMES_BOOK = process.env.REACT_APP_SHOW_THEMES_BOOK === 'true'
 export const DEFAULT_THEME_BOOK = process.env.REACT_APP_DEFAULT_THEME_BOOK ?? 'base'
 
 export const CORE_VERSION = process.env.REACT_APP_SOLR_VERSION  ?? ''
 export let ALFRESCO_SITE = REACT_APP_SITE_ALFRESCO ?? 'new-mc-graw'
+
+export const CORES = {
+    'activity': 1,
+    'assessment': 2,
+    'course': 3,
+    'multimedia': 4,
+    'book': 5,
+    'document': 6
+}
+
+export const ENABLE_COGNITIVE = process.env.REACT_APP_USE_COGNITIVE_SERVICES === 'true'
+export const COGNITIVE_API_URL = process.env.REACT_APP_API_COGNITIVE_SERVICES

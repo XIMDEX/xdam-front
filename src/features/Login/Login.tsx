@@ -7,6 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { useHistory } from 'react-router-dom';
+import { ENABLE_COGNITIVE } from '../../constants';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,9 +23,9 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: 50,
   },
   btn: {
-    backgroundColor: '#43a1a2',
+    backgroundColor: ENABLE_COGNITIVE ? 'hsl(222 88% 44%)' : '#43A1A2',
     '&:hover, &:focus': {
-      backgroundColor: '#43a1a2',
+      backgroundColor: ENABLE_COGNITIVE ? 'hsl(222 88% 44%)' : '#43A1A2',
     },
   }
 }));
@@ -59,7 +60,7 @@ export function Login() {
         history.push(history.location.pathname + history.location.search);
     }else if(history.location.pathname.startsWith('/resource/') && history.location.pathname.endsWith('/preview')){
       const urlParts = history.location.pathname.split('/');
-      const resourceId = urlParts[2]; 
+      const resourceId = urlParts[2];
       history.push(history.location.pathname +`/resource/${resourceId}/preview`);
     } else {
         history.push('/home')
@@ -111,7 +112,7 @@ export function Login() {
         fullWidth
         color="primary"
         className={classes.btn}
-        // style={{backgroundColor: '#43a1a2'}}
+        // style={{backgroundColor: 'hsl(222 88% 44%)'}}
         variant="contained"
         onClick={log}
         disabled={loading}

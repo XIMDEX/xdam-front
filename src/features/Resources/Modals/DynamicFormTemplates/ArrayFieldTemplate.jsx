@@ -4,6 +4,7 @@ import { Button, Dropdown, Label } from "semantic-ui-react";
 import { ArrayFieldTemplate as ArrayFieldTemplateRJSF } from "@rjsf/semantic-ui";
 import XTagsSearch from '@ximdex/xui-react/material/XTags/XTagsSearch/XTagsSearch'
 import { XTag } from '@ximdex/xui-react/material'
+import { ENABLE_COGNITIVE } from "../../../../constants";
 
 export default function ArrayFieldTemplate(props) {
     const [data] = useState(props.formData)
@@ -247,7 +248,7 @@ function ListItemsXTags({items, handleAction, ...props}) {
                         canDelete
                         customizable={{
                             organization: {
-                                color: '#43A1A2',
+                                color: ENABLE_COGNITIVE ? 'hsl(222 88% 44%)' : '#43A1A2',
                             }
                         }}
                     />

@@ -8,6 +8,7 @@ import { selectWorkspaceCollections, selectWorkspacesData, setWorkspacesData } f
 import { useDispatch, useSelector } from 'react-redux';
 import MainService from '../../../api/service';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { ENABLE_COGNITIVE } from '../../../constants';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -28,7 +29,7 @@ const useStyles = makeStyles((theme: Theme) =>
     buttonAddWorkspace:{
         backgroundColor: 'white',
         border: 'none',
-        color: '#43A1A2',
+        color: ENABLE_COGNITIVE ? 'hsl(222 88% 44%)' : '#43A1A2',
         borderRadius: '50%',
     },
     addWorkspaceInput:{
@@ -120,7 +121,10 @@ export default function WorkspaceSelect({resourceData, dataForUpdate, newWorkspa
                 }
                 renderTags={(tagValue, getTagProps) => tagValue.map((option, index) => (
                     <Chip
-                        sx={{backgroundColor: '#43A1A2', color: 'white'}}
+                        sx={{
+                            backgroundColor: ENABLE_COGNITIVE ? 'hsl(222 88% 44%)' : '#43A1A2',
+                            color: 'white'
+                        }}
                         label={option.label}
                         {...getTagProps({ index })}
                         disabled={workspaceDefault.findIndex(defaultWk => defaultWk.value === option.value) !== -1}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import {
     BrowserRouter as Router,
@@ -26,7 +26,8 @@ function HomePage({
     organization_id,
     collection_id,
     sidebarOpen,
-    classes
+    classes,
+    isFrame
 }) {
     return (
 
@@ -45,15 +46,17 @@ function HomePage({
                 <Router>
                     <Redirect to={{ pathname: "/home" }} />
                     {loading ? <Loading /> : null}
-                    <Grid container>
-                        <Grid item sm={12} className="main-header">
-                            {organization_id && collection_id ? (
-                                <Header _user={user} />
-                            ) : (
-                                ""
-                            )}
+                    { !isFrame  && (
+                        <Grid container>
+                            <Grid item sm={12} className="main-header">
+                                {organization_id && collection_id ? (
+                                    <Header _user={user} />
+                                ) : (
+                                    ""
+                                )}
+                            </Grid>
                         </Grid>
-                    </Grid>
+                    )}
                     <div
                         className={
                             !sidebarOpen
@@ -65,6 +68,7 @@ function HomePage({
                             className={
                                 !sidebarOpen ? "sideBarHidden" : "sideBar"
                             }
+                            style={isFrame && sidebarOpen ? {minHeight: '100vh'} : {}}
                         >
                             <Grid
                                 container

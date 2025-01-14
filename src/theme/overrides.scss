@@ -1,17 +1,22 @@
+$primary-default: $primary;
+$primary-cognitive: hsl(222, 88%, 44%);
+
+// Estilos principales
 .MuiPaginationItem-page.Mui-selected {
-    background-color: $primary !important;
+    background-color: $primary-default !important;
     color: white;
 }
 
 .buttonStyle {
-    background-color: $primary !important;
+    background-color: $primary-default !important;
     color: white !important;
 }
 
 .ui.teal.button, .ui.teal.buttons  {
-    background-color: $primary !important;
+    background-color: $primary-default !important;
+
     .button {
-        background-color: $primary;
+        background-color: $primary-default;
     }
     color: white;
 }
@@ -19,11 +24,11 @@
 .ui.button {
     font-family: 'Roboto', 'Lato', sans-serif;
 }
-//facets headers
 
+// Facets Headers
 .cardOpen {
     & .MuiButtonBase-root {
-        background-color: $primary !important;
+        background-color: $primary-default !important;
         color: white !important;
     }
     & .MuiButtonBase-root.MuiButton-root.MuiButton-text.MuiButton-fullWidth {
@@ -33,20 +38,20 @@
     }
 }
 
-
 .facetCard {
-
     .MuiButtonBase-root.MuiButton-root.MuiButton-text.MuiButton-fullWidth {
         border-radius: unset;
         background-color: $gray1;
         border-top: 2px solid $gray3;
+
         .MuiButton-endIcon {
-            color: $gray3
+            color: $gray3;
         }
     }
     .MuiGrid-root.MuiGrid-item.MuiGrid-grid-sm-1 {
-        background-color: $primary;
+        background-color: $primary-default;
         border-top: 2px solid $gray3;
+
         button {
             span {
                 svg {
@@ -55,13 +60,9 @@
             }
         }
     }
-    
 }
 
-
-//end facets 
-
-
+// Pagination
 .MuiPagination-ul {
     li:first-of-type {
         button {
@@ -90,6 +91,54 @@
         }
         .MuiPaginationItem-ellipsis {
             line-height: 2;
+        }
+    }
+}
+
+// Estilos para .cognitive
+body.cognitive {
+    .MuiPaginationItem-page.Mui-selected {
+        background-color: $primary-cognitive !important;
+        color: white;
+    }
+
+    .buttonStyle {
+        background-color: $primary-cognitive !important;
+        color: white !important;
+    }
+
+    .ui.teal.button, .ui.teal.buttons {
+        background-color: $primary-cognitive !important;
+
+        .button {
+            background-color: $primary-cognitive;
+        }
+        color: white;
+    }
+
+    .cardOpen {
+        & .MuiButtonBase-root {
+            background-color: $primary-cognitive !important;
+            color: white !important;
+        }
+        & .MuiButtonBase-root.MuiButton-root.MuiButton-text.MuiButton-fullWidth {
+            .MuiButton-endIcon {
+                color: white !important;
+            }
+        }
+    }
+
+    .facetCard {
+        .MuiGrid-root.MuiGrid-item.MuiGrid-grid-sm-1 {
+            background-color: $primary-cognitive;
+
+            button {
+                span {
+                    svg {
+                        fill: white;
+                    }
+                }
+            }
         }
     }
 }

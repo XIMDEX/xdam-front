@@ -1,9 +1,15 @@
+$primary-default: $primary;
+$primary-cognitive: hsl(222, 88%, 44%);
+
+$secondary-default: $secondary;
+
+// Estilos por defecto
 .bg-primary {
-    background-color: $primary !important;
+    background-color: $primary-default !important;
 }
 
 .bg-secondary {
-    background-color: $secondary !important;
+    background-color: $secondary-default !important;
 }
 
 .xdam-btn-primary {
@@ -23,11 +29,11 @@
 }
 
 .xdam-btn-primary:hover {
-    background-color: darken($primary, 5%) !important;
+    background-color: darken($primary-default, 5%) !important;
 }
 
 .xdam-btn-secondary:hover {
-    background-color: darken($secondary, 5%) !important;
+    background-color: darken($secondary-default, 5%) !important;
 }
 
 .btn-square {
@@ -50,7 +56,67 @@
     border-bottom-right-radius: 5px;
 }
 
-
 .btn-round {
     border-radius: 5px;
+}
+
+// Estilos para body.cognitive
+body.cognitive {
+    .bg-primary {
+        background-color: $primary-cognitive !important;
+    }
+
+    .bg-secondary {
+        background-color: $secondary-default !important;
+    }
+
+    .xdam-btn-primary {
+        background-color: $primary-cognitive;
+        border: none;
+        padding: 5px 10px;
+        color: white;
+        text-transform: capitalize;
+        cursor: pointer;
+    }
+
+    .xdam-btn-secondary {
+        background-color: $secondary-default;
+        border: none;
+        padding: 5px 10px;
+        color: white;
+        text-transform: capitalize;
+        cursor: pointer;
+    }
+
+    .xdam-btn-primary:hover {
+        background-color: darken($primary-cognitive, 5%) !important;
+    }
+
+    .xdam-btn-secondary:hover {
+        background-color: darken($secondary-default, 5%) !important;
+    }
+
+    .btn-square {
+        width: 35px;
+        height: 35px;
+    }
+
+    .btn-half-square {
+        width: 17.5px;
+        height: 35px;
+    }
+
+    .btn-round-left {
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px;
+    }
+
+    .btn-round-right {
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
+    }
+
+    .btn-round {
+        border-radius: 5px;
+    }
 }

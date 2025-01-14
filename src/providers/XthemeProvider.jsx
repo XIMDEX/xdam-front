@@ -3,6 +3,7 @@ import { XThemeProvider } from '@ximdex/xui-react/providers/';
 import useBool from '../hooks/useBool';
 import themee from '../theme'
 import { createMuiTheme } from '@material-ui/core';
+import { ENABLE_COGNITIVE } from '../constants';
 
 
 const XthemeContext = createContext();
@@ -14,7 +15,7 @@ const XthemeProvider = ({ children }) => {
             palette: {
                 mode: 'light',
                 primary: {
-                    main: '#43a1a2',
+                    main: ENABLE_COGNITIVE ? 'hsl(222 88% 44%)' : '#43A1A2',
                     contrastText: '#ffffff',
                 },
                 secondary: {
@@ -119,7 +120,7 @@ const XthemeProvider = ({ children }) => {
                     m: '1px solid #adadad',
                     l: '4px solid #adadad',
                     status: {
-                        active: '4px solid #43A1A2',
+                        active: '4px solid ' + (ENABLE_COGNITIVE ? 'hsl(222 88% 44%)' : '#43A1A2'),
                         inactive: '4px solid #adadad',
                     }
                 }

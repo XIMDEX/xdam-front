@@ -33,6 +33,7 @@ import CDNData from './Tabs/CDN/CDNData';
 import WorkspaceSelect from '../../../components/forms/WorkspaceSelect/WorkspaceSelect';
 import { CDNsAttachedToResource, CDNsAttachedToResourceV2 } from './ResourceCDNsAttached';
 import { currentCollection, max_num_files_collection } from '../../../slices/collectionSlice';
+import LLM from './Tabs/LLM/LLM';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -573,6 +574,10 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const mediaData = { menuItem: "Media data", render: () => <Tab.Pane > <MediaData url={resourceData?.files?.[0].dam_url} description="test" transcription="Test" xtags={[]}/> </Tab.Pane> };
   const cdnData = { menuItem: "CDN data", render: () => <Tab.Pane > <CDNData data={dataForUpdate?.data?.cdns_attached ?? []}/> </Tab.Pane> };
 
+  const contentLLM = {menuItem: "Content", render: () => <Tab.Pane > <LLM data={resourceData.id} type="content"/>  </Tab.Pane> }
+  const resumeLLM = {menuItem: "Summary", render: () => <Tab.Pane > <LLM data={resourceData.id} type="resume"/>  </Tab.Pane> }
+  const conceptualMapLLM = {menuItem: "Conceptual Map", render: () => <Tab.Pane > <LLM data={resourceData.id} type="conceptual_map"/> </Tab.Pane> }
+
   const pane = [metaData];
   let panes = [metaData, ...lomsData];
   if(resourceType === MULTIMEDIA) {
@@ -580,6 +585,10 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   }
   if (dataForUpdate?.data?.cdns_attached) {
     panes = [...panes, cdnData]
+  }
+
+  if (resourceType === 'document') {
+    panes = [...panes, contentLLM, resumeLLM, conceptualMapLLM]
   }
   const setForm = (data) => {
     dispatch(setFormData(data))

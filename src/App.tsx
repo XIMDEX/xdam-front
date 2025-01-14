@@ -38,6 +38,8 @@ import ResourcePreviewPage from "./pages/ResourcePreviewPage";
 import CdnPanelPage from "./pages/CdnPanelPage";
 import CdnRenderPage from "./pages/CdnRenderPage";
 import { setCollections, setCurrentCollection } from "./slices/collectionSlice";
+import { CORES, ENABLE_COGNITIVE } from "./constants";
+
 
 const useStyles = makeStyles((theme) => {
     let docHeight = document.body.scrollHeight;
@@ -75,6 +77,9 @@ function App() {
     const [localUser, setLocalUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    const [core, setCore] = useState(null);
+    const [isIframe, setIsIframe] = useState(false);
+
     const handleLoading = (status: boolean) => setLoading(status);
 
     function clearAllFilters() {
@@ -96,6 +101,23 @@ function App() {
     }
 
     const handleCookie = (auth) => setCookie("JWT", auth, { maxAge: 86400 });
+
+    useEffect(() => {
+        if (ENABLE_COGNITIVE) {
+            document.body.classList.add("cognitive");
+        }
+    },[])
+
+    useEffect(() => {
+        const search = window.location.search;
+        const params = new URLSearchParams(search);
+        if (params.get("frame") === "true") {
+            setIsIframe(true);
+        }
+        if (params.get("core")) {
+            setCore(params.get("core"));
+        }
+    }, [])
 
     useEffect(() => {
         const initUser = async () => {
@@ -125,7 +147,7 @@ function App() {
             if (localUser && !organization_id && !collection_id) {
                 setInitialOrganization(localUser.data.selected_org_data.id);
                 setInitialCollection(
-                    localUser.data.selected_org_data.collections[0].id
+                    CORES[core] ?? localUser.data.selected_org_data.collections[0].id
                 );
                 dispatch(
                     setOrganization({
@@ -178,6 +200,7 @@ function App() {
                 collection_id={collection_id}
                 sidebarOpen={sidebarOpen}
                 classes={classes}
+                isFrame={isIframe}
             />);
     } else {
         return (<LoginPage loading={loading} />);
