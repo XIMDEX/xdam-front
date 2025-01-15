@@ -19,15 +19,18 @@ import { selectWorkspacesData } from '../../../appSlice';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     imgView: {
-      height: '400px',
-      display: 'block',
-      backgroundRepeat: 'no-repeat',
-      backgroundPosition: 'top',
-      backgroundSize: 'cover',
-      border: '1px solid #e1e1e1',
-      borderRadius: 5,
-      marginBottom: 15
-    },
+        height: '400px',
+        width: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center',
+        backgroundSize: 'contain',
+        border: '1px solid #e1e1e1',
+        borderRadius: 5,
+        marginBottom: 15,
+      },
     mediaPlayer: {
         width: '100%'
     },
@@ -75,8 +78,8 @@ export default function ViewResource( { resData } ) {
 
 
 
-    let preview = render(resData, 'medium')
-
+    let preview = render(resData, '')
+    let previewVideo = render(resData,"")
     const closeModal = () => {
       let element: HTMLElement = document.getElementsByClassName('MuiBackdrop-root')[0] as HTMLElement;
       element.click();
@@ -164,7 +167,18 @@ export default function ViewResource( { resData } ) {
         <Grid item sm={12}>
           {resourceData !== null && (
             <>
-              <div style={{backgroundImage: 'url('+preview+')'}} className={classes.imgView}/>
+              {(resourceData.type !== 'video' && resourceData.type !== 'audio' ) && (
+                <div style={{backgroundImage: 'url('+preview+')'}} className={classes.imgView}/>
+              )}
+
+              {(resourceData.type === 'video' ) && (
+                <video controls className={classes.mediaPlayer}> <source src={previewVideo} /></video>
+              )}
+                {console.log(resourceData)}
+              {(resourceData.type === 'audio' ) && (
+                <audio controls className={classes.mediaPlayer}> <source src={MainService().render(resData.previews[0])} /> </audio>
+              )}
+
               <Grid container spacing={3}>
                 <Grid item sm={5} hidden={resourceData.files?.length < 1}>
                   <div>{resourceData.files?.length > 0 ? <RelatedFiles resData={resourceData} files={resourceData.files} withPlayer={true} /> : <Label>No files attached</Label>}</div>
