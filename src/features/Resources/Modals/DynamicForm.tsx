@@ -34,6 +34,7 @@ import WorkspaceSelect from '../../../components/forms/WorkspaceSelect/Workspace
 import { CDNsAttachedToResource, CDNsAttachedToResourceV2 } from './ResourceCDNsAttached';
 import { currentCollection, max_num_files_collection } from '../../../slices/collectionSlice';
 import LLM from './Tabs/LLM/LLM';
+import FeedbackTab from './Tabs/Feedback/FeedbackTab';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -577,6 +578,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const contentLLM = {menuItem: "Content", render: () => <Tab.Pane > <LLM data={resourceData.id} type="content"/>  </Tab.Pane> }
   const resumeLLM = {menuItem: "Summary", render: () => <Tab.Pane > <LLM data={resourceData.id} type="resume"/>  </Tab.Pane> }
   const conceptualMapLLM = {menuItem: "Conceptual Map", render: () => <Tab.Pane > <LLM data={resourceData.id} type="conceptual_map"/> </Tab.Pane> }
+  const feedback = {menuItem: "Feedback", render: () => <Tab.Pane > <FeedbackTab data={resourceData.id} type="feedback"/> </Tab.Pane> }
 
   const pane = [metaData];
   let panes = [metaData, ...lomsData];
@@ -588,7 +590,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   }
 
   if (resourceType === 'document') {
-    panes = [...panes, contentLLM, resumeLLM, conceptualMapLLM]
+    panes = [...panes, contentLLM, resumeLLM, conceptualMapLLM, feedback]
   }
   const setForm = (data) => {
     dispatch(setFormData(data))
