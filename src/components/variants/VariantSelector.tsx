@@ -22,7 +22,7 @@ const availableConditions: Condition[] = [
   { id: 'condition4', label: 'Condición 4' },
 ];
 
-export default function VariantSelector({conditions, variants}: {conditions: Condition[], variants: Variant[]}) {
+export default function VariantSelector({conditions, variants, handleBack}: {conditions: Condition[], variants: Variant[], handleBack: () => void}) {
   const [initialVariants, setInitialVariants] = useState<Variant[]>([{ name: 'default', conditions: ['condition1', 'condition3'] },...variants]);
   const [selectedVariant, setSelectedVariant] = useState<Variant>(initialVariants[0]);
   const [isEditing, setIsEditing] = useState(false);
@@ -69,38 +69,39 @@ export default function VariantSelector({conditions, variants}: {conditions: Con
       <div style={{ display: 'flex', justifyContent: 'start', marginBottom: (showConditions ? '20px' : 0), gap: 20, width: '100%' }}>
 
         <button
+            onClick={() => {handleBack?.()}}
+            style={{
+                padding: '8px 10px',
+                backgroundColor: 'rgb(79, 70, 229)',
+                color: 'white',
+                border: 'none',
+                borderRadius: '4px',
+                cursor: 'pointer',
+                width: 120,
+                alignSelf: 'flex-start'
+            }}
+        >Go to Editor</button>
+        <button
             onClick={() => setShowConditions(prev => !prev)}
             style={{
               padding: '5px 10px',
-              backgroundColor: '#007bff',
+              backgroundColor: 'rgb(79, 70, 229)',
               color: 'white',
               border: 'none',
               borderRadius: '4px',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              width: 150,
             }}
         >{showConditions ? 'Hide Conditions' : 'Show Conditions'}</button>
         <select
           value={selectedVariant.name}
           onChange={handleVariantChange}
-          style={{ padding: '5px', borderRadius: '4px', border: '1px solid #ccc', width: '200px' }}
+          style={{ padding: '5px', borderRadius: '4px', border: '1px solid #ccc', width: '200px', flexGrow: 1 }}
         >
           {initialVariants.map(variant => (
             <option key={variant.name} value={variant.name}>{variant.name}</option>
           ))}
         </select>
-        <button
-          onClick={handleNewVariant}
-          style={{
-            padding: '5px 10px',
-            backgroundColor: '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
-        >
-          {isEditing ? 'Save variant' : 'New variant'}
-        </button>
       </div>
 
       {isEditing && (

@@ -32,6 +32,10 @@ export default function LLM({ data , type}) {
     const [rating, setRating] = useState(0);
     const [feedback, setFeedback] = useState('');
 
+    const backAction = () => {
+        window.parent.postMessage({ type: "cognitrek", content: 'resource', data: data }, '*');
+    }
+
     const handleRatingChange = (rating) => {
         setRating(rating);
     }
@@ -39,6 +43,20 @@ export default function LLM({ data , type}) {
     const handleFeedbackChange = (feedback) => {
         setFeedback(feedback);
     }
+
+
+    useEffect(() => {
+        const handleMessages = (event) => {
+            const {type, content, action} = event.data;
+            if (type === "cognitrek") {
+                console.log("event", event);
+            }
+        }
+        window.addEventListener("message", handleMessages);
+        window.parent.postMessage({ type: "cognitrek", content: 'READY' }, '*');
+
+        return () => window.removeEventListener("message", handleMessages);
+    }, [])
 
     useEffect(() => {
         fetch(`${COGNITIVE_API_URL}/conditions`)
@@ -51,7 +69,6 @@ export default function LLM({ data , type}) {
                     }))
                 }
                 setCondition(data)
-                console.log(data)
             })
 
         fetch(`${COGNITIVE_API_URL}/resource/${data}/variants`)
@@ -85,9 +102,9 @@ export default function LLM({ data , type}) {
     if (type === 'content') {
         return (
             <div style={{height: '100%', width: '100%', display: 'flex', flexDirection: 'column'}}>
-                <VariantSelector conditions={condition} variants={variants} />
+                    <VariantSelector conditions={condition} variants={variants} handleBack={backAction} />
                 {condition.length > 0 && (
-                    <iframe src={`${COGNITIVE_API_URL}/viewer/${data}`} title="content" width="100%" height="100%" style={{border: 'none', flexGrow: 1, paddingBottom: 10}}></iframe>
+                    <iframe src={`${COGNITIVE_API_URL}/visor/${data}/preview?tm=${new Date().getTime()}`} title="content" width="100%" height="100%" style={{border: 'none', flexGrow: 1, paddingBottom: 10}}></iframe>
                 )}
                 <div id='feedback'>
                     <InteractiveStars rating={rating} onRatingChange={handleRatingChange} onFeedbackChange={handleFeedbackChange} onSubmit={() => {}} feedback={feedback} />
@@ -102,13 +119,6 @@ export default function LLM({ data , type}) {
     }
     if (type === 'conceptual_map') {
         return ( <div dangerouslySetInnerHTML={{__html: parseMarkdownToHTML(value)}} ></div> )
-        // return (
-        //     <div>
-        //         {value.split('\n').map((line, index) => (
-        //             <div key={index}>{line}</div>
-        //         ))}
-        //     </div>
-        // )
     }
 
     return <div>error</div>

@@ -9,7 +9,7 @@ import {
 } from '@material-ui/core';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import MainService from '../../../api/service';
-import { bookLanguages, courseLanguages, CURRENT_BOOK_VERSION, DEFAULT_THEME_BOOK, MULTIMEDIA, SHOW_THEMES_BOOK, VALIDS_LOM, UNLIMITED_FILES } from '../../../constants';
+import { bookLanguages, courseLanguages, CURRENT_BOOK_VERSION, DEFAULT_THEME_BOOK, MULTIMEDIA, SHOW_THEMES_BOOK, VALIDS_LOM, UNLIMITED_FILES, ENABLE_COGNITIVE } from '../../../constants';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectCollection } from '../../../slices/organizationSlice';
 import SemanticForm from "@rjsf/semantic-ui";
@@ -294,7 +294,6 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
 
   }, [])
 
-
   useEffect(() => {
     const getAccessibility = async () => {
         const {accessibility} = await MainService().checkAccessibility(resourceData.id)
@@ -578,7 +577,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const contentLLM = {menuItem: "Content", render: () => <Tab.Pane > <LLM data={resourceData.id} type="content"/>  </Tab.Pane> }
   const resumeLLM = {menuItem: "Summary", render: () => <Tab.Pane > <LLM data={resourceData.id} type="resume"/>  </Tab.Pane> }
   const conceptualMapLLM = {menuItem: "Conceptual Map", render: () => <Tab.Pane > <LLM data={resourceData.id} type="conceptual_map"/> </Tab.Pane> }
-  const feedback = {menuItem: "Feedback", render: () => <Tab.Pane > <FeedbackTab data={resourceData.id} type="feedback"/> </Tab.Pane> }
+  const feedback = {menuItem: "Feedback", render: () => <Tab.Pane > <FeedbackTab data={resourceData.id} /> </Tab.Pane> }
 
   const pane = [metaData];
   let panes = [metaData, ...lomsData];
@@ -589,7 +588,7 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
     panes = [...panes, cdnData]
   }
 
-  if (resourceType === 'document') {
+  if (resourceType === 'document' && ENABLE_COGNITIVE) {
     panes = [...panes, contentLLM, resumeLLM, conceptualMapLLM, feedback]
   }
   const setForm = (data) => {
