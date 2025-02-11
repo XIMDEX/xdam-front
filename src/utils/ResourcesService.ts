@@ -1,5 +1,5 @@
 import { Cookies } from 'react-cookie';
-import { COURSE, BOOK, MULTIMEDIA, IMAGE, VIDEO, AUDIO, ACTIVITY, ASSESSMENT, DOCUMENT, BOOK_EDITOR_URL, COURSE_EDITOR_URL, DEFAULT_THEME_BOOK } from '../constants';
+import { COURSE, BOOK, MULTIMEDIA, IMAGE, VIDEO, AUDIO, ACTIVITY, ASSESSMENT, DOCUMENT, BOOK_EDITOR_URL, COURSE_EDITOR_URL, DEFAULT_THEME_BOOK, ENABLE_COGNITIVE } from '../constants';
 import MainService from '../api/service';
 
 class ResourcesService {
@@ -59,9 +59,22 @@ class ResourcesService {
 
     getDocumentActions()
     {
-      return {
-        create: { href: '', label: '' }
-      }
+        const actions = {
+            create: { href: '', label: '' }
+        }
+
+        if (ENABLE_COGNITIVE) {
+            actions['view'] = {
+                href: (data) => window.parent.postMessage({ type: "cognitrek", content: 'visor', data: data }, '*'),
+                label: 'View'
+            };
+            actions['edit'] = {
+                href: (data) => window.parent.postMessage({ type: "cognitrek", content: 'editor', data: data }, '*'),
+                label: 'Editor'
+            };
+
+        }
+        return actions
     }
 
     getActions(resource) {

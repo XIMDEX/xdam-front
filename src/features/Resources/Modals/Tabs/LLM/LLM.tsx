@@ -71,7 +71,7 @@ export default function LLM({ data , type}) {
                 setCondition(data)
             })
 
-        fetch(`${COGNITIVE_API_URL}/resource/${data}/variants`)
+        fetch(`${COGNITIVE_API_URL}/resources/${data}/variants`)
             .then(response => response.json())
             .then(data => {
                 setVariants([])
@@ -84,14 +84,14 @@ export default function LLM({ data , type}) {
         }
 
         if (type === 'resume') {
-            fetch(`${COGNITIVE_API_URL}/resource/${data}/summary`)
+            fetch(`${COGNITIVE_API_URL}/resources/${data}/summary`)
                 .then(response => response.json())
                 .then(data => {
                     setValue(data.summary)
                 })
         }
         if (type === 'conceptual_map') {
-            fetch(`${COGNITIVE_API_URL}/resource/${data}/conceptual_map`)
+            fetch(`${COGNITIVE_API_URL}/resources/${data}/conceptual_map`)
                 .then(response => response.json())
                 .then(data => {
                     setValue(data.conceptual_map)

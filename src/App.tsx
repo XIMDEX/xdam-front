@@ -69,7 +69,7 @@ function App() {
     const mainService = MainService();
     const facetsQuery = useSelector(selectFacetsQuery);
     const query = useSelector(selectQuery);
-    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [sidebarOpen, setSidebarOpen] = useState(ENABLE_COGNITIVE ? false : true);
     const organization_id = useSelector(selectOrganization);
     const collection_id = useSelector(selectCollection);
     const [initialOrganization, setInitialOrganization] = useState(null);
@@ -81,6 +81,14 @@ function App() {
     const [isIframe, setIsIframe] = useState(false);
 
     const handleLoading = (status: boolean) => setLoading(status);
+
+    const handleCognitrek = (event) => {
+        const {type, content, action} = event.data;
+        if (type === "cognitrek") {
+            console.log("event", event);
+        }
+
+    }
 
     function clearAllFilters() {
         let newQuery = {
@@ -105,6 +113,7 @@ function App() {
     useEffect(() => {
         if (ENABLE_COGNITIVE) {
             document.body.classList.add("cognitive");
+            document.addEventListener('message', handleCognitrek)
         }
     },[])
 
