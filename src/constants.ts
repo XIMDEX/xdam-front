@@ -103,5 +103,5 @@ export const CORES = {
     'document': 6
 }
 
-export const ENABLE_COGNITIVE = process.env.REACT_APP_USE_COGNITIVE_SERVICES === 'true'
+export const ENABLE_COGNITIVE = CLIENT?.toLocaleLowerCase() === 'cognitrek'
 export const COGNITIVE_API_URL = process.env.REACT_APP_API_COGNITIVE_SERVICES

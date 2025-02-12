@@ -574,10 +574,6 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   const mediaData = { menuItem: "Media data", render: () => <Tab.Pane > <MediaData url={resourceData?.files?.[0].dam_url} description="test" transcription="Test" xtags={[]}/> </Tab.Pane> };
   const cdnData = { menuItem: "CDN data", render: () => <Tab.Pane > <CDNData data={dataForUpdate?.data?.cdns_attached ?? []}/> </Tab.Pane> };
 
-  const contentLLM = {menuItem: "Content", render: () => <Tab.Pane > <LLM data={resourceData.id} type="content"/>  </Tab.Pane> }
-  const resumeLLM = {menuItem: "Summary", render: () => <Tab.Pane > <LLM data={resourceData.id} type="resume"/>  </Tab.Pane> }
-  const conceptualMapLLM = {menuItem: "Conceptual Map", render: () => <Tab.Pane > <LLM data={resourceData.id} type="conceptual_map"/> </Tab.Pane> }
-  const feedback = {menuItem: "Feedback", render: () => <Tab.Pane > <FeedbackTab data={resourceData.id} /> </Tab.Pane> }
 
   const pane = [metaData];
   let panes = [metaData, ...lomsData];
@@ -589,8 +585,13 @@ export default function DynamicForm({ resourceType, action, schema, dataForUpdat
   }
 
   if (resourceType === 'document' && ENABLE_COGNITIVE) {
+    const contentLLM = {menuItem: "Content", render: () => <Tab.Pane > <LLM data={resourceData.id} type="content"/>  </Tab.Pane> }
+    const resumeLLM = {menuItem: "Summary", render: () => <Tab.Pane > <LLM data={resourceData.id} type="resume"/>  </Tab.Pane> }
+    const conceptualMapLLM = {menuItem: "Conceptual Map", render: () => <Tab.Pane > <LLM data={resourceData.id} type="conceptual_map"/> </Tab.Pane> }
+    const feedback = {menuItem: "Feedback", render: () => <Tab.Pane > <FeedbackTab data={resourceData.id} /> </Tab.Pane> }
     panes = [...panes, contentLLM, resumeLLM, conceptualMapLLM, feedback]
   }
+  
   const setForm = (data) => {
     dispatch(setFormData(data))
   }
